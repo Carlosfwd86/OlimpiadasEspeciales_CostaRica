@@ -1,0 +1,76 @@
+/* --- ESTILOS DEL NAVBAR ESTÉTICO --- */
+
+.navbar-principal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4rem;
+    height: 80px;
+    background-color: #0b0c16; /* Color de fondo oscuro y profesional */
+    color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* O similar */
+}
+
+/* Sección del Logo */
+.navbar-logo-seccion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-logo-placehold {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.navbar-pais {
+    background-color: #ff0c20; /* Rojo vibrante */
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Enlaces de Texto */
+.navbar-enlaces {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-enlaces button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 10px;
+    transition: color 0.2s ease;
+}
+
+.navbar-enlaces button:hover {
+    color: #ffd128; /* Amarillo para el hover */
+}
+
+/* Botón Entrar */
+.boton-entrar {
+    background-color: #ff0c20; /* Rojo vibrante */
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.boton-entrar:hover {
+    background-color: #e00b1a; /* Rojo ligeramente más oscuro */
+}
