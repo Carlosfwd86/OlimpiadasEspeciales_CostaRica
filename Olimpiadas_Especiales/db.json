@@ -1,14 +1,5 @@
 {
-    "voluntarios": [
-        {
-            "id": 1,
-            "nombre": "Juan",
-            "apellido": "Perez",
-            "correo": "[EMAIL_ADDRESS]",
-            "telefono": "88888888",
-            "disponibilidad": "Fines de semana",
-            "habilidades": ["Deportes", "Primeros auxilios"],
-            "estado": "Activo"
-        }
+    "usuarios": [
+        
     ]
-}   
+}
