@@ -34,8 +34,8 @@ const Footer = () => {
           <h4 className="footer_h4">Explorar</h4>
           <ul className="footer_lista">
             <li className="footer_item" onClick={() => abrirRedSocial('Nosotros')}>Nosotros</li>
-            <li className="footer_item" onClick={() => abrirRedSocial('Programas')}>Programas</li>
-            <li className="footer_item" onClick={() => abrirRedSocial('Noticias')}>Noticias</li>
+            <li className="footer_item" onClick={() => abrirRedSocial('Programas')}>Eventos</li>
+            <li className="footer_item" onClick={() => abrirRedSocial('Noticias')}>Voluntarios</li>
           </ul>
         </div>
 

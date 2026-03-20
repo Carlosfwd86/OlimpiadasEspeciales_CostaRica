@@ -6,11 +6,10 @@ const Navbar = () => {
   // VERDE: Funciones de navegación con nombres en español
   const irAlInicio = () => console.log("Inicio");
   const irANosotros = () => console.log("Nosotros");
-  const irAProgramas = () => console.log("Programas");
-  const irASumate = () => console.log("Súmate");
-  const irAParticipa = () => console.log("Participa");
-  const irARegistrate = () => console.log("Registro");
-  const irAHazteSocio = () => console.log("Socio");
+  const irAEventos = () => console.log("Eventos");
+  const irAVoluntarios = () => console.log("Voluntarios");
+  const irAContacto = () => console.log("Contacto");
+  const irARegistro = () => console.log("Registro");
 
   return (
     <nav className="navbar_principal">
@@ -25,14 +24,13 @@ const Navbar = () => {
       <div className="navbar_menu_derecha">
         <ul className="lista_navegacion">
           <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
-          <li className="enlace_nav" onClick={irAProgramas}>PROGRAMAS</li>
-          <li className="enlace_nav" onClick={irASumate}>SÚMATE</li>
-          <li className="enlace_nav" onClick={irAParticipa}>PARTICIPA</li>
-          <li className="enlace_nav" onClick={irARegistrate}>REGÍSTRATE</li>
+          <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
+          <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
+          <li className="enlace_nav" onClick={irAContacto}>CONTACTO</li>
         </ul>
         
-        <button className="boton_accion_rojo" onClick={irAHazteSocio}>
-          HAZTE SOCIO
+        <button className="boton_accion_rojo" onClick={irARegistro}>
+          REGISTRO
         </button>
       </div>
     </nav>
