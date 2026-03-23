@@ -42,5 +42,18 @@
       "correo": "darias@gmail.com",
       "telefono": "83172478"
     }
-  ]
+  ],
+  "estadisticas_generales": {
+    "totalRegistros": { "valor": "0", "porcentaje": "0%", "tendencia": "none" },
+    "atletasActivos": { "valor": "0", "porcentaje": "0%", "tendencia": "none" },
+    "revisionesPendientes": { "valor": "0", "textoExtra": "" },
+    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
+  },
+  "graficos": {
+    "atletasPorDeporte": [],
+    "distribucionRegional": [],
+    "totalGeneral": "0"
+  },
+  "registros_pendientes": [],
+  "actividad_sistema": []
 }

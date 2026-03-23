@@ -27,7 +27,7 @@ const Navbar = () => {
     };
   }, []);
 
-  // VERDE: Funciones de navegación con nombres en español
+  // Funciones de navegación
   const irAlInicio = () => navegar("/");
   const irANosotros = () => navegar("/nosotros");
   const irAEventos = () => navegar("/eventos");
@@ -35,6 +35,7 @@ const Navbar = () => {
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
   const irARegistro = () => console.log("Registro");
+  const irAPanelAdmin = () => navegar("/admin");
 
   const cerrarSesion = () => {
     localStorage.removeItem('usuarioSesion');

@@ -1,0 +1,145 @@
+/* src/style/Topbar.css */
+
+.admin-topbar {
+  background-color: var(--admin-white, #ffffff);
+  border-bottom: 1px solid var(--admin-border, #e1e4e8);
+  height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-nav {
+  display: flex;
+  gap: 30px;
+}
+
+.topbar-link {
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--admin-text-muted, #6e6e73);
+  position: relative;
+  height: 70px;
+  display: flex;
+  align-items: center;
+}
+
+.topbar-link:hover {
+  color: var(--admin-text-main, #1d1d1f);
+}
+
+.topbar-link.active {
+  color: var(--admin-red, #e62334);
+  font-weight: 600;
+}
+
+.topbar-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; /* overlap border */
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--admin-red, #e62334);
+  border-radius: 3px 3px 0 0;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #adb5bd;
+  font-size: 14px;
+}
+
+.search-input {
+  width: 250px;
+  padding: 10px 10px 10px 36px;
+  border: 1px solid transparent;
+  background-color: #f1f3f5;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--admin-text-main, #1d1d1f);
+  transition: all 0.2s;
+  outline: none;
+}
+
+.search-input:focus {
+  background-color: #fff;
+  border-color: #ced4da;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+}
+
+.notification-btn {
+  background-color: #f1f3f5;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-text-muted, #6e6e73);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.notification-btn:hover {
+  background-color: #e9ecef;
+  color: var(--admin-text-main, #1d1d1f);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--admin-red, #e62334);
+  border-radius: 50%;
+  border: 1px solid white;
+}
+
+.profile-btn {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-avatar-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--admin-red, #e62334);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid #fff;
+}
