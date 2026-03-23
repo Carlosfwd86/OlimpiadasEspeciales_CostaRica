@@ -3,13 +3,16 @@ import React from 'react';
 /* Importamos solo lo necesario, sin repetir */
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePages from '../pages/HomePages';
+import FormularioPages from '../pages/FormularioPages';
 import NosotrosPages from '../pages/NosotrosPages';
 import EventosPages from '../pages/EventosPages';
 import VoluntariosPages from '../pages/VoluntariosPages';
 import ContactoPages from '../pages/ContactoPages';
 
+
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
+
 
 const Routing = () => {
     return (
@@ -19,6 +22,9 @@ const Routing = () => {
                    <Route path="/entrenadores" element={<EntrenadoresPage />} />
                    <Route path="/login" element={<LoginPage />} />
             
+
+            {/* Ruta del formulario */}
+            <Route path="/formulario" element={<FormularioPages />} />
 
             {/* Redirección por defecto: si el usuario pone cualquier otra cosa, lo manda al inicio */}
             <Route path="*" element={<Navigate to="/" />} />
