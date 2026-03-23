@@ -1,14 +1,17 @@
 import React from 'react';
-import "../styles/Navbar.css"
+import { useNavigate } from 'react-router-dom';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
+  const navegar = useNavigate();
 
   // VERDE: Funciones de navegación con nombres en español
-  const irAlInicio = () => console.log("Inicio");
-  const irANosotros = () => console.log("Nosotros");
-  const irAEventos = () => console.log("Eventos");
-  const irAVoluntarios = () => console.log("Voluntarios");
-  const irAContacto = () => console.log("Contacto");
+  const irAlInicio = () => navegar("/");
+  const irANosotros = () => navegar("/nosotros");
+  const irAEventos = () => navegar("/eventos");
+  const irAVoluntarios = () => navegar("/voluntarios");
+  const irAContacto = () => navegar("/contacto");
+  const irALogin = () => navegar("/login");
   const irARegistro = () => console.log("Registro");
 
   return (
@@ -29,9 +32,14 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irAContacto}>CONTACTO</li>
         </ul>
         
-        <button className="boton_accion_rojo" onClick={irARegistro}>
-          REGISTRO
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="boton_accion_blanco" onClick={irALogin}>
+            INICIAR SESIÓN
+          </button>
+          <button className="boton_accion_rojo" onClick={irARegistro}>
+            REGISTRO
+          </button>
+        </div>
       </div>
     </nav>
   );
