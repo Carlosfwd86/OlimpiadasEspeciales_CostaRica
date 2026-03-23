@@ -1,0 +1,173 @@
+/* src/style/PendingTable.css */
+
+.pending-table-container {
+  background-color: var(--admin-white, #ffffff);
+  border: 1px solid var(--admin-border, #e1e4e8);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid var(--admin-border, #e1e4e8);
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--admin-text-main, #1d1d1f);
+  font-weight: 700;
+}
+
+.link-red {
+  color: var(--admin-red, #e62334);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.pending-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pending-table th {
+  text-align: left;
+  padding: 16px 24px;
+  font-size: 11px;
+  color: #adb5bd;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.pending-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f1f3f5;
+  color: var(--admin-text-main, #1d1d1f);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.athlete-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.athlete-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Backgrounds for Initials */
+.bg-light-red { background-color: #fce8e6; color: var(--admin-red, #e62334); }
+.bg-light-blue { background-color: #e8f0fe; color: #1a73e8; }
+.bg-light-pink { background-color: #fce4ec; color: #d81b60; }
+
+.athlete-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.athlete-name {
+  font-weight: 600;
+  color: var(--admin-text-main, #1d1d1f);
+}
+
+.athlete-time {
+  font-size: 12px;
+  color: #adb5bd;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.status-yellow {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.status-blue {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
+  background: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6e6e73;
+  transition: all 0.2s;
+}
+
+.btn-action.edit:hover {
+  color: #1a73e8;
+  border-color: #1a73e8;
+  background-color: #f1f8ff;
+}
+
+.btn-action.approve:hover {
+  color: #28a745;
+  border-color: #28a745;
+  background-color: #e6ffed;
+}
+
+.empty-table-msg {
+  text-align: center;
+  padding: 40px !important;
+  color: #868e96;
+  font-style: italic;
+}
+
+.table-footer {
+  padding: 16px 24px;
+  text-align: center;
+  background-color: #fafbfc;
+  border-top: 1px solid var(--admin-border, #e1e4e8);
+}
+
+.table-footer a {
+  color: var(--admin-text-muted, #6e6e73);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.table-footer a:hover {
+  color: var(--admin-text-main, #1d1d1f);
+  text-decoration: underline;
+}
