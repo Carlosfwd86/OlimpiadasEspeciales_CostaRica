@@ -12,8 +12,9 @@ const Navbar = () => {
   const irAVoluntarios = () => navegar("/voluntarios");
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
-  const irARegistro = () => console.log("Registro");
-  
+
+  const irARegistro = () => navegar("/formulario");
+
   return (
     <nav className="navbar_principal">
       <div className="navbar_logotipo" onClick={irAlInicio}>

@@ -21,15 +21,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Fetch data from multiple endpoints since db.json structure changed
-      const [resAtletas, resEntrenadores, resTutores, resVoluntarios] = await Promise.all([
-        fetch("http://localhost:3001/atletas"),
-        fetch("http://localhost:3001/entrenadores"),
-        fetch("http://localhost:3001/tutores"),
-        fetch("http://localhost:3001/voluntarios")
-      ]);
 
-      if (!resAtletas.ok || !resEntrenadores.ok || !resTutores.ok || !resVoluntarios.ok) {
+      // Fetch usuarios from API
+      const response = await fetch("http://localhost:3000/atletas");
+      if (!response.ok) {
         throw new Error("No se pudo conectar con el servidor.");
       }
 
@@ -89,27 +84,27 @@ const Login = () => {
         <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
             <label htmlFor="cedula">Cédula</label>
-            <input 
-              type="text" 
-              id="cedula" 
-              name="cedula" 
-              placeholder="Ej: 111111111" 
+            <input
+              type="text"
+              id="cedula"
+              name="cedula"
+              placeholder="Ej: 111111111"
               value={formData.cedula}
               onChange={handleChange}
-              required 
+              required
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="contrasenia">Contraseña</label>
-            <input 
-              type="password" 
-              id="contrasenia" 
-              name="contrasenia" 
-              placeholder="••••••••" 
+            <input
+              type="password"
+              id="contrasenia"
+              name="contrasenia"
+              placeholder="••••••••"
               value={formData.contrasenia}
               onChange={handleChange}
-              required 
+              required
             />
           </div>
 
