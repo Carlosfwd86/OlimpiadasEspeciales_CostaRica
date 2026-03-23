@@ -1,0 +1,209 @@
+.entrenadores-dashboard {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #333;
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  color: #e3000f; /* Olimpiadas Especiales red */
+  margin-bottom: 10px;
+}
+
+.dashboard-header p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-content {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.form-container {
+  flex: 1;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-top: 5px solid #e3000f;
+}
+
+.form-container h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #222;
+  font-size: 1.5rem;
+}
+
+.entrenador-form .form-group {
+  margin-bottom: 20px;
+}
+
+.entrenador-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #444;
+}
+
+.entrenador-form input,
+.entrenador-form select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.entrenador-form input:focus,
+.entrenador-form select:focus {
+  outline: none;
+  border-color: #e3000f;
+  box-shadow: 0 0 0 3px rgba(227, 0, 15, 0.15);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background-color: #e3000f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn-submit:hover {
+  background-color: #c2000c;
+}
+
+.btn-submit:active {
+  transform: translateY(2px);
+}
+
+.list-container {
+  flex: 2;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.list-container h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #222;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-count {
+  background-color: #f1f1f1;
+  color: #555;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.entrenadores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.entrenador-card {
+  background-color: #f9f9f9;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.entrenador-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  border-color: #ddd;
+}
+
+.entrenador-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 10px;
+}
+
+.entrenador-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete:hover {
+  color: #e3000f;
+}
+
+.entrenador-info p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.entrenador-info strong {
+  color: #333;
+  margin-right: 8px;
+  min-width: 80px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}

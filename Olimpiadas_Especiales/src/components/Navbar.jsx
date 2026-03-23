@@ -11,6 +11,7 @@ const Navbar = () => {
   const irAEventos = () => navegar("/eventos");
   const irAVoluntarios = () => navegar("/voluntarios");
   const irAContacto = () => navegar("/contacto");
+  const irALogin = () => navegar("/login");
   const irARegistro = () => console.log("Registro");
 
   return (
@@ -32,9 +33,14 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
         </ul>
         
-        <button className="boton_accion_rojo" onClick={irARegistro}>
-          REGISTRO
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="boton_accion_blanco" onClick={irALogin}>
+            INICIAR SESIÓN
+          </button>
+          <button className="boton_accion_rojo" onClick={irARegistro}>
+            REGISTRO
+          </button>
+        </div>
       </div>
     </nav>
   );
