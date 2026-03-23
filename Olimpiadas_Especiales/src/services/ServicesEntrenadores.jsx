@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001/entrenadores";
+const API_URL = "http://localhost:3000/entrenadores";
 
 // Obtener todos los entrenadores (Read)
 export const getEntrenadores = async () => {
