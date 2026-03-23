@@ -152,4 +152,51 @@
     width: 100%; /* El botón ocupa todo el ancho en móvil para que sea fácil tocarlo */
     padding: 15px;
   }
+
+  .boton_cerrar_sesion {
+    width: 100%;
+    padding: 15px;
+  }
+}
+
+/* --- BOTÓN CERRAR SESIÓN --- */
+.boton_cerrar_sesion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FF0000;
+  color: #ffffff;
+  border: 2px solid #FF0000;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.boton_cerrar_sesion:hover {
+  background-color: #C00000;
+  border-color: #C00000;
+  box-shadow: 0 4px 14px rgba(192, 0, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+.boton_cerrar_sesion:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* --- SALUDO USUARIO EN NAVBAR --- */
+.saludo_usuario {
+  font-size: 0.82rem;
+  color: #555;
+  white-space: nowrap;
+}
+
+.saludo_usuario strong {
+  color: #FF0000;
+  font-weight: 800;
 }
