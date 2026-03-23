@@ -13,7 +13,7 @@ const Navbar = () => {
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
   const irARegistro = () => console.log("Registro");
-
+  
   return (
     <nav className="navbar_principal">
       <div className="navbar_logotipo" onClick={irAlInicio}>
@@ -34,12 +34,12 @@ const Navbar = () => {
         </ul>
         
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button className="boton_accion_blanco" onClick={irALogin}>
-            INICIAR SESIÓN
-          </button>
-          <button className="boton_accion_rojo" onClick={irARegistro}>
-            REGISTRO
-          </button>
+              <button className="boton_accion_blanco" onClick={irALogin}>
+                INICIAR SESIÓN
+              </button>
+              <button className="boton_accion_rojo" onClick={irARegistro}>
+                REGISTRO
+              </button>
         </div>
       </div>
     </nav>

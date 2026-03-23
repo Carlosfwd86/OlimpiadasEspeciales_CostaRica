@@ -21,24 +21,38 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Fetch usuarios from API
-      const response = await fetch("http://localhost:3001/usuarios");
-      if (!response.ok) {
+      // Fetch data from multiple endpoints since db.json structure changed
+      const [resAtletas, resEntrenadores, resTutores, resVoluntarios] = await Promise.all([
+        fetch("http://localhost:3001/atletas"),
+        fetch("http://localhost:3001/entrenadores"),
+        fetch("http://localhost:3001/tutores"),
+        fetch("http://localhost:3001/voluntarios")
+      ]);
+
+      if (!resAtletas.ok || !resEntrenadores.ok || !resTutores.ok || !resVoluntarios.ok) {
         throw new Error("No se pudo conectar con el servidor.");
       }
-      const usuarios = await response.json();
 
-      // Find user that matches cedula and contrasenia
-      const usuarioValido = usuarios.find(
-        (user) => user.cedula === formData.cedula && user.contrasenia === formData.contrasenia
+      const atletas = await resAtletas.json();
+      const entrenadores = await resEntrenadores.json();
+      const tutores = await resTutores.json();
+      const voluntarios = await resVoluntarios.json();
+
+      const todosLosUsuarios = [...atletas, ...entrenadores, ...tutores, ...voluntarios];
+
+      // Find user that matches cedula and contrasenia/password
+      const usuarioValido = todosLosUsuarios.find(
+        (user) => user.cedula === formData.cedula && (user.contrasenia === formData.contrasenia || user.password === formData.contrasenia)
       );
 
       if (usuarioValido) {
+        // Save to localStorage to persist session
+        localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioValido));
+
         // Redirect based on role
         alert(`Bienvenido(a), ingresaste como ${usuarioValido.rol}`);
         switch (usuarioValido.rol) {
           case 'atleta':
-            // Redirect to a specific path or home if not created
             navigate('/atleta');
             break;
           case 'entrenador':
