@@ -1,0 +1,164 @@
+/* CONSERVANDO VARIABLES GLOBALES */
+.contenedor_contacto_principal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-bottom: 50px;
+}
+
+/* --- BANNER --- */
+.banner_contacto {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background-image: url('../../public/fotoContacto.jpg'); 
+  background-size: cover;
+  background-position: center 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay_banner {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(100,0,0,0.6) 100%);
+}
+
+.titulo_contacto {
+  position: relative;
+  z-index: 2;
+  color: var(--so-white);
+  font-size: 5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* --- TARJETAS --- */
+.contenedor_tarjetas_contacto {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5%;
+  margin-top: -60px;
+  position: relative;
+  z-index: 3;
+}
+
+.tarjeta_contacto {
+  flex: 1;
+  min-width: 280px;
+  background-color: var(--so-white); /* Todas blancas */
+  color: var(--so-black);
+  border-radius: 12px;
+  padding: 50px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-top-color 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--so-black); /* Borde negro definido para contraste */
+  border-top: 6px solid var(--so-black); /* Borde superior inicial negro que pasará a ser rojo en hover */
+}
+
+/* Cuando se pone encima, se eleva y el borde superior se pone "rojito" */
+.tarjeta_contacto:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  border-top-color: var(--so-red);
+}
+
+/* Circulo icono centralizado */
+.circulo_icono {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(255,0,0,0.06); /* Sutil tinte rojo base */
+  color: var(--so-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+  transition: all 0.3s ease;
+}
+
+.tarjeta_contacto:hover .circulo_icono {
+  background-color: var(--so-red);
+  color: var(--so-white);
+  transform: scale(1.1) rotate(5deg);
+}
+
+.tarjeta_contacto h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+  text-transform: capitalize;
+  color: var(--so-black);
+}
+
+.tarjeta_contacto p {
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--so-grey);
+}
+
+/* --- LISTA DE REDES SOCIALES --- */
+.lista_redes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.lista_redes li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--so-grey);
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.lista_redes li:hover {
+  color: var(--so-red);
+  transform: translateX(5px);
+}
+
+.icono_mini_red {
+  font-weight: bold;
+  font-size: 1.1rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  background-color: rgba(255,0,0,0.1);
+  color: var(--so-red);
+  border-radius: 5px;
+}
+
+/* --- RESPONSIVIDAD --- */
+@media (max-width: 1024px) {
+  .titulo_contacto { font-size: 4rem; }
+  .contenedor_tarjetas_contacto { flex-wrap: wrap; gap: 20px; margin-top: -40px; }
+}
+@media (max-width: 768px) {
+  .titulo_contacto { font-size: 3rem; }
+  .contenedor_tarjetas_contacto { flex-direction: column; align-items: center; margin-top: 0; padding: 30px 5%; }
+  .tarjeta_contacto { width: 100%; max-width: 400px; padding: 40px 20px; }
+}

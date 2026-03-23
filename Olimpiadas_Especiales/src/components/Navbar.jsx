@@ -26,10 +26,11 @@ const Navbar = () => {
 
       <div className="navbar_menu_derecha">
         <ul className="lista_navegacion">
+          <li className="enlace_nav" onClick={irAlInicio}>INICIO</li>
           <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
           <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
-          <li className="enlace_nav" onClick={irAContacto}>CONTACTO</li>
+          <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
         </ul>
         
         <div style={{ display: 'flex', gap: '10px' }}>
