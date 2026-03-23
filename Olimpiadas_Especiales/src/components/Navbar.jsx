@@ -1,14 +1,16 @@
 import React from 'react';
-import "../styles/Navbar.css"
+import { useNavigate } from 'react-router-dom';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
+  const navegar = useNavigate();
 
   // VERDE: Funciones de navegación con nombres en español
-  const irAlInicio = () => console.log("Inicio");
-  const irANosotros = () => console.log("Nosotros");
-  const irAEventos = () => console.log("Eventos");
-  const irAVoluntarios = () => console.log("Voluntarios");
-  const irAContacto = () => console.log("Contacto");
+  const irAlInicio = () => navegar("/");
+  const irANosotros = () => navegar("/nosotros");
+  const irAEventos = () => navegar("/eventos");
+  const irAVoluntarios = () => navegar("/voluntarios");
+  const irAContacto = () => navegar("/contacto");
   const irARegistro = () => console.log("Registro");
 
   return (
@@ -23,10 +25,11 @@ const Navbar = () => {
 
       <div className="navbar_menu_derecha">
         <ul className="lista_navegacion">
+          <li className="enlace_nav" onClick={irAlInicio}>INICIO</li>
           <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
           <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
-          <li className="enlace_nav" onClick={irAContacto}>CONTACTO</li>
+          <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
         </ul>
         
         <button className="boton_accion_rojo" onClick={irARegistro}>
