@@ -1,16 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 
 const Home = () => {
 
     /* --- Funciones de Acción --- */
-    const manejarUnete = () => {
-        console.log("Unirse como atleta...");
-    };
+    const navegar = useNavigate();
+    const irAFormulario = (rol) => navegar(`/formulario?rol=${rol}`);
 
-    const manejarConoceMas = () => {
-        console.log("Conocer más detalles...");
-    };
+    const manejarUnete = () => navegar('/formulario?rol=atleta');
+    const manejarConoceMas = () => console.log('Conocer más...');
 
     return (
         <section className="contenedor_hero_principal">
@@ -50,7 +49,7 @@ const Home = () => {
             <div className="hero_tarjetas_inferiores">
                 
                 {/* 1. Tarjeta Atleta */}
-                <div className="tarjeta_info">
+                <div className="tarjeta_info" onClick={() => irAFormulario('atleta')} style={{ cursor: 'pointer' }}>
                     <div className="icono_tarjeta">
                         <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="8" r="5" />
@@ -65,7 +64,7 @@ const Home = () => {
                 </div>
 
                 {/* 2. Tarjeta Familiar */}
-                <div className="tarjeta_info">
+                <div className="tarjeta_info" onClick={() => irAFormulario('tutor')} style={{ cursor: 'pointer' }}>
                     <div className="icono_tarjeta">
                         <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -82,7 +81,7 @@ const Home = () => {
                 </div>
 
                 {/* 3. Tarjeta Entrenador */}
-                <div className="tarjeta_info">
+                <div className="tarjeta_info" onClick={() => irAFormulario('entrenador')} style={{ cursor: 'pointer' }}>
                     <div className="icono_tarjeta">
                         <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
@@ -97,7 +96,7 @@ const Home = () => {
                 </div>
 
                 {/* 4. Tarjeta Voluntario */}
-                <div className="tarjeta_info">
+                <div className="tarjeta_info" onClick={() => irAFormulario('voluntario')} style={{ cursor: 'pointer' }}>
                     <div className="icono_tarjeta">
                         <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
