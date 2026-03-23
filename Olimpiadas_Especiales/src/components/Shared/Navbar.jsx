@@ -1,62 +1,40 @@
-/* --- COMPONENTE NAVBAR ESTÉTICO --- */
-
 import React from 'react';
-import "../../styles/Navbar.css"
+import "../styles/Navbar.css"
 
 const Navbar = () => {
 
-    /* --- Funciones de Manejo de Clics (sin lógica de rutas aún) --- */
-    
-    const irAInicio = () => {
-        console.log("Clic en Inicio");
-        // Aquí iría la lógica para mostrar la página de inicio
-    };
+  // VERDE: Funciones de navegación con nombres en español
+  const irAlInicio = () => console.log("Inicio");
+  const irANosotros = () => console.log("Nosotros");
+  const irAEventos = () => console.log("Eventos");
+  const irAVoluntarios = () => console.log("Voluntarios");
+  const irAContacto = () => console.log("Contacto");
+  const irARegistro = () => console.log("Registro");
 
-    const irARegistro = () => {
-        console.log("Clic en Registro de Atletas");
-        // Lógica para mostrar registro
-    };
+  return (
+    <nav className="navbar_principal">
+      <div className="navbar_logotipo" onClick={irAlInicio}>
+        <div className="icono_rojo_so"></div>
+        <div className="textos_logo">
+          <span className="nombre_organizacion">OLIMPÍADAS ESPECIALES</span>
+          <span className="nombre_pais">COSTA RICA</span>
+        </div>
+      </div>
 
-    const irAListaAtletas = () => {
-        console.log("Clic en Lista de Atletas");
-    };
-
-    const irAPanelAdmin = () => {
-        console.log("Clic en Panel de Administración");
-    };
-
-    const manejarEntrar = () => {
-        console.log("Clic en Entrar");
-    };
-
-    return (
-        <nav className="navbar-principal">
-            
-            {/* Sección del Logo */}
-            <div className="navbar-logo-seccion">
-                {/* Asumimos que tenés un SVG o PNG para el logo */}
-                {/* <img src="/ruta/al/logo.svg" alt="Olimpiadas Especiales Logo" /> */}
-                <div className="navbar-logo-placehold">Olimpiadas Especiales</div>
-                <span className="navbar-pais">Costa Rica</span>
-            </div>
-
-            {/* Sección de Navegación de Texto */}
-            <ul className="navbar-enlaces">
-                <li><button onClick={irAInicio}>Inicio</button></li>
-                <li><button onClick={irARegistro}>Registro de Atletas</button></li>
-                <li><button onClick={irAListaAtletas}>Lista de Atletas</button></li>
-                <li><button onClick={irAPanelAdmin}>Panel de Administración</button></li>
-            </ul>
-
-            {/* Sección del Botón de Acción */}
-            <div className="navbar-accion">
-                <button className="boton-entrar" onClick={manejarEntrar}>
-                    Entrar
-                </button>
-            </div>
-
-        </nav>
-    );
+      <div className="navbar_menu_derecha">
+        <ul className="lista_navegacion">
+          <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
+          <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
+          <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
+          <li className="enlace_nav" onClick={irAContacto}>CONTACTO</li>
+        </ul>
+        
+        <button className="boton_accion_rojo" onClick={irARegistro}>
+          REGISTRO
+        </button>
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;
