@@ -4,13 +4,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 80px 10%;
+    padding: 80px 2%;
     gap: 50px;
     background-color: #ffffff;
 }
 
 .contenido-hero {
-    max-width: 600px;
+    max-width: 100%;
 }
 
 .etiqueta-inclusion {
