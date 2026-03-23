@@ -1,46 +1,136 @@
 {
-  "usuarios": [
+  "atletas": [
     {
-      "id": "1",
-      "cedula": "111111111",
-      "contrasenia": "atleta123",
+      "id": "2560",
+      "nombre": "Braksley",
+      "segundoNombre": "Roberto",
+      "apellido": "Camacho García",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "fechaNacimiento": "2333-02-12",
+      "cedula": "601780786",
+      "direccion": "asasasa",
+      "genero": "Masculino",
+      "telefono": "63511090",
+      "emergenciaNombre": "Manuel Fernandez Gonzales",
+      "emergenciaTelefono": "76767676",
+      "condicionesMedicas": [
+        "Síndrome De Marfan"
+      ],
+      "movilidad": [
+        "Silla de ruedas"
+      ],
+      "ayudasVida": [
+        "Gafas/lentes de contacto"
+      ],
+      "comunicaciones": [
+        "Lenguaje de señas"
+      ],
+      "dispMedicos": [
+        "Ninguno"
+      ],
+      "reqDietetico": "No",
+      "otrosDispositivos": "No",
+      "afeccionCardiaca": "Si",
+      "asma": "No",
+      "diabetes": "No",
+      "discVisual": "No",
+      "discAuditiva": "Si",
+      "trastornoHemorragico": "No",
+      "medicoLimitoDeportes": "Si",
+      "epilepsiaConvulsivo": "Si",
+      "anemiaDepranocitica": "No",
+      "conmocionCerebral": "No",
+      "afeccionesMentales": "No",
+      "alergiasGraves": "No",
+      "tomaMedicamentos": "No",
+      "disciplina": "Voleibol",
+      "nivelHabilidad": "Principiante (Sin experiencia o empezando)",
+      "relacionAtleta": "El Atleta mismo",
+      "documentos": {
+        "identificacion": {},
+        "certificado": {},
+        "foto": {}
+      },
+      "documentosGuardados": {
+        "identificacion": "Captura de pantalla 2026-02-11 102334.png",
+        "certificado": "Captura de pantalla 2026-02-11 102334.png",
+        "foto": "images (1).jpg"
+      },
+      "password": "vqvf10db",
       "rol": "atleta"
     },
     {
-      "id": "2",
-      "cedula": "222222222",
-      "contrasenia": "entrenador123",
-      "rol": "entrenador"
+      "id": "9b78",
+      "nombre": "Jose Figueres",
+      "segundoNombre": "",
+      "apellido": "",
+      "fechaNacimiento": "3332-02-23",
+      "cedula": "61780786",
+      "genero": "Masculino",
+      "direccion": "casacdsfscsd",
+      "telefono": "6351109023",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "emergenciaNombre": "Braksley MAPACHO garcia",
+      "emergenciaTelefono": "2323232323",
+      "medicamentos": [],
+      "condicionesMedicas": [
+        "Epilepsia"
+      ],
+      "disciplina": "Baloncesto",
+      "nivelHabilidad": "Principiante",
+      "relacionAtleta": "El Atleta mismo",
+      "relacionAtletaOtro": "",
+      "reqDietetico": "Si",
+      "tomaMedicamentos": "No",
+      "password": "muzz4rpp",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-23T16:56:16.468Z"
     },
     {
-      "id": "3",
-      "cedula": "333333333",
-      "contrasenia": "tutor123",
-      "rol": "tutor"
-    },
-    {
-      "id": "4",
-      "cedula": "444444444",
-      "contrasenia": "voluntario123",
-      "rol": "voluntario"
+      "id": "5eba",
+      "nombre": "sadca",
+      "segundoNombre": "",
+      "apellido": "",
+      "fechaNacimiento": "3333-02-23",
+      "cedula": "23232323",
+      "genero": "Masculino",
+      "direccion": "sdfsfdsfsf",
+      "telefono": "23232323232",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "emergenciaNombre": "efsdfsdfdsfds",
+      "emergenciaTelefono": "3232323",
+      "medicamentos": [],
+      "condicionesMedicas": [
+        "Síndrome de Alcoholismo Fetal",
+        "Síndrome de Down",
+        "Espina Bífida"
+      ],
+      "disciplina": "Atletismo",
+      "nivelHabilidad": "Avanzado",
+      "relacionAtleta": "El Atleta mismo",
+      "relacionAtletaOtro": "",
+      "otrosDispositivos": "Si",
+      "conmocionCerebral": "Si",
+      "alergiasGraves": "Si",
+      "afeccionesMentales": "Si",
+      "anemiaDepranocitica": "Si",
+      "medicoLimitoDeportes": "Si",
+      "discAuditiva": "Si",
+      "diabetes": "Si",
+      "afeccionCardiaca": "Si",
+      "discVisual": "Si",
+      "trastornoHemorragico": "Si",
+      "epilepsiaConvulsivo": "Si",
+      "asma": "Si",
+      "reqDietetico": "Si",
+      "tomaMedicamentos": "No",
+      "tipoAlergia": "khkjhgjklñkjhgjkl",
+      "password": "2einchqc",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-23T17:14:58.499Z"
     }
   ],
-  "entrenadores": [
-    {
-      "id": "89a5",
-      "nombre": "Carlos",
-      "apellidos": "Andrés Jiménez",
-      "especialidad": "Atletismo",
-      "correo": "cjimenezrfwd@gmail.com",
-      "telefono": "8818-3631"
-    },
-    {
-      "id": "8919",
-      "nombre": "Dylan ",
-      "apellidos": "Arias",
-      "especialidad": "Atletismo",
-      "correo": "darias@gmail.com",
-      "telefono": "83172478"
-    }
-  ]
+  "entrenadores": [],
+  "voluntarios": [],
+  "tutores": []
 }

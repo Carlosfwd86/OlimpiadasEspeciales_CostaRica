@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getEntrenadores, createEntrenador, deleteEntrenador } from '../services/ServiceEntrenadores';
+import { getEntrenadores, createEntrenador, deleteEntrenador } from '../services/ServicesEntrenadores';
 import '../styles/Entrenadores.css';
 
 function Entrenadores() {
