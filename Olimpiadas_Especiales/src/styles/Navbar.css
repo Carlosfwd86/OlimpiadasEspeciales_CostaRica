@@ -1,76 +1,133 @@
-/* --- ESTILOS DEL NAVBAR ESTÉTICO --- */
 
-.navbar-principal {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2%; /* Expandido a lo largo tocando bordes */
-    height: 80px;
-    background-color: #0b0c16; /* Color de fondo oscuro y profesional */
-    color: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* O similar */
+/* --- ESTILOS BASE (Escritorio) --- */
+.navbar_principal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  background-color: #ffffff;
+  height: 90px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
 }
 
-/* Sección del Logo */
-.navbar-logo-seccion {
-    display: flex;
-    align-items: center;
+.navbar_logotipo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+  min-width: fit-content;
+}
+
+.icono_rojo_so {
+  width: 35px;
+  height: 35px;
+  background-color: #FF0000; /* Rojo de tu paleta */
+  border-radius: 50%;
+}
+
+.textos_logo {
+  display: flex;
+  flex-direction: column;
+}
+
+.nombre_organizacion {
+  font-weight: 900;
+  font-size: 1rem;
+  color: #000;
+  line-height: 1;
+}
+
+.nombre_pais {
+  font-size: 0.75rem;
+  color: #FF0000;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.navbar_menu_derecha {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.lista_navegacion {
+  display: flex;
+  list-style: none;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+.enlace_nav {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+
+.enlace_nav:hover {
+  color: #FF0000;
+}
+
+.boton_accion_rojo {
+  background-color: #FF0000;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.2s;
+}
+
+/* --- RESPONSIVIDAD (Celulares y Tablets) --- */
+
+/* Para pantallas medianas (Laptops pequeñas / Tablets) */
+@media (max-width: 1100px) {
+  .lista_navegacion {
     gap: 10px;
+  }
+  .enlace_nav {
+    font-size: 0.75rem;
+  }
 }
 
-.navbar-logo-placehold {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: white;
-}
+/* Para Celulares (Menos de 768px) */
+@media (max-width: 768px) {
+  .navbar_principal {
+    height: auto;
+    padding: 15px 5%;
+    flex-direction: column; /* Apilamos logo y menú */
+    gap: 15px;
+  }
 
-.navbar-pais {
-    background-color: #ff0c20; /* Rojo vibrante */
-    color: white;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
+  .navbar_menu_derecha {
+    width: 100%;
+    flex-direction: column;
+    gap: 15px;
+  }
 
-/* Enlaces de Texto */
-.navbar-enlaces {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-    margin: 0;
-    padding: 0;
-}
+  .lista_navegacion {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap; /* Si son muchos, se pasan a la siguiente línea */
+    gap: 12px;
+  }
 
-.navbar-enlaces button {
-    background: none;
-    border: none;
-    color: white;
+  .nombre_organizacion {
     font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 10px;
-    transition: color 0.2s ease;
-}
+  }
 
-.navbar-enlaces button:hover {
-    color: #ffd128; /* Amarillo para el hover */
-}
-
-/* Botón Entrar */
-.boton-entrar {
-    background-color: #ff0c20; /* Rojo vibrante */
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.boton-entrar:hover {
-    background-color: #e00b1a; /* Rojo ligeramente más oscuro */
+  .boton_accion_rojo {
+    width: 100%; /* El botón ocupa todo el ancho en móvil para que sea fácil tocarlo */
+    padding: 15px;
+  }
 }

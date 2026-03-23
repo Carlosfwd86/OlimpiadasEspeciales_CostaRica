@@ -1,0 +1,118 @@
+/* SelectorRoles.css - Ultra-Intuitive & Graphical Design */
+
+:root {
+  --color-atleta: #FF4D4D;
+  --color-entrenador: #4D79FF;
+  --color-tutor: #22C55E;
+  --color-voluntario: #A855F7;
+  --bg-soft: #f8fafc;
+}
+
+.selector-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+  background-color: var(--bg-soft);
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.selector-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.botonesDeRol {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Individual Role Card (Big Squares) */
+.botonRol {
+  position: relative;
+  aspect-ratio: 1 / 1; /* Perfect Square */
+  border: none;
+  border-radius: 35px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  padding: 20px;
+}
+
+.botonRol:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific Colors and Gradients for each Role */
+.botonRol[data-role="atleta"] { border-bottom: 12px solid var(--color-atleta); }
+.botonRol[data-role="entrenador"] { border-bottom: 12px solid var(--color-entrenador); }
+.botonRol[data-role="tutor"] { border-bottom: 12px solid var(--color-tutor); }
+.botonRol[data-role="voluntario"] { border-bottom: 12px solid var(--color-voluntario); }
+
+/* Icons (Huge and Graphical) */
+.iconoRol {
+  font-size: 70px;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+  transition: transform 0.3s ease;
+}
+
+.botonRol:hover .iconoRol {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* Text Labels */
+.nombreRol {
+  font-size: 22px;
+  font-weight: 800;
+  color: #334155;
+  letter-spacing: -0.5px;
+}
+
+/* Interactive Feedback */
+.botonRol::after {
+  content: 'Elegir ➔';
+  position: absolute;
+  bottom: -40px;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.botonRol[data-role="atleta"]::after { background: var(--color-atleta); }
+.botonRol[data-role="entrenador"]::after { background: var(--color-entrenador); }
+.botonRol[data-role="tutor"]::after { background: var(--color-tutor); }
+.botonRol[data-role="voluntario"]::after { background: var(--color-voluntario); }
+
+.botonRol:hover::after {
+  bottom: 25px;
+}
+
+/* Responsive Grid */
+@media (max-width: 500px) {
+  .botonesDeRol {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .selector-title {
+    font-size: 26px;
+  }
+}
