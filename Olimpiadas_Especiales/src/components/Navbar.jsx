@@ -1,15 +1,16 @@
 /* --- COMPONENTE NAVBAR ESTÉTICO --- */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import "../styles/Navbar.css"
 
 const Navbar = () => {
+    const navigate = useNavigate();
 
-    /* --- Funciones de Manejo de Clics (sin lógica de rutas aún) --- */
+    /* --- Funciones de Manejo de Rutas --- */
     
     const irAInicio = () => {
-        console.log("Clic en Inicio");
-        // Aquí iría la lógica para mostrar la página de inicio
+        navigate("/");
     };
 
     const irARegistro = () => {
@@ -22,7 +23,7 @@ const Navbar = () => {
     };
 
     const irAPanelAdmin = () => {
-        console.log("Clic en Panel de Administración");
+        navigate("/admin");
     };
 
     const manejarEntrar = () => {
