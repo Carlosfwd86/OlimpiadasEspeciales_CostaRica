@@ -1,14 +1,15 @@
 import React from 'react';
-import "../styles/Navbar.css"
+import '../styles/Navbar.css';
 
 const Navbar = () => {
+  const navegar = useNavigate();
 
   // VERDE: Funciones de navegación con nombres en español
-  const irAlInicio = () => console.log("Inicio");
-  const irANosotros = () => console.log("Nosotros");
-  const irAEventos = () => console.log("Eventos");
-  const irAVoluntarios = () => console.log("Voluntarios");
-  const irAContacto = () => console.log("Contacto");
+  const irAlInicio = () => navegar("/");
+  const irANosotros = () => navegar("/nosotros");
+  const irAEventos = () => navegar("/eventos");
+  const irAVoluntarios = () => navegar("/voluntarios");
+  const irAContacto = () => navegar("/contacto");
   const irARegistro = () => console.log("Registro");
 
   return (
