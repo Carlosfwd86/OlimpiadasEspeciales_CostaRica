@@ -21,16 +21,23 @@ const Login = () => {
     setLoading(true);
 
     try {
+
       // Fetch usuarios from API
-      const response = await fetch("http://localhost:3001/usuarios");
+      const response = await fetch("http://localhost:3000/atletas");
       if (!response.ok) {
         throw new Error("No se pudo conectar con el servidor.");
       }
-      const usuarios = await response.json();
 
-      // Find user that matches cedula and contrasenia
-      const usuarioValido = usuarios.find(
-        (user) => user.cedula === formData.cedula && user.contrasenia === formData.contrasenia
+      const atletas = await resAtletas.json();
+      const entrenadores = await resEntrenadores.json();
+      const tutores = await resTutores.json();
+      const voluntarios = await resVoluntarios.json();
+
+      const todosLosUsuarios = [...atletas, ...entrenadores, ...tutores, ...voluntarios];
+
+      // Find user that matches cedula and contrasenia/password
+      const usuarioValido = todosLosUsuarios.find(
+        (user) => user.cedula === formData.cedula && (user.contrasenia === formData.contrasenia || user.password === formData.contrasenia)
       );
 
       if (usuarioValido) {
@@ -41,7 +48,6 @@ const Login = () => {
         alert(`Bienvenido(a), ingresaste como ${usuarioValido.rol}`);
         switch (usuarioValido.rol) {
           case 'atleta':
-            // Redirect to a specific path or home if not created
             navigate('/atleta');
             break;
           case 'entrenador':
@@ -78,27 +84,27 @@ const Login = () => {
         <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
             <label htmlFor="cedula">Cédula</label>
-            <input 
-              type="text" 
-              id="cedula" 
-              name="cedula" 
-              placeholder="Ej: 111111111" 
+            <input
+              type="text"
+              id="cedula"
+              name="cedula"
+              placeholder="Ej: 111111111"
               value={formData.cedula}
               onChange={handleChange}
-              required 
+              required
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="contrasenia">Contraseña</label>
-            <input 
-              type="password" 
-              id="contrasenia" 
-              name="contrasenia" 
-              placeholder="••••••••" 
+            <input
+              type="password"
+              id="contrasenia"
+              name="contrasenia"
+              placeholder="••••••••"
               value={formData.contrasenia}
               onChange={handleChange}
-              required 
+              required
             />
           </div>
 

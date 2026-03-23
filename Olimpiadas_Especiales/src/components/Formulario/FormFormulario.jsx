@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
 import SelectorDeRol from './SelectorDeRol'
@@ -6,11 +7,16 @@ import FormAtleta from './FormAtleta'
 import FormEntrenador from './FormEntrenador'
 import FormTutor from './FormTutor'
 import FormVoluntario from './FormVoluntario'
-import { useState } from 'react'
 
 function FormFormulario() {
-
   const [rol, setRol] = useState(null)
+  const [searchParams] = useSearchParams()
+
+  // Si viene con ?rol=X en la URL, saltar directo al formulario
+  useEffect(() => {
+    const rolParam = searchParams.get('rol')
+    if (rolParam) setRol(rolParam)
+  }, [searchParams])
 
 
   return (
