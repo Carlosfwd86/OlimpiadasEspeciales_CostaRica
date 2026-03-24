@@ -1,6 +1,6 @@
 import React from 'react';
 import '../style/Sidebar.css';
-import logoUrl from '../img/SO_CostaRica-10_logo-removebg-preview.png';
+import logoUrl from '../img/Logo Olimpiadas.png';
 
 export default function Sidebar() {
   return (
