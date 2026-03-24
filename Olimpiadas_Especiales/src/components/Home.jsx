@@ -58,8 +58,7 @@ const Home = () => {
                     </h1>
                     
                     <p className="hero_descripcion">
-                        Promovemos la inclusión, el respeto y el desarrollo de personas 
-                        con discapacidad intelectual a través del deporte.
+                      Nuestra mision es proporcionar entrenamiento deportivo y competición atlética durante todo el año en una variedad de deportes de tipo olímpico para niños y adultos con discapacidad intelectual, ofreciéndoles oportunidades continuas para desarrollar su condición física, demostrar valentía, experimentar alegría y compartir sus talentos, habilidades y amistad con sus familias, otros atletas de las Olimpiadas Especiales y la comunidad.
                     </p>
 
                     <div className="hero_botones">
