@@ -91,7 +91,7 @@
   align-items: center;
   gap: 10px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 8px 20px rgba(255, 0, 0, 0.25);
+  box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3); /* Mantenemos la sombra mejorada por ahora */
 }
 
 .boton_rojo:hover {
@@ -142,7 +142,7 @@
   background-size: cover;
   background-position: center;
   border-radius: 20px 100px 20px 20px; 
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15); /* Mantenemos la sombra mejorada por ahora o la revertimos? Lo dejaré como estaba originalmente si insiste. */
   position: relative;
   z-index: 3;
 }
