@@ -35,7 +35,7 @@ const Navbar = () => {
   const irAVoluntarios = () => navegar("/voluntarios");
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
-  const irARegistro = () => console.log("Registro");
+  const irARegistro = () => navegar("/formulario");
   const irAPanelAdmin = () => navegar("/admin");
 
   const cerrarSesion = () => {
