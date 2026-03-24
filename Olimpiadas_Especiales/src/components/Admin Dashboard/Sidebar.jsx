@@ -1,6 +1,6 @@
 import React from 'react';
-import '../style/Sidebar.css';
-import logoUrl from '../img/SO_CostaRica-10_logo-removebg-preview.png';
+import '../../style/Sidebar.css';
+import logoUrl from '../../img/SO_CostaRica-10_logo-removebg-preview.png';
 
 export default function Sidebar() {
   return (
