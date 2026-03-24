@@ -6,7 +6,7 @@
   align-items: center;
   padding: 0 5%;
   background-color: #ffffff;
-  height: 90px;
+  height: 95px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -18,34 +18,21 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: 12px;
   min-width: fit-content;
+  transition: transform 0.3s ease;
+}
+
+.navbar_logotipo:hover {
+  transform: scale(1.20);
 }
 
 .icono_rojo_so {
-  width: 35px;
-  height: 35px;
-  background-color: #FF0000; /* Rojo de tu paleta */
-  border-radius: 50%;
-}
-
-.textos_logo {
-  display: flex;
-  flex-direction: column;
-}
-
-.nombre_organizacion {
-  font-weight: 900;
-  font-size: 1rem;
-  color: #000;
-  line-height: 1;
-}
-
-.nombre_pais {
-  font-size: 0.75rem;
-  color: #FF0000;
-  font-weight: 700;
-  letter-spacing: 1px;
+  height: 120px;
+  width: auto;
+  max-width: 400px;
+  transform: scaleX(1.55);
+  transform-origin: left center;
+  object-fit: contain;
 }
 
 .navbar_menu_derecha {
@@ -142,10 +129,6 @@
     justify-content: center;
     flex-wrap: wrap; /* Si son muchos, se pasan a la siguiente línea */
     gap: 12px;
-  }
-
-  .nombre_organizacion {
-    font-size: 0.9rem;
   }
 
   .boton_accion_rojo {
