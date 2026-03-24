@@ -218,7 +218,35 @@
       "fechaRegistro": "2026-03-23T21:08:04.090Z"
     }
   ],
-  "entrenadores": [],
-  "voluntarios": [],
-  "tutores": []
+  "entrenadores": [
+    {
+      "id": "89a5",
+      "nombre": "Carlos",
+      "apellidos": "Andrés Jiménez",
+      "especialidad": "Atletismo",
+      "correo": "cjimenezrfwd@gmail.com",
+      "telefono": "8818-3631"
+    },
+    {
+      "id": "8919",
+      "nombre": "Dylan ",
+      "apellidos": "Arias",
+      "especialidad": "Atletismo",
+      "correo": "darias@gmail.com",
+      "telefono": "83172478"
+    }
+  ],
+  "estadisticas_generales": {
+    "totalRegistros": { "valor": "0", "porcentaje": "0%", "tendencia": "none" },
+    "atletasActivos": { "valor": "0", "porcentaje": "0%", "tendencia": "none" },
+    "revisionesPendientes": { "valor": "0", "textoExtra": "" },
+    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
+  },
+  "graficos": {
+    "atletasPorDeporte": [],
+    "distribucionRegional": [],
+    "totalGeneral": "0"
+  },
+  "registros_pendientes": [],
+  "actividad_sistema": []
 }

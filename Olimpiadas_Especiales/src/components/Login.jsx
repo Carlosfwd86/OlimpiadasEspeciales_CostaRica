@@ -41,10 +41,10 @@ const Login = () => {
       );
 
       if (usuarioValido) {
-        // Save to localStorage to persist session
-        localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioValido));
-
-        // Redirect based on role
+        // Guardar sesión en localStorage
+        localStorage.setItem('usuarioSesion', JSON.stringify(usuarioValido));
+        // Notificar a la Navbar para que actualice el botón en tiempo real
+        window.dispatchEvent(new Event('sesionActualizada'));
         alert(`Bienvenido(a), ingresaste como ${usuarioValido.rol}`);
         switch (usuarioValido.rol) {
           case 'atleta':
