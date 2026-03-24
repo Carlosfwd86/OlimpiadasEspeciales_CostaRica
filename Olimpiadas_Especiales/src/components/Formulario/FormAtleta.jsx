@@ -815,9 +815,9 @@ function FormAtleta({ onVolver }) {
                     <option value="Atletismo">Atletismo</option>
                     <option value="Baloncesto">Baloncesto</option>
                     <option value="Fútbol">Fútbol</option>
-                    <option value="Natación">Natación</option>
-                    <option value="Voleibol">Voleibol</option>
-                    <option value="Gimnasia rítmica">Gimnasia rítmica</option>
+                    <option value="Deportes Acuáticos">Deportes Acuáticos</option>
+                    <option value="Voleibol de Playa">Voleibol de Playa</option>
+                    <option value="Gimnasia Artística">Gimnasia Artística</option>
                     <option value="Boccia">Boccia</option>
                     <option value="Bádminton">Bádminton</option>
                     <option value="Bolos">Bolos</option>
@@ -826,6 +826,15 @@ function FormAtleta({ onVolver }) {
                     <option value="Triatlón">Triatlón</option>
                     <option value="Balonmano (handball)">Balonmano (handball)</option>
                     <option value="Floorball">Floorball</option>
+                    <option value="Softbol">Softbol</option>
+                    <option value="Piragüismo">Piragüismo</option>
+                    <option value="Levantamiento de Pesas">Levantamiento de Pesas</option>
+                    <option value="Tenis de Mesa">Tenis de Mesa</option>
+                    <option value="Petanca">Petanca</option>
+                    <option value="Gimnasia Ritmica">Gimnasia Ritmica</option>
+                    <option value="Levantamiento de Pesas">Levantamiento de Pesas</option>
+                    <option value="Raquetas de nieve">Raquetas de nieve</option>
+                    <option value="Voleibol">Voleibol</option>
                   </select>
                 </div>
                 <div className="input-container">
