@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../style/PendingTable.css';
+import '../../style/PendingTable.css';
 
 export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery = '' }) {
   const [registrations, setRegistrations] = useState([]);

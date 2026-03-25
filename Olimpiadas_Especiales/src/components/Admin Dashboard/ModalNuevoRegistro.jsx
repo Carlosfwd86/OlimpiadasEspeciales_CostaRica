@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../style/ModalNuevoRegistro.css';
+import '../../style/ModalNuevoRegistro.css';
 
 export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, editData }) {
   const [formData, setFormData] = useState({
