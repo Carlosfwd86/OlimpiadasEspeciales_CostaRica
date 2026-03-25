@@ -10,7 +10,7 @@ import VoluntariosPages from '../pages/VoluntariosPages';
 import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
-import PanelAdministrativo from '../components/Panel-Administrativo';
+import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
 
 
 const Routing = () => {
