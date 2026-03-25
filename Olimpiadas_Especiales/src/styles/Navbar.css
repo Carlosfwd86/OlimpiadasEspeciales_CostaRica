@@ -23,15 +23,13 @@
 }
 
 .navbar_logotipo:hover {
-  transform: scale(1.20);
+  transform: scale(1.05); /* Escala más sutil */
 }
 
 .icono_rojo_so {
-  height: 120px;
+  height: 65px; /* Altura más adecuada para un navbar de 95px */
   width: auto;
-  max-width: 400px;
-  transform: scaleX(1.55);
-  transform-origin: left center;
+  max-width: 250px;
   object-fit: contain;
 }
 
