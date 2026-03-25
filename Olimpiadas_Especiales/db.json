@@ -216,6 +216,53 @@
       "password": "t1p4jdgs",
       "rol": "atleta",
       "fechaRegistro": "2026-03-23T21:08:04.090Z"
+    },
+    {
+      "id": "f500",
+      "nombre": "aurora",
+      "segundoNombre": "",
+      "apellido": "",
+      "fechaNacimiento": "2026-03-06",
+      "cedula": "605000917",
+      "genero": "Masculino",
+      "direccion": "DNONNSDOGHSRRFHSD",
+      "telefono": "89074567",
+      "correoElectronico": "gfuentesfwd@gmail.com",
+      "emergenciaNombre": "GERSON DINARTE FUENTES ",
+      "emergenciaTelefono": "4877757477",
+      "medicamentos": [
+        {
+          "nombre": "",
+          "dosis": "",
+          "frecuencia": ""
+        }
+      ],
+      "condicionesMedicas": [
+        "Autismo"
+      ],
+      "disciplina": "Atletismo",
+      "nivelHabilidad": "Principiante",
+      "relacionAtleta": "El Atleta mismo",
+      "relacionAtletaOtro": "",
+      "reqDietetico": "Si",
+      "otrosDispositivos": "Si",
+      "asma": "Si",
+      "afeccionCardiaca": "Si",
+      "diabetes": "Si",
+      "discVisual": "Si",
+      "epilepsiaConvulsivo": "Si",
+      "discAuditiva": "Si",
+      "medicoLimitoDeportes": "Si",
+      "conmocionCerebral": "Si",
+      "anemiaDepranocitica": "Si",
+      "afeccionesMentales": "Si",
+      "alergiasGraves": "Si",
+      "tipoAlergia": "alergia",
+      "tomaMedicamentos": "No",
+      "trastornoHemorragico": "Si",
+      "password": "ohcfbr9a",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-24T17:46:57.983Z"
     }
   ],
   "entrenadores": [
@@ -237,10 +284,25 @@
     }
   ],
   "estadisticas_generales": {
-    "totalRegistros": { "valor": "0", "porcentaje": "0%", "tendencia": "none" },
-    "atletasActivos": { "valor": "0", "porcentaje": "0%", "tendencia": "none" },
-    "revisionesPendientes": { "valor": "0", "textoExtra": "" },
-    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
+    "totalRegistros": {
+      "valor": "0",
+      "porcentaje": "0%",
+      "tendencia": "none"
+    },
+    "atletasActivos": {
+      "valor": "0",
+      "porcentaje": "0%",
+      "tendencia": "none"
+    },
+    "revisionesPendientes": {
+      "valor": "0",
+      "textoExtra": ""
+    },
+    "voluntarios": {
+      "valor": "0",
+      "porcentaje": "0%",
+      "tendencia": "none"
+    }
   },
   "graficos": {
     "atletasPorDeporte": [],
@@ -248,5 +310,6 @@
     "totalGeneral": "0"
   },
   "registros_pendientes": [],
-  "actividad_sistema": []
+  "actividad_sistema": [],
+  "$schema": "./node_modules/json-server/schema.json"
 }
