@@ -10,7 +10,7 @@ import VoluntariosPages from '../pages/VoluntariosPages';
 import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
-import PanelAdministrativo from '../components/Panel-Administrativo';
+import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
 import PrivateRoute from './PrivateRoute';
 
 
@@ -23,6 +23,8 @@ const Routing = () => {
             <Route path="/nosotros" element={<NosotrosPages />} />
             <Route path="/contacto" element={<ContactoPages />} />
             <Route path="/formulario" element={<FormularioPages />} />
+            <Route path="/eventos" element={<EventosPages />} />
+            <Route path="/voluntarios" element={<VoluntariosPages />} />
 
             {/* Rutas Privadas - Protegidas por PrivateRoute */}
             <Route 
@@ -38,22 +40,6 @@ const Routing = () => {
                 element={
                     <PrivateRoute>
                         <EntrenadoresPage />
-                    </PrivateRoute>
-                } 
-            />
-            <Route 
-                path="/eventos" 
-                element={
-                    <PrivateRoute>
-                        <EventosPages />
-                    </PrivateRoute>
-                } 
-            />
-            <Route 
-                path="/voluntarios" 
-                element={
-                    <PrivateRoute>
-                        <VoluntariosPages />
                     </PrivateRoute>
                 } 
             />

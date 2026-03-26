@@ -7,17 +7,31 @@ import '../../styles/Formulario/FormAtleta.css'
 // Initialize EmailJS with Public Key
 emailjs.init("4zWvRC7Yn7lUDqd1q");
 
+const getFechaHoyFormateada = () => {
+  const hoy = new Date();
+  return hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
+};
 
 function FormAtleta({ onVolver }) {
   // --- Estados del Formulario Integral ---
   const [paso, setPaso] = useState(1);
+  const [dislexiaActivo, setDislexiaActivo] = useState(false);
   const [datos, setDatos] = useState({
     // Personal
-    nombre: '', segundoNombre: '', apellido: '', fechaNacimiento: '',
+    nombre: '', fechaNacimiento: '', pais: '',
     cedula: '', genero: '', direccion: '', telefono: '', correoElectronico: '',
     emergenciaNombre: '', emergenciaTelefono: '',
+    // Tutor (Mini-formulario menores de edad)
+    tutorNombre: '', tutorApellido: '', tutorRelacion: '', tutorCorreo: '', tutorTelefono: '', tutorPais: '',
     // Médico
     medicamentos: [], condicionesMedicas: [],
+    dispositivosMovilidad: [], ayudasEstiloVida: [], comunicaciones: [], dispositivosMedicos: [],
+    especificacionDietetico: '', especificacionOtrosDispositivos: '',
+    cantidadConmociones: '', fechaUltimaConmocion: '', especificacionAfeccionesMentales: '',
+    tiposAlergia: [], especificacionAlergiaOtro: '',
+    // Documentos & Legal
+    terminosAceptados: false, objecionTratamientoMedico: false, objecionTransfusiones: false,
+    firmaAtleta: '', fechaFirmaAtleta: getFechaHoyFormateada(), firmaTutor: '', relacionTutor: '', fechaFirmaTutor: getFechaHoyFormateada(), interesInvestigacion: '',
     // Deporte
     disciplina: '', nivelHabilidad: '', relacionAtleta: '', relacionAtletaOtro: ''
   });
@@ -33,6 +47,13 @@ function FormAtleta({ onVolver }) {
     if (errores[key]) setErrores(prev => ({ ...prev, [key]: false }));
   }
 
+  const manejarCambioCheckbox = (e) => {
+    const { id, name, checked } = e.target;
+    const key = id || name;
+    setDatos(prev => ({ ...prev, [key]: checked }));
+    if (errores[key]) setErrores(prev => ({ ...prev, [key]: false }));
+  }
+
   const manejarCambioArreglo = (e) => {
     const { name, value, checked } = e.target;
     setDatos(prev => {
@@ -44,9 +65,23 @@ function FormAtleta({ onVolver }) {
       }
       return { ...prev, [name]: arregloActual };
     });
-    if (name === 'tipoAlergia' && checked && errores['tipoAlergia']) {
-      setErrores(prev => ({ ...prev, tipoAlergia: false }));
+    // Limpiar error genérico cuando el usuario marca una opción
+    if (errores[name] && checked) {
+      setErrores(prev => ({ ...prev, [name]: false }));
     }
+  }
+
+  // --- Validación de Edad ---
+  const esMenorDeEdad = () => {
+    if (!datos.fechaNacimiento) return false;
+    const hoy = new Date();
+    const nacimiento = new Date(datos.fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    return edad < 18;
   }
 
   // --- Lógica Sección Médica (Modal y Tabla) ---
@@ -165,13 +200,31 @@ function FormAtleta({ onVolver }) {
           falte = true; 
         } 
       });
+
+      if (esMenorDeEdad()) {
+        const reqTutor = ['tutorNombre', 'tutorApellido', 'tutorRelacion', 'tutorCorreo', 'tutorTelefono', 'tutorPais'];
+        reqTutor.forEach(f => {
+          if (!datos[f]?.toString().trim()) {
+            nuevosErrores[f] = true;
+            falte = true;
+          }
+        });
+      }
+
       if (falte) { 
-        Swal.fire({ icon: 'error', title: 'Campos Incompletos', text: 'Por favor complete todos los datos personales marcados.', confirmButtonColor: '#E00000' }); 
+        const mensajeError = esMenorDeEdad() 
+          ? 'Por favor complete todos los datos personales obligatorios y los datos del tutor (marcados en rojo).'
+          : 'Por favor complete todos los campos personales obligatorios (marcados en rojo).';
+        Swal.fire({ icon: 'error', title: 'Campos Incompletos', text: mensajeError, confirmButtonColor: '#E00000' }); 
         setErrores(nuevosErrores); 
         return false; 
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correoElectronico)) { 
         Swal.fire({ icon: 'error', title: 'Correo Inválido', text: 'Ingrese un formato de correo electrónico válido.', confirmButtonColor: '#E00000' }); 
+        return false; 
+      }
+      if (esMenorDeEdad() && datos.tutorCorreo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.tutorCorreo)) {
+        Swal.fire({ icon: 'error', title: 'Correo del Tutor Inválido', text: 'Ingrese un formato de correo electrónico válido para el tutor.', confirmButtonColor: '#E00000' }); 
         return false; 
       }
       return true;
@@ -189,9 +242,27 @@ function FormAtleta({ onVolver }) {
       let falte = false;
       qReq.forEach(q => { if (!datos[q]) { nuevosErrores[q] = true; falte = true; } });
       
-      if (datos.alergiasGraves === 'Si' && !datos.tipoAlergia) {
-        falte = true;
-        nuevosErrores.tipoAlergia = true;
+      if (datos.alergiasGraves === 'Si') {
+        if (!datos.tiposAlergia || datos.tiposAlergia.length === 0) {
+          falte = true; nuevosErrores.tiposAlergia = true;
+        }
+        if (datos.tiposAlergia?.includes('Otros (especifique)') && !datos.especificacionAlergiaOtro?.trim()) {
+          falte = true; nuevosErrores.especificacionAlergiaOtro = true;
+        }
+      }
+      if (datos.reqDietetico === 'Si' && !datos.especificacionDietetico?.trim()) {
+        falte = true; nuevosErrores.especificacionDietetico = true;
+      }
+      if (datos.otrosDispositivos === 'Si' && !datos.especificacionOtrosDispositivos?.trim()) {
+        falte = true; nuevosErrores.especificacionOtrosDispositivos = true;
+      }
+      if (datos.conmocionCerebral === 'Si' && (!datos.cantidadConmociones?.trim() || !datos.fechaUltimaConmocion?.trim())) {
+        falte = true; 
+        if(!datos.cantidadConmociones?.trim()) nuevosErrores.cantidadConmociones = true;
+        if(!datos.fechaUltimaConmocion?.trim()) nuevosErrores.fechaUltimaConmocion = true;
+      }
+      if (datos.afeccionesMentales === 'Si' && !datos.especificacionAfeccionesMentales?.trim()) {
+        falte = true; nuevosErrores.especificacionAfeccionesMentales = true;
       }
 
       setErrores(nuevosErrores);
@@ -218,6 +289,32 @@ function FormAtleta({ onVolver }) {
 
   // --- Finalización Real ---
   const finalizarInscripcion = () => {
+    if (paso === 4) {
+      if (!datos.terminosAceptados) {
+        Swal.fire({ icon: 'error', title: 'Visualización Requerida', text: 'Debe marcar la casilla indicando que ha leído, entendido y aceptado el formulario legal.', confirmButtonColor: '#E00000' });
+        setErrores(prev => ({ ...prev, terminosAceptados: true }));
+        return;
+      }
+      
+      const p4Req = esMenorDeEdad() 
+        ? ['firmaAtleta', 'fechaFirmaAtleta', 'firmaTutor', 'relacionTutor', 'fechaFirmaTutor'] 
+        : ['firmaAtleta', 'fechaFirmaAtleta'];
+        
+      const nuevosErrores = {};
+      let falte = false;
+      p4Req.forEach(f => {
+        if (!datos[f]?.trim()) {
+          nuevosErrores[f] = true;
+          falte = true;
+        }
+      });
+      if (falte) {
+        setErrores(prev => ({ ...prev, ...nuevosErrores }));
+        Swal.fire({ icon: 'error', title: 'Firmas Incompletas', text: 'Por favor complete todos los campos de firma requeridos.', confirmButtonColor: '#E00000' });
+        return;
+      }
+    }
+
     const resumenHTML = `<div style="text-align: left;"><p>Atleta: ${datos.nombre}</p><p>Disciplina: ${datos.disciplina}</p></div>`;
     Swal.fire({
       title: '¿Finalizar Inscripción?',
@@ -336,37 +433,46 @@ function FormAtleta({ onVolver }) {
           <div className="content-body">
             {paso === 1 && (
               <div className="form-grid-ref">
+                <div className='input-container'>
+                  <label>Programa local de Olimpiadas Especiales:</label>
+                  <input type="text" id='programa' className="input-field" placeholder="Escribe aqui" value={datos.programa} onChange={manejarCambio} />
+                </div>
                 <div className="input-container">
                   <label>Nombre Completo</label>
-                  <input type="text" id='nombre' className="input-field" placeholder="Ej: Juan Pérez Mora" value={datos.nombre} onChange={manejarCambio} />
+                  <input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error-border' : ''}`} placeholder="Ej: Juan Pérez Mora" value={datos.nombre} onChange={manejarCambio} style={errores.nombre ? { borderColor: '#E00000' } : {}} />
                 </div>
                 <div className="input-container">
                   <label>Cédula / Identificación</label>
-                  <input type="text" id='cedula' className="input-field" placeholder="0-0000-0000" value={datos.cedula} onChange={manejarCambio} />
+                  <input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error-border' : ''}`} placeholder="0-0000-0000" value={datos.cedula} onChange={manejarCambio} style={errores.cedula ? { borderColor: '#E00000' } : {}} />
                 </div>
                 <div className="input-container">
                   <label>Fecha de Nacimiento</label>
-                  <input type="date" id='fechaNacimiento' className="input-field" value={datos.fechaNacimiento} onChange={manejarCambio} />
+                  <input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error-border' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} style={errores.fechaNacimiento ? { borderColor: '#E00000' } : {}} />
                 </div>
                 <div className="input-container">
                   <label>Género</label>
-                  <select id="genero" className="input-field" value={datos.genero} onChange={manejarCambio}>
+                  <select id="genero" className={`input-field ${errores.genero ? 'error-border' : ''}`} value={datos.genero} onChange={manejarCambio} style={errores.genero ? { borderColor: '#E00000' } : {}}>
                     <option value="">Seleccione...</option>
+                    <option value="NoDefinido">Prefiero no responder</option>
                     <option value="Masculino">Masculino</option>
                     <option value="Femenino">Femenino</option>
                   </select>
                 </div>
                 <div className="input-container">
                   <label>Teléfono de Contacto</label>
-                  <input type="text" id='telefono' className="input-field" placeholder="+506 0000-0000" value={datos.telefono} onChange={manejarCambio} />
+                  <input type="text" id='telefono' className={`input-field ${errores.telefono ? 'error-border' : ''}`} placeholder="+506 0000-0000" value={datos.telefono} onChange={manejarCambio} style={errores.telefono ? { borderColor: '#E00000' } : {}} />
+                </div>
+                <div className="input-container">
+                  <label>País</label>
+                  <input type="text" id='pais' className={`input-field ${errores.pais ? 'error-border' : ''}`} placeholder="Costa Rica" value={datos.pais} onChange={manejarCambio} style={errores.pais ? { borderColor: '#E00000' } : {}} />
                 </div>
                 <div className="input-container">
                   <label>Correo Electrónico</label>
-                  <input type="email" id='correoElectronico' className="input-field" placeholder="atleta@correo.com" value={datos.correoElectronico} onChange={manejarCambio} />
+                  <input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error-border' : ''}`} placeholder="atleta@correo.com" value={datos.correoElectronico} onChange={manejarCambio} style={errores.correoElectronico ? { borderColor: '#E00000' } : {}} />
                 </div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}>
                   <label>Dirección Exacta</label>
-                  <textarea id="direccion" className="input-field" style={{ minHeight: '100px' }} placeholder="Barrio, calle, número de casa..." value={datos.direccion} onChange={manejarCambio}></textarea>
+                  <textarea id="direccion" className={`input-field ${errores.direccion ? 'error-border' : ''}`} style={errores.direccion ? { minHeight: '100px', borderColor: '#E00000' } : { minHeight: '100px' }} placeholder="Barrio, calle, número de casa..." value={datos.direccion} onChange={manejarCambio}></textarea>
                 </div>
                 
                 <div style={{ gridColumn: 'span 2', marginTop: '20px' }}>
@@ -376,22 +482,127 @@ function FormAtleta({ onVolver }) {
 
                 <div className="input-container">
                   <label>Nombre Contacto de Emergencia</label>
-                  <input type="text" id='emergenciaNombre' className="input-field" placeholder="Nombre completo" value={datos.emergenciaNombre} onChange={manejarCambio} />
+                  <input type="text" id='emergenciaNombre' className={`input-field ${errores.emergenciaNombre ? 'error-border' : ''}`} placeholder="Nombre completo" value={datos.emergenciaNombre} onChange={manejarCambio} style={errores.emergenciaNombre ? { borderColor: '#E00000' } : {}} />
                 </div>
                 <div className="input-container">
                   <label>Teléfono de Emergencia</label>
-                  <input type="text" id='emergenciaTelefono' className="input-field" placeholder="Teléfono de contacto" value={datos.emergenciaTelefono} onChange={manejarCambio} />
+                  <input type="text" id='emergenciaTelefono' className={`input-field ${errores.emergenciaTelefono ? 'error-border' : ''}`} placeholder="Teléfono de contacto" value={datos.emergenciaTelefono} onChange={manejarCambio} style={errores.emergenciaTelefono ? { borderColor: '#E00000' } : {}} />
                 </div>
+
+                {esMenorDeEdad() && (
+                  <div style={{ gridColumn: 'span 2', marginTop: '20px', background: '#fff5f5', padding: '25px', borderRadius: '15px', border: '1px solid #fecaca' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#E00000', margin: 0 }}>Información del Tutor / Encargado</h3>
+                      <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#64748b' }}>Requerido para atletas menores de edad</p>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
+                      <div className="input-container" style={{ margin: 0 }}>
+                        <label>Nombre del Tutor</label>
+                        <input type="text" id='tutorNombre' className={`input-field ${errores.tutorNombre ? 'error-border' : ''}`} placeholder="Nombre" value={datos.tutorNombre} onChange={manejarCambio} style={errores.tutorNombre ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }} />
+                      </div>
+                      <div className="input-container" style={{ margin: 0 }}>
+                        <label>Apellido del Tutor</label>
+                        <input type="text" id='tutorApellido' className={`input-field ${errores.tutorApellido ? 'error-border' : ''}`} placeholder="Apellido" value={datos.tutorApellido} onChange={manejarCambio} style={errores.tutorApellido ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }} />
+                      </div>
+                      <div className="input-container" style={{ margin: 0 }}>
+                        <label>Relación con el Deportista</label>
+                        <select id="tutorRelacion" className={`input-field ${errores.tutorRelacion ? 'error-border' : ''}`} value={datos.tutorRelacion} onChange={manejarCambio} style={errores.tutorRelacion ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }}>
+                          <option value="">Seleccione...</option>
+                          <option value="Madre">Madre</option>
+                          <option value="Padre">Padre</option>
+                          <option value="Abuelo/a">Abuelo/a</option>
+                          <option value="Hermano/a">Hermano/a</option>
+                          <option value="Tutor Legal">Tutor Legal</option>
+                          <option value="Otro">Otro</option>
+                        </select>
+                      </div>
+                      <div className="input-container" style={{ margin: 0 }}>
+                        <label>País</label>
+                        <input type="text" id='tutorPais' className={`input-field ${errores.tutorPais ? 'error-border' : ''}`} placeholder="País de residencia" value={datos.tutorPais} onChange={manejarCambio} style={errores.tutorPais ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }} />
+                      </div>
+                      <div className="input-container" style={{ margin: 0 }}>
+                        <label>Correo Electrónico</label>
+                        <input type="email" id='tutorCorreo' className={`input-field ${errores.tutorCorreo ? 'error-border' : ''}`} placeholder="tutor@correo.com" value={datos.tutorCorreo} onChange={manejarCambio} style={errores.tutorCorreo ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }} />
+                      </div>
+                      <div className="input-container" style={{ margin: 0 }}>
+                        <label>Número de Teléfono</label>
+                        <input type="text" id='tutorTelefono' className={`input-field ${errores.tutorTelefono ? 'error-border' : ''}`} placeholder="+506 0000-0000" value={datos.tutorTelefono} onChange={manejarCambio} style={errores.tutorTelefono ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {paso === 2 && (
               <div className="form-sections-modern">
+                {/* Nueva Sección: Dispositivos de Asistencia */}
+                <div className="question-group" style={{marginBottom: '30px'}}>
+                  <h3 style={{fontSize: '18px', fontWeight: 700, marginBottom: '20px'}}>Dispositivos de asistencia y adaptaciones</h3>
+                  <p style={{fontSize: '14px', color: '#64748b', marginBottom: '25px'}}>¿Utiliza alguno de los siguientes? Marque todo lo que corresponda.</p>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+                    {/* Movilidad */}
+                    <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '15px' }}>
+                      <h4 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#334155' }}>Movilidad</h4>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+                        {['Caminador', 'Aparatos ortopédicos o muletas', 'Silla de ruedas', 'Aparatos ortopédicos removibles', 'Prótesis', 'Ninguno'].map(opt => (
+                          <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#475569' }}>
+                            <input type="checkbox" name="dispositivosMovilidad" value={opt} onChange={manejarCambioArreglo} checked={datos.dispositivosMovilidad?.includes(opt) || false} style={{ width: '16px', height: '16px', accentColor: '#E00000' }} />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Ayudas para el estilo de vida */}
+                    <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '15px' }}>
+                      <h4 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#334155' }}>Ayudas para el estilo de vida</h4>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
+                        {['CPAP', 'Dentadura postiza', 'Gafas/lentes de contacto', 'Ninguno'].map(opt => (
+                          <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#475569' }}>
+                            <input type="checkbox" name="ayudasEstiloVida" value={opt} onChange={manejarCambioArreglo} checked={datos.ayudasEstiloVida?.includes(opt) || false} style={{ width: '16px', height: '16px', accentColor: '#E00000' }} />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Comunicaciones */}
+                    <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '15px' }}>
+                      <h4 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#334155' }}>Comunicaciones</h4>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+                        {['Audífono', 'Dispositivos de comunicación', 'Lenguaje de señas', 'Ninguno'].map(opt => (
+                          <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#475569' }}>
+                            <input type="checkbox" name="comunicaciones" value={opt} onChange={manejarCambioArreglo} checked={datos.comunicaciones?.includes(opt) || false} style={{ width: '16px', height: '16px', accentColor: '#E00000' }} />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Dispositivos Médicos */}
+                    <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '15px' }}>
+                      <h4 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#334155' }}>Dispositivos médicos</h4>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+                        {['Desfibrilador cardioversor implantable', 'Dispositivo implantable para convulsiones', 'Derivación ventrículo peritoneal', 'Marcapasos', 'Ninguno'].map(opt => (
+                          <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#475569' }}>
+                            <input type="checkbox" name="dispositivosMedicos" value={opt} onChange={manejarCambioArreglo} checked={datos.dispositivosMedicos?.includes(opt) || false} style={{ width: '16px', height: '16px', accentColor: '#E00000' }} />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ height: '1px', background: '#f1f5f9', margin: '30px 0' }}></div>
+
                 {/* Selector de Condiciones Principales (Modal) */}
                 <div className="question-group" style={{marginBottom: '30px'}}>
                   <label className="checkbox-label" style={{ cursor: 'pointer', padding: '15px', background: '#f8fafc', border: '1px dashed #e2e8f0', borderRadius: '15px', display: 'flex', alignItems: 'center' }}>
                     <input type="checkbox" onChange={manejarClickCondicion} checked={datos.condicionesMedicas?.length > 0} />
-                    <span style={{ marginLeft: '12px', fontWeight: 600 }}>Registrar condiciones médicas específicas (Autismo, Down, etc.)</span>
+                    <span style={{ marginLeft: '12px', fontWeight: 600 }}>Registrar condiciones médicas específicas (Autismo, Down, etc. Obligatorio)</span>
                   </label>
                   {datos.condicionesMedicas?.length > 0 && (
                     <div style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
@@ -410,7 +621,7 @@ function FormAtleta({ onVolver }) {
                 <div className="medical-status-grid">
                   {[
                     { id: 'reqDietetico', label: 'Dieta Especial', desc: '¿Requiere alimentación específica?' },
-                    { id: 'otrosDispositivos', label: 'Dispositivos de Apoyo', desc: 'Silla de ruedas, ortesis, etc.' },
+                    { id: 'otrosDispositivos', label: 'Otros Dispositivos', desc: '¿Usa algún otro no listado arriba?' },
                     { id: 'afeccionCardiaca', label: 'Afección Cardíaca', desc: '¿Tiene problemas del corazón?' },
                     { id: 'asma', label: 'Asma', desc: '¿Padece de dificultades respiratorias?' },
                     { id: 'diabetes', label: 'Diabetes', desc: '¿Controla niveles de azúcar?' },
@@ -420,8 +631,8 @@ function FormAtleta({ onVolver }) {
                     { id: 'medicoLimitoDeportes', label: 'Limitación Deportiva', desc: '¿Un médico ha limitado su actividad?' },
                     { id: 'epilepsiaConvulsivo', label: 'Epilepsia', desc: '¿Padece convulsiones?' },
                     { id: 'anemiaDepranocitica', label: 'Anemia Depranocítica', desc: '¿Células falciformes?' },
-                    { id: 'conmocionCerebral', label: 'Conmoción Cerebral', desc: '¿Ha tenido golpes en la cabeza?' },
-                    { id: 'afeccionesMentales', label: 'Afecciones Mentales', desc: 'Depresión, ansiedad grave, etc.' },
+                    { id: 'conmocionCerebral', label: 'Conmoción Cerebral', desc: '¿Alguna vez ha tenido una conmoción cerebral?' },
+                    { id: 'afeccionesMentales', label: 'Afecciones de Salud Mental / Conductuales', desc: '¿Tiene afecciones conductuales, de salud mental y/o sensoriales?' },
                     { id: 'alergiasGraves', label: 'Alergias Graves', desc: 'Medicamentos, látex, comida.' }
                   ].map((field) => (
                     <div key={field.id} className={`status-tile ${errores[field.id] ? 'error-border' : ''}`} style={errores[field.id] ? {borderColor: '#E00000'} : {}}>
@@ -443,16 +654,109 @@ function FormAtleta({ onVolver }) {
                   ))}
 
                   {datos.alergiasGraves === 'Si' && (
-                    <div className="alergia-extra input-container" style={{padding: '20px', background: '#fff1f2', borderRadius: '15px', marginTop: '10px'}}>
-                      <label style={{color: '#E00000'}}>Especifique las Alergias Graves</label>
+                    <div className="alergia-extra" style={{padding: '20px', background: '#fff1f2', borderRadius: '15px', marginTop: '10px'}}>
+                      <label style={{color: '#E00000', fontWeight: 'bold', display: 'block', marginBottom: '15px'}}>En caso afirmativo, especifique si se trata de alguno de los siguientes:</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '15px' }}>
+                        {['Picaduras de insectos', 'Medicamentos/drogas', 'Alimentos', 'Látex', 'Otros (especifique)'].map(opt => (
+                          <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#475569' }}>
+                            <input 
+                              type="checkbox" 
+                              name="tiposAlergia" 
+                              value={opt} 
+                              onChange={manejarCambioArreglo} 
+                              checked={datos.tiposAlergia?.includes(opt) || false} 
+                              style={{ width: '16px', height: '16px', accentColor: '#E00000' }} 
+                            />
+                            <span style={errores.tiposAlergia ? {color: '#E00000'} : {}}>{opt}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {datos.tiposAlergia?.includes('Otros (especifique)') && (
+                        <div className="input-container" style={{margin: 0}}>
+                          <input 
+                            type="text" 
+                            id="especificacionAlergiaOtro" 
+                            className={`input-field ${errores.especificacionAlergiaOtro ? 'error-border' : ''}`} 
+                            placeholder="Especifique..." 
+                            value={datos.especificacionAlergiaOtro || ''} 
+                            onChange={manejarCambio} 
+                            style={errores.especificacionAlergiaOtro ? {background: 'white', borderColor: '#E00000', marginTop: '5px'} : {background: 'white', marginTop: '5px'}}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {datos.reqDietetico === 'Si' && (
+                    <div className="input-container" style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px'}}>
+                      <label style={{color: '#334155'}}>Especifique el requerimiento dietético:</label>
                       <input 
                         type="text" 
-                        id="tipoAlergia" 
-                        className="input-field" 
-                        placeholder="Ej: Penicilina, Maní, etc." 
-                        value={datos.tipoAlergia || ''} 
+                        id="especificacionDietetico" 
+                        className={`input-field ${errores.especificacionDietetico ? 'error-border' : ''}`} 
+                        placeholder="Ej: Vegetariano, sin gluten..." 
+                        value={datos.especificacionDietetico || ''} 
                         onChange={manejarCambio} 
-                        style={{background: 'white'}}
+                        style={errores.especificacionDietetico ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
+                      />
+                    </div>
+                  )}
+
+                  {datos.otrosDispositivos === 'Si' && (
+                    <div className="input-container" style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px'}}>
+                      <label style={{color: '#334155'}}>Especifique otros dispositivos de asistencia:</label>
+                      <input 
+                        type="text" 
+                        id="especificacionOtrosDispositivos" 
+                        className={`input-field ${errores.especificacionOtrosDispositivos ? 'error-border' : ''}`} 
+                        placeholder="Especifique..." 
+                        value={datos.especificacionOtrosDispositivos || ''} 
+                        onChange={manejarCambio} 
+                        style={errores.especificacionOtrosDispositivos ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
+                      />
+                    </div>
+                  )}
+
+                  {datos.conmocionCerebral === 'Si' && (
+                    <div style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px'}}>
+                      <div className="input-container" style={{margin: 0}}>
+                        <label style={{color: '#334155'}}>¿Cuántos a lo largo de su vida?</label>
+                        <input 
+                          type="number" 
+                          id="cantidadConmociones" 
+                          className={`input-field ${errores.cantidadConmociones ? 'error-border' : ''}`} 
+                          placeholder="Ej: 1" 
+                          value={datos.cantidadConmociones || ''} 
+                          onChange={manejarCambio} 
+                          style={errores.cantidadConmociones ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
+                        />
+                      </div>
+                      <div className="input-container" style={{margin: 0}}>
+                        <label style={{color: '#334155'}}>Fecha de la última (mm/aaaa):</label>
+                        <input 
+                          type="text" 
+                          id="fechaUltimaConmocion" 
+                          className={`input-field ${errores.fechaUltimaConmocion ? 'error-border' : ''}`} 
+                          placeholder="mm/aaaa" 
+                          value={datos.fechaUltimaConmocion || ''} 
+                          onChange={manejarCambio} 
+                          style={errores.fechaUltimaConmocion ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {datos.afeccionesMentales === 'Si' && (
+                    <div className="input-container" style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px'}}>
+                      <label style={{color: '#334155'}}>En caso afirmativo, especifique (afecciones conductuales/salud mental/sensoriales):</label>
+                      <input 
+                        type="text" 
+                        id="especificacionAfeccionesMentales" 
+                        className={`input-field ${errores.especificacionAfeccionesMentales ? 'error-border' : ''}`} 
+                        placeholder="Especifique..." 
+                        value={datos.especificacionAfeccionesMentales || ''} 
+                        onChange={manejarCambio} 
+                        style={errores.especificacionAfeccionesMentales ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
                       />
                     </div>
                   )}
@@ -511,7 +815,26 @@ function FormAtleta({ onVolver }) {
                     <option value="Atletismo">Atletismo</option>
                     <option value="Baloncesto">Baloncesto</option>
                     <option value="Fútbol">Fútbol</option>
-                    <option value="Natación">Natación</option>
+                    <option value="Deportes Acuáticos">Deportes Acuáticos</option>
+                    <option value="Voleibol de Playa">Voleibol de Playa</option>
+                    <option value="Gimnasia Artística">Gimnasia Artística</option>
+                    <option value="Boccia">Boccia</option>
+                    <option value="Bádminton">Bádminton</option>
+                    <option value="Bolos">Bolos</option>
+                    <option value="Ciclismo">Ciclismo</option>
+                    <option value="Golf">Golf</option>
+                    <option value="Triatlón">Triatlón</option>
+                    <option value="Balonmano (handball)">Balonmano (handball)</option>
+                    <option value="Floorball">Floorball</option>
+                    <option value="Softbol">Softbol</option>
+                    <option value="Piragüismo">Piragüismo</option>
+                    <option value="Levantamiento de Pesas">Levantamiento de Pesas</option>
+                    <option value="Tenis de Mesa">Tenis de Mesa</option>
+                    <option value="Petanca">Petanca</option>
+                    <option value="Gimnasia Ritmica">Gimnasia Ritmica</option>
+                    <option value="Levantamiento de Pesas">Levantamiento de Pesas</option>
+                    <option value="Raquetas de nieve">Raquetas de nieve</option>
+                    <option value="Voleibol">Voleibol</option>
                   </select>
                 </div>
                 <div className="input-container">
@@ -537,28 +860,205 @@ function FormAtleta({ onVolver }) {
             )}
 
             {paso === 4 && (
-              <div className="docs-grid" style={{display: 'grid', gridTemplateColumns: '1fr', gap: '30px'}}>
-                <div className="zona-drop" onClick={() => document.getElementById('file-identificacion').click()}>
-                  <div style={{fontSize: '32px', marginBottom: '10px'}}>📄</div>
-                  <h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Documento de Identidad</h4>
-                  <p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Haga clic para subir PDF o Imagen</p>
-                  <input id="file-identificacion" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files[0], 'identificacion')} />
-                  {archivos.identificacion && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.identificacion.name}</div>}
+              <div className="docs-grid" style={{display: 'flex', flexDirection: 'column', gap: '40px'}}>
+                <div style={{display: 'grid', gridTemplateColumns: '1fr', gap: '30px'}}>
+                  <div className="zona-drop" onClick={() => document.getElementById('file-identificacion').click()}>
+                    <div style={{fontSize: '32px', marginBottom: '10px'}}>📄</div>
+                    <h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Documento de Identidad</h4>
+                    <p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Haga clic para subir PDF o Imagen</p>
+                    <input id="file-identificacion" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files[0], 'identificacion')} />
+                    {archivos.identificacion && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.identificacion.name}</div>}
+                  </div>
+                  <div className="zona-drop" onClick={() => document.getElementById('file-certificado').click()}>
+                    <div style={{fontSize: '32px', marginBottom: '10px'}}>🏥</div>
+                    <h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Certificado Médico</h4>
+                    <p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Documento oficial debidamente firmado</p>
+                    <input id="file-certificado" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files[0], 'certificado')} />
+                    {archivos.certificado && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.certificado.name}</div>}
+                  </div>
                 </div>
-                <div className="zona-drop" onClick={() => document.getElementById('file-certificado').click()}>
-                  <div style={{fontSize: '32px', marginBottom: '10px'}}>🏥</div>
-                  <h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Certificado Médico</h4>
-                  <p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Documento oficial debidamente firmado</p>
-                  <input id="file-certificado" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files[0], 'certificado')} />
-                  {archivos.certificado && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.certificado.name}</div>}
+
+                {/* Exenciones y Políticas */}
+                <div style={{ background: '#f8fafc', padding: '30px', borderRadius: '15px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+                    <h3 style={{fontSize: '18px', fontWeight: 700, color: '#E00000', margin: 0, textTransform: 'uppercase'}}>Exenciones, Liberaciones y Políticas</h3>
+                    <button 
+                      type="button" 
+                      onClick={() => setDislexiaActivo(!dislexiaActivo)}
+                      style={{
+                        padding: '8px 15px', 
+                        background: dislexiaActivo ? '#E00000' : 'white', 
+                        color: dislexiaActivo ? 'white' : '#475569', 
+                        border: `1px solid ${dislexiaActivo ? '#E00000' : '#cbd5e1'}`, 
+                        borderRadius: '20px', 
+                        fontSize: '13px', 
+                        fontWeight: 600, 
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      {dislexiaActivo ? '✔️ Modo Lectura Activado (Ubuntu)' : '👁️ Modo Lectura (Anti-Dislexia)'}
+                    </button>
+                  </div>
+                  
+                  <div style={{ 
+                    background: 'white', 
+                    padding: '20px', 
+                    borderRadius: '10px', 
+                    height: '400px', 
+                    overflowY: 'auto', 
+                    border: '1px solid #e2e8f0', 
+                    fontSize: dislexiaActivo ? '15px' : '14px', 
+                    color: '#475569', 
+                    lineHeight: dislexiaActivo ? '1.8' : '1.6',
+                    fontFamily: dislexiaActivo ? '"Ubuntu", sans-serif' : 'inherit',
+                    letterSpacing: dislexiaActivo ? '0.5px' : 'normal',
+                    wordSpacing: dislexiaActivo ? '1px' : 'normal',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <p style={{fontWeight: 700, marginBottom: '15px'}}>Por favor, lea la siguiente información y marque todas las casillas antes de firmar.</p>
+                    <p>Estoy de acuerdo con lo siguiente:</p>
+                    <ol style={{paddingLeft: '20px', marginBottom: '20px'}}>
+                      <li style={{marginBottom: '10px'}}><strong>Capacidad de participación.</strong> Soy físicamente capaz de participar en las actividades de Olimpiadas Especiales y cumpliré con todas las reglas, requisitos y códigos de conducta aplicables.</li>
+                      <li style={{marginBottom: '10px'}}>
+                        <strong>Autorización uso de imagen.</strong> Doy permiso a Olimpiadas Especiales, Inc., a los comités organizadores de los juegos de Olimpiadas Especiales, a los programas acreditados por Olimpiadas Especiales (colectivamente "Olimpiadas Especiales"), así como a los auspiciadores y socios oficiales de Olimpiadas Especiales que tengan autorización de Olimpiadas Especiales, para usar mi imagen, foto, video, nombre, voz, palabras, información biográfica y material similar o relacionado (mi "imagen") para promover Olimpiadas Especiales y recaudar fondos para Olimpiadas Especiales. Entiendo que mi imagen puede ser utilizada en todo tipo de medios de comunicación en campañas locales o globales, incluidas las de los auspiciadores y socios de Olimpiadas Especiales, pero entiendo que mi imagen no se utilizará para respaldar productos o servicios comerciales. Entiendo que no seré compensado por el uso de mi imagen.
+                      </li>
+                      <li style={{marginBottom: '10px'}}>
+                        <strong>Atención de emergencia.</strong> Si no puedo, o mi tutor no está disponible, para dar mi consentimiento o tomar decisiones médicas en una emergencia, autorizo a Olimpiadas Especiales a buscar atención médica en mi nombre, a menos que marque una de estas casillas:
+                        <div style={{ marginTop: '10px', marginBottom: '10px', padding: '10px', background: '#f8fafc', borderRadius: '8px' }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', marginBottom: '8px', color: '#334155' }}>
+                            <input type="checkbox" name="objecionTratamientoMedico" checked={datos.objecionTratamientoMedico} onChange={manejarCambioCheckbox} style={{ width: '16px', height: '16px', accentColor: '#E00000' }} />
+                            Tengo una objeción religiosa o de otro tipo para recibir tratamiento médico.
+                          </label>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', color: '#334155' }}>
+                            <input type="checkbox" name="objecionTransfusiones" checked={datos.objecionTransfusiones} onChange={manejarCambioCheckbox} style={{ width: '16px', height: '16px', accentColor: '#E00000' }} />
+                            No doy mi consentimiento para las transfusiones de sangre.
+                          </label>
+                        </div>
+                        (Si alguna de las casillas está marcada, se debe completar un FORMULARIO DE RECHAZO DE ATENCIÓN MÉDICA DE EMERGENCIA).
+                      </li>
+                      <li style={{marginBottom: '10px'}}><strong>Pernocte.</strong> Para algunos eventos, es posible que se requiera alojamiento durante la noche. Si tengo preguntas, me pondré en contacto con mi Programa de Olimpiadas Especiales.</li>
+                      <li style={{marginBottom: '10px'}}><strong>Programas de Salud.</strong> Si participo en un programa de salud, doy mi consentimiento para las actividades de salud, las pruebas de detección y el tratamiento. Esto no debe reemplazar la atención médica regular. Tengo el derecho de rechazar el tratamiento de la programación de salud (que es diferente de la atención médica secundaria o de emergencia) en cualquier momento".</li>
+                      <li style={{marginBottom: '10px'}}>
+                        <strong>Información personal.</strong> Entiendo que Olimpiadas Especiales recopilará mi información personal como parte de mi participación, incluyendo mi nombre, imagen, dirección, número de teléfono, información de salud y otra información de identificación personal y relacionada con la salud que proporciono a Olimpiadas Especiales ("información personal").
+                      </li>
+                    </ol>
+
+                    <p>Estoy de acuerdo y doy mi consentimiento a Olimpiadas Especiales:</p>
+                    <ul style={{paddingLeft: '20px', marginBottom: '20px', listStyleType: 'disc'}}>
+                      <li style={{marginBottom: '8px'}}>usar mi información personal para: asegurarme de que soy elegible y puedo participar de manera segura; llevar a cabo capacitaciones y eventos; compartir los resultados de los concursos (incluso en la Web y en los medios de comunicación); proporcionar tratamiento de salud si participo en un programa de salud; analizar los datos con el fin de mejorar la programación e identificar y responder a las necesidades de los participantes de Olimpiadas Especiales; realizar operaciones informáticas, aseguramiento de la calidad, pruebas y otras actividades relacionadas; y proporcionar servicios relacionados con eventos.</li>
+                      <li style={{marginBottom: '8px'}}>usar mi información de contacto para comunicarse conmigo acerca de Olimpiadas Especiales.</li>
+                      <li style={{marginBottom: '8px'}}>compartir mi información personal de manera confidencial con (i) investigadores, como universidades y agencias de salud pública que estudian la discapacidad intelectual y el impacto de las actividades de Olimpiadas Especiales, (ii) profesionales médicos en una emergencia, y (iii) autoridades gubernamentales con el fin de ayudarme con las visas requeridas para viajes internacionales a eventos de Olimpiadas Especiales y para cualquier otro propósito necesario para proteger la seguridad pública, responder a las solicitudes del gobierno y reportar información según lo requiera la ley.</li>
+                      <li style={{marginBottom: '8px'}}>Tengo derecho a solicitar ver mi información personal o a ser informado sobre la información personal que se procesa sobre mí. Tengo derecho a solicitar que se corrija y elimine mi información personal, y a restringir el procesamiento de mi información personal si es inconsistente con este consentimiento.</li>
+                    </ul>
+
+                    <p style={{marginBottom: '20px'}}><strong>Política de privacidad.</strong> La información personal puede usarse y compartirse de acuerdo con este formulario y como se explica con más detalle en la política de privacidad de Olimpiadas Especiales en <a href="http://www.SpecialOlympics.org/Privacy-Policy" target="_blank" rel="noopener noreferrer" style={{color: '#0066cc', textDecoration: 'underline'}}>www.SpecialOlympics.org/Privacy-Policy</a>.</p>
+                    
+                    <h4 style={{ color: '#E00000', marginTop: '30px', fontWeight: 700, textTransform: 'uppercase', textAlign: 'center' }}>Síntomas de Compresión de la Médula Espinal E INESTABILIDAD ATLANTOAXIAL<br/><span style={{fontSize: '14px', textTransform: 'none'}}>(Solo para atletas con síndrome de Down)</span></h4>
+                    <p style={{marginTop: '15px'}}>Si yo (o el atleta) hemos sido diagnosticados o hemos experimentado alguno de los siguientes síntomas que han aumentado en gravedad en los últimos tres años: dificultad para controlar los intestinos o la vejiga; entumecimiento u hormigueo en piernas, brazos, manos o pies; debilidad en brazos, piernas, manos o pies; quemadura/hincones/pinzamiento del nervio, dolor en el cuello, la espalda, de los hombros, los brazos, las manos, los glúteos, las piernas o los pies; espasticidad o parálisis: debo obtener una revisión y el permiso de un médico con licencia para que autorice a entrenar y / o participar en las actividades de Olimpiadas Especiales.</p>
+
+                    <h4 style={{ color: '#E00000', marginTop: '30px', fontWeight: 700, textTransform: 'uppercase', textAlign: 'center' }}>Renuncia y Liberación de Responsabilidad / Asunción de Riesgos / Indemnización</h4>
+                    <p style={{marginTop: '15px'}}>En consideración a que se le permita participar de cualquier manera en las actividades de Olimpiadas Especiales, el abajo firmante reconoce, aprecia y acepta que:</p>
+                    <ol style={{paddingLeft: '20px', marginBottom: '20px'}}>
+                      <li style={{marginBottom: '10px'}}>Si bien las reglas particulares y la disciplina personal pueden reducir este riesgo, existe el riesgo de enfermedad (incluidas las enfermedades transmisibles), lesiones (incluida la conmoción cerebral), discapacidad y muerte;</li>
+                      <li style={{marginBottom: '10px'}}>Si observo algún peligro inusual o significativo durante mi presencia o participación, me retiraré de la participación y lo pondré en conocimiento del representante de Olimpiadas Especiales más cercano de inmediato; y</li>
+                      <li style={{marginBottom: '10px'}}><strong>Entiendo los riesgos que implica la participación en las actividades de Olimpiadas Especiales. Acepto y asumo plenamente todos los riesgos y toda la responsabilidad por pérdidas, costos y daños en los que pueda incurrir como resultado de mi participación. En la mayor medida de la ley, libero y acepto no demandar a ninguna organización de Olimpiadas Especiales, sus directores, agentes, voluntarios y empleados, otros participantes, agencias patrocinadoras, patrocinadores, anunciantes y, si corresponde, propietarios y arrendadores de instalaciones en las que se lleva a cabo cualquier actividad de Olimpiadas Especiales ("Exonerados") relacionados con cualquier responsabilidad, reclamo o pérdida en mi cuenta causada o presuntamente causada en su totalidad o en parte por los Exonerados, incluso si surgen de la negligencia de los Exonerados. He leído esta disposición de liberación de responsabilidad y asunción de riesgos, comprendo completamente sus términos, reconozco que he renunciado a derechos sustanciales al firmarla y la firmo libre y voluntariamente sin ningún incentivo. Además, acepto que si, a pesar de esta liberación, yo, o cualquier persona en mi nombre, presento una reclamación contra cualquiera de los Exonerados, indemnizaré y eximiré de responsabilidad a cada uno de los Exonerados de dichas responsabilidades, reclamaciones o pérdidas como resultado de dicha reclamación. Estoy de acuerdo en que si alguna parte de este formulario se considera inválida, las otras partes continuarán en pleno vigor y efecto.</strong></li>
+                    </ol>
+                  </div>
+
+                  {/* Accept terms Checkbox */}
+                  <div style={{ marginTop: '20px', padding: '15px', background: datos.terminosAceptados ? '#f0fdf4' : '#fff', border: `2px solid ${datos.terminosAceptados ? '#166534' : (errores.terminosAceptados ? '#E00000' : '#e2e8f0')}`, borderRadius: '10px', transition: 'border 0.3s' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer', fontWeight: 600, color: datos.terminosAceptados ? '#166534' : '#334155' }}>
+                      <input type="checkbox" name="terminosAceptados" checked={datos.terminosAceptados} onChange={manejarCambioCheckbox} style={{ width: '24px', height: '24px', accentColor: '#166534' }} />
+                      He leído y entiendo este formulario. Al firmar, acepto este formulario.
+                    </label>
+                  </div>
+
+                  {/* Signatures Container (Unlocked on check) */}
+                  <div style={{ marginTop: '30px', transition: 'all 0.4s ease', opacity: datos.terminosAceptados ? 1 : 0.4, pointerEvents: datos.terminosAceptados ? 'auto' : 'none', background: '#fff', border: '1px solid #e2e8f0', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+                    
+                    <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', paddingBottom: '15px', borderBottom: '2px solid #f1f5f9' }}>
+                      <label style={{fontWeight: 700, fontSize: '15px', color: '#0f172a', margin: 0}}>Nombre del atleta:</label>
+                      <p style={{margin: 0, fontSize: '16px', color: '#475569', fontWeight: 600}}>{datos.nombre || '(Nombre pendiente)'}</p>
+                    </div>
+
+                    <div style={{ marginBottom: '35px' }}>
+                      <h4 style={{fontSize: '16px', color: '#0f172a', margin: '0 0 5px 0', fontWeight: 800}}>FIRMA DEL ATLETA</h4>
+                      <p style={{fontSize: '13px', color: '#64748b', margin: '0 0 15px 0'}}>(requerido para atletas adultos con capacidad para firmar documentos legales)</p>
+                      
+                      <p style={{fontSize: '14px', color: '#334155', marginBottom: '20px', padding: '15px', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #3b82f6'}}>He leído y entiendo este formulario. Si tengo preguntas, las haré. Al firmar, acepto este formulario.</p>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                        <div className="input-container" style={{ margin: 0 }}>
+                          <label style={{fontWeight: 600, color: '#0f172a'}}>Firma del atleta:</label>
+                          <input type="text" name="firmaAtleta" className={`input-field ${errores.firmaAtleta ? 'error-border' : ''}`} placeholder="Digitar firma digital..." value={datos.firmaAtleta} onChange={manejarCambio} style={errores.firmaAtleta ? { borderColor: '#E00000', background: '#fff1f2' } : {}} />
+                        </div>
+                        <div className="input-container" style={{ margin: 0 }}>
+                          <label style={{fontWeight: 600, color: '#0f172a'}}>Fecha (dd/mm/aaaa):</label>
+                          <input type="date" className="input-field" disabled={true} value={datos.fechaFirmaAtleta} style={{ background: '#f8fafc', color: '#475569', cursor: 'not-allowed' }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {esMenorDeEdad() && (
+                      <div style={{ marginBottom: '20px', padding: '20px', background: '#fff5f5', borderRadius: '10px', border: '1px solid #fecaca' }}>
+                        <h4 style={{fontSize: '16px', color: '#E00000', margin: '0 0 5px 0', fontWeight: 800}}>FIRMA DEL PADRE/TUTOR</h4>
+                        <p style={{fontSize: '13px', color: '#64748b', margin: '0 0 15px 0'}}>(requerido para el atleta que es menor de edad o carece de capacidad para firmar documentos legales)</p>
+                        
+                        <p style={{fontSize: '14px', color: '#334155', marginBottom: '20px', padding: '15px', background: '#fff', borderRadius: '8px', borderLeft: '4px solid #E00000'}}>Soy padre o tutor del atleta. He leído y entiendo este formulario y he explicado el contenido al atleta según corresponda. Al firmar, acepto este formulario en mi propio nombre y en nombre del atleta.</p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '15px' }}>
+                          <div className="input-container" style={{ margin: 0 }}>
+                            <label style={{fontWeight: 600, color: '#0f172a'}}>Firma del Padre/Tutor:</label>
+                            <input type="text" name="firmaTutor" className={`input-field ${(errores.firmaTutor && esMenorDeEdad()) ? 'error-border' : ''}`} placeholder="Digitar firma..." value={datos.firmaTutor} onChange={manejarCambio} style={(errores.firmaTutor && esMenorDeEdad()) ? { borderColor: '#E00000', background: '#fff' } : { background: '#fff' }} />
+                          </div>
+                          <div className="input-container" style={{ margin: 0 }}>
+                            <label style={{fontWeight: 600, color: '#0f172a'}}>Fecha (dd/mm/aaaa):</label>
+                            <input type="date" className="input-field" disabled={true} value={datos.fechaFirmaTutor} style={{ background: '#f8fafc', color: '#475569', cursor: 'not-allowed' }} />
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+                          <div className="input-container" style={{ margin: 0 }}>
+                            <label style={{fontWeight: 600, color: '#0f172a'}}>Nombre en letra de imprenta:</label>
+                            <input type="text" className="input-field" disabled={true} value={datos.firmaTutor || ''} style={{ background: '#f8fafc', fontWeight: 600, color: '#475569', cursor: 'not-allowed' }} placeholder="Se autocompleta con su firma" />
+                          </div>
+                          <div className="input-container" style={{ margin: 0 }}>
+                            <label style={{fontWeight: 600, color: '#0f172a'}}>Relación:</label>
+                            <input type="text" name="relacionTutor" className={`input-field ${(errores.relacionTutor && esMenorDeEdad()) ? 'error-border' : ''}`} placeholder="Padre, Madre, etc..." value={datos.relacionTutor} onChange={manejarCambio} style={(errores.relacionTutor && esMenorDeEdad()) ? { borderColor: '#E00000', background: '#fff' } : { background: '#fff' }} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Investigación */}
+                  <div style={{ marginTop: '30px', background: '#f8fafc', padding: '25px', borderRadius: '15px', border: '1px solid #e2e8f0' }}>
+                    <div style={{textAlign: 'center', marginBottom: '20px'}}>
+                      <h4 style={{ color: '#E00000', margin: '0 0 5px 0', fontSize: '16px', fontWeight: 800, textTransform: 'uppercase' }}>Evaluación e Investigación</h4>
+                      <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>(Opcional)</span>
+                    </div>
+                    
+                    <p style={{ fontSize: '14px', color: '#475569', marginBottom: '20px', lineHeight: '1.6', textAlign: 'center', maxWidth: '800px', margin: '0 auto 20px auto' }}>Olimpiadas Especiales quiere ayudar a nuestros atletas y sus familias a mantenerse sanos y felices. Es posible que participemos en estudios de investigación y compartiremos información para su posible participación. Todos los estudios serán revisados por el Director de Salud de Olimpiadas Especiales.</p>
+                    
+                    <div style={{ background: 'white', padding: '20px', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+                      <p style={{ fontSize: '15px', color: '#0f172a', fontWeight: 600, margin: 0, textAlign: 'center' }}>¿A usted o a su familia les interesaría aprender sobre estudios de investigación?</p>
+                      <div style={{ display: 'flex', gap: '40px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#334155', fontWeight: 600, padding: '10px 20px', background: datos.interesInvestigacion === 'Si' ? '#fff1f2' : '#f8fafc', borderRadius: '30px', border: `1px solid ${datos.interesInvestigacion === 'Si' ? '#fda4af' : '#e2e8f0'}`, transition: 'all 0.2s' }}>
+                          <input type="radio" name="interesInvestigacion" value="Si" onChange={manejarCambio} checked={datos.interesInvestigacion === 'Si'} style={{ width: '18px', height: '18px', accentColor: '#E00000' }} /> Sí
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#334155', fontWeight: 600, padding: '10px 20px', background: datos.interesInvestigacion === 'No' ? '#fff1f2' : '#f8fafc', borderRadius: '30px', border: `1px solid ${datos.interesInvestigacion === 'No' ? '#fda4af' : '#e2e8f0'}`, transition: 'all 0.2s' }}>
+                          <input type="radio" name="interesInvestigacion" value="No" onChange={manejarCambio} checked={datos.interesInvestigacion === 'No'} style={{ width: '18px', height: '18px', accentColor: '#E00000' }} /> No
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
-            
-            <div style={{marginTop: '40px', padding: '20px', background: '#f8fafc', borderRadius: '15px', display: 'flex', alignItems: 'center', gap: '15px'}}>
-                <input type="checkbox" id="verificado" style={{width: '20px', height: '20px', cursor: 'pointer', accentColor: '#E00000'}} />
-                <label htmlFor="verificado" style={{fontSize: '14px', color: '#475569', fontWeight: 500, cursor: 'pointer'}}>Confirmo que los datos ingresados son verídicos y autorizo el tratamiento de la información.</label>
-            </div>
           </div>
 
           <footer className="form-footer">

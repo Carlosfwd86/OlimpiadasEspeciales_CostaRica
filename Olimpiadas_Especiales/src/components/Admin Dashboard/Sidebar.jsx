@@ -1,6 +1,6 @@
 import React from 'react';
-import '../style/Sidebar.css';
-import logoUrl from '../img/Logo Olimpiadas.png';
+import '../../style/Sidebar.css';
+import logoUrl from '../../img/Logo Olimpiadas.png';
 
 export default function Sidebar() {
   return (

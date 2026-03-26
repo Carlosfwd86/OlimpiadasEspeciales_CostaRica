@@ -5,6 +5,8 @@ import { getAtletas } from '../services/ServicesAtletas';
 import { getTutores } from '../services/ServicesTutores';
 import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
+import CarouselEventos from './CarouselEventos';
+import BannerVoluntarios from './BannerVoluntarios';
 
 const Home = () => {
 
@@ -45,7 +47,8 @@ const Home = () => {
     }, []);
 
     return (
-        <section className="contenedor_hero_principal">
+        <>
+            <section className="contenedor_hero_principal">
             <div className="hero_fondo_derecha"></div>
 
             {/* Contenido Superior Principal */}
@@ -76,8 +79,11 @@ const Home = () => {
                 </div>
 
             </div>
+        </section>
 
-            {/* Tarjetas Inferiores Flotantes */}
+        {/* Sección de Selección de ROL con fondo propio */}
+        <div className="hero_tarjetas_inferiores_contenedor">
+            <h2 className="titulo_registro_seccion">¡REGÍSTRATE AHORA!</h2>
             <div className="hero_tarjetas_inferiores">
                 
                 {/* 1. Tarjeta Atleta */}
@@ -146,8 +152,11 @@ const Home = () => {
                 </div>
 
             </div>
-        </section>
-    );
+        </div>
+        <CarouselEventos />
+        <BannerVoluntarios />
+    </>
+);
 };
 
 export default Home;
