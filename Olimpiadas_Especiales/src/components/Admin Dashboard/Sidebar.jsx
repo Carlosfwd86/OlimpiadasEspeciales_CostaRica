@@ -43,7 +43,7 @@ export default function Sidebar({ activeTab, onTabChange }) {
             onClick={() => onTabChange('competiciones')}
           >
             <i className="fa-solid fa-trophy nav-icon"></i>
-            Competiciones
+            Competiciones y Eventos
           </li>
         </ul>
       </div>

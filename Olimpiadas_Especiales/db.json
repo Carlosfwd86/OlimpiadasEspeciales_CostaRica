@@ -155,6 +155,15 @@
       "tutorVinculado": "ee1e"
     },
     {
+      "id": "d4b0",
+      "nombre": "Gerson David Dinarte Fuentes",
+      "correoElectronico": "gfuentesfwd@gmail.com",
+      "telefono": "82074567",
+      "disciplina": "Fútbol",
+      "programa": "San José",
+      "status": "ACTIVO",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-26T16:40:22.308Z"
       "id": "721b",
       "nombre": "Samir Jacobo",
       "correoElectronico": "samirito@gmail.com",
@@ -252,6 +261,26 @@
     "distribucionRegional": [],
     "totalGeneral": "0"
   },
+  "registros_pendientes": [
+    {
+      "id": "bb6d",
+      "initials": "GD",
+      "name": "Gerson David Dinarte Fuentes",
+      "email": "gfuente@gmail.com",
+      "phone": "89074567",
+      "sport": "Atletismo",
+      "region": "Puntarenas",
+      "time": "Registrado ahora",
+      "status": "VERIFICACIÓN PEND.",
+      "statusColor": "yellow",
+      "bgColor": "bg-light-blue"
+    }
+  ],
+  "actividad_sistema": [
+    {
+      "id": "7341",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
   "registros_pendientes": [],
   "actividad_sistema": [
     {
@@ -263,6 +292,9 @@
       "time": "Hace un momento"
     },
     {
+      "id": "6a0c",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
       "id": "fa5a",
       "title": "Aprobación",
       "details": "Se aprobó a Samir Jacobo",
@@ -279,6 +311,9 @@
       "time": "Hace un momento"
     },
     {
+      "id": "c1c0",
+      "title": "Aprobación",
+      "details": "Se aprobó a Gerson David Dinarte Fuentes",
       "id": "2333",
       "title": "Aprobación",
       "details": "Se aprobó a Nora Figueroa",
@@ -287,6 +322,9 @@
       "time": "Hace un momento"
     },
     {
+      "id": "dbc3",
+      "title": "Competición",
+      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
       "id": "5b66",
       "title": "Competición",
       "details": "Nueva competición: uky,il7,.u",
@@ -297,6 +335,43 @@
   ],
   "competiciones": [
     {
+      "id": "1",
+      "nombre": "Próxima Competencia Nacional de Atletismo",
+      "resumen": "Nuestros atletas se preparan para la competencia regional. Ven a apoyarlos este fin de semana en el estadio nacional.",
+      "fecha": "2026-05-15",
+      "lugar": "Estadio Nacional",
+      "categoria": "Atletismo",
+      "status": "Próximo",
+      "img": "evento_competencia.png",
+      "deporte": "Fútbol",
+      "fechaFin": "2026-03-28",
+      "ubicacion": "",
+      "descripcion": "",
+      "imagen": "",
+      "enlace": ""
+    },
+    {
+      "id": "2",
+      "nombre": "Encuentro Regional de Natación",
+      "resumen": "Un evento acuático increíble para todas las edades. Contaremos con la participación de delegaciones de todo el país.",
+      "fecha": "2026-06-22",
+      "lugar": "Piscina María del Milagro París",
+      "categoria": "Natación",
+      "status": "Abierto",
+      "img": "evento_natacion.png"
+    },
+    {
+      "id": "3",
+      "nombre": "Gala de Reconocimiento al Atleta",
+      "resumen": "Celebración especial para honrar el esfuerzo y la dedicación de nuestros deportistas durante el año.",
+      "fecha": "2026-07-10",
+      "lugar": "Teatro Nacional",
+      "categoria": "Social",
+      "status": "Por confirmar",
+      "img": "evento_ceremonia.png"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
       "id": "rk6pt51kz",
       "nombre": "uky,il7,.u",
       "deporte": "Atletismo",
