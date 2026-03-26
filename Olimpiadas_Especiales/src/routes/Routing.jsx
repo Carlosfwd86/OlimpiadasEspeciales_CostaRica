@@ -11,6 +11,7 @@ import VoluntariosPages from '../pages/VoluntariosPages';
 import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
+import PerfilPage from '../pages/PerfilPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
 import PrivateRoute from './PrivateRoute';
 
@@ -41,6 +42,14 @@ const Routing = () => {
                 element={
                     <PrivateRoute>
                         <EntrenadoresPage />
+                    </PrivateRoute>
+                } 
+            />
+            <Route 
+                path="/perfil" 
+                element={
+                    <PrivateRoute>
+                        <PerfilPage />
                     </PrivateRoute>
                 } 
             />

@@ -67,14 +67,14 @@ export const ServicesAdmin = {
         return res.json();
     },
 
-    getProfile: async () => {
-        const res = await fetch(`${BASE_URL}/admin_profile`);
+    getProfile: async (id = 1) => {
+        const res = await fetch(`${BASE_URL}/Admin/${id}`);
         if (!res.ok) throw new Error("Error al obtener perfil");
         return res.json();
     },
 
-    updateProfile: async (data) => {
-        const res = await fetch(`${BASE_URL}/admin_profile`, {
+    updateProfile: async (id, data) => {
+        const res = await fetch(`${BASE_URL}/Admin/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

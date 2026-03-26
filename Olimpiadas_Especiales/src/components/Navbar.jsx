@@ -37,6 +37,7 @@ const Navbar = () => {
   const irALogin = () => navegar("/login");
   const irARegistro = () => navegar("/formulario");
   const irAPanelAdmin = () => navegar("/admin");
+  const irAPerfil = () => navegar("/perfil");
 
   const cerrarSesion = () => {
     localStorage.removeItem('usuarioSesion');
@@ -63,11 +64,14 @@ const Navbar = () => {
           {usuarioSesion ? (
             /* --- Sesión activa: saludo + botón cerrar sesión --- */
             <>
-              <span className="saludo_usuario">
-                Hola, <strong>{usuarioSesion.cedula}</strong>
+              <span className="saludo_usuario" onClick={irAPerfil} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }}></i>
+                Hola, <strong>{usuarioSesion.nombre || usuarioSesion.cedula}</strong>
               </span>
+              <button className="boton_accion_rojo" onClick={irAPerfil} style={{ padding: '8px 15px', fontSize: '12px' }}>
+                MI PERFIL
+              </button>
               <button className="boton_cerrar_sesion" onClick={cerrarSesion}>
-                {/* Ícono de salida (SVG inline) */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
