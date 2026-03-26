@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../style/AdminDashboard.css';
+import '../../style/AdminDashboard.css';
 
 // Importaremos los subcomponentes conforme los vayamos creando
 import Sidebar from './Sidebar';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../style/ActivityFeed.css';
+import '../../style/ActivityFeed.css';
 
 export default function ActivityFeed() {
   const [activities, setActivities] = useState([]);

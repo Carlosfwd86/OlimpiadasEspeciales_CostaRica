@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../style/ChartSection.css';
+import '../../style/ChartSection.css';
 
 export default function ChartSection() {
   const [graficos, setGraficos] = useState(null);

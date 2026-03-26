@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../style/Topbar.css';
+import '../../style/Topbar.css';
 
 export default function Topbar({ onSearch }) {
   const navigate = useNavigate();
