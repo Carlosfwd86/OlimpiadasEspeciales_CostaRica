@@ -6,6 +6,7 @@ import { getTutores } from '../services/ServicesTutores';
 import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
 import CarouselEventos from './CarouselEventos';
+import BannerVoluntarios from './BannerVoluntarios';
 
 const Home = () => {
 
@@ -153,6 +154,7 @@ const Home = () => {
             </div>
         </div>
         <CarouselEventos />
+        <BannerVoluntarios />
     </>
 );
 };
