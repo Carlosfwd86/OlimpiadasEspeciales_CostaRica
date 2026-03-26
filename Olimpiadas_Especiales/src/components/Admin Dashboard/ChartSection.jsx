@@ -1,16 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/ChartSection.css';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
+import RegionalMap from './RegionalMap';
 
-export default function ChartSection() {
+export default function ChartSection({ onTabChange }) {
   const [graficos, setGraficos] = useState(null);
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    fetch('http://localhost:3001/graficos')
-      .then(response => response.json())
-      .then(data => setGraficos(data))
-      .catch(error => console.error("Error al cargar datos de gráficos:", error));
+    Promise.all([
+      ServicesAdmin.getCharts(),
+      ServicesAdmin.getAtletas()
+    ]).then(([chartData, atletas]) => {
+      // If db.json charts are empty, calculate them dynamically
+      let processedCharts = { ...chartData };
+      
+      if (processedCharts.distribucionRegional.length === 0 && atletas.length > 0) {
+        const provinces = ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"];
+        const counts = {};
+        atletas.forEach(a => {
+          let r = a.region || "Desconocido";
+          if (r === "Desconocido" && a.direccion) {
+            const found = provinces.find(p => a.direccion.toLowerCase().includes(p.toLowerCase()));
+            if (found) r = found;
+          }
+          counts[r] = (counts[r] || 0) + 1;
+        });
+
+        processedCharts.distribucionRegional = Object.entries(counts).map(([name, val]) => ({
+          region: name,
+          valor: val,
+          colorClase: `color-${name.toLowerCase().replace(/\s/g, '-')}`
+        }));
+        processedCharts.totalGeneral = atletas.length;
+      }
+
+      setGraficos(processedCharts);
+    }).catch(error => console.error("Error al cargar datos de gráficos:", error));
   }, []);
+
 
   if (!graficos) return <div className="chart-section-container">Cargando gráficos...</div>;
 
@@ -43,7 +71,7 @@ export default function ChartSection() {
       <div className="chart-card chart-card-regional">
         <div className="chart-card-header d-flex-between">
           <h3>Distribución Regional</h3>
-          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); alert("Abriendo mapa interactivo..."); }}>Ver Mapa</a>
+          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); onTabChange && onTabChange('regiones'); }}>Ver Mapa</a>
         </div>
         
         <div className="regional-content">
@@ -65,11 +93,8 @@ export default function ChartSection() {
           </div>
         </div>
 
-        <div className="map-placeholder">
-          <div className="map-image-stub">
-            <i className="fa-solid fa-map-location-dot map-icon"></i>
-            <span>Visualización del Mapa de Costa Rica</span>
-          </div>
+        <div className="map-summary-preview">
+           <RegionalMap mini={true} />
         </div>
       </div>
 

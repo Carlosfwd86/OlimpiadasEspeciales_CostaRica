@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/ActivityFeed.css';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 
 export default function ActivityFeed() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3001/actividad_sistema')
-      .then(response => response.json())
+    ServicesAdmin.getActivities()
       .then(data => {
-        setActivities(data);
+        // Mostrar los más recientes primero
+        setActivities(data.reverse());
         setLoading(false);
       })
       .catch(error => {
@@ -17,6 +18,7 @@ export default function ActivityFeed() {
         setLoading(false);
       });
   }, []);
+
 
   if (loading) return <div className="activity-feed-container">Cargando actividad...</div>;
 
