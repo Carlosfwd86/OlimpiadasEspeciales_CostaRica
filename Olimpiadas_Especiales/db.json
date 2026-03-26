@@ -1,160 +1,6 @@
 {
   "atletas": [
     {
-      "id": "4b97",
-      "nombre": "adasdasd",
-      "fechaNacimiento": "2018-02-23",
-      "pais": "sdfghjkl",
-      "cedula": "12345679876543",
-      "genero": "Masculino",
-      "direccion": "sdfghjkl",
-      "telefono": "12345678",
-      "correoElectronico": "bcamachogfwd@gmail.com",
-      "emergenciaNombre": "asdfkj",
-      "emergenciaTelefono": "2345678",
-      "tutorNombre": "Braksley",
-      "tutorApellido": "Camacho García",
-      "tutorRelacion": "Padre",
-      "tutorCorreo": "bcamachogfwd@gmail.com",
-      "tutorTelefono": "132456789",
-      "tutorPais": "dsfghjk",
-      "medicamentos": [],
-      "condicionesMedicas": [
-        "Síndrome De Marfan"
-      ],
-      "dispositivosMovilidad": [
-        "Caminador"
-      ],
-      "ayudasEstiloVida": [
-        "Gafas/lentes de contacto"
-      ],
-      "comunicaciones": [
-        "Ninguno"
-      ],
-      "dispositivosMedicos": [
-        "Desfibrilador cardioversor implantable"
-      ],
-      "especificacionDietetico": "",
-      "especificacionOtrosDispositivos": "",
-      "cantidadConmociones": "",
-      "fechaUltimaConmocion": "",
-      "especificacionAfeccionesMentales": "",
-      "tiposAlergia": [],
-      "especificacionAlergiaOtro": "",
-      "terminosAceptados": true,
-      "objecionTratamientoMedico": true,
-      "objecionTransfusiones": true,
-      "firmaAtleta": "adasdasd",
-      "fechaFirmaAtleta": "2026-03-24",
-      "firmaTutor": "Braksley Camacho Garcia",
-      "relacionTutor": "Padre",
-      "fechaFirmaTutor": "2026-03-24",
-      "interesInvestigacion": "No",
-      "disciplina": "Atletismo",
-      "nivelHabilidad": "Principiante",
-      "relacionAtleta": "El Atleta mismo",
-      "relacionAtletaOtro": "",
-      "programa": "dddsaa",
-      "anemiaDepranocitica": "No",
-      "medicoLimitoDeportes": "No",
-      "discAuditiva": "Si",
-      "diabetes": "No",
-      "afeccionCardiaca": "Si",
-      "reqDietetico": "No",
-      "otrosDispositivos": "No",
-      "asma": "Si",
-      "discVisual": "Si",
-      "trastornoHemorragico": "No",
-      "epilepsiaConvulsivo": "No",
-      "conmocionCerebral": "No",
-      "alergiasGraves": "No",
-      "afeccionesMentales": "No",
-      "tomaMedicamentos": "No",
-      "apellido": "",
-      "segundoNombre": "",
-      "password": "5o9adnl7",
-      "rol": "atleta",
-      "fechaRegistro": "2026-03-24T20:00:29.797Z"
-    },
-    {
-      "id": "f7b2",
-      "nombre": "dsfghj",
-      "fechaNacimiento": "2018-03-23",
-      "pais": "dsfghj",
-      "cedula": "234567",
-      "genero": "Masculino",
-      "direccion": "degtfkjl",
-      "telefono": "1234567",
-      "correoElectronico": "bcamachogfwd@gmail.com",
-      "emergenciaNombre": "sdfghjk",
-      "emergenciaTelefono": "1234567890",
-      "tutorNombre": "Braksley",
-      "tutorApellido": "Camacho García",
-      "tutorRelacion": "Padre",
-      "tutorCorreo": "braksgpro123@gmail.com",
-      "tutorTelefono": "234567890",
-      "tutorPais": "sdfghjk",
-      "tutorCedula": "1234567890",
-      "medicamentos": [],
-      "condicionesMedicas": [
-        "Desconocido"
-      ],
-      "dispositivosMovilidad": [
-        "Caminador"
-      ],
-      "ayudasEstiloVida": [
-        "Gafas/lentes de contacto"
-      ],
-      "comunicaciones": [
-        "Audífono"
-      ],
-      "dispositivosMedicos": [
-        "Ninguno"
-      ],
-      "especificacionDietetico": "",
-      "especificacionOtrosDispositivos": "",
-      "cantidadConmociones": "",
-      "fechaUltimaConmocion": "",
-      "especificacionAfeccionesMentales": "",
-      "tiposAlergia": [],
-      "especificacionAlergiaOtro": "",
-      "terminosAceptados": true,
-      "objecionTratamientoMedico": true,
-      "objecionTransfusiones": true,
-      "firmaAtleta": "adasdasd",
-      "fechaFirmaAtleta": "2026-03-25",
-      "firmaTutor": "Braksley Camacho Garcia",
-      "relacionTutor": "",
-      "fechaFirmaTutor": "2026-03-25",
-      "interesInvestigacion": "No",
-      "disciplina": "Levantamiento de Pesas",
-      "nivelHabilidad": "Principiante",
-      "relacionAtleta": "El Atleta mismo",
-      "relacionAtletaOtro": "",
-      "programa": "sdfgh",
-      "afeccionesMentales": "No",
-      "anemiaDepranocitica": "No",
-      "medicoLimitoDeportes": "Si",
-      "discAuditiva": "Si",
-      "diabetes": "No",
-      "afeccionCardiaca": "Si",
-      "reqDietetico": "No",
-      "otrosDispositivos": "No",
-      "asma": "Si",
-      "discVisual": "Si",
-      "trastornoHemorragico": "No",
-      "epilepsiaConvulsivo": "No",
-      "conmocionCerebral": "No",
-      "alergiasGraves": "No",
-      "tomaMedicamentos": "No",
-      "apellido": "",
-      "segundoNombre": "",
-      "password": "hola123",
-      "rol": "atleta",
-      "fechaRegistro": "2026-03-25T21:50:40.115Z",
-      "tutorVinculado": "ee1e"
-    },
-    {
       "id": "d4b0",
       "nombre": "Gerson David Dinarte Fuentes",
       "correoElectronico": "gfuentesfwd@gmail.com",
@@ -201,20 +47,6 @@
   "voluntarios": [],
   "tutores": [
     {
-      "id": "ee1e",
-      "nombre": "Braksley",
-      "apellido": "Camacho García",
-      "cedula": "1234567890",
-      "correoElectronico": "braksgpro123@gmail.com",
-      "telefono": "234567890",
-      "pais": "sdfghjk",
-      "relacionConAtleta": "Padre",
-      "password": "n2i85d1j",
-      "rol": "tutor",
-      "atletaVinculado": "f7b2",
-      "fechaRegistro": "2026-03-25T21:50:40.365Z"
-    },
-    {
       "id": "f9db",
       "nombre": "andres",
       "cedula": "23456789",
@@ -234,75 +66,38 @@
     }
   ],
   "estadisticas_generales": {
-    "totalRegistros": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
-    "atletasActivos": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
-    "revisionesPendientes": { "valor": "1", "textoExtra": "" },
-    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
+    "totalRegistros": {
+      "valor": "3",
+      "porcentaje": "100%",
+      "tendencia": "up"
+    },
+    "atletasActivos": {
+      "valor": "3",
+      "porcentaje": "100%",
+      "tendencia": "up"
+    },
+    "revisionesPendientes": {
+      "valor": "0",
+      "textoExtra": ""
+    },
+    "voluntarios": {
+      "valor": "0",
+      "porcentaje": "0%",
+      "tendencia": "none"
+    }
   },
   "graficos": {
     "atletasPorDeporte": [],
     "distribucionRegional": [],
-    "totalGeneral": "5"
+    "totalGeneral": "3"
   },
-  "registros_pendientes": [
-    {
-      "id": "bb6d",
-      "initials": "GD",
-      "name": "Gerson David Dinarte Fuentes",
-      "email": "gfuente@gmail.com",
-      "phone": "89074567",
-      "sport": "Atletismo",
-      "region": "Puntarenas",
-      "time": "Registrado ahora",
-      "status": "VERIFICACIÓN PEND.",
-      "statusColor": "yellow",
-      "bgColor": "bg-light-blue"
-    }
-  ],
+  "registros_pendientes": [],
   "actividad_sistema": [
     {
       "id": "1",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "c1c0",
-      "title": "Aprobación",
-      "details": "Se aprobó a Gerson David Dinarte Fuentes",
-      "id": "2333",
-      "title": "Aprobación",
-      "details": "Se aprobó a Nora Figueroa",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "dbc3",
-      "title": "Competición",
-      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
-      "id": "5b66",
-      "title": "Competición",
-      "details": "Nueva competición: uky,il7,.u",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "d5e0",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Ana López",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "fabd",
-      "title": "Aprobación",
-      "details": "Se aprobó a Ana López",
-      "icon": "fa-solid fa-check-circle",
+      "title": "Sistema Iniciado",
+      "details": "Base de datos saneada y lista para operación real.",
+      "icon": "fa-solid fa-server",
       "iconColor": "green",
       "time": "Hace un momento"
     }
@@ -310,8 +105,8 @@
   "competiciones": [
     {
       "id": "1",
-      "nombre": "Próxima Competencia Nacional de Atletismo",
-      "resumen": "Nuestros atletas se preparan para la competencia regional. Ven a apoyarlos este fin de semana en el estadio nacional.",
+      "nombre": "Competición Nacional de Atletismo",
+      "resumen": "Próxima gran cita deportiva nacional en San José.",
       "fecha": "2026-05-15",
       "lugar": "Estadio Nacional",
       "categoria": "Atletismo",
@@ -321,45 +116,25 @@
     {
       "id": "2",
       "nombre": "Encuentro Regional de Natación",
-      "resumen": "Un evento acuático increíble para todas las edades. Contaremos con la participación de delegaciones de todo el país.",
+      "resumen": "Competencia acuática para delegaciones regionales.",
       "fecha": "2026-06-22",
       "lugar": "Piscina María del Milagro París",
       "categoria": "Natación",
       "status": "Abierto",
       "img": "evento_natacion.png"
-    },
-    {
-      "id": "3",
-      "nombre": "Gala de Reconocimiento al Atleta",
-      "resumen": "Celebración especial para honrar el esfuerzo y la dedicación de nuestros deportistas durante el año.",
-      "fecha": "2026-07-10",
-      "lugar": "Teatro Nacional",
-      "categoria": "Social",
-      "status": "Por confirmar",
-      "img": "evento_ceremonia.png"
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json"
-      "id": "rk6pt51kz",
-      "nombre": "uky,il7,.u",
-      "deporte": "Atletismo",
-      "fecha": "2026-03-26",
-      "fechaFin": "2026-03-23",
-      "ubicacion": "kgkggykkkhbkh",
-      "descripcion": "kkukvkvhhukbkbhl",
-      "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIROd_m5TqdXbs60Y_ajK7p9pygWly6Y3zVA&s",
-      "enlace": "https://www.nsf.org/mx/es/alimentos-bebidas/alimentos-org%C3%A1nicos-especialidades/certificaci%C3%B3n-bebidas-hielo-empaquetado",
-      "status": "Programado"
-    }
+  "consultas": [],
+  "disciplinas": [
+    "Atletismo", "Baloncesto", "Fútbol", "Deportes Acuáticos", 
+    "Voleibol de Playa", "Gimnasia Artística", "Boccia", 
+    "Bádminton", "Bolos", "Ciclismo", "Golf", "Triatlón", 
+    "Balonmano (handball)", "Floorball", "Softbol", "Piragüismo", 
+    "Levantamiento de Pesas", "Tenis de Mesa", "Petanca", 
+    "Gimnasia Ritmica", "Raquetas de nieve", "Voleibol"
   ],
-  "consultas": [
-    {
-      "id": "f271",
-      "user_name": "francella porras ",
-      "user_email": "nporrasafwd@gmail.com",
-      "user_subject": "SALUDO",
-      "message": "espero esten bien",
-      "fecha": "2026-03-26T21:02:59.838Z"
-    }
-  ]
+  "niveles_habilidad": ["Principiante", "Intermedio", "Avanzado"],
+  "programas": ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"],
+  "areas_voluntariado": ["Apoyo en Eventos", "Logística y Transporte", "Asistencia Médica", "Entrenamiento Deportivo", "Redes Sociales / Fotos", "Administración"],
+  "parentescos": ["Padre/Madre", "Hermano(a)", "Tío(a)", "Abuelo(a)", "Encargado Legal", "Otro"]
 }

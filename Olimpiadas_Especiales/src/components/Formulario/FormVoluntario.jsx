@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
 import { createVoluntario } from '../../services/ServicesVoluntarios';
+import { getConfig } from '../../services/ServicesConfig';
 import '../../styles/Formulario/FormVoluntario.css';
 
 emailjs.init("4zWvRC7Yn7lUDqd1q");
@@ -16,6 +17,11 @@ function FormVoluntario({ onVolver }) {
   });
   const [errores, setErrores] = useState({});
   const [archivos, setArchivos] = useState({ cedula: null, delincuencia: null, foto: null });
+  const [areasCatalogo, setAreasCatalogo] = useState([]);
+
+  useEffect(() => {
+    getConfig('areas_voluntariado').then(setAreasCatalogo);
+  }, []);
 
   const manejarCambio = (e) => {
     const { id, value } = e.target;
@@ -115,7 +121,6 @@ function FormVoluntario({ onVolver }) {
   };
 
   const porcentajeProgreso = paso * 25;
-  const AREAS = ['Apoyo en Eventos', 'Logística y Transporte', 'Asistencia Médica', 'Entrenamiento Deportivo', 'Redes Sociales / Fotos', 'Administración'];
 
   return (
     <div className="form-voluntario-layout">
@@ -184,7 +189,7 @@ function FormVoluntario({ onVolver }) {
               <div className="form-sections-modern">
                 <p style={{ fontWeight: 600, color: '#64748b', marginBottom: '15px' }}>Selecciona las áreas donde te gustaría colaborar:</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  {AREAS.map(area => (
+                  {areasCatalogo.map(area => (
                     <label key={area} className="checkbox-label">
                       <input type="checkbox" checked={datos.areasInteres.includes(area)} onChange={() => manejarCheckbox(area)} style={{ accentColor: '#E00000', width: '16px', height: '16px' }} />
                       <span>{area}</span>

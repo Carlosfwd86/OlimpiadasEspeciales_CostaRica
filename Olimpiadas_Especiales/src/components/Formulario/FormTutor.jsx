@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
 import { createTutor } from '../../services/ServicesTutores';
+import { getConfig } from '../../services/ServicesConfig';
 import '../../styles/Formulario/FormTutor.css';
 
 emailjs.init("4zWvRC7Yn7lUDqd1q");
@@ -15,6 +16,11 @@ function FormTutor({ onVolver }) {
   });
   const [errores, setErrores] = useState({});
   const [archivos, setArchivos] = useState({ cedula: null, foto: null });
+  const [parentescos, setParentescos] = useState([]);
+
+  useEffect(() => {
+    getConfig('parentescos').then(setParentescos);
+  }, []);
 
   const manejarCambio = (e) => {
     const { id, value } = e.target;
@@ -168,11 +174,7 @@ function FormTutor({ onVolver }) {
                   <label>Parentesco / Relación *</label>
                   <select id="relacionConAtleta" className="input-field" value={datos.relacionConAtleta} onChange={manejarCambio}>
                     <option value="">Seleccione...</option>
-                    <option value="Padre/Madre">Padre/Madre</option>
-                    <option value="Hermano(a)">Hermano(a)</option>
-                    <option value="Tío(a)">Tío(a)</option>
-                    <option value="Abuelo(a)">Abuelo(a)</option>
-                    <option value="Encargado Legal">Encargado Legal</option>
+                    {parentescos.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
               </div>
