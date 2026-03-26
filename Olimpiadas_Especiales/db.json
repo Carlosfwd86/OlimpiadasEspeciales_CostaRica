@@ -77,27 +77,6 @@
       "fechaRegistro": "2026-03-24T20:00:29.797Z"
     },
     {
-<<<<<<< HEAD
-      "id": "afba",
-      "initials": "FR",
-      "name": "francela",
-      "email": "nporrasafwd@gmail.com",
-      "phone": "88800000",
-      "sport": "Baloncesto",
-      "region": "Puntarenas",
-      "time": "Registrado ahora",
-      "status": "ACTIVO",
-      "statusColor": "yellow",
-      "bgColor": "bg-light-blue",
-      "fechaRegistro": "2026-03-26T01:50:59.322Z",
-      "rol": "atleta"
-    },
-    {
-      "id": "43ee",
-      "nombre": "Ana López",
-      "correoElectronico": "ana@gmaill.com",
-      "telefono": "22334455",
-=======
       "id": "f7b2",
       "nombre": "dsfghj",
       "fechaNacimiento": "2018-03-23",
@@ -180,21 +159,13 @@
       "nombre": "Gerson David Dinarte Fuentes",
       "correoElectronico": "gfuentesfwd@gmail.com",
       "telefono": "82074567",
->>>>>>> 0ea9660e26d1ac5d1f973fd60d5280738e6506b6
       "disciplina": "Fútbol",
       "programa": "San José",
       "status": "ACTIVO",
       "rol": "atleta",
-<<<<<<< HEAD
-      "fechaRegistro": "2026-03-26T16:28:55.131Z"
-    }
-  ],
-  "competiciones": [],
-  "entrenadores": [],
-  "voluntarios": [],
-  "tutores": [],
-=======
       "fechaRegistro": "2026-03-26T16:40:22.308Z"
+    },
+    {
       "id": "721b",
       "nombre": "Samir Jacobo",
       "correoElectronico": "samirito@gmail.com",
@@ -226,12 +197,8 @@
       "rol": "admin"
     }
   ],
-  "entrenadores": [
-   
-  ],
-  "voluntarios": [
-  
-  ],
+  "entrenadores": [],
+  "voluntarios": [],
   "tutores": [
     {
       "id": "ee1e",
@@ -266,32 +233,16 @@
       "fechaRegistro": "2026-03-26T17:27:12.371Z"
     }
   ],
->>>>>>> 0ea9660e26d1ac5d1f973fd60d5280738e6506b6
   "estadisticas_generales": {
-    "totalRegistros": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    },
-    "atletasActivos": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    },
-    "revisionesPendientes": {
-      "valor": "0",
-      "textoExtra": ""
-    },
-    "voluntarios": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    }
+    "totalRegistros": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
+    "atletasActivos": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
+    "revisionesPendientes": { "valor": "1", "textoExtra": "" },
+    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
   },
   "graficos": {
     "atletasPorDeporte": [],
     "distribucionRegional": [],
-    "totalGeneral": "0"
+    "totalGeneral": "5"
   },
   "registros_pendientes": [
     {
@@ -310,34 +261,9 @@
   ],
   "actividad_sistema": [
     {
-      "id": "7341",
+      "id": "1",
       "title": "Nuevo Registro",
       "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
-  "registros_pendientes": [],
-  "actividad_sistema": [
-    {
-      "id": "963e",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Samir Jacobo",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "6a0c",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
-      "id": "fa5a",
-      "title": "Aprobación",
-      "details": "Se aprobó a Samir Jacobo",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "95c3",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Nora Figueroa",
       "icon": "fa-solid fa-user-plus",
       "iconColor": "blue",
       "time": "Hace un momento"
@@ -390,13 +316,7 @@
       "lugar": "Estadio Nacional",
       "categoria": "Atletismo",
       "status": "Próximo",
-      "img": "evento_competencia.png",
-      "deporte": "Fútbol",
-      "fechaFin": "2026-03-28",
-      "ubicacion": "",
-      "descripcion": "",
-      "imagen": "",
-      "enlace": ""
+      "img": "evento_competencia.png"
     },
     {
       "id": "2",
