@@ -24,14 +24,20 @@
 /* --- FORMA CURVA ROJA DE FONDO (WAVE) --- */
 .hero_fondo_derecha {
   position: absolute;
-  top: 40px;
-  right: -2%;
-  width: 50%;
-  height: 85%;
+  top: 10%;
+  right: 2%;
+  width: 40%;
+  height: 80%;
   background-color: var(--so-red);
   border-radius: 40px 0 0 100px;
   z-index: 1;
-  opacity: 0.95;
+  opacity: 0.8;
+  animation: floatBackground 8s ease-in-out infinite;
+}
+
+@keyframes floatBackground {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.02); }
 }
 
 /* --- CONTENIDO SUPERIOR (Texto Izquierda / Imagen Derecha) --- */
@@ -159,38 +165,90 @@
   text-align: center;
 }
 
-.titulo_registro_seccion {
+.stats_header_seccion {
+  margin-bottom: 50px;
+}
+
+.stats_badge {
+  display: inline-block;
+  background: #fff0f0;
   color: var(--so-red);
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 30px;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.titulo_registro_seccion {
+  color: var(--so-black);
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: -1px;
 }
 
 .hero_tarjetas_inferiores {
   position: relative;
   z-index: 4;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 0 5%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  padding: 0 8%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.tarjeta_info {
+.tarjeta_info.stat_card {
   background-color: var(--so-white);
-  flex: 1;
-  max-width: 280px;
-  min-height: 140px;
-  padding: 25px 20px;
-  border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
+  padding: 40px 30px;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.06); 
   display: flex;
   flex-direction: column;
-  position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  overflow: hidden;
+  align-items: center;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.03);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stat_card:hover {
+  transform: translateY(-15px);
+  box-shadow: 0 30px 70px rgba(230, 35, 52, 0.15);
+  border-color: rgba(230, 35, 52, 0.2);
+}
+
+.stat_number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--so-red);
+  line-height: 1;
+  margin-bottom: 20px;
+  font-family: inherit;
+}
+
+.stat_content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.stat_card h4 {
+  font-size: 1.4rem;
+  color: var(--so-black);
+  margin: 0;
+  font-weight: 800;
+}
+
+.stat_card p {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .tarjeta_info::before {

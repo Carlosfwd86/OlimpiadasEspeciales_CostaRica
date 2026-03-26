@@ -153,6 +153,28 @@
       "rol": "atleta",
       "fechaRegistro": "2026-03-25T21:50:40.115Z",
       "tutorVinculado": "ee1e"
+    },
+    {
+      "id": "721b",
+      "nombre": "Samir Jacobo",
+      "correoElectronico": "samirito@gmail.com",
+      "telefono": "86869696",
+      "disciplina": "Natación",
+      "programa": "Alajuela",
+      "status": "ACTIVO",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-26T16:40:33.977Z"
+    },
+    {
+      "id": "b001",
+      "nombre": "Nora Figueroa",
+      "correoElectronico": "noaf@gmail.com",
+      "telefono": "88484848",
+      "disciplina": "Baloncesto",
+      "programa": "Puntarenas",
+      "status": "ACTIVO",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-26T16:42:25.862Z"
     }
   ],
   "Admin": [
@@ -184,6 +206,24 @@
       "rol": "tutor",
       "atletaVinculado": "f7b2",
       "fechaRegistro": "2026-03-25T21:50:40.365Z"
+    },
+    {
+      "id": "f9db",
+      "nombre": "andres",
+      "cedula": "23456789",
+      "telefono": "88183631",
+      "correoElectronico": "cjimenezrfwd@gmail.com",
+      "direccion": "ZDNGZEDGHNRSEYXDG",
+      "nombreAtleta": "Luis j",
+      "relacionConAtleta": "Padre/Madre",
+      "ocupacion": "Arquitecto",
+      "motivacion": "QUIERO UNIRME PARA ESTAR AL TANTO DE LAS COMPENCIAS DE MIS HIJOS",
+      "experienciaNecesidadesEspeciales": "No",
+      "cedula_nombre": "voluntarios_accion.png",
+      "foto_nombre": "No adjuntado",
+      "password": "auubdjf1",
+      "rol": "tutor",
+      "fechaRegistro": "2026-03-26T17:27:12.371Z"
     }
   ],
   "estadisticas_generales": {
@@ -213,5 +253,60 @@
     "totalGeneral": "0"
   },
   "registros_pendientes": [],
-  "actividad_sistema": []
+  "actividad_sistema": [
+    {
+      "id": "963e",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Samir Jacobo",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fa5a",
+      "title": "Aprobación",
+      "details": "Se aprobó a Samir Jacobo",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "95c3",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Nora Figueroa",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "2333",
+      "title": "Aprobación",
+      "details": "Se aprobó a Nora Figueroa",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "5b66",
+      "title": "Competición",
+      "details": "Nueva competición: uky,il7,.u",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    }
+  ],
+  "competiciones": [
+    {
+      "id": "rk6pt51kz",
+      "nombre": "uky,il7,.u",
+      "deporte": "Atletismo",
+      "fecha": "2026-03-26",
+      "fechaFin": "2026-03-23",
+      "ubicacion": "kgkggykkkhbkh",
+      "descripcion": "kkukvkvhhukbkbhl",
+      "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIROd_m5TqdXbs60Y_ajK7p9pygWly6Y3zVA&s",
+      "enlace": "https://www.nsf.org/mx/es/alimentos-bebidas/alimentos-org%C3%A1nicos-especialidades/certificaci%C3%B3n-bebidas-hielo-empaquetado",
+      "status": "Programado"
+    }
+  ]
 }
