@@ -12,32 +12,41 @@ import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
+import PrivateRoute from './PrivateRoute';
 
 
 const Routing = () => {
     return (
         <Routes>
-            {/* Ruta principal que carga la página de inicio */}
+            {/* Rutas Públicas */}
             <Route path="/" element={<HomePages />} />
-            <Route path="/entrenadores" element={<EntrenadoresPage />} />
             <Route path="/login" element={<LoginPage />} />
-
-            {/* Ruta para el Panel Administrativo y sus secciones */}
-            <Route path="/admin" element={<PanelAdministrativo />} />
-            <Route path="/configuracion" element={<PanelAdministrativo />} />
-            <Route path="/usuarios" element={<PanelAdministrativo />} />
-
-            {/* Ruta del formulario */}
-            <Route path="/formulario" element={<FormularioPages />} />
-
-            {/* Redirección por defecto: si el usuario pone cualquier otra cosa, lo manda al inicio */}
-            <Route path="*" element={<Navigate to="/" />} />
-
-            {/* rutas de navbar */}
             <Route path="/nosotros" element={<NosotrosPages />} />
+            <Route path="/contacto" element={<ContactoPages />} />
+            <Route path="/formulario" element={<FormularioPages />} />
             <Route path="/eventos" element={<EventosPages />} />
             <Route path="/voluntarios" element={<VoluntariosPages />} />
-            <Route path="/contacto" element={<ContactoPages />} />
+
+            {/* Rutas Privadas - Protegidas por PrivateRoute */}
+            <Route 
+                path="/admin" 
+                element={
+                    <PrivateRoute>
+                        <PanelAdministrativo />
+                    </PrivateRoute>
+                } 
+            />
+            <Route 
+                path="/entrenadores" 
+                element={
+                    <PrivateRoute>
+                        <EntrenadoresPage />
+                    </PrivateRoute>
+                } 
+            />
+
+            {/* Redirección por defecto */}
+            <Route path="*" element={<Navigate to="/" />} />
         </Routes>
     );
 };

@@ -21,40 +21,58 @@ const Login = () => {
     setLoading(true);
 
     try {
-
-      // Fetch usuarios from API
-      const response = await fetch("http://localhost:3000/atletas");
-      if (!response.ok) {
-        throw new Error("No se pudo conectar con el servidor.");
-      }
-
-      const atletas = await resAtletas.json();
-      const entrenadores = await resEntrenadores.json();
-      const tutores = await resTutores.json();
-      const voluntarios = await resVoluntarios.json();
-
-      const todosLosUsuarios = [...atletas, ...entrenadores, ...tutores, ...voluntarios];
-
-      // Find user that matches cedula and contrasenia/password
-      const usuarioValido = todosLosUsuarios.find(
-        (user) => user.cedula === formData.cedula && (user.contrasenia === formData.contrasenia || user.password === formData.contrasenia)
+      // Fetch all user collections from the local server
+      const endpoints = ["Admin", "atletas", "entrenadores", "tutores", "voluntarios"];
+      const baseUrl = "http://localhost:3001";
+      
+      const responses = await Promise.all(
+        endpoints.map(endpoint => fetch(`${baseUrl}/${endpoint}`).then(res => {
+          if (!res.ok) throw new Error(`Error al conectar con ${endpoint}`);
+          return res.json();
+        }))
       );
+
+      // Flatten all arrays into a single user list
+      const todosLosUsuarios = responses.flat();
+
+      // Find user that matches cedula (or correoElectronico for admin) and password/contrasenia
+      const usuarioValido = todosLosUsuarios.find(user => {
+        const inputCred = formData.cedula.toLowerCase();
+        const userCedula = user.cedula ? user.cedula.toString().toLowerCase() : '';
+        const userEmail = user.correoElectronico ? user.correoElectronico.toLowerCase() : '';
+        
+        const matchesIdentifier = userCedula === inputCred || userEmail === inputCred;
+        
+        const inputPass = formData.contrasenia;
+        const userPass = user.password || user.contrasenia;
+        
+        const matchesPassword = userPass === inputPass;
+        
+        return matchesIdentifier && matchesPassword;
+      });
 
       if (usuarioValido) {
         // Guardar sesión en localStorage
         localStorage.setItem('usuarioSesion', JSON.stringify(usuarioValido));
+        
         // Notificar a la Navbar para que actualice el botón en tiempo real
         window.dispatchEvent(new Event('sesionActualizada'));
+        
         alert(`Bienvenido(a), ingresaste como ${usuarioValido.rol}`);
-        switch (usuarioValido.rol) {
+        
+        // Redireccionar según el rol
+        switch (usuarioValido.rol?.toLowerCase()) {
+          case 'admin':
+            navigate('/admin');
+            break;
           case 'atleta':
-            navigate('/atleta');
+            navigate('/perfil');
+            break;
+          case 'tutor':
+            navigate('/perfil');
             break;
           case 'entrenador':
             navigate('/entrenadores');
-            break;
-          case 'tutor':
-            navigate('/tutor');
             break;
           case 'voluntario':
             navigate('/voluntarios');
@@ -67,7 +85,7 @@ const Login = () => {
       }
     } catch (err) {
       console.error(err);
-      setError('Ocurrió un error en la autenticación. Asegúrese de que el servidor esté corriendo.');
+      setError('Ocurrió un error en la autenticación. Asegúrese de que el servidor esté corriendo en el puerto 3001.');
     } finally {
       setLoading(false);
     }

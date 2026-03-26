@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
 import emailjs from '@emailjs/browser'
-import { createAtleta } from '../../services/ServicesAtletas'
+import { createAtleta, updateAtleta } from '../../services/ServicesAtletas'
+import { createTutor } from '../../services/ServicesTutores'
 import '../../styles/Formulario/FormAtleta.css'
 
 // Initialize EmailJS with Public Key
@@ -22,7 +23,7 @@ function FormAtleta({ onVolver }) {
     cedula: '', genero: '', direccion: '', telefono: '', correoElectronico: '',
     emergenciaNombre: '', emergenciaTelefono: '',
     // Tutor (Mini-formulario menores de edad)
-    tutorNombre: '', tutorApellido: '', tutorRelacion: '', tutorCorreo: '', tutorTelefono: '', tutorPais: '',
+    tutorNombre: '', tutorApellido: '', tutorRelacion: '', tutorCorreo: '', tutorTelefono: '', tutorPais: '', tutorCedula: '',
     // Médico
     medicamentos: [], condicionesMedicas: [],
     dispositivosMovilidad: [], ayudasEstiloVida: [], comunicaciones: [], dispositivosMedicos: [],
@@ -36,7 +37,7 @@ function FormAtleta({ onVolver }) {
     disciplina: '', nivelHabilidad: '', relacionAtleta: '', relacionAtletaOtro: ''
   });
   const [errores, setErrores] = useState({});
-  const [archivos, setArchivos] = useState({ identificacion: null, certificado: null, foto: null });
+  const [archivos, setArchivos] = useState({ identificacion: null, certificado: null, foto: null, identificacionTutor: null });
   const [arrastrando, setArrastrando] = useState(null);
 
   // --- Manejadores Universales ---
@@ -202,7 +203,7 @@ function FormAtleta({ onVolver }) {
       });
 
       if (esMenorDeEdad()) {
-        const reqTutor = ['tutorNombre', 'tutorApellido', 'tutorRelacion', 'tutorCorreo', 'tutorTelefono', 'tutorPais'];
+        const reqTutor = ['tutorNombre', 'tutorApellido', 'tutorCedula', 'tutorRelacion', 'tutorCorreo', 'tutorTelefono', 'tutorPais'];
         reqTutor.forEach(f => {
           if (!datos[f]?.toString().trim()) {
             nuevosErrores[f] = true;
@@ -297,7 +298,7 @@ function FormAtleta({ onVolver }) {
       }
       
       const p4Req = esMenorDeEdad() 
-        ? ['firmaAtleta', 'fechaFirmaAtleta', 'firmaTutor', 'relacionTutor', 'fechaFirmaTutor'] 
+        ? ['firmaAtleta', 'fechaFirmaAtleta', 'firmaTutor', 'fechaFirmaTutor'] 
         : ['firmaAtleta', 'fechaFirmaAtleta'];
         
       const nuevosErrores = {};
@@ -311,6 +312,11 @@ function FormAtleta({ onVolver }) {
       if (falte) {
         setErrores(prev => ({ ...prev, ...nuevosErrores }));
         Swal.fire({ icon: 'error', title: 'Firmas Incompletas', text: 'Por favor complete todos los campos de firma requeridos.', confirmButtonColor: '#E00000' });
+        return;
+      }
+
+      if (esMenorDeEdad() && !archivos.identificacionTutor) {
+        Swal.fire({ icon: 'error', title: 'Documentación Faltante', text: 'Debe subir el Documento de Identidad del Padre / Tutor.', confirmButtonColor: '#E00000' });
         return;
       }
     }
@@ -335,12 +341,62 @@ function FormAtleta({ onVolver }) {
         };
 
         try {
-          await createAtleta(datosParaEnvio);
-          await emailjs.send('service_ttxcgou', 'template_2eklg8i', { to_email: datos.correoElectronico, to_name: datos.nombre, message: `Bienvenido. Tu clave es: ${pass}` }, '4zWvRC7Yn7lUDqd1q');
-          Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Registro completado.' }).then(() => window.location.href = '/');
+          // Crear atleta
+          const atletaCreado = await createAtleta(datosParaEnvio);
+          
+          if (esMenorDeEdad()) {
+            const passTutor = Math.random().toString(36).slice(-8);
+            const datosTutor = {
+              nombre: datos.tutorNombre,
+              apellido: datos.tutorApellido,
+              cedula: datos.tutorCedula,
+              correoElectronico: datos.tutorCorreo,
+              telefono: datos.tutorTelefono,
+              pais: datos.tutorPais,
+              relacionConAtleta: datos.tutorRelacion,
+              password: passTutor,
+              rol: 'tutor',
+              atletaVinculado: atletaCreado.id,
+              fechaRegistro: new Date().toISOString()
+            };
+            
+            // Crear el tutor y vincular con atleta
+            const tutorCreado = await createTutor(datosTutor);
+            
+            // Actualizar paciente para guardar el ID del tutor
+            await updateAtleta(atletaCreado.id, { ...atletaCreado, tutorVinculado: tutorCreado.id });
+            
+            // Enviar correo al tutor
+            if (datos.tutorCorreo) {
+              await emailjs.send('service_ttxcgou', 'template_2eklg8i', { to_email: datos.tutorCorreo, to_name: datos.tutorNombre, message: `Bienvenido. Has sido registrado como tutor en Olimpiadas Especiales CR. Tu clave temporal es: ${passTutor}` }, '4zWvRC7Yn7lUDqd1q');
+            }
+          }
+
+          // Correo del atleta
+          try {
+            await emailjs.send(
+              'service_ttxcgou', 
+              'template_2eklg8i', 
+              {
+                to_email: datosParaEnvio.correoElectronico || datosParaEnvio.tutorCorreo,
+                to_name: datosParaEnvio.nombre,
+                message: `Tu cuenta ha sido creada. Tu contraseña temporal es: ${pass}. Por favor cámbiala al iniciar sesión.`,
+              },
+              '4zWvRC7Yn7lUDqd1q'
+            );
+            Swal.fire({ 
+              icon: 'success', 
+              title: '¡Inscripción Exitosa!', 
+              text: 'Se ha enviado un correo con tus credenciales de acceso.', 
+              confirmButtonColor: '#E00000' 
+            }).then(() => window.location.href = '/');
+          } catch (error) {
+            console.error("Error al guardar:", error);
+            Swal.fire({ icon: 'success', title: 'Guardado localmente (Modo Offline)' }).then(() => window.location.href = '/');
+          }
         } catch (error) {
           console.error("Error al guardar:", error);
-          Swal.fire({ icon: 'success', title: 'Guardado localmente (Modo Offline)' }).then(() => window.location.href = '/');
+          Swal.fire({ icon: 'error', title: 'Error al guardar', text: 'Hubo un problema al procesar tu inscripción. Inténtalo de nuevo.', confirmButtonColor: '#E00000' });
         }
       }
     });
@@ -503,6 +559,10 @@ function FormAtleta({ onVolver }) {
                       <div className="input-container" style={{ margin: 0 }}>
                         <label>Apellido del Tutor</label>
                         <input type="text" id='tutorApellido' className={`input-field ${errores.tutorApellido ? 'error-border' : ''}`} placeholder="Apellido" value={datos.tutorApellido} onChange={manejarCambio} style={errores.tutorApellido ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }} />
+                      </div>
+                      <div className="input-container" style={{ margin: 0 }}>
+                        <label>Cédula / Identificación del Tutor</label>
+                        <input type="text" id='tutorCedula' className={`input-field ${errores.tutorCedula ? 'error-border' : ''}`} placeholder="0-0000-0000" value={datos.tutorCedula} onChange={manejarCambio} style={errores.tutorCedula ? { background: 'white', borderColor: '#E00000' } : { background: 'white' }} />
                       </div>
                       <div className="input-container" style={{ margin: 0 }}>
                         <label>Relación con el Deportista</label>
@@ -876,6 +936,15 @@ function FormAtleta({ onVolver }) {
                     <input id="file-certificado" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files[0], 'certificado')} />
                     {archivos.certificado && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.certificado.name}</div>}
                   </div>
+                  {esMenorDeEdad() && (
+                    <div className="zona-drop" onClick={() => document.getElementById('file-identificacion-tutor').click()} style={{ border: '2px dashed #fda4af', background: '#fff1f2' }}>
+                      <div style={{fontSize: '32px', marginBottom: '10px'}}>👤</div>
+                      <h4 style={{margin: '0 0 5px 0', fontSize: '16px', color: '#E00000'}}>ID del Padre / Tutor</h4>
+                      <p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Requerido (PDF o Imagen)</p>
+                      <input id="file-identificacion-tutor" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files[0], 'identificacionTutor')} />
+                      {archivos.identificacionTutor && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.identificacionTutor.name}</div>}
+                    </div>
+                  )}
                 </div>
 
                 {/* Exenciones y Políticas */}
@@ -1024,11 +1093,11 @@ function FormAtleta({ onVolver }) {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                           <div className="input-container" style={{ margin: 0 }}>
                             <label style={{fontWeight: 600, color: '#0f172a'}}>Nombre en letra de imprenta:</label>
-                            <input type="text" className="input-field" disabled={true} value={datos.firmaTutor || ''} style={{ background: '#f8fafc', fontWeight: 600, color: '#475569', cursor: 'not-allowed' }} placeholder="Se autocompleta con su firma" />
+                            <input type="text" className="input-field" disabled={true} value={`${datos.tutorNombre || ''} ${datos.tutorApellido || ''}`.trim() || ''} style={{ background: '#f8fafc', fontWeight: 600, color: '#475569', cursor: 'not-allowed' }} placeholder="Autocompletado del Paso 1" />
                           </div>
                           <div className="input-container" style={{ margin: 0 }}>
                             <label style={{fontWeight: 600, color: '#0f172a'}}>Relación:</label>
-                            <input type="text" name="relacionTutor" className={`input-field ${(errores.relacionTutor && esMenorDeEdad()) ? 'error-border' : ''}`} placeholder="Padre, Madre, etc..." value={datos.relacionTutor} onChange={manejarCambio} style={(errores.relacionTutor && esMenorDeEdad()) ? { borderColor: '#E00000', background: '#fff' } : { background: '#fff' }} />
+                            <input type="text" className="input-field" disabled={true} value={datos.tutorRelacion || ''} style={{ background: '#f8fafc', fontWeight: 600, color: '#475569', cursor: 'not-allowed' }} placeholder="Autocompletado del Paso 1" />
                           </div>
                         </div>
                       </div>

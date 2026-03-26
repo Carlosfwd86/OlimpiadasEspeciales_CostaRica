@@ -65,6 +65,70 @@
   border-radius: 0 12px 12px 0;
 }
 
+/* Misión y Visión */
+.contenedor_mision_vision {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin: 60px 0;
+}
+
+.bloque_nosotros_info {
+  background-color: #fcfcfc;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+  border: 1px solid #f0f0f0;
+  transition: transform 0.3s ease;
+}
+
+.bloque_nosotros_info:hover {
+  transform: translateY(-5px);
+  border-color: #ff0000;
+}
+
+.bloque_nosotros_info h2 {
+  color: #ff0000;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  font-weight: 800;
+  border-bottom: 3px solid #ff0000;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.bloque_nosotros_info p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #555;
+  margin: 0;
+}
+
+/* Objetivos de la Plataforma */
+.objetivos_plataforma {
+  background: linear-gradient(135deg, #ff0000 0%, #b30000 100%);
+  color: #ffffff;
+  padding: 50px;
+  border-radius: 25px;
+  margin: 60px 0;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(255, 0, 0, 0.2);
+}
+
+.objetivos_plataforma h3 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.objetivos_plataforma p {
+  font-size: 1.3rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  opacity: 0.95;
+}
+
 /* Foto del Equipo */
 .contenedor_foto_equipo {
   margin-top: 50px;
@@ -93,6 +157,19 @@
     font-size: 2.5rem;
   }
   .parrafo_nosotros {
+    font-size: 1.1rem;
+  }
+  .contenedor_mision_vision {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .objetivos_plataforma {
+    padding: 30px 20px;
+  }
+  .objetivos_plataforma h3 {
+    font-size: 1.8rem;
+  }
+  .objetivos_plataforma p {
     font-size: 1.1rem;
   }
 }
