@@ -11,6 +11,7 @@ import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
+import PerfilPage from '../pages/PerfilPage';
 
 
 const Routing = () => {
@@ -35,6 +36,7 @@ const Routing = () => {
             <Route path="/eventos" element={<EventosPages />} />
             <Route path="/voluntarios" element={<VoluntariosPages />} />
             <Route path="/contacto" element={<ContactoPages />} />
+            <Route path="/perfil" element={<PerfilPage />} />
         </Routes>
     );
 };

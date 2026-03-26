@@ -75,11 +75,113 @@
       "password": "5o9adnl7",
       "rol": "atleta",
       "fechaRegistro": "2026-03-24T20:00:29.797Z"
+    },
+    {
+      "id": "f7b2",
+      "nombre": "dsfghj",
+      "fechaNacimiento": "2018-03-23",
+      "pais": "dsfghj",
+      "cedula": "234567",
+      "genero": "Masculino",
+      "direccion": "degtfkjl",
+      "telefono": "1234567",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "emergenciaNombre": "sdfghjk",
+      "emergenciaTelefono": "1234567890",
+      "tutorNombre": "Braksley",
+      "tutorApellido": "Camacho García",
+      "tutorRelacion": "Padre",
+      "tutorCorreo": "braksgpro123@gmail.com",
+      "tutorTelefono": "234567890",
+      "tutorPais": "sdfghjk",
+      "tutorCedula": "1234567890",
+      "medicamentos": [],
+      "condicionesMedicas": [
+        "Desconocido"
+      ],
+      "dispositivosMovilidad": [
+        "Caminador"
+      ],
+      "ayudasEstiloVida": [
+        "Gafas/lentes de contacto"
+      ],
+      "comunicaciones": [
+        "Audífono"
+      ],
+      "dispositivosMedicos": [
+        "Ninguno"
+      ],
+      "especificacionDietetico": "",
+      "especificacionOtrosDispositivos": "",
+      "cantidadConmociones": "",
+      "fechaUltimaConmocion": "",
+      "especificacionAfeccionesMentales": "",
+      "tiposAlergia": [],
+      "especificacionAlergiaOtro": "",
+      "terminosAceptados": true,
+      "objecionTratamientoMedico": true,
+      "objecionTransfusiones": true,
+      "firmaAtleta": "adasdasd",
+      "fechaFirmaAtleta": "2026-03-25",
+      "firmaTutor": "Braksley Camacho Garcia",
+      "relacionTutor": "",
+      "fechaFirmaTutor": "2026-03-25",
+      "interesInvestigacion": "No",
+      "disciplina": "Levantamiento de Pesas",
+      "nivelHabilidad": "Principiante",
+      "relacionAtleta": "El Atleta mismo",
+      "relacionAtletaOtro": "",
+      "programa": "sdfgh",
+      "afeccionesMentales": "No",
+      "anemiaDepranocitica": "No",
+      "medicoLimitoDeportes": "Si",
+      "discAuditiva": "Si",
+      "diabetes": "No",
+      "afeccionCardiaca": "Si",
+      "reqDietetico": "No",
+      "otrosDispositivos": "No",
+      "asma": "Si",
+      "discVisual": "Si",
+      "trastornoHemorragico": "No",
+      "epilepsiaConvulsivo": "No",
+      "conmocionCerebral": "No",
+      "alergiasGraves": "No",
+      "tomaMedicamentos": "No",
+      "apellido": "",
+      "segundoNombre": "",
+      "password": "hola123",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-25T21:50:40.115Z",
+      "tutorVinculado": "ee1e"
+    }
+  ],
+  "Admin": [
+    {
+      "id": "1",
+      "nombre": "Admin",
+      "correoElectronico": "admin@gmail.com",
+      "password": "admin",
+      "rol": "admin"
     }
   ],
   "entrenadores": [],
   "voluntarios": [],
-  "tutores": [],
+  "tutores": [
+    {
+      "id": "ee1e",
+      "nombre": "Braksley",
+      "apellido": "Camacho García",
+      "cedula": "1234567890",
+      "correoElectronico": "braksgpro123@gmail.com",
+      "telefono": "234567890",
+      "pais": "sdfghjk",
+      "relacionConAtleta": "Padre",
+      "password": "n2i85d1j",
+      "rol": "tutor",
+      "atletaVinculado": "f7b2",
+      "fechaRegistro": "2026-03-25T21:50:40.365Z"
+    }
+  ],
   "estadisticas_generales": {
     "totalRegistros": {
       "valor": "0",
@@ -107,6 +209,5 @@
     "totalGeneral": "0"
   },
   "registros_pendientes": [],
-  "actividad_sistema": [],
-  "$schema": "./node_modules/json-server/schema.json"
+  "actividad_sistema": []
 }
