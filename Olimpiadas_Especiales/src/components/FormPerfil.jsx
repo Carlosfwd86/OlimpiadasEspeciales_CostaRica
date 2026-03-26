@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { updateAtleta, getAtletaById } from '../services/ServicesAtletas';
 import { updateTutor, getTutorById } from '../services/ServicesTutores';
 import { updateEntrenador, getEntrenadorById } from '../services/ServicesEntrenadores';
 import { updateVoluntario, getVoluntarioById } from '../services/ServicesVoluntarios';
+import { updateUsuario } from '../services/ServicesUsuarios';
 import { ServicesAdmin } from '../services/ServicesAdmin';
 import '../styles/Perfil.css';
 
 function FormPerfil({ user, setRefreshUser }) {
+    const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [linkedUser, setLinkedUser] = useState(null);
@@ -54,6 +57,8 @@ function FormPerfil({ user, setRefreshUser }) {
                 await updateVoluntario(user.id, updatedUser);
             } else if (user.rol === 'admin') {
                 await ServicesAdmin.updateProfile(user.id, updatedUser);
+            } else if (user.rol === 'usuario') {
+                await updateUsuario(user.id, updatedUser);
             } else {
                 Swal.fire({ icon: 'info', title: 'Aviso', text: 'Cambio de contraseña no implementado para este rol.' });
                 return;
@@ -138,6 +143,9 @@ function FormPerfil({ user, setRefreshUser }) {
                     <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
                         <button className="btn-primary" onClick={() => setModalOpen(true)}>
                             Cambiar Contraseña
+                        </button>
+                        <button className="btn-success" onClick={() => navigate('/formulario')} style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '12px', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold' }}>
+                            Postularme
                         </button>
                         <button className="btn-secondary" onClick={() => {
                             localStorage.removeItem('usuarioSesion'); // Changed from 'user' to 'usuarioSesion'

@@ -40,6 +40,21 @@ function FormAtleta({ onVolver }) {
   const [archivos, setArchivos] = useState({ identificacion: null, certificado: null, foto: null, identificacionTutor: null });
   const [arrastrando, setArrastrando] = useState(null);
 
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      // Solo autocompletar si es un usuario básico que se está postulando
+      if (user.rol === 'usuario') {
+        setDatos(prev => ({
+          ...prev,
+          nombre: user.nombre || prev.nombre,
+          correoElectronico: user.correoElectronico || prev.correoElectronico
+        }));
+      }
+    }
+  }, []);
+
   // --- Manejadores Universales ---
   const manejarCambio = (e) => {
     const { id, name, value } = e.target;

@@ -111,46 +111,10 @@
       "dispositivosMedicos": [
         "Ninguno"
       ],
-      "especificacionDietetico": "",
-      "especificacionOtrosDispositivos": "",
-      "cantidadConmociones": "",
-      "fechaUltimaConmocion": "",
-      "especificacionAfeccionesMentales": "",
-      "tiposAlergia": [],
-      "especificacionAlergiaOtro": "",
-      "terminosAceptados": true,
-      "objecionTratamientoMedico": true,
-      "objecionTransfusiones": true,
-      "firmaAtleta": "adasdasd",
-      "fechaFirmaAtleta": "2026-03-25",
-      "firmaTutor": "Braksley Camacho Garcia",
-      "relacionTutor": "",
-      "fechaFirmaTutor": "2026-03-25",
-      "interesInvestigacion": "No",
-      "disciplina": "Levantamiento de Pesas",
-      "nivelHabilidad": "Principiante",
-      "relacionAtleta": "El Atleta mismo",
-      "relacionAtletaOtro": "",
-      "programa": "sdfgh",
-      "afeccionesMentales": "No",
-      "anemiaDepranocitica": "No",
-      "medicoLimitoDeportes": "Si",
-      "discAuditiva": "Si",
-      "diabetes": "No",
-      "afeccionCardiaca": "Si",
-      "reqDietetico": "No",
-      "otrosDispositivos": "No",
-      "asma": "Si",
-      "discVisual": "Si",
-      "trastornoHemorragico": "No",
-      "epilepsiaConvulsivo": "No",
-      "conmocionCerebral": "No",
-      "alergiasGraves": "No",
-      "tomaMedicamentos": "No",
-      "apellido": "",
-      "segundoNombre": "",
       "password": "hola123",
       "rol": "atleta",
+      "disciplina": "Levantamiento de Pesas",
+      "programa": "sdfgh",
       "fechaRegistro": "2026-03-25T21:50:40.115Z",
       "tutorVinculado": "ee1e"
     },
@@ -339,27 +303,25 @@
       "img": "evento_ceremonia.png"
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json"
-      "id": "rk6pt51kz",
-      "nombre": "uky,il7,.u",
-      "deporte": "Atletismo",
-      "fecha": "2026-03-26",
-      "fechaFin": "2026-03-23",
-      "ubicacion": "kgkggykkkhbkh",
-      "descripcion": "kkukvkvhhukbkbhl",
-      "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIROd_m5TqdXbs60Y_ajK7p9pygWly6Y3zVA&s",
-      "enlace": "https://www.nsf.org/mx/es/alimentos-bebidas/alimentos-org%C3%A1nicos-especialidades/certificaci%C3%B3n-bebidas-hielo-empaquetado",
-      "status": "Programado"
-    }
-  ],
-  "consultas": [
+  "consultas": [],
+  "usuarios": [
     {
-      "id": "f271",
-      "user_name": "francella porras ",
-      "user_email": "nporrasafwd@gmail.com",
-      "user_subject": "SALUDO",
-      "message": "espero esten bien",
-      "fecha": "2026-03-26T21:02:59.838Z"
+      "id": "90e1",
+      "nombre": "Braksley",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "password": "holaperros123",
+      "edad": "18",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-26T21:38:33.117Z"
+    },
+    {
+      "id": "6332",
+      "nombre": "gerson",
+      "correoElectronico": "dinartegerson@gmail.com",
+      "password": "123456789",
+      "edad": "19",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-26T21:44:20.764Z"
     }
   ]
 }
