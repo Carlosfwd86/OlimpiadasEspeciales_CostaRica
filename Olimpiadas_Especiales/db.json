@@ -77,6 +77,27 @@
       "fechaRegistro": "2026-03-24T20:00:29.797Z"
     },
     {
+<<<<<<< HEAD
+      "id": "afba",
+      "initials": "FR",
+      "name": "francela",
+      "email": "nporrasafwd@gmail.com",
+      "phone": "88800000",
+      "sport": "Baloncesto",
+      "region": "Puntarenas",
+      "time": "Registrado ahora",
+      "status": "ACTIVO",
+      "statusColor": "yellow",
+      "bgColor": "bg-light-blue",
+      "fechaRegistro": "2026-03-26T01:50:59.322Z",
+      "rol": "atleta"
+    },
+    {
+      "id": "43ee",
+      "nombre": "Ana López",
+      "correoElectronico": "ana@gmaill.com",
+      "telefono": "22334455",
+=======
       "id": "f7b2",
       "nombre": "dsfghj",
       "fechaNacimiento": "2018-03-23",
@@ -155,6 +176,25 @@
       "tutorVinculado": "ee1e"
     },
     {
+      "id": "d4b0",
+      "nombre": "Gerson David Dinarte Fuentes",
+      "correoElectronico": "gfuentesfwd@gmail.com",
+      "telefono": "82074567",
+>>>>>>> 0ea9660e26d1ac5d1f973fd60d5280738e6506b6
+      "disciplina": "Fútbol",
+      "programa": "San José",
+      "status": "ACTIVO",
+      "rol": "atleta",
+<<<<<<< HEAD
+      "fechaRegistro": "2026-03-26T16:28:55.131Z"
+    }
+  ],
+  "competiciones": [],
+  "entrenadores": [],
+  "voluntarios": [],
+  "tutores": [],
+=======
+      "fechaRegistro": "2026-03-26T16:40:22.308Z"
       "id": "721b",
       "nombre": "Samir Jacobo",
       "correoElectronico": "samirito@gmail.com",
@@ -226,6 +266,7 @@
       "fechaRegistro": "2026-03-26T17:27:12.371Z"
     }
   ],
+>>>>>>> 0ea9660e26d1ac5d1f973fd60d5280738e6506b6
   "estadisticas_generales": {
     "totalRegistros": {
       "valor": "0",
@@ -252,6 +293,26 @@
     "distribucionRegional": [],
     "totalGeneral": "0"
   },
+  "registros_pendientes": [
+    {
+      "id": "bb6d",
+      "initials": "GD",
+      "name": "Gerson David Dinarte Fuentes",
+      "email": "gfuente@gmail.com",
+      "phone": "89074567",
+      "sport": "Atletismo",
+      "region": "Puntarenas",
+      "time": "Registrado ahora",
+      "status": "VERIFICACIÓN PEND.",
+      "statusColor": "yellow",
+      "bgColor": "bg-light-blue"
+    }
+  ],
+  "actividad_sistema": [
+    {
+      "id": "7341",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
   "registros_pendientes": [],
   "actividad_sistema": [
     {
@@ -263,6 +324,9 @@
       "time": "Hace un momento"
     },
     {
+      "id": "6a0c",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
       "id": "fa5a",
       "title": "Aprobación",
       "details": "Se aprobó a Samir Jacobo",
@@ -279,6 +343,9 @@
       "time": "Hace un momento"
     },
     {
+      "id": "c1c0",
+      "title": "Aprobación",
+      "details": "Se aprobó a Gerson David Dinarte Fuentes",
       "id": "2333",
       "title": "Aprobación",
       "details": "Se aprobó a Nora Figueroa",
@@ -287,16 +354,72 @@
       "time": "Hace un momento"
     },
     {
+      "id": "dbc3",
+      "title": "Competición",
+      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
       "id": "5b66",
       "title": "Competición",
       "details": "Nueva competición: uky,il7,.u",
       "icon": "fa-solid fa-trophy",
       "iconColor": "yellow",
       "time": "Hace un momento"
+    },
+    {
+      "id": "d5e0",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Ana López",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fabd",
+      "title": "Aprobación",
+      "details": "Se aprobó a Ana López",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
     }
   ],
   "competiciones": [
     {
+      "id": "1",
+      "nombre": "Próxima Competencia Nacional de Atletismo",
+      "resumen": "Nuestros atletas se preparan para la competencia regional. Ven a apoyarlos este fin de semana en el estadio nacional.",
+      "fecha": "2026-05-15",
+      "lugar": "Estadio Nacional",
+      "categoria": "Atletismo",
+      "status": "Próximo",
+      "img": "evento_competencia.png",
+      "deporte": "Fútbol",
+      "fechaFin": "2026-03-28",
+      "ubicacion": "",
+      "descripcion": "",
+      "imagen": "",
+      "enlace": ""
+    },
+    {
+      "id": "2",
+      "nombre": "Encuentro Regional de Natación",
+      "resumen": "Un evento acuático increíble para todas las edades. Contaremos con la participación de delegaciones de todo el país.",
+      "fecha": "2026-06-22",
+      "lugar": "Piscina María del Milagro París",
+      "categoria": "Natación",
+      "status": "Abierto",
+      "img": "evento_natacion.png"
+    },
+    {
+      "id": "3",
+      "nombre": "Gala de Reconocimiento al Atleta",
+      "resumen": "Celebración especial para honrar el esfuerzo y la dedicación de nuestros deportistas durante el año.",
+      "fecha": "2026-07-10",
+      "lugar": "Teatro Nacional",
+      "categoria": "Social",
+      "status": "Por confirmar",
+      "img": "evento_ceremonia.png"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
       "id": "rk6pt51kz",
       "nombre": "uky,il7,.u",
       "deporte": "Atletismo",
@@ -307,6 +430,16 @@
       "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIROd_m5TqdXbs60Y_ajK7p9pygWly6Y3zVA&s",
       "enlace": "https://www.nsf.org/mx/es/alimentos-bebidas/alimentos-org%C3%A1nicos-especialidades/certificaci%C3%B3n-bebidas-hielo-empaquetado",
       "status": "Programado"
+    }
+  ],
+  "consultas": [
+    {
+      "id": "f271",
+      "user_name": "francella porras ",
+      "user_email": "nporrasafwd@gmail.com",
+      "user_subject": "SALUDO",
+      "message": "espero esten bien",
+      "fecha": "2026-03-26T21:02:59.838Z"
     }
   ]
 }

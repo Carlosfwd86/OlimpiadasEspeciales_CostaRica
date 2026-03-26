@@ -24,7 +24,7 @@ const Home = () => {
     const navegar = useNavigate();
     const irAFormulario = (rol) => navegar(`/formulario?rol=${rol}`);
 
-    const manejarUnete = () => navegar('/formulario?rol=atleta');
+    const manejarUnete = () => navegar('/formulario');
     const manejarConoceMas = () => console.log('Conocer más...');
 
     const [counts, setCounts] = useState({
@@ -116,7 +116,7 @@ const Home = () => {
 
                     <div className="hero_botones">
                         <button className="boton_rojo" onClick={manejarUnete}>
-                            Únete como atleta <span className="flecha_boton">&gt;</span>
+                            Registrate <span className="flecha_boton">&gt;</span>
                         </button>
                         <button className="boton_blanco" onClick={manejarConoceMas}>
                             Conoce más
