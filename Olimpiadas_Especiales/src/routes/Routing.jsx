@@ -11,6 +11,7 @@ import VoluntariosPages from '../pages/VoluntariosPages';
 import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
 import PerfilPage from '../pages/PerfilPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
 import PrivateRoute from './PrivateRoute';
@@ -22,6 +23,7 @@ const Routing = () => {
             {/* Rutas Públicas */}
             <Route path="/" element={<HomePages />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegisterPage />} />
             <Route path="/nosotros" element={<NosotrosPages />} />
             <Route path="/contacto" element={<ContactoPages />} />
             <Route path="/formulario" element={<FormularioPages />} />

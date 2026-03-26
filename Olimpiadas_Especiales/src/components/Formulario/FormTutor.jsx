@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
 import { createTutor } from '../../services/ServicesTutores';
@@ -15,6 +15,20 @@ function FormTutor({ onVolver }) {
   });
   const [errores, setErrores] = useState({});
   const [archivos, setArchivos] = useState({ cedula: null, foto: null });
+
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      if (user.rol === 'usuario') {
+        setDatos(prev => ({
+          ...prev,
+          nombre: user.nombre || prev.nombre,
+          correoElectronico: user.correoElectronico || prev.correoElectronico
+        }));
+      }
+    }
+  }, []);
 
   const manejarCambio = (e) => {
     const { id, value } = e.target;
