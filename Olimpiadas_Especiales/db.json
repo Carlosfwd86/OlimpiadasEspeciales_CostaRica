@@ -198,30 +198,15 @@
     }
   ],
   "estadisticas_generales": {
-    "totalRegistros": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    },
-    "atletasActivos": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    },
-    "revisionesPendientes": {
-      "valor": "0",
-      "textoExtra": ""
-    },
-    "voluntarios": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    }
+    "totalRegistros": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
+    "atletasActivos": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
+    "revisionesPendientes": { "valor": "1", "textoExtra": "" },
+    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
   },
   "graficos": {
     "atletasPorDeporte": [],
     "distribucionRegional": [],
-    "totalGeneral": "0"
+    "totalGeneral": "5"
   },
   "registros_pendientes": [
     {
@@ -240,17 +225,47 @@
   ],
   "actividad_sistema": [
     {
-      "id": "963e",
+      "id": "1",
       "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Samir Jacobo",
+      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
       "icon": "fa-solid fa-user-plus",
       "iconColor": "blue",
       "time": "Hace un momento"
     },
     {
-      "id": "fa5a",
+      "id": "c1c0",
       "title": "Aprobación",
-      "details": "Se aprobó a Samir Jacobo",
+      "details": "Se aprobó a Gerson David Dinarte Fuentes",
+      "id": "2333",
+      "title": "Aprobación",
+      "details": "Se aprobó a Nora Figueroa",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "dbc3",
+      "title": "Competición",
+      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
+      "id": "5b66",
+      "title": "Competición",
+      "details": "Nueva competición: uky,il7,.u",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "d5e0",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Ana López",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fabd",
+      "title": "Aprobación",
+      "details": "Se aprobó a Ana López",
       "icon": "fa-solid fa-check-circle",
       "iconColor": "green",
       "time": "Hace un momento"
@@ -266,6 +281,26 @@
       "categoria": "Atletismo",
       "status": "Próximo",
       "img": "evento_competencia.png"
+    },
+    {
+      "id": "2",
+      "nombre": "Encuentro Regional de Natación",
+      "resumen": "Un evento acuático increíble para todas las edades. Contaremos con la participación de delegaciones de todo el país.",
+      "fecha": "2026-06-22",
+      "lugar": "Piscina María del Milagro París",
+      "categoria": "Natación",
+      "status": "Abierto",
+      "img": "evento_natacion.png"
+    },
+    {
+      "id": "3",
+      "nombre": "Gala de Reconocimiento al Atleta",
+      "resumen": "Celebración especial para honrar el esfuerzo y la dedicación de nuestros deportistas durante el año.",
+      "fecha": "2026-07-10",
+      "lugar": "Teatro Nacional",
+      "categoria": "Social",
+      "status": "Por confirmar",
+      "img": "evento_ceremonia.png"
     }
   ],
   "consultas": [],
