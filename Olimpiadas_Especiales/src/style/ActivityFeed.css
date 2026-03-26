@@ -65,3 +65,8 @@
   font-size: 13px;
   color: var(--admin-text-muted, #6e6e73);
 }
+
+/* Dark Mode Overrides */
+.dark-mode .feed-green { background-color: #1a331a; color: #51cf66; }
+.dark-mode .feed-blue { background-color: #1a2733; color: #5c9eff; }
+.dark-mode .feed-red { background-color: #331a1a; color: #ff6b6b; }

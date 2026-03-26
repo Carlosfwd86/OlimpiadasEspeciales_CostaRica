@@ -4,12 +4,26 @@
 
 :root {
   --admin-bg: #f4f6f8;
+  --admin-bg-alt: #ffffff;
   --admin-text-main: #1d1d1f;
   --admin-text-muted: #6e6e73;
+  --admin-text-sub: #adb5bd;
   --admin-red: #e62334;
   --admin-white: #ffffff;
   --admin-border: #e1e4e8;
+  --admin-border-alt: #f1f3f5;
   --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.dark-mode {
+  --admin-bg: #121212;
+  --admin-bg-alt: #1c1c1e;
+  --admin-text-main: #f5f5f7;
+  --admin-text-muted: #a1a1a6;
+  --admin-text-sub: #86868b;
+  --admin-white: #1c1c1e;
+  --admin-border: #2c2c2e;
+  --admin-border-alt: #3a3a3c;
 }
 
 .admin-dashboard-layout {
@@ -108,4 +122,83 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+}
+
+/* Regional Map */
+.regional-map-container {
+  background: var(--admin-white);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.map-title h4 {
+  margin: 0;
+  color: var(--admin-text-main);
+  font-size: 16px;
+}
+
+.map-title p {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: var(--admin-text-muted);
+}
+
+.map-tooltip-fixed {
+  background: #1e293b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.province-name {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.province-count {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.map-wrapper {
+  background: var(--admin-bg);
+  border-radius: 10px;
+  border: 1px solid var(--admin-border);
+}
+
+.map-legend {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--admin-text-muted);
+}
+
+.legend-gradient {
+  width: 150px;
+  height: 8px;
+  background: linear-gradient(to right, #ffedea, #ef4444);
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }

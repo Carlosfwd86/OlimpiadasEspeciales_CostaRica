@@ -29,7 +29,7 @@
 }
 
 .chart-badge {
-  background-color: #f1f3f5;
+  background-color: var(--admin-border-alt, #f1f3f5);
   color: var(--admin-text-muted, #6e6e73);
   font-size: 12px;
   padding: 4px 8px;
@@ -56,7 +56,7 @@
 .progress-bar-bg {
   width: 100%;
   height: 8px;
-  background-color: #f1f3f5;
+  background-color: var(--admin-border-alt, #f1f3f5);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -114,7 +114,7 @@
 .dot-red { background-color: var(--admin-red, #e62334); }
 .dot-pink { background-color: #f06292; }
 .dot-light-pink { background-color: #f8bbd0; }
-.dot-gray { background-color: #e0e0e0; }
+.dot-gray { background-color: var(--admin-border-alt, #e0e0e0); }
 
 .region-name {
   color: var(--admin-text-muted, #6e6e73);
@@ -185,6 +185,25 @@
   font-weight: 600;
   gap: 10px;
 }
+
+/* Dark Mode Overrides */
+.dark-mode .map-image-stub {
+  background-color: #1a221a;
+  color: #8c9e82;
+}
+
+.dark-mode .donut-chart-placeholder {
+  background: conic-gradient(
+    #3a3a3c 0% 20%, 
+    var(--admin-red, #e62334) 20% 60%, 
+    #c2185b 60% 85%, 
+    #880e4f 85% 100%
+  );
+}
+
+.dark-mode .progress-bar-fill.fill-blue { background-color: #5c9eff; }
+.dark-mode .progress-bar-fill.fill-green { background-color: #51cf66; }
+.dark-mode .progress-bar-fill.fill-yellow { background-color: #ffd93d; }
 
 .map-icon {
   font-size: 24px;

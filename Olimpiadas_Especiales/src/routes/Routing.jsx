@@ -1,3 +1,4 @@
+
 /* --- ENRUTADOR PRINCIPAL DEL PROYECTO --- */
 import React from 'react';
 /* Importamos solo lo necesario, sin repetir */
@@ -21,8 +22,10 @@ const Routing = () => {
             <Route path="/entrenadores" element={<EntrenadoresPage />} />
             <Route path="/login" element={<LoginPage />} />
 
-            {/* Ruta para el Panel Administrativo */}
+            {/* Ruta para el Panel Administrativo y sus secciones */}
             <Route path="/admin" element={<PanelAdministrativo />} />
+            <Route path="/configuracion" element={<PanelAdministrativo />} />
+            <Route path="/usuarios" element={<PanelAdministrativo />} />
 
             {/* Ruta del formulario */}
             <Route path="/formulario" element={<FormularioPages />} />

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/PendingTable.css';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 
-export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery = '' }) {
+export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery = '', onActionSuccess }) {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterSport, setFilterSport] = useState('');
+  const [filterRegion, setFilterRegion] = useState('');
 
   const fetchRegistrations = () => {
-    fetch('http://localhost:3001/registros_pendientes')
-      .then(response => response.json())
+    ServicesAdmin.getRegistrations()
       .then(data => {
         setRegistrations(data);
         setLoading(false);
@@ -22,49 +24,106 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
     fetchRegistrations();
   }, [refreshTrigger]);
 
-  const handleApprove = (id) => {
-    if(!window.confirm("¿Seguro que deseas marcar este registro como APROBADO?")) return;
+  const handleApprove = (reg) => {
+    if(!window.confirm(`¿Seguro que deseas APROBAR a ${reg.name}? Pasará a la base de datos oficial.`)) return;
     
-    fetch(`http://localhost:3001/registros_pendientes/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: 'APROBADO',
-        statusColor: 'green',
-        bgColor: 'bg-light-green'
+    ServicesAdmin.aprobarRegistro(reg)
+      .then(() => {
+        alert("¡Atleta aprobado y guardado en la base de datos oficial!");
+        ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${reg.name}`, "fa-solid fa-check-circle", "green");
+        if (onActionSuccess) onActionSuccess();
+        fetchRegistrations();
       })
+      .catch(err => {
+        console.error("Error al aprobar:", err);
+        alert("Error al procesar la aprobación.");
+      });
+  };
+
+  const handleReject = (id) => {
+    if(!window.confirm("¿Seguro que deseas marcar este registro como RECHAZADO?")) return;
+    
+    ServicesAdmin.saveRegistro({
+        status: 'RECHAZADO',
+        statusColor: 'red',
+        bgColor: 'bg-light-red'
+      }, id)
+    .then(() => {
+        if (onActionSuccess) onActionSuccess();
+        fetchRegistrations();
     })
-    .then(() => fetchRegistrations())
-    .catch(err => console.error("Error al aprobar:", err));
+    .catch(err => console.error("Error al rechazar:", err));
+  };
+
+  const handleDelete = (id) => {
+    if(!window.confirm("¿Estás seguro de que deseas ELIMINAR permanentemente este registro?")) return;
+    
+    ServicesAdmin.deleteRegistro(id)
+    .then(() => {
+        ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
+        if (onActionSuccess) onActionSuccess();
+        fetchRegistrations();
+    })
+    .catch(err => console.error("Error al eliminar:", err));
   };
 
   if (loading) {
     return (
       <div className="pending-table-container">
-        <div className="table-header">
-          <h3>Registros Pendientes</h3>
+        <div className="table-header"><h3>Registros Pendientes</h3></div>
+        <div className="loading-state" style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+          <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '24px', marginBottom: '10px', display: 'block' }}></i>
+          Cargando registros...
         </div>
-        <div className="loading-state">Cargando registros...</div>
       </div>
     );
   }
 
   const filteredRegs = registrations.filter(reg => {
-    if (!searchQuery) return true;
-    const term = searchQuery.toLowerCase();
-    return (
-      reg.name.toLowerCase().includes(term) ||
-      reg.sport.toLowerCase().includes(term) ||
-      reg.region.toLowerCase().includes(term) ||
-      reg.status.toLowerCase().includes(term)
-    );
+    const matchesSearch = !searchQuery || 
+      reg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (reg.email && reg.email.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesSport = !filterSport || reg.sport === filterSport;
+    const matchesRegion = !filterRegion || reg.region === filterRegion;
+
+    return matchesSearch && matchesSport && matchesRegion;
   });
 
   return (
     <div className="pending-table-container">
       <div className="table-header">
         <h3>Registros Pendientes</h3>
-        <button className="btn-filter"><i className="fa-solid fa-filter"></i> Filtrar</button>
+        <div className="table-filters" style={{ display: 'flex', gap: '10px' }}>
+          <select 
+            className="filter-select" 
+            value={filterSport} 
+            onChange={(e) => setFilterSport(e.target.value)}
+            style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px' }}
+          >
+            <option value="">Todos los Deportes</option>
+            <option value="Fútbol">Fútbol</option>
+            <option value="Natación">Natación</option>
+            <option value="Atletismo">Atletismo</option>
+            <option value="Bochas">Bochas</option>
+            <option value="Baloncesto">Baloncesto</option>
+          </select>
+          <select 
+            className="filter-select" 
+            value={filterRegion} 
+            onChange={(e) => setFilterRegion(e.target.value)}
+            style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px' }}
+          >
+            <option value="">Todas las Regiones</option>
+            <option value="San José">San José</option>
+            <option value="Alajuela">Alajuela</option>
+            <option value="Cartago">Cartago</option>
+            <option value="Heredia">Heredia</option>
+            <option value="Guanacaste">Guanacaste</option>
+            <option value="Puntarenas">Puntarenas</option>
+            <option value="Limón">Limón</option>
+          </select>
+        </div>
       </div>
       
       <div className="table-responsive">
@@ -81,8 +140,11 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
           <tbody>
             {filteredRegs.length === 0 ? (
               <tr>
-                <td colSpan="5" className="empty-table-msg">
-                  {searchQuery ? `No hay resultados para "${searchQuery}"` : "No hay registros pendientes."}
+                <td colSpan="5" className="empty-table-msg" style={{ padding: '60px 20px', textAlign: 'center', color: '#64748b' }}>
+                  <div style={{ fontSize: '40px', marginBottom: '15px' }}>📋</div>
+                  {searchQuery || filterSport || filterRegion ? 
+                    `No hay resultados para los filtros aplicados.` : 
+                    "¡Todo al día! No hay registros pendientes por revisar."}
                 </td>
               </tr>
             ) : (
@@ -109,8 +171,14 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
                       <button className="btn-action edit" title="Editar" onClick={() => onEdit(reg)}>
                         <i className="fa-solid fa-pen"></i>
                       </button>
-                      <button className="btn-action approve" title="Aprobar" onClick={() => handleApprove(reg.id)}>
+                      <button className="btn-action approve" title="Aprobar" onClick={() => handleApprove(reg)}>
                         <i className="fa-solid fa-check"></i>
+                      </button>
+                      <button className="btn-action reject" title="Rechazar" onClick={() => handleReject(reg.id)}>
+                        <i className="fa-solid fa-xmark"></i>
+                      </button>
+                      <button className="btn-action delete" title="Eliminar" onClick={() => handleDelete(reg.id)}>
+                        <i className="fa-solid fa-trash"></i>
                       </button>
                     </div>
                   </td>
