@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { updateAtleta, getAtletaById } from '../services/ServicesAtletas';
 import { updateTutor, getTutorById } from '../services/ServicesTutores';
+import { updateEntrenador, getEntrenadorById } from '../services/ServicesEntrenadores';
+import { updateVoluntario, getVoluntarioById } from '../services/ServicesVoluntarios';
+import { ServicesAdmin } from '../services/ServicesAdmin';
 import '../styles/Perfil.css';
 
 function FormPerfil({ user, setRefreshUser }) {
@@ -19,6 +22,9 @@ function FormPerfil({ user, setRefreshUser }) {
                 } else if (user?.rol === 'tutor' && user.atletaVinculado) {
                     const atleta = await getAtletaById(user.atletaVinculado);
                     setLinkedUser(atleta);
+                } else if (user?.rol === 'entrenador' || user?.rol === 'voluntario') {
+                    // Possible future linking for these roles
+                    setLinkedUser(null);
                 }
             } catch (error) {
                 console.error("Error fetching linked user", error);
@@ -42,9 +48,15 @@ function FormPerfil({ user, setRefreshUser }) {
                 await updateAtleta(user.id, updatedUser);
             } else if (user.rol === 'tutor') {
                 await updateTutor(user.id, updatedUser);
+            } else if (user.rol === 'entrenador') {
+                await updateEntrenador(user.id, updatedUser);
+            } else if (user.rol === 'voluntario') {
+                await updateVoluntario(user.id, updatedUser);
+            } else if (user.rol === 'admin') {
+                await ServicesAdmin.updateProfile(user.id, updatedUser);
             } else {
-                // For admin or others
-                Swal.fire({ icon: 'info', title: 'Aviso', text: 'Cambio de contraseña no implementado para este rol en JSON.' });
+                Swal.fire({ icon: 'info', title: 'Aviso', text: 'Cambio de contraseña no implementado para este rol.' });
+                return;
             }
 
             // Actualizar localstorage si es el mismo
@@ -64,7 +76,13 @@ function FormPerfil({ user, setRefreshUser }) {
 
     if (!user) return <div style={{padding: '50px', textAlign: 'center', fontFamily: 'Outfit'}}>Cargando Perfil...</div>;
 
-    const badgeLabel = user.rol === 'atleta' ? 'Atleta Oficial' : user.rol === 'tutor' ? 'Tutor/Encargado' : 'Administrador';
+    const badgeLabel = {
+        'atleta': 'Atleta Oficial',
+        'tutor': 'Tutor/Encargado',
+        'admin': 'Administrador',
+        'entrenador': 'Entrenador',
+        'voluntario': 'Voluntario'
+    }[user.rol] || 'Usuario';
     
     // Generar avatar a partir de iniciales
     const iniciales = (user.nombre?.charAt(0) || '') + (user.apellido?.charAt(0) || user.tutorApellido?.charAt(0) || '');
@@ -170,8 +188,40 @@ function FormPerfil({ user, setRefreshUser }) {
                                     <span className="detail-value">{user.pais || user.tutorPais || 'N/A'}</span>
                                 </div>
                             </div>
+                        ) : (user.rol === 'entrenador' || user.rol === 'voluntario') ? (
+                            <div className="details-grid">
+                                <div className="detail-item">
+                                    <span className="detail-label">Cédula / ID</span>
+                                    <span className="detail-value">{user.cedula || 'N/A'}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Teléfono</span>
+                                    <span className="detail-value">{user.telefono || 'N/A'}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Especialidad/Interés</span>
+                                    <span className="detail-value">{user.especialidad || user.intereses || (user.rol === 'entrenador' ? 'Entrenador' : 'Apoyo General')}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">País / Región</span>
+                                    <span className="detail-value">{user.pais || 'Costa Rica'}</span>
+                                </div>
+                            </div>
                         ) : (
-                            <p style={{color: '#64748b'}}>Datos administrativos.</p>
+                            <div className="details-grid">
+                                <div className="detail-item">
+                                    <span className="detail-label">ID Admin</span>
+                                    <span className="detail-value">#{user.id}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Correo de Soporte</span>
+                                    <span className="detail-value">{user.correoElectronico}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Acceso</span>
+                                    <span className="detail-value">Total / Root</span>
+                                </div>
+                            </div>
                         )}
                     </div>
 

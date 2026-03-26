@@ -66,16 +66,10 @@ const Login = () => {
             navigate('/admin');
             break;
           case 'atleta':
-            navigate('/perfil');
-            break;
           case 'tutor':
-            navigate('/perfil');
-            break;
           case 'entrenador':
-            navigate('/entrenadores');
-            break;
           case 'voluntario':
-            navigate('/voluntarios');
+            navigate('/perfil');
             break;
           default:
             navigate('/');
