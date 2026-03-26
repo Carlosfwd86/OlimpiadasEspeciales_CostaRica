@@ -112,7 +112,7 @@ const Contacto = () => {
             </svg>
           </div>
           <h3>Teléfono</h3>
-          <p>2224 0000</p>
+          <p>+506 2224 0000</p>
         </div>
 
         {/* Tarjeta Email */}

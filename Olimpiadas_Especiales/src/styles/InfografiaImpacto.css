@@ -1,0 +1,152 @@
+.infografia_contenedor {
+    padding: 60px 8%;
+    background: #ffffff;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.infografia_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.info_card {
+    background: #fdfdfd;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    padding: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+.info_card h3, .info_card h4 {
+    margin: 0;
+    padding: 20px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.card_header_blue { background: #2d5da1; color: white; padding: 20px; }
+.card_header_green { background: #009688; color: white; padding: 20px; }
+
+/* Donutos */
+
+.demografia h3 {
+    text-align: center;
+    color: var(--so-black);
+    border-bottom: 2px solid #eee;
+}
+
+.donut_container {
+    display: flex;
+    justify-content: space-around;
+    padding: 30px 10px;
+}
+
+.donut_item {
+    text-align: center;
+    position: relative;
+    width: 100px;
+}
+
+.donut_svg {
+    transform: rotate(-90deg);
+}
+
+.donut_base {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3;
+}
+
+.donut_value {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s ease-out;
+}
+
+.donut_value.masc { stroke: #2d5da1; }
+.donut_value.fem { stroke: var(--so-red); }
+
+.donut_texto {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+}
+
+.donut_texto strong { font-size: 1rem; color: #333; }
+.donut_texto span { font-size: 0.6rem; text-transform: uppercase; color: #666; font-weight: bold; }
+
+/* Edades */
+
+.edad_list {
+    padding: 0 25px 30px;
+}
+
+.edad_item {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edad_item span { font-size: 0.8rem; font-weight: bold; color: #555; width: 100px; text-transform: uppercase; }
+
+.progress_bar {
+    flex: 1;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress_bar .fill {
+    height: 100%;
+    background: var(--so-red);
+    transition: width 1s ease-out;
+}
+
+.edad_item .perc { width: 35px; text-align: right; color: var(--so-red); font-weight: 900; }
+
+/* Card body universal */
+
+.card_body {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.main_stat { display: flex; flex-direction: column; margin-bottom: 10px; }
+.main_stat .number { font-size: 2.8rem; font-weight: 900; color: #2d5da1; }
+.main_stat .label { font-size: 0.8rem; color: #666; font-weight: bold; letter-spacing: 1px; }
+
+.sub_stats { display: flex; justify-content: space-between; gap: 15px; }
+.sub_item { display: flex; flex-direction: column; }
+.sub_item strong { font-size: 1.4rem; color: #333; }
+.sub_item strong.green { color: #009688; }
+.sub_item span { font-size: 0.7rem; color: #888; font-weight: bold; }
+
+.stat_line { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+.stat_line .number { font-size: 1.6rem; font-weight: 900; color: #009688; }
+.stat_line .label { font-size: 0.7rem; color: #666; font-weight: bold; }
+
+.unificados_icon, .healthy_icon {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    opacity: 0.1;
+}
+
+@media (max-width: 768px) {
+    .infografia_grid { grid-template-columns: 1fr; }
+    .infografia_contenedor { padding: 40px 5%; }
+}
