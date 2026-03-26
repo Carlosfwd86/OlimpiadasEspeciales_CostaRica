@@ -164,6 +164,8 @@
       "status": "ACTIVO",
       "rol": "atleta",
       "fechaRegistro": "2026-03-26T16:40:22.308Z"
+    },
+    {
       "id": "721b",
       "nombre": "Samir Jacobo",
       "correoElectronico": "samirito@gmail.com",
@@ -195,12 +197,8 @@
       "rol": "admin"
     }
   ],
-  "entrenadores": [
-   
-  ],
-  "voluntarios": [
-  
-  ],
+  "entrenadores": [],
+  "voluntarios": [],
   "tutores": [
     {
       "id": "ee1e",
@@ -236,30 +234,15 @@
     }
   ],
   "estadisticas_generales": {
-    "totalRegistros": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    },
-    "atletasActivos": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    },
-    "revisionesPendientes": {
-      "valor": "0",
-      "textoExtra": ""
-    },
-    "voluntarios": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
-    }
+    "totalRegistros": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
+    "atletasActivos": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
+    "revisionesPendientes": { "valor": "1", "textoExtra": "" },
+    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
   },
   "graficos": {
     "atletasPorDeporte": [],
     "distribucionRegional": [],
-    "totalGeneral": "0"
+    "totalGeneral": "5"
   },
   "registros_pendientes": [
     {
@@ -278,58 +261,11 @@
   ],
   "actividad_sistema": [
     {
-      "id": "7341",
+      "id": "1",
       "title": "Nuevo Registro",
       "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
-  "registros_pendientes": [],
-  "actividad_sistema": [
-    {
-      "id": "963e",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Samir Jacobo",
       "icon": "fa-solid fa-user-plus",
       "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "6a0c",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
-      "id": "fa5a",
-      "title": "Aprobación",
-      "details": "Se aprobó a Samir Jacobo",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "95c3",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Nora Figueroa",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "c1c0",
-      "title": "Aprobación",
-      "details": "Se aprobó a Gerson David Dinarte Fuentes",
-      "id": "2333",
-      "title": "Aprobación",
-      "details": "Se aprobó a Nora Figueroa",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "dbc3",
-      "title": "Competición",
-      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
-      "id": "5b66",
-      "title": "Competición",
-      "details": "Nueva competición: uky,il7,.u",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
       "time": "Hace un momento"
     }
   ],
@@ -342,13 +278,7 @@
       "lugar": "Estadio Nacional",
       "categoria": "Atletismo",
       "status": "Próximo",
-      "img": "evento_competencia.png",
-      "deporte": "Fútbol",
-      "fechaFin": "2026-03-28",
-      "ubicacion": "",
-      "descripcion": "",
-      "imagen": "",
-      "enlace": ""
+      "img": "evento_competencia.png"
     },
     {
       "id": "2",
@@ -369,19 +299,6 @@
       "categoria": "Social",
       "status": "Por confirmar",
       "img": "evento_ceremonia.png"
-    }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
-      "id": "rk6pt51kz",
-      "nombre": "uky,il7,.u",
-      "deporte": "Atletismo",
-      "fecha": "2026-03-26",
-      "fechaFin": "2026-03-23",
-      "ubicacion": "kgkggykkkhbkh",
-      "descripcion": "kkukvkvhhukbkbhl",
-      "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIROd_m5TqdXbs60Y_ajK7p9pygWly6Y3zVA&s",
-      "enlace": "https://www.nsf.org/mx/es/alimentos-bebidas/alimentos-org%C3%A1nicos-especialidades/certificaci%C3%B3n-bebidas-hielo-empaquetado",
-      "status": "Programado"
     }
   ]
 }
