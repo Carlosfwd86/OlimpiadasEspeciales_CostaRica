@@ -267,6 +267,44 @@
       "icon": "fa-solid fa-user-plus",
       "iconColor": "blue",
       "time": "Hace un momento"
+    },
+    {
+      "id": "c1c0",
+      "title": "Aprobación",
+      "details": "Se aprobó a Gerson David Dinarte Fuentes",
+      "id": "2333",
+      "title": "Aprobación",
+      "details": "Se aprobó a Nora Figueroa",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "dbc3",
+      "title": "Competición",
+      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
+      "id": "5b66",
+      "title": "Competición",
+      "details": "Nueva competición: uky,il7,.u",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "d5e0",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Ana López",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fabd",
+      "title": "Aprobación",
+      "details": "Se aprobó a Ana López",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
     }
   ],
   "competiciones": [
@@ -299,6 +337,29 @@
       "categoria": "Social",
       "status": "Por confirmar",
       "img": "evento_ceremonia.png"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+      "id": "rk6pt51kz",
+      "nombre": "uky,il7,.u",
+      "deporte": "Atletismo",
+      "fecha": "2026-03-26",
+      "fechaFin": "2026-03-23",
+      "ubicacion": "kgkggykkkhbkh",
+      "descripcion": "kkukvkvhhukbkbhl",
+      "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIROd_m5TqdXbs60Y_ajK7p9pygWly6Y3zVA&s",
+      "enlace": "https://www.nsf.org/mx/es/alimentos-bebidas/alimentos-org%C3%A1nicos-especialidades/certificaci%C3%B3n-bebidas-hielo-empaquetado",
+      "status": "Programado"
+    }
+  ],
+  "consultas": [
+    {
+      "id": "f271",
+      "user_name": "francella porras ",
+      "user_email": "nporrasafwd@gmail.com",
+      "user_subject": "SALUDO",
+      "message": "espero esten bien",
+      "fecha": "2026-03-26T21:02:59.838Z"
     }
   ]
 }
