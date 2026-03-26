@@ -1,50 +1,94 @@
-/* CONSERVANDO VARIABLES GLOBALES */
+/* ============================================================
+   CONTACTO — Olimpiadas Especiales Costa Rica
+   ============================================================ */
+
+/* ── Wrapper principal ──────────────────────────────────────── */
 .contenedor_contacto_principal {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-bottom: 50px;
+  padding-bottom: 70px;
+  background: #f9f9f9;
 }
 
-/* --- BANNER --- */
-.banner_contacto {
+/* ── ENCABEZADO ─────────────────────────────────────────────── */
+.encabezado_consultas {
+  background: #fff;
+  border-bottom: 3px solid #C8102E;
+  padding: 28px 8% 22px;
+}
+
+.titulo_consultas {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #C8102E;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+
+.breadcrumb_consultas {
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0;
+}
+
+.breadcrumb_consultas span:first-child {
+  color: #C8102E;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.breadcrumb_consultas span:first-child:hover { text-decoration: underline; }
+
+.sep_breadcrumb { margin: 0 6px; color: #bbb; }
+
+/* ── HERO BANNER ────────────────────────────────────────────── */
+.hero_consultas {
   position: relative;
   width: 100%;
-  height: 400px;
-  background-image: url('../img/fotoContacto.jpg'); 
+  height: 420px;
+  background-image: url('../img/fotocontacto.jpg');
   background-size: cover;
-  background-position: center 60%;
+  background-position: center 55%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.overlay_banner {
+.overlay_hero_consultas {
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(100,0,0,0.6) 100%);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.30);
 }
 
-.titulo_contacto {
+/* Título CONTÁCTANOS sobre la foto */
+.titulo_hero_consultas {
   position: relative;
   z-index: 2;
-  color: var(--so-white);
+  color: #fff;
   font-size: 5rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.55);
+  text-align: center;
+  margin: 0;
+  text-transform: uppercase;
 }
 
-/* --- TARJETAS --- */
+/* ══════════════════════════════════════════════════════════════
+   SECCIÓN 1 — TARJETAS DE CONTACTO
+══════════════════════════════════════════════════════════════ */
 .contenedor_tarjetas_contacto {
   display: flex;
   justify-content: center;
   align-items: stretch;
   gap: 30px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: -90px auto 0;
   padding: 0 5%;
-  margin-top: -60px;
   position: relative;
   z-index: 3;
 }
@@ -52,8 +96,8 @@
 .tarjeta_contacto {
   flex: 1;
   min-width: 280px;
-  background-color: var(--so-white); /* Todas blancas */
-  color: var(--so-black);
+  background-color: #fff;
+  color: #111;
   border-radius: 12px;
   padding: 50px 30px;
   display: flex;
@@ -63,26 +107,22 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.06);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-top-color 0.3s ease;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  border: 2px solid var(--so-black); /* Borde negro definido para contraste */
-  border-top: 6px solid var(--so-black); /* Borde superior inicial negro que pasará a ser rojo en hover */
+  border: 2px solid #111;
+  border-top: 6px solid #111;
 }
 
-/* Cuando se pone encima, se eleva y el borde superior se pone "rojito" */
 .tarjeta_contacto:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-  border-top-color: var(--so-red);
+  border-top-color: #C8102E;
 }
 
-/* Circulo icono centralizado */
 .circulo_icono {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: rgba(255,0,0,0.06); /* Sutil tinte rojo base */
-  color: var(--so-red);
+  background-color: rgba(200,16,46,0.06);
+  color: #C8102E;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,8 +131,8 @@
 }
 
 .tarjeta_contacto:hover .circulo_icono {
-  background-color: var(--so-red);
-  color: var(--so-white);
+  background-color: #C8102E;
+  color: #fff;
   transform: scale(1.1) rotate(5deg);
 }
 
@@ -101,17 +141,17 @@
   font-weight: 800;
   margin-bottom: 15px;
   text-transform: capitalize;
-  color: var(--so-black);
+  color: #111;
 }
 
 .tarjeta_contacto p {
   font-size: 1.05rem;
   font-weight: 500;
   margin: 0;
-  color: var(--so-grey);
+  color: #555;
 }
 
-/* --- LISTA DE REDES SOCIALES --- */
+/* Redes sociales */
 .lista_redes {
   list-style: none;
   padding: 0;
@@ -128,37 +168,267 @@
   gap: 10px;
   font-weight: 600;
   font-size: 1.05rem;
-  color: var(--so-grey);
+  color: #555;
   cursor: pointer;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.lista_redes li:hover {
-  color: var(--so-red);
-  transform: translateX(5px);
-}
+.lista_redes li:hover { color: #C8102E; transform: translateX(5px); }
 
 .icono_mini_red {
-  font-weight: bold;
-  font-size: 1.1rem;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: monospace;
-  background-color: rgba(255,0,0,0.1);
-  color: var(--so-red);
+  background-color: rgba(200,16,46,0.10);
+  color: #C8102E;
   border-radius: 5px;
 }
 
-/* --- RESPONSIVIDAD --- */
-@media (max-width: 1024px) {
-  .titulo_contacto { font-size: 4rem; }
-  .contenedor_tarjetas_contacto { flex-wrap: wrap; gap: 20px; margin-top: -40px; }
+/* ══════════════════════════════════════════════════════════════
+   SECCIÓN 2 — FORMULARIO + MAPA
+══════════════════════════════════════════════════════════════ */
+.cuerpo_consultas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1300px;
+  width: 92%;
+  margin: 60px auto 0;
 }
+
+/* Subtítulos */
+.subtitulo_formulario,
+.subtitulo_mapa {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #C8102E;
+}
+
+/* ── Columna formulario ──────────────────────────────────────── */
+.col_formulario_consultas {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Alertas */
+.alerta_exito {
+  background: #e8f5e9;
+  border: 1px solid #66bb6a;
+  color: #2e7d32;
+  padding: 14px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+.alerta_error {
+  background: #fdecea;
+  border: 1px solid #ef9a9a;
+  color: #b71c1c;
+  padding: 14px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+form#formulario_consultas_asuntos {
+  display: flex;
+  flex-direction: column;
+  margin-top: 18px;
+}
+
+.grupo_campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.etiqueta_campo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 7px;
+}
+
+/* Inputs, textarea */
+.campo_texto {
+  background: #f2f2f2;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  color: #222;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.campo_texto:focus {
+  border-color: #C8102E;
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.12);
+  background: #fff;
+}
+
+.campo_textarea { resize: vertical; min-height: 130px; }
+
+/* Select ASUNTO con bloque rojo */
+.wrapper_select_asunto {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.campo_select_asunto {
+  flex: 1;
+  background: #f2f2f2;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  color: #222;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.campo_select_asunto:focus {
+  border-color: #C8102E;
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.12);
+  background: #fff;
+}
+
+.flecha_select_asunto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #C8102E;
+  border-radius: 0 4px 4px 0;
+  padding: 0 16px;
+  pointer-events: none;
+  min-width: 46px;
+  flex-shrink: 0;
+}
+
+/* Botón ENVIAR */
+.contenedor_boton_enviar {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.boton_enviar_consulta {
+  background: #fff;
+  color: #111;
+  border: 2px solid #111;
+  padding: 13px 60px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.22s ease, color 0.22s ease, transform 0.18s ease;
+}
+
+.boton_enviar_consulta:hover:not(:disabled) {
+  background: #C8102E;
+  color: #fff;
+  border-color: #C8102E;
+  transform: translateY(-2px);
+}
+
+.boton_enviar_consulta:active:not(:disabled) { transform: translateY(0); }
+
+.boton_enviar_consulta:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Columna mapa ────────────────────────────────────────────── */
+.col_mapa_consultas {
+  display: flex;
+  flex-direction: column;
+}
+
+.direccion_mapa {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.7;
+  margin: 10px 0 18px;
+}
+
+.wrapper_mapa {
+  flex: 1;
+  min-height: 420px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+  border: 2px solid #e0e0e0;
+}
+
+.wrapper_mapa iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  display: block;
+}
+
+/* Botón abrir en Google Maps */
+.btn_abrir_mapa {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 22px;
+  background: #C8102E;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.18s ease;
+  align-self: flex-start;
+}
+
+.btn_abrir_mapa:hover {
+  background: #a00c24;
+  transform: translateY(-2px);
+}
+
+/* ── RESPONSIVO ──────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .titulo_consultas { font-size: 1.6rem; }
+  .contenedor_tarjetas_contacto { flex-wrap: wrap; gap: 20px; margin-top: -40px; }
+  .cuerpo_consultas { grid-template-columns: 1fr; width: 94%; }
+  .wrapper_mapa, .wrapper_mapa iframe { min-height: 360px; }
+}
+
 @media (max-width: 768px) {
-  .titulo_contacto { font-size: 3rem; }
+  .titulo_consultas { font-size: 1.3rem; }
+  .hero_consultas { height: 200px; }
   .contenedor_tarjetas_contacto { flex-direction: column; align-items: center; margin-top: 0; padding: 30px 5%; }
   .tarjeta_contacto { width: 100%; max-width: 400px; padding: 40px 20px; }
+  .cuerpo_consultas { margin-top: 32px; gap: 28px; }
+  .boton_enviar_consulta { padding: 13px 40px; }
 }
