@@ -75,7 +75,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
             <div className="modal-content" style={{ maxWidth: '560px', width: '95%', maxHeight: '90vh', overflowY: 'auto' }}>
                 <div className="modal-header">
                     <h2 style={{ fontSize: '20px', color: '#1e293b' }}>
-                        {editData ? '✏️ Editar Competición' : '🏆 Nueva Competición'}
+                        {editData ? '✏️ Editar Evento / Competición' : '🏆 Nuevo Evento o Competición'}
                     </h2>
                     <button className="btn-close" onClick={onClose}>&times;</button>
                 </div>
@@ -204,7 +204,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                             type="submit"
                             style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#e62334', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px' }}
                         >
-                            {editData ? 'Guardar Cambios' : 'Crear Competición'}
+                            {editData ? 'Guardar Cambios' : 'Crear Evento'}
                         </button>
                     </div>
                 </form>

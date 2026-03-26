@@ -183,14 +183,14 @@ export default function PanelAdministrativo() {
             <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                     <div>
-                        <h3 style={{ color: 'var(--admin-text-main)', margin: '0' }}>Gestión de Competiciones</h3>
+                        <h3 style={{ color: 'var(--admin-text-main)', margin: '0' }}>Gestión de Competiciones y Eventos</h3>
                         <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px', margin: '5px 0 0' }}>Organiza y supervisa los próximos eventos deportivos.</p>
                     </div>
                     <button 
                         className="btn-new-entry" 
                         onClick={() => { setEditData(null); setIsCompModalOpen(true); }}
                     >
-                        + Nueva Competición
+                        + Nuevo Evento / Competición
                     </button>
                 </div>
 
@@ -206,7 +206,7 @@ export default function PanelAdministrativo() {
                                 competition={comp} 
                                 onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
                                 onDelete={(id) => {
-                                    if(window.confirm("¿Estás seguro de eliminar esta competición?")) {
+                                    if(window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
                                         ServicesAdmin.deleteCompeticion(id)
                                             .then(() => handleSaveSuccess())
                                             .catch(err => alert(err.message));
@@ -220,14 +220,14 @@ export default function PanelAdministrativo() {
                         <div style={{ fontSize: '60px', color: '#cbd5e1', marginBottom: '20px' }}>
                             <i className="fa-solid fa-calendar-plus"></i>
                         </div>
-                        <h3 style={{ color: '#64748b' }}>No hay competiciones programadas</h3>
+                        <h3 style={{ color: '#64748b' }}>No hay competiciones o eventos programados</h3>
                         <p style={{ color: '#94a3b8' }}>Comienza creando tu primer evento deportivo nacional.</p>
                         <button 
                             className="btn-new-entry" 
                             style={{ marginTop: '20px' }}
                             onClick={() => setIsCompModalOpen(true)}
                         >
-                            + Crear Competición
+                            + Crear Evento
                         </button>
                     </div>
                 )}
