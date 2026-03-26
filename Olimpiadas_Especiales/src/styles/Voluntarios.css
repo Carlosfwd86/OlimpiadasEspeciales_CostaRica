@@ -1,0 +1,130 @@
+.seccion-voluntarios-completa {
+    padding: 80px 10%;
+    background: #fdfdfd;
+    min-height: 100vh;
+}
+
+.voluntarios-hero {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.voluntarios-hero h1 {
+    font-size: 3rem;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+.voluntarios-hero p {
+    color: #666;
+    font-size: 1.25rem;
+}
+
+.voluntarios-contenido-cards {
+    margin: 60px auto;
+}
+
+.voluntarios-contenido-cards h2 {
+    font-size: 2.2rem;
+    color: #1a1a1a;
+    margin-bottom: 40px;
+    text-align: center;
+    font-weight: 800;
+}
+
+.grid-roles-voluntarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.rol-voluntario-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.rol-voluntario-card:hover {
+    transform: translateY(-8px);
+    border-color: #ff0000;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+}
+
+.rol-icono {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.rol-voluntario-card h3 {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+.rol-voluntario-card p {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.boton-postular {
+    background: #ff0000;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.boton-postular:hover {
+    background: #e60000;
+    transform: scale(1.05);
+}
+
+.info-registro-voluntarios {
+    background: #fff5f5;
+    padding: 50px;
+    border-radius: 25px;
+    margin-top: 80px;
+    border-left: 8px solid #ff0000;
+}
+
+.info-registro-voluntarios h3 {
+    font-size: 1.8rem;
+    color: #ff0000;
+    margin-bottom: 25px;
+    font-weight: 800;
+}
+
+.info-registro-voluntarios ol {
+    list-style: decimal;
+    margin-left: 20px;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.info-registro-voluntarios li {
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .voluntarios-hero h1 {
+        font-size: 2.2rem;
+    }
+    .grid-roles-voluntarios {
+        grid-template-columns: 1fr;
+    }
+    .seccion-voluntarios-completa {
+        padding: 50px 5%;
+    }
+}
