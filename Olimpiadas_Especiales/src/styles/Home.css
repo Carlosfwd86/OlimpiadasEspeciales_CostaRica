@@ -24,13 +24,14 @@
 /* --- FORMA CURVA ROJA DE FONDO (WAVE) --- */
 .hero_fondo_derecha {
   position: absolute;
-  top: 0;
-  right: -5%;
-  width: 55%;
-  height: 100%;
+  top: 40px;
+  right: -2%;
+  width: 50%;
+  height: 85%;
   background-color: var(--so-red);
-  border-bottom-left-radius: 120px;
+  border-radius: 40px 0 0 100px;
   z-index: 1;
+  opacity: 0.95;
 }
 
 /* --- CONTENIDO SUPERIOR (Texto Izquierda / Imagen Derecha) --- */
@@ -149,6 +150,24 @@
 
 
 /* --- TARJETAS INFERIORES FLOTANTES --- */
+.hero_tarjetas_inferiores_contenedor {
+  background: #f8f9fa;
+  padding: 60px 0;
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.titulo_registro_seccion {
+  color: var(--so-red);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .hero_tarjetas_inferiores {
   position: relative;
   z-index: 4;
@@ -156,8 +175,6 @@
   justify-content: center;
   gap: 20px;
   padding: 0 5%;
-  margin-top: -65px; 
-  padding-bottom: 60px; 
 }
 
 .tarjeta_info {
@@ -290,6 +307,10 @@
   .boton_rojo, .boton_blanco {
     width: 100%;
     justify-content: center;
+  }
+
+  .titulo_registro_seccion {
+    font-size: 1.5rem;
   }
 
   .tarjeta_info {
