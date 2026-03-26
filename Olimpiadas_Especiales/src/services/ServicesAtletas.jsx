@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/atletas";
+const API_URL = "http://localhost:3001/atletas";
 
 // Obtener todos los atletas (Read)
 export const getAtletas = async () => {
