@@ -186,8 +186,12 @@
       "rol": "admin"
     }
   ],
-  "entrenadores": [],
-  "voluntarios": [],
+  "entrenadores": [
+   
+  ],
+  "voluntarios": [
+  
+  ],
   "tutores": [
     {
       "id": "ee1e",

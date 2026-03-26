@@ -17,6 +17,7 @@ import imgEvento2 from '../img/evento_natacion.png';
 import imgEvento3 from '../img/evento_ceremonia.png';
 import imgVoluntario from '../img/voluntarios_accion.png';
 
+
 const Home = () => {
 
     /* --- Funciones de Acción --- */
