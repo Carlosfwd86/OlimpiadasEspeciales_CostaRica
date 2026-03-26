@@ -14,7 +14,11 @@ const Contacto = () => {
       <div className="contenedor_tarjetas_contacto">
         
         {/* Tarjeta 1: Teléfono */}
-        <div className="tarjeta_contacto">
+        <div 
+          className="tarjeta_contacto" 
+          onClick={() => window.location.href = 'tel:22240000'}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="circulo_icono">
             {/* SVG Teléfono */}
             <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -26,7 +30,11 @@ const Contacto = () => {
         </div>
 
         {/* Tarjeta 2: Email */}
-        <div className="tarjeta_contacto">
+        <div 
+          className="tarjeta_contacto" 
+          onClick={() => window.location.href = 'mailto:info@olimpiadasespeciales.cr'}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="circulo_icono">
             {/* SVG Carta / Email */}
             <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
