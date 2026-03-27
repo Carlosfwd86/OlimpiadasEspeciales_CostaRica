@@ -26,28 +26,65 @@ export const ServicesAdmin = {
         return res.json();
     },
 
-    // Lógica de Aprobación (Mover a Atletas)
+    // Lógica de Aprobación Dinámica
     aprobarRegistro: async (registro) => {
-        // Mapear campos de Pendientes a Atletas oficiales
-        const atletaData = {
-            nombre: registro.name,
-            correoElectronico: registro.email,
-            telefono: registro.phone,
-            disciplina: registro.sport,
-            programa: registro.region,
+        const role = registro.rol || 'atleta';
+        const targetEndpoint = {
+            'atleta': 'atletas',
+            'entrenador': 'entrenadores',
+            'voluntario': 'voluntarios',
+            'tutor': 'tutores'
+        }[role] || 'atletas';
+
+        // 1. Localizar al usuario base
+        const userEmail = registro.correoElectronico || registro.email;
+        let userId = registro.usuarioId;
+
+        if (!userId && userEmail) {
+            try {
+                const resU = await fetch(`${BASE_URL}/usuarios?correoElectronico=${userEmail.toLowerCase()}`);
+                const users = await resU.json();
+                if (users.length > 0) userId = users[0].id;
+            } catch (e) { console.error("Error buscando usuario:", e); }
+        }
+
+        // 2. Actualizar el usuario base (Rol y datos básicos si vienen en el form)
+        if (userId) {
+            try {
+                await fetch(`${BASE_URL}/usuarios/${userId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        rol: role,
+                        pais: registro.pais || undefined,
+                        direccion: registro.direccion || undefined,
+                        telefono: registro.telefono || undefined
+                    })
+                });
+            } catch (e) { console.error("Error actualizando usuario base:", e); }
+        }
+
+        // 3. Crear registro detallado en la tabla del rol
+        const officialData = {
+            ...registro,
+            id: userId ? `${role}_${userId}` : registro.id, // ID único por rol si existe usuario
+            usuarioId: userId || null,
             status: 'ACTIVO',
-            rol: 'atleta',
-            fechaRegistro: new Date().toISOString()
+            fechaAprobacion: new Date().toISOString()
         };
-        
-        const resAtleta = await fetch(`${BASE_URL}/atletas`, {
+
+        // Limpiar campos temporales
+        const fieldsToDelete = ['statusColor', 'bgColor', 'time', 'initials'];
+        fieldsToDelete.forEach(f => delete officialData[f]);
+
+        const resOfficial = await fetch(`${BASE_URL}/${targetEndpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(atletaData)
+            body: JSON.stringify(officialData)
         });
-        if (!resAtleta.ok) throw new Error("Error al crear atleta oficial");
+        if (!resOfficial.ok) throw new Error(`Error al crear registro en ${targetEndpoint}`);
 
-        // 2. Eliminar de pendientes
+        // 4. Eliminar de pendientes
         await fetch(`${BASE_URL}/registros_pendientes/${registro.id}`, { method: 'DELETE' });
         
         return true;

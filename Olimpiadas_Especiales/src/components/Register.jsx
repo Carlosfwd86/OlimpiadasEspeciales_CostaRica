@@ -12,6 +12,7 @@ const Register = () => {
     telefono: '',
     password: '',
     confirmPassword: '',
+    pais: '',
     genero: '',
     fechaNacimiento: ''
 
@@ -151,6 +152,19 @@ const Register = () => {
           </div>
 
           <div className="form-group">
+            <label htmlFor="pais">País</label>
+            <input
+              type="text"
+              id="pais"
+              name="pais"
+              placeholder="Ingrese el nombre del País"
+              value={formData.pais}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
             <label htmlFor="correoElectronico">Correo Electrónico</label>
             <input
               type="email"
@@ -179,7 +193,7 @@ const Register = () => {
           </div>
 
 
-          <div>
+          <div className="form-group">
             <label htmlFor="genero">Genero</label>
             <select
               id="genero"
