@@ -34,13 +34,6 @@ const Eventos = () => {
                     <source src="/img/berlin-film-2025-for-website.mp4" type="video/mp4" />
                     Tu navegador no soporta el tag de video.
                 </video>
-                <div className="video-overlay">
-                    <div className="video-caption">
-                        <span className="badge-berlin">Berlín 2025</span>
-                        <h1>Un Sueño Mundial</h1>
-                        <p>Acompaña a nuestra delegación en el camino hacia la gloria.</p>
-                    </div>
-                </div>
             </div>
 
             <div className="eventos-container">
