@@ -16,6 +16,51 @@ function FormPerfil({ user, setRefreshUser }) {
     const [modalOpen, setModalOpen] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [linkedUser, setLinkedUser] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState({ ...user });
+
+    const handleEditToggle = () => {
+        setIsEditing(!isEditing);
+        if (!isEditing) setEditData({ ...user });
+    };
+
+    const handleInputChange = (e) => {
+        setEditData({
+            ...editData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSaveProfile = async () => {
+        try {
+            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+            
+            let updated;
+            if (user.rol === 'atleta') {
+                updated = await updateAtleta(user.id, editData);
+            } else if (user.rol === 'tutor') {
+                updated = await updateTutor(user.id, editData);
+            } else if (user.rol === 'entrenador') {
+                updated = await updateEntrenador(user.id, editData);
+            } else if (user.rol === 'voluntario') {
+                updated = await updateVoluntario(user.id, editData);
+            } else if (user.rol === 'admin') {
+                updated = await ServicesAdmin.updateProfile(user.id, editData);
+            } else {
+                updated = await updateUsuario(user.id, editData);
+            }
+
+            localStorage.setItem('usuarioSesion', JSON.stringify(editData));
+            
+            Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Perfil actualizado correctamente', timer: 2000, showConfirmButton: false });
+            setIsEditing(false);
+            if(setRefreshUser) setRefreshUser(editData);
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron guardar los cambios.' });
+        }
+    };
 
     const handleAvatarClick = () => {
         fileInputRef.current.click();
@@ -187,6 +232,90 @@ function FormPerfil({ user, setRefreshUser }) {
                     transform: scale(1.15);
                     background: #1e293b;
                 }
+
+                .edit-profile-action {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 16px;
+                    background: #fff;
+                    border: 1.5px solid #ff0000;
+                    border-radius: 10px;
+                    color: #ff0000;
+                    font-size: 13px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .edit-profile-action:hover {
+                    background: #ff0000;
+                    color: #fff;
+                    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.15);
+                }
+
+                .edit-input-field {
+                    width: 100%;
+                    padding: 8px 12px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-family: 'Outfit', sans-serif;
+                    color: #1e293b;
+                    background: #f8fafc;
+                    transition: all 0.2s ease;
+                }
+
+                .edit-input-field:focus {
+                    outline: none;
+                    border-color: #ff0000;
+                    background: #fff;
+                    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.05);
+                }
+
+                .edit-actions-footer {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 12px;
+                    margin-top: 25px;
+                    padding-top: 20px;
+                    border-top: 1px solid #f1f5f9;
+                }
+
+                .btn-save {
+                    background: #ff0000;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 10px;
+                    font-weight: 700;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .btn-save:hover {
+                    background: #cc0000;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+                }
+
+                .btn-cancel {
+                    background: #f1f5f9;
+                    color: #64748b;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 10px;
+                    font-weight: 700;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .btn-cancel:hover {
+                    background: #e2e8f0;
+                    color: #1e293b;
+                }
             `}</style>
 
             <button className="boton_regresar" onClick={() => navigate(-1)}>
@@ -233,12 +362,44 @@ function FormPerfil({ user, setRefreshUser }) {
                                 accept="image/png, image/jpeg, image/jpg"
                             />
                         </div>
-                        <h2>{user.nombre} {user.apellido || user.tutorApellido || ''}</h2>
+                        {isEditing ? (
+                            <div style={{ marginBottom: '15px' }}>
+                                <input 
+                                    name="nombre" 
+                                    className="edit-input-field" 
+                                    value={editData.nombre} 
+                                    onChange={handleInputChange} 
+                                    style={{ fontWeight: 'bold', fontSize: '1.2rem', textAlign: 'center' }}
+                                />
+                            </div>
+                        ) : (
+                            <h2>{user.nombre} {user.apellido || user.tutorApellido || ''}</h2>
+                        )}
+                        
                         <p>{user.correoElectronico || user.tutorCorreo}</p>
                         
                         <div className="id-card-detail">
                             <span>Rol en el Sistema</span>
-                            <span style={{color: '#E00000', textTransform: 'capitalize'}}>{user.rol}</span>
+                            {isEditing ? (
+                                <select 
+                                    name="rol" 
+                                    className="edit-input-field" 
+                                    value={editData.rol} 
+                                    onChange={handleInputChange}
+                                    style={{ fontSize: '12px', padding: '5px' }}
+                                >
+                                    <option value="atleta">Atleta Oficial</option>
+                                    <option value="entrenador">Entrenador</option>
+                                    <option value="tutor">Tutor / Familiar</option>
+                                    <option value="voluntario">Voluntario</option>
+                                    <option value="usuario">Usuario General</option>
+                                    {!['atleta','entrenador','tutor','voluntario','usuario'].includes(user.rol) && (
+                                        <option value={user.rol}>{user.rol}</option>
+                                    )}
+                                </select>
+                            ) : (
+                                <span style={{color: '#E00000', textTransform: 'capitalize'}}>{badgeLabel}</span>
+                            )}
                         </div>
                         <div className="id-card-detail">
                             <span>ID de Registro</span>
@@ -279,70 +440,172 @@ function FormPerfil({ user, setRefreshUser }) {
                     
                     {/* Sección General */}
                     <div className="perfil-section">
-                        <h3>Información de {badgeLabel}</h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <h3 style={{ margin: 0 }}>Información de {badgeLabel}</h3>
+                            {!isEditing && (
+                                <button className="edit-profile-action" onClick={handleEditToggle}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                    Editar Información
+                                </button>
+                            )}
+                        </div>
+                        
                         {user.rol === 'atleta' ? (
                             <div className="details-grid">
                                 <div className="detail-item">
                                     <span className="detail-label">Nombre Completo</span>
-                                    <span className="detail-value">{user.nombre} {user.apellido}</span>
+                                    {isEditing ? (
+                                        <input name="nombre" className="edit-input-field" value={editData.nombre} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.nombre} {user.apellido}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Edad</span>
-                                    <span className="detail-value">{user.edad || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="edad" type="number" className="edit-input-field" value={editData.edad} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.edad || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Fecha de Nacimiento</span>
-                                    <span className="detail-value">{user.fechaNacimiento || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="fechaNacimiento" type="date" className="edit-input-field" value={editData.fechaNacimiento} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.fechaNacimiento || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Cédula / ID</span>
-                                    <span className="detail-value">{user.cedula || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="cedula" className="edit-input-field" value={editData.cedula} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.cedula || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Teléfono</span>
-                                    <span className="detail-value">{user.telefono || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="telefono" className="edit-input-field" value={editData.telefono} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.telefono || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">País / Región</span>
-                                    <span className="detail-value">{user.pais || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="pais" className="edit-input-field" value={editData.pais} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.pais || 'N/A'}</span>
+                                    )}
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Rol en el programa</span>
+                                    {isEditing ? (
+                                        <select name="rol" className="edit-input-field" value={editData.rol} onChange={handleInputChange}>
+                                            <option value="atleta">Atleta Oficial</option>
+                                            <option value="entrenador">Entrenador</option>
+                                            <option value="tutor">Tutor / Familiar</option>
+                                            <option value="voluntario">Voluntario</option>
+                                            <option value="usuario">Usuario General</option>
+                                            {!['atleta','entrenador','tutor','voluntario','usuario'].includes(user.rol) && (
+                                                <option value={user.rol}>{user.rol}</option>
+                                            )}
+                                        </select>
+                                    ) : (
+                                        <span className="detail-value">{badgeLabel}</span>
+                                    )}
                                 </div>
                             </div>
                         ) : user.rol === 'tutor' ? (
                             <div className="details-grid">
                                 <div className="detail-item">
                                     <span className="detail-label">Nombre Completo</span>
-                                    <span className="detail-value">{user.nombre} {user.tutorApellido || user.apellido || ''}</span>
+                                    {isEditing ? (
+                                        <input name="nombre" className="edit-input-field" value={editData.nombre} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.nombre} {user.tutorApellido || user.apellido || ''}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Edad</span>
-                                    <span className="detail-value">{user.edad || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="edad" type="number" className="edit-input-field" value={editData.edad} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.edad || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Cédula / ID</span>
-                                    <span className="detail-value">{user.cedula || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="cedula" className="edit-input-field" value={editData.cedula} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.cedula || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Teléfono Primario</span>
-                                    <span className="detail-value">{user.telefono || user.tutorTelefono || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="telefono" className="edit-input-field" value={editData.telefono || editData.tutorTelefono} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.telefono || user.tutorTelefono || 'N/A'}</span>
+                                    )}
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Rol en el programa</span>
+                                    {isEditing ? (
+                                        <select name="rol" className="edit-input-field" value={editData.rol} onChange={handleInputChange}>
+                                            <option value="atleta">Atleta Oficial</option>
+                                            <option value="entrenador">Entrenador</option>
+                                            <option value="tutor">Tutor / Familiar</option>
+                                            <option value="voluntario">Voluntario</option>
+                                            <option value="usuario">Usuario General</option>
+                                            {!['atleta','entrenador','tutor','voluntario','usuario'].includes(user.rol) && (
+                                                <option value={user.rol}>{user.rol}</option>
+                                            )}
+                                        </select>
+                                    ) : (
+                                        <span className="detail-value">{badgeLabel}</span>
+                                    )}
                                 </div>
                             </div>
                         ) : (user.rol === 'entrenador' || user.rol === 'voluntario' || user.rol === 'usuario' || true) ? (
                             <div className="details-grid">
                                 <div className="detail-item">
                                     <span className="detail-label">Nombre Completo</span>
-                                    <span className="detail-value">{user.nombre} {user.apellido || ''}</span>
+                                    {isEditing ? (
+                                        <input name="nombre" className="edit-input-field" value={editData.nombre} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.nombre} {user.apellido || ''}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Edad</span>
-                                    <span className="detail-value">{user.edad || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="edad" type="number" className="edit-input-field" value={editData.edad} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.edad || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Cédula / ID</span>
-                                    <span className="detail-value">{user.cedula || 'N/A'}</span>
+                                    {isEditing ? (
+                                        <input name="cedula" className="edit-input-field" value={editData.cedula} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.cedula || 'N/A'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">País / Región</span>
-                                    <span className="detail-value">{user.pais || 'Costa Rica'}</span>
+                                    {isEditing ? (
+                                        <input name="pais" className="edit-input-field" value={editData.pais} onChange={handleInputChange} />
+                                    ) : (
+                                        <span className="detail-value">{user.pais || 'Costa Rica'}</span>
+                                    )}
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Correo Registrado</span>
@@ -350,10 +613,30 @@ function FormPerfil({ user, setRefreshUser }) {
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Rol en el programa</span>
-                                    <span className="detail-value">{badgeLabel}</span>
+                                    {isEditing ? (
+                                        <select name="rol" className="edit-input-field" value={editData.rol} onChange={handleInputChange}>
+                                            <option value="atleta">Atleta Oficial</option>
+                                            <option value="entrenador">Entrenador</option>
+                                            <option value="tutor">Tutor / Familiar</option>
+                                            <option value="voluntario">Voluntario</option>
+                                            <option value="usuario">Usuario General</option>
+                                            {!['atleta','entrenador','tutor','voluntario','usuario'].includes(user.rol) && (
+                                                <option value={user.rol}>{user.rol}</option>
+                                            )}
+                                        </select>
+                                    ) : (
+                                        <span className="detail-value">{badgeLabel}</span>
+                                    )}
                                 </div>
                             </div>
                         ) : null}
+
+                        {isEditing && (
+                            <div className="edit-actions-footer">
+                                <button className="btn-cancel" onClick={handleEditToggle}>Cancelar</button>
+                                <button className="btn-save" onClick={handleSaveProfile}>Guardar Cambios</button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Sección Médica (Solo Atleta) */}
