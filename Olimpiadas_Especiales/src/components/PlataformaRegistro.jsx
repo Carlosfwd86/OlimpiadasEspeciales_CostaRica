@@ -112,6 +112,7 @@ const pasos = [
 function PlataformaRegistro() {
   const navigate = useNavigate();
   const [hoveredRole, setHoveredRole] = useState(null);
+  const [highlightFirstStep, setHighlightFirstStep] = useState(false);
 
   const handleVerRequisitos = () => {
     Swal.fire({
@@ -243,7 +244,10 @@ function PlataformaRegistro() {
 
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '44px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => document.getElementById('roles-section').scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => {
+              document.getElementById('pasos-section').scrollIntoView({ behavior: 'smooth' });
+              setHighlightFirstStep(true);
+            }}
             style={{
               padding: '16px 40px', background: '#FF0000', color: '#fff',
               border: 'none', borderRadius: '16px', fontSize: '1rem', fontWeight: '800',
@@ -271,21 +275,40 @@ function PlataformaRegistro() {
       </section>
 
       {/* PASOS */}
-      <section style={{ padding: '90px 24px', background: '#ffffff' }}>
+      <section id="pasos-section" style={{ padding: '90px 24px', background: '#ffffff' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <p style={{ color: '#FF0000', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.85rem', marginBottom: '12px' }}>Proceso de Inscripción</p>
             <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-1.5px' }}>Pasos para el Registro</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '28px' }}>
-            {pasos.map((paso, i) => (
+          <div 
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '28px' }}
+          >
+            {pasos.map((paso, i) => {
+              const isTarget = highlightFirstStep && i === 0;
+              const isDimmed = highlightFirstStep && i !== 0;
+
+              return (
               <div key={i} style={{
                 background: '#f8fafc', borderRadius: '24px', padding: '32px 28px',
-                border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden',
-                transition: 'all 0.3s ease',
+                border: `1px solid ${isTarget ? '#FF0000' : '#f1f5f9'}`, position: 'relative', overflow: 'hidden',
+                transition: 'all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1.1)',
+                cursor: i === 0 ? 'pointer' : 'default',
+                transform: isTarget ? 'translateY(-15px) translateX(-10px) scale(1.06)' : (isDimmed ? 'translateX(120px) translateY(20px) scale(0.85)' : 'none'),
+                boxShadow: isTarget ? '0 35px 70px rgba(255,0,0,0.25)' : 'none',
+                opacity: isDimmed ? 0.15 : 1,
+                zIndex: isTarget ? 10 : 1,
+                pointerEvents: isDimmed ? 'none' : 'auto'
               }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,0,0,0.08)'; e.currentTarget.style.borderColor = '#fecaca'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
+                onClick={() => i === 0 && navigate('/registro')}
+                onMouseEnter={e => { 
+                  if (highlightFirstStep) return;
+                  e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,0,0,0.08)'; e.currentTarget.style.borderColor = '#fecaca'; 
+                }}
+                onMouseLeave={e => { 
+                  if (highlightFirstStep) return;
+                  e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#f1f5f9'; 
+                }}
               >
                 <div style={{
                   position: 'absolute', top: '16px', right: '20px',
@@ -298,7 +321,8 @@ function PlataformaRegistro() {
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>{paso.titulo}</h3>
                 <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: '1.65', margin: 0 }}>{paso.desc}</p>
               </div>
-            ))}
+            );
+            })}
           </div>
         </div>
       </section>
