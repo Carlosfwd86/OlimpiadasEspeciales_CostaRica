@@ -267,7 +267,7 @@
       "correoElectronico": "saujivi@gmail.com",
       "password": "saujivi",
       "edad": "14",
-      "rol": "usuario",
+      "rol": "entrenador",
       "fechaRegistro": "2026-03-27T05:39:00.440Z"
     },
     {
@@ -287,8 +287,21 @@
       "telefono": "88506060",
       "password": "cinvilla",
       "edad": "38",
-      "rol": "usuario",
-      "fechaRegistro": "2026-03-27T06:22:56.317Z"
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-27T06:22:56.317Z",
+      "pais": "Panama"
+    },
+    {
+      "id": "edc1",
+      "nombre": "Carlos Andres Jimenez Rojas",
+      "cedula": "603550322",
+      "correoElectronico": "cjimenezrfwd@gmail.com",
+      "telefono": "88183631",
+      "password": "carlosji",
+      "edad": "39",
+      "rol": "voluntario",
+      "fechaRegistro": "2026-03-27T06:48:21.479Z",
+      "pais": "Costa Rica"
     }
   ],
   "disciplinas": [
