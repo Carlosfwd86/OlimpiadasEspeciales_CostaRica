@@ -130,34 +130,18 @@ const Home = () => {
                     <source src="/img/videoHome.mp4" type="video/mp4" />
                 </video>
 
-                {/* Estructura de 3 Secciones (Overlays) */}
+                {/* Overlay Radial Sutil (Solo oscurece un poco el centro para legibilidad) */}
                 <div style={{
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    display: 'flex',
+                    background: 'radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 60%)',
                     zIndex: 1
-                }}>
-                    {/* Sección Izquierda: Nítida/Limpia */}
-                    <div style={{ flex: 1, background: 'transparent' }} />
+                }} />
 
-                    {/* Sección Central: Franja de Cristal (Glassmorphism) */}
-                    <div style={{
-                        width: 'clamp(320px, 60%, 850px)',
-                        background: 'rgba(0, 0, 0, 0.4)',
-                        backdropFilter: 'blur(12px)',
-                        borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-                        boxShadow: '0 0 50px rgba(0,0,0,0.5)'
-                    }} />
-
-                    {/* Sección Derecha: Nítida/Limpia */}
-                    <div style={{ flex: 1, background: 'transparent' }} />
-                </div>
-
-                {/* Contenido Central */}
+                {/* Contenido Central con Efecto de Halo */}
                 <div style={{ 
                     position: 'relative', 
                     zIndex: 3,
@@ -165,31 +149,38 @@ const Home = () => {
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    padding: '60px 20px',
-                    maxWidth: '800px'
+                    padding: '40px 20px',
+                    maxWidth: '900px',
+                    textAlign: 'center'
                 }}>
                     <p style={{
                         color: '#ffffff', fontWeight: '1000', textTransform: 'uppercase',
-                        letterSpacing: '0.12em', fontSize: 'clamp(1.5rem, 4vw, 2.78rem)', marginBottom: '14px',
-                        textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                        letterSpacing: '0.12em', fontSize: 'clamp(1.5rem, 5vw, 3.5rem)', marginBottom: '14px',
+                        // Sombra de texto tipo "Halo" (múltiples capas para máximo contraste sin bloque)
+                        textShadow: `
+                            0 0 20px rgba(0,0,0,0.9),
+                            0 4px 10px rgba(0,0,0,0.8),
+                            0 0 5px rgba(0,0,0,1)
+                        `
                     }}>¿Primera vez aquí?</p>
 
                     <h2 style={{
                         color: '#ffffff',
-                        fontSize: 'clamp(1.2rem, 3.5vw, 2.2rem)',
+                        fontSize: 'clamp(1.2rem, 4vw, 2.8rem)',
                         fontWeight: '900',
-                        letterSpacing: '-1px',
-                        margin: '0 0 16px',
-                        lineHeight: '1.2',
-                        textShadow: '0 2px 10px rgba(0,0,0,0.6)'
+                        letterSpacing: '-1.5px',
+                        margin: '0 0 20px',
+                        lineHeight: '1.1',
+                        textShadow: '0 4px 15px rgba(0,0,0,0.8)'
                     }}>
                         Empieza creando tu cuenta
                     </h2>
 
                     <p style={{
-                        color: '#f1f5f9', fontSize: '1.15rem', lineHeight: '1.7',
-                        maxWidth: '520px', margin: '0 auto 32px',
-                        textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                        color: '#ffffff', fontSize: 'clamp(1rem, 2vw, 1.25rem)', lineHeight: '1.6',
+                        maxWidth: '550px', margin: '0 auto 40px',
+                        fontWeight: '500',
+                        textShadow: '0 2px 10px rgba(0,0,0,0.9)'
                     }}>
                         Necesitas una cuenta para guardar tu progreso y completar la inscripción.
                     </p>
