@@ -35,6 +35,7 @@ const Navbar = () => {
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
   const irARegistro = () => navegar("/registro");
+  const irAPlataformaRegistro = () => navegar("/plataforma-registro");
   const irAPanelAdmin = () => navegar("/admin");
   const irAPerfil = () => navegar("/perfil");
 
@@ -57,6 +58,21 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
           <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
           <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
+          <li
+            className="enlace_nav"
+            onClick={irAPlataformaRegistro}
+            style={{
+              background: '#FF0000',
+              color: '#ffffff',
+              padding: '8px 18px',
+              borderRadius: '50px',
+              fontWeight: '900',
+              letterSpacing: '0.05em',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#cc0000'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'translateY(0)'; }}
+          >INSCRIBIRSE</li>
         </ul>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>

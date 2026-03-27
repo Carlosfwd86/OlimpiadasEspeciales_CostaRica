@@ -13,6 +13,7 @@ import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import PerfilPage from '../pages/PerfilPage';
+import PlataformaRegistroPage from '../pages/PlataformaRegistroPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
 import PrivateRoute from './PrivateRoute';
 import ScrollToTop from '../components/ScrollToTop';
@@ -30,6 +31,7 @@ const Routing = () => {
             <Route path="/nosotros" element={<NosotrosPages />} />
             <Route path="/contacto" element={<ContactoPages />} />
             <Route path="/formulario" element={<FormularioPages />} />
+            <Route path="/plataforma-registro" element={<PlataformaRegistroPage />} />
             <Route path="/eventos" element={<EventosPages />} />
             <Route path="/voluntarios" element={<VoluntariosPages />} />
 

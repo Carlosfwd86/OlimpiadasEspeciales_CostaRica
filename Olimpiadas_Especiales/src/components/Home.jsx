@@ -15,7 +15,7 @@ const Home = () => {
     const navegar = useNavigate();
     const irAFormulario = (rol) => navegar(`/formulario?rol=${rol}`);
 
-    const manejarUnete = () => navegar('/formulario');
+    const manejarUnete = () => navegar('/plataforma-registro');
     const manejarConoceMas = () => navegar('/nosotros');
 
     const [counts, setCounts] = useState({
