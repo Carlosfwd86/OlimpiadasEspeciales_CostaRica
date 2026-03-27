@@ -98,6 +98,71 @@ const Home = () => {
 
     return (
         <>
+            {/* Banner CTA Flotante - Arriba del Hero */}
+            <div style={{
+                background: 'linear-gradient(135deg, #ff0000ee 0%, #3b2e1eff 100%)',
+                padding: '48px 24px',
+                textAlign: 'center',
+                fontFamily: "'Inter', 'Segoe UI', Roboto, sans-serif",
+                position: 'relative',
+                overflow: 'hidden',
+            }}>
+                {/* Círculos decorativos */}
+                <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'800px', height:'200px', borderRadius:'50%', background:'rgba(255,0,0,0.06)', pointerEvents:'none' }} />
+                <div style={{ position:'absolute', bottom:'-40px', left:'-40px', width:'150px', height:'150px', borderRadius:'50%', background:'rgba(255,0,0,0.04)', pointerEvents:'none' }} />
+
+                <p style={{
+                    color: '#f7efefff', fontWeight: '1000', textTransform: 'uppercase',
+                    letterSpacing: '0.12em', fontSize: '2.78rem', marginBottom: '14px',
+                }}>¿Primera vez aquí?</p>
+
+                <h2 style={{
+                    color: '#ffffff',
+                    fontSize: 'clamp(1.8rem, 4vw, 1.8rem)',
+                    fontWeight: '900',
+                    letterSpacing: '-1.5px',
+                    margin: '0 0 16px',
+                    lineHeight: '3.1',
+                }}>
+                    Empieza creando tu cuenta
+                </h2>
+
+                <p style={{
+                    color: '#94a3b8', fontSize: '1rem', lineHeight: '1.7',
+                    maxWidth: '420px', margin: '0 auto 32px',
+                }}>
+                    Necesitas una cuenta para guardar tu progreso y completar la inscripción.
+                </p>
+
+                <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <button
+                        onClick={() => navegar('/registro')}
+                        style={{
+                            padding: '14px 36px', background: '#FF0000', color: 'rgba(255, 255, 255, 1)',
+                            border: 'none', borderRadius: '12px', fontSize: '0.98rem', fontWeight: '800',
+                            cursor: 'pointer', boxShadow: '0 8px 20px rgba(255,0,0,0.3)',
+                            transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#cc0000'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    >
+                        Crear Cuenta
+                    </button>
+                    <button
+                        onClick={() => navegar('/login')}
+                        style={{
+                            padding: '14px 36px', background: 'hsla(0, 95%, 49%, 1.00)', color: 'rgba(255, 255, 255, 1)',
+                            border: '2px solid rgba(249, 248, 248, 1)', borderRadius: '12px', fontSize: '0.98rem', fontWeight: '800',
+                            cursor: 'pointer', transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#64748b'; e.currentTarget.style.color = '#ffffff'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#e2e8f0'; }}
+                    >
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+
             <section className="contenedor_hero_principal">
 
                 {/* Contenido Superior Principal */}
