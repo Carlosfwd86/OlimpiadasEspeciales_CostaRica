@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 import { getAtletas } from '../services/ServicesAtletas';
@@ -13,6 +13,83 @@ const Home = () => {
 
     /* --- Funciones de Acción --- */
     const navegar = useNavigate();
+    const canvasRef = useRef(null);
+
+    /* ── Animated lines canvas ── */
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let raf;
+        let w, h;
+
+        const resize = () => {
+            w = canvas.width = canvas.offsetWidth;
+            h = canvas.height = canvas.offsetHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Generate nodes
+        const NUM = 38;
+        const nodes = Array.from({ length: NUM }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.45,
+            vy: (Math.random() - 0.5) * 0.45,
+        }));
+
+        const LINK_DIST = 140;
+
+        const draw = () => {
+            ctx.clearRect(0, 0, w, h);
+
+            // Update positions
+            nodes.forEach(n => {
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 0) n.x = w;
+                if (n.x > w) n.x = 0;
+                if (n.y < 0) n.y = h;
+                if (n.y > h) n.y = 0;
+            });
+
+            // Draw links
+            for (let i = 0; i < NUM; i++) {
+                for (let j = i + 1; j < NUM; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < LINK_DIST) {
+                        const alpha = (1 - dist / LINK_DIST) * 0.25;
+                        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Draw dots
+            nodes.forEach(n => {
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, 1.8, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                ctx.fill();
+            });
+
+            raf = requestAnimationFrame(draw);
+        };
+        draw();
+
+        return () => {
+            cancelAnimationFrame(raf);
+            window.removeEventListener('resize', resize);
+        };
+    }, []);
+
     const irAFormulario = (rol) => navegar(`/formulario?rol=${rol}`);
 
     const manejarUnete = () => navegar('/plataforma-registro');
@@ -101,6 +178,10 @@ const Home = () => {
             {/* Banner CTA Flotante - Arriba del Hero */}
             {/* Banner CTA Flotante - Arriba del Hero (Ahora con Video) */}
             <div style={{
+                background: 'linear-gradient(135deg, rgba(255,0,0,0.72) 0%, rgba(30,20,10,0.82) 100%)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                padding: '48px 24px',
                 textAlign: 'center',
                 fontFamily: "'Inter', 'Segoe UI', Roboto, sans-serif",
                 position: 'relative',
@@ -129,6 +210,9 @@ const Home = () => {
                 >
                     <source src="/img/videoHome.mp4" type="video/mp4" />
                 </video>
+                
+                {/* Canvas de líneas animadas */}
+                <canvas ref={canvasRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:1 }} />
 
                 {/* Overlay Radial Sutil (Solo oscurece un poco el centro para legibilidad) */}
                 <div style={{
@@ -138,7 +222,7 @@ const Home = () => {
                     width: '100%',
                     height: '100%',
                     background: 'radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 60%)',
-                    zIndex: 1
+                    zIndex: 2
                 }} />
 
                 {/* Contenido Central con Efecto de Halo */}
@@ -153,10 +237,14 @@ const Home = () => {
                     maxWidth: '900px',
                     textAlign: 'center'
                 }}>
+                    
+                    {/* Círculos decorativos */}
+                    <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'800px', height:'200px', borderRadius:'50%', background:'rgba(255,0,0,0.06)', pointerEvents:'none' }} />
+                    <div style={{ position:'absolute', bottom:'-40px', left:'-40px', width:'150px', height:'150px', borderRadius:'50%', background:'rgba(255,0,0,0.04)', pointerEvents:'none' }} />
+
                     <p style={{
                         color: '#ffffff', fontWeight: '1000', textTransform: 'uppercase',
                         letterSpacing: '0.12em', fontSize: 'clamp(1.5rem, 5vw, 3.5rem)', marginBottom: '14px',
-                        // Sombra de texto tipo "Halo" (múltiples capas para máximo contraste sin bloque)
                         textShadow: `
                             0 0 20px rgba(0,0,0,0.9),
                             0 4px 10px rgba(0,0,0,0.8),
