@@ -77,7 +77,6 @@
       "fechaRegistro": "2026-03-24T20:00:29.797Z"
     },
     {
-<<<<<<< HEAD
       "id": "afba",
       "initials": "FR",
       "name": "francela",
@@ -97,7 +96,14 @@
       "nombre": "Ana López",
       "correoElectronico": "ana@gmaill.com",
       "telefono": "22334455",
-=======
+      "disciplina": "Atletismo",
+      "programa": "San José",
+      "status": "ACTIVO",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-26T16:28:55.131Z",
+      "password": "atleta123"
+    },
+    {
       "id": "f7b2",
       "nombre": "dsfghj",
       "fechaNacimiento": "2018-03-23",
@@ -180,21 +186,13 @@
       "nombre": "Gerson David Dinarte Fuentes",
       "correoElectronico": "gfuentesfwd@gmail.com",
       "telefono": "82074567",
->>>>>>> 0ea9660e26d1ac5d1f973fd60d5280738e6506b6
       "disciplina": "Fútbol",
       "programa": "San José",
       "status": "ACTIVO",
       "rol": "atleta",
-<<<<<<< HEAD
-      "fechaRegistro": "2026-03-26T16:28:55.131Z"
-    }
-  ],
-  "competiciones": [],
-  "entrenadores": [],
-  "voluntarios": [],
-  "tutores": [],
-=======
       "fechaRegistro": "2026-03-26T16:40:22.308Z"
+    },
+    {
       "id": "721b",
       "nombre": "Samir Jacobo",
       "correoElectronico": "samirito@gmail.com",
@@ -226,12 +224,8 @@
       "rol": "admin"
     }
   ],
-  "entrenadores": [
-   
-  ],
-  "voluntarios": [
-  
-  ],
+  "entrenadores": [],
+  "voluntarios": [],
   "tutores": [
     {
       "id": "ee1e",
@@ -266,17 +260,16 @@
       "fechaRegistro": "2026-03-26T17:27:12.371Z"
     }
   ],
->>>>>>> 0ea9660e26d1ac5d1f973fd60d5280738e6506b6
   "estadisticas_generales": {
     "totalRegistros": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
+      "valor": "7",
+      "porcentaje": "100%",
+      "tendencia": "up"
     },
     "atletasActivos": {
-      "valor": "0",
-      "porcentaje": "0%",
-      "tendencia": "none"
+      "valor": "7",
+      "porcentaje": "100%",
+      "tendencia": "up"
     },
     "revisionesPendientes": {
       "valor": "0",
@@ -289,30 +282,20 @@
     }
   },
   "graficos": {
-    "atletasPorDeporte": [],
-    "distribucionRegional": [],
-    "totalGeneral": "0"
+    "atletasPorDeporte": [
+      { "name": "Fútbol", "value": 1 },
+      { "name": "Natación", "value": 1 },
+      { "name": "Baloncesto", "value": 2 },
+      { "name": "Atletismo", "value": 2 },
+      { "name": "Levantamiento de Pesas", "value": 1 }
+    ],
+    "distribucionRegional": [
+      { "name": "San José", "value": 3 },
+      { "name": "Alajuela", "value": 1 },
+      { "name": "Puntarenas", "value": 2 }
+    ],
+    "totalGeneral": "7"
   },
-  "registros_pendientes": [
-    {
-      "id": "bb6d",
-      "initials": "GD",
-      "name": "Gerson David Dinarte Fuentes",
-      "email": "gfuente@gmail.com",
-      "phone": "89074567",
-      "sport": "Atletismo",
-      "region": "Puntarenas",
-      "time": "Registrado ahora",
-      "status": "VERIFICACIÓN PEND.",
-      "statusColor": "yellow",
-      "bgColor": "bg-light-blue"
-    }
-  ],
-  "actividad_sistema": [
-    {
-      "id": "7341",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
   "registros_pendientes": [],
   "actividad_sistema": [
     {
@@ -324,9 +307,6 @@
       "time": "Hace un momento"
     },
     {
-      "id": "6a0c",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
       "id": "fa5a",
       "title": "Aprobación",
       "details": "Se aprobó a Samir Jacobo",
@@ -343,25 +323,11 @@
       "time": "Hace un momento"
     },
     {
-      "id": "c1c0",
-      "title": "Aprobación",
-      "details": "Se aprobó a Gerson David Dinarte Fuentes",
       "id": "2333",
       "title": "Aprobación",
       "details": "Se aprobó a Nora Figueroa",
       "icon": "fa-solid fa-check-circle",
       "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "dbc3",
-      "title": "Competición",
-      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
-      "id": "5b66",
-      "title": "Competición",
-      "details": "Nueva competición: uky,il7,.u",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
       "time": "Hace un momento"
     },
     {
@@ -391,7 +357,7 @@
       "categoria": "Atletismo",
       "status": "Próximo",
       "img": "evento_competencia.png",
-      "deporte": "Fútbol",
+      "deporte": "Atletismo",
       "fechaFin": "2026-03-28",
       "ubicacion": "",
       "descripcion": "",
@@ -417,9 +383,8 @@
       "categoria": "Social",
       "status": "Por confirmar",
       "img": "evento_ceremonia.png"
-    }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+    },
+    {
       "id": "rk6pt51kz",
       "nombre": "uky,il7,.u",
       "deporte": "Atletismo",
@@ -441,5 +406,6 @@
       "message": "espero esten bien",
       "fecha": "2026-03-26T21:02:59.838Z"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
