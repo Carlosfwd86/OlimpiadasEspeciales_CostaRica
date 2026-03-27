@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
-import { createEntrenador } from '../../services/ServicesEntrenadores';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
 import '../../styles/Formulario/FormEntrenador.css';
 
@@ -22,13 +22,16 @@ function FormEntrenador({ onVolver }) {
     const sesion = localStorage.getItem('usuarioSesion');
     if (sesion) {
       const user = JSON.parse(sesion);
-      if (user.rol === 'usuario') {
-        setDatos(prev => ({
-          ...prev,
-          nombre: user.nombre || prev.nombre,
-          correoElectronico: user.correoElectronico || prev.correoElectronico
-        }));
-      }
+      setDatos(prev => ({
+        ...prev,
+        nombre: user.nombre || prev.nombre,
+        cedula: user.cedula || prev.cedula,
+        fechaNacimiento: user.fechaNacimiento || prev.fechaNacimiento,
+        genero: user.genero || prev.genero,
+        telefono: user.telefono || prev.telefono,
+        correoElectronico: user.correoElectronico || prev.correoElectronico,
+        direccion: user.direccion || prev.direccion
+      }));
     }
   }, []);
   const [archivos, setArchivos] = useState({
@@ -114,20 +117,34 @@ function FormEntrenador({ onVolver }) {
     }).then(async (res) => {
       if (res.isConfirmed) {
         Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+        const sesion = JSON.parse(localStorage.getItem('usuarioSesion') || '{}');
         const pass = Math.random().toString(36).slice(-8);
         const archivosNombres = {
           cedula_nombre: archivos.cedula?.name || 'No adjuntado',
           titulo_nombre: archivos.titulo?.name || 'No adjuntado',
           foto_nombre: archivos.foto?.name || 'No adjuntado',
         };
-        const entry = { ...datos, ...archivosNombres, password: pass, rol: 'entrenador', fechaRegistro: new Date().toISOString() };
+        const entry = { 
+          ...datos, 
+          ...archivosNombres, 
+          usuarioId: sesion.id || null,
+          password: pass, 
+          rol: 'entrenador', 
+          fechaRegistro: new Date().toISOString(),
+          status: 'PENDIENTE',
+          statusColor: 'yellow',
+          bgColor: 'bg-light-blue',
+          name: datos.nombre,
+          initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''),
+          time: 'Registrado ahora'
+        };
 
         try {
-          await createEntrenador(entry);
+          await ServicesAdmin.saveRegistro(entry);
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', {
             to_email: datos.correoElectronico,
             to_name: datos.nombre,
-            message: `Has sido registrado como Entrenador. Tu clave es: ${pass}\n\nDocumentos adjuntos:\n- Cédula: ${archivosNombres.cedula_nombre}\n- Título/Certificado: ${archivosNombres.titulo_nombre}\n- Foto: ${archivosNombres.foto_nombre}`
+            message: `Tus datos de postulación para el rol de Entrenador han sido enviados correctamente. Un administrador revisará tu información pronto.\n\nPor favor, mantente atento a tu correo para la confirmación de aprobación.\n\nDocumentos adjuntos:\n- Cédula: ${archivosNombres.cedula_nombre}\n- Título/Certificado: ${archivosNombres.titulo_nombre}\n- Foto: ${archivosNombres.foto_nombre}`
           }, '4zWvRC7Yn7lUDqd1q');
           Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Registro de entrenador completado.' }).then(() => window.location.href = '/');
         } catch (error) {
@@ -190,8 +207,8 @@ function FormEntrenador({ onVolver }) {
             {paso === 1 && (
               <div className="form-grid-ref">
                 <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Fecha de Nacimiento *</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} /></div>
+                <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} readOnly={!!datos.cedula} /></div>
+                <div className="input-container"><label>Fecha de Nacimiento *</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} readOnly={!!datos.fechaNacimiento} /></div>
                 <div className="input-container"><label>Género *</label>
                   <select id="genero" className={`input-field ${errores.genero ? 'error' : ''}`} value={datos.genero} onChange={manejarCambio}>
                     <option value="">Seleccione...</option>
@@ -200,7 +217,8 @@ function FormEntrenador({ onVolver }) {
                   </select>
                 </div>
                 <div className="input-container"><label>Teléfono *</label><input type="text" id='telefono' className={`input-field ${errores.telefono ? 'error' : ''}`} value={datos.telefono} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Correo Electrónico *</label><input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error' : ''}`} value={datos.correoElectronico} onChange={manejarCambio} /></div>
+                <div className="input-container"><label>País *</label><input type="text" id='pais' className="input-field" value={datos.pais} onChange={manejarCambio} readOnly={!!datos.pais} /></div>
+                <div className="input-container"><label>Correo Electrónico *</label><input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error' : ''}`} value={datos.correoElectronico} onChange={manejarCambio} readOnly={!!datos.correoElectronico} /></div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}><label>Dirección Exacta *</label><textarea id="direccion" className={`input-field ${errores.direccion ? 'error' : ''}`} value={datos.direccion} onChange={manejarCambio}></textarea></div>
                 <div style={{ gridColumn: 'span 2', marginTop: '5px' }}><h3 style={{ color: '#1e293b', fontWeight: 700, margin: 0 }}>Contacto de Emergencia</h3></div>
                 <div className="input-container"><label>Nombre *</label><input type="text" id='emergenciaNombre' className={`input-field ${errores.emergenciaNombre ? 'error' : ''}`} value={datos.emergenciaNombre} onChange={manejarCambio} /></div>

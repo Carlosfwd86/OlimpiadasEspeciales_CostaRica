@@ -11,6 +11,17 @@ export const getUsuarios = async () => {
     }
 };
 
+export const getUsuarioById = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/${id}`);
+        if (!response.ok) throw new Error("Error al obtener el usuario");
+        return await response.json();
+    } catch (error) {
+        console.error("Error en getUsuarioById:", error);
+        throw error;
+    }
+};
+
 export const createUsuario = async (usuario) => {
     try {
         const response = await fetch(API_URL, {
