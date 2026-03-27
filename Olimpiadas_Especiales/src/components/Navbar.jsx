@@ -31,7 +31,6 @@ const Navbar = () => {
   const irAlInicio = () => navegar("/");
   const irANosotros = () => navegar("/nosotros");
   const irAEventos = () => navegar("/eventos");
-  const irAVoluntarios = () => navegar("/voluntarios");
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
   const irARegistro = () => navegar("/registro");
@@ -56,7 +55,6 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irAlInicio}>INICIO</li>
           <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
-          <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
           <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
           <li
             className="enlace_nav"

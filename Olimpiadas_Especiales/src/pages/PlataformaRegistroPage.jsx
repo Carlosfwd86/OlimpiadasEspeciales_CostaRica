@@ -303,63 +303,6 @@ function PlataformaRegistroPage() {
         </div>
       </section>
 
-      {/* CTA INTERMEDIO */}
-      <section style={{ padding: '60px 24px', background: '#f8fafc' }}>
-        <div style={{
-          maxWidth: '900px',
-          margin: '0 auto',
-          background: '#FF0000',
-          borderRadius: '28px',
-          padding: '60px 48px',
-          textAlign: 'center',
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* Círculos decorativos */}
-          <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'180px', height:'180px', borderRadius:'50%', background:'rgba(255,255,255,0.08)', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', bottom:'-50px', left:'-30px', width:'140px', height:'140px', borderRadius:'50%', background:'rgba(255,255,255,0.06)', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', top:'20px', left:'20px', width:'60px', height:'60px', borderRadius:'50%', background:'rgba(255,255,255,0.07)', pointerEvents:'none' }} />
-
-          <h2 style={{
-            color: '#ffffff',
-            fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-            fontWeight: '900',
-            letterSpacing: '-1.5px',
-            margin: '0 0 20px',
-            lineHeight: '1.15',
-          }}>
-            ¿Listo para empezar el proceso?
-          </h2>
-          <p style={{
-            color: 'rgba(255,255,255,0.85)',
-            fontSize: '1.05rem',
-            lineHeight: '1.75',
-            maxWidth: '520px',
-            margin: '0 auto 36px',
-          }}>
-            Únete a la comunidad de Olimpiadas Especiales Costa Rica y apoya el talento deportivo de cada atleta. El registro toma menos de 10 minutos.
-          </p>
-          <button
-            onClick={() => document.getElementById('roles-section').scrollIntoView({ behavior: 'smooth' })}
-            style={{
-              background: '#ffffff',
-              color: '#FF0000',
-              border: 'none',
-              padding: '16px 40px',
-              borderRadius: '14px',
-              fontSize: '1rem',
-              fontWeight: '800',
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 14px 28px rgba(0,0,0,0.2)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
-          >
-            Comenzar Registro Ahora
-          </button>
-        </div>
-      </section>
 
       {/* ROLES - SELECTOR */}
       <section id="roles-section" style={{ padding: '90px 24px', background: '#f8fafc' }}>
