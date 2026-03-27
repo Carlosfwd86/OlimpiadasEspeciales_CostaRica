@@ -96,9 +96,6 @@ const Navbar = () => {
               <button className="boton_accion_blanco" onClick={irALogin}>
                 INICIAR SESIÓN
               </button>
-              <button className="boton_accion_rojo" onClick={irARegistro}>
-                REGISTRO
-              </button>
             </>
           )}
         </div>

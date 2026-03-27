@@ -260,48 +260,170 @@
       "edad": "19",
       "rol": "usuario",
       "fechaRegistro": "2026-03-26T21:44:20.764Z"
+    },
+    {
+      "id": "2cf0",
+      "nombre": "Saul Andres Jimenez Villalobos",
+      "correoElectronico": "saujivi@gmail.com",
+      "password": "saujivi",
+      "edad": "14",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-27T05:39:00.440Z"
+    },
+    {
+      "id": "a5f6",
+      "nombre": "Isaac Josue Jimenez Villalobos ",
+      "correoElectronico": "isajivi@gmail.com",
+      "password": "isajivi",
+      "edad": "9",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-27T06:09:47.695Z"
+    },
+    {
+      "id": "2345",
+      "nombre": "Cinthia Villalobos Campos",
+      "cedula": "601780178",
+      "correoElectronico": "cinvilla@gmail.com",
+      "telefono": "88506060",
+      "password": "cinvilla",
+      "edad": "38",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-27T06:22:56.317Z"
     }
   ],
   "disciplinas": [
-    { "id": "1", "nombre": "Atletismo" },
-    { "id": "2", "nombre": "Natación" },
-    { "id": "3", "nombre": "Fútbol" },
-    { "id": "4", "nombre": "Baloncesto" },
-    { "id": "5", "nombre": "Bochas" },
-    { "id": "6", "nombre": "Tenis de Mesa" },
-    { "id": "7", "nombre": "Gimnasia" },
-    { "id": "8", "nombre": "Levantamiento de Pesas" }
+    {
+      "id": "1",
+      "nombre": "Atletismo"
+    },
+    {
+      "id": "2",
+      "nombre": "Natación"
+    },
+    {
+      "id": "3",
+      "nombre": "Fútbol"
+    },
+    {
+      "id": "4",
+      "nombre": "Baloncesto"
+    },
+    {
+      "id": "5",
+      "nombre": "Bochas"
+    },
+    {
+      "id": "6",
+      "nombre": "Tenis de Mesa"
+    },
+    {
+      "id": "7",
+      "nombre": "Gimnasia"
+    },
+    {
+      "id": "8",
+      "nombre": "Levantamiento de Pesas"
+    }
   ],
   "programas": [
-    { "id": "1", "nombre": "San José" },
-    { "id": "2", "nombre": "Alajuela" },
-    { "id": "3", "nombre": "Heredia" },
-    { "id": "4", "nombre": "Cartago" },
-    { "id": "5", "nombre": "Limón" },
-    { "id": "6", "nombre": "Puntarenas" },
-    { "id": "7", "nombre": "Guanacaste" },
-    { "id": "8", "nombre": "San Carlos" }
+    {
+      "id": "1",
+      "nombre": "San José"
+    },
+    {
+      "id": "2",
+      "nombre": "Alajuela"
+    },
+    {
+      "id": "3",
+      "nombre": "Heredia"
+    },
+    {
+      "id": "4",
+      "nombre": "Cartago"
+    },
+    {
+      "id": "5",
+      "nombre": "Limón"
+    },
+    {
+      "id": "6",
+      "nombre": "Puntarenas"
+    },
+    {
+      "id": "7",
+      "nombre": "Guanacaste"
+    },
+    {
+      "id": "8",
+      "nombre": "San Carlos"
+    }
   ],
   "niveles_habilidad": [
-    { "id": "1", "nombre": "Principiante" },
-    { "id": "2", "nombre": "Intermedio" },
-    { "id": "3", "nombre": "Avanzado" },
-    { "id": "4", "nombre": "Élite" }
+    {
+      "id": "1",
+      "nombre": "Principiante"
+    },
+    {
+      "id": "2",
+      "nombre": "Intermedio"
+    },
+    {
+      "id": "3",
+      "nombre": "Avanzado"
+    },
+    {
+      "id": "4",
+      "nombre": "Élite"
+    }
   ],
   "areas_voluntariado": [
-    { "id": "1", "nombre": "Entrenador" },
-    { "id": "2", "nombre": "Logística en Eventos" },
-    { "id": "3", "nombre": "Salud y Medicina" },
-    { "id": "4", "nombre": "Comunicación y Redes" },
-    { "id": "5", "nombre": "Administración" }
+    {
+      "id": "1",
+      "nombre": "Entrenador"
+    },
+    {
+      "id": "2",
+      "nombre": "Logística en Eventos"
+    },
+    {
+      "id": "3",
+      "nombre": "Salud y Medicina"
+    },
+    {
+      "id": "4",
+      "nombre": "Comunicación y Redes"
+    },
+    {
+      "id": "5",
+      "nombre": "Administración"
+    }
   ],
   "parentescos": [
-    { "id": "1", "nombre": "Padre" },
-    { "id": "2", "nombre": "Madre" },
-    { "id": "3", "nombre": "Hermano/a" },
-    { "id": "4", "nombre": "Abuelo/a" },
-    { "id": "5", "nombre": "Tutor Legal" },
-    { "id": "6", "nombre": "Otro" }
+    {
+      "id": "1",
+      "nombre": "Padre"
+    },
+    {
+      "id": "2",
+      "nombre": "Madre"
+    },
+    {
+      "id": "3",
+      "nombre": "Hermano/a"
+    },
+    {
+      "id": "4",
+      "nombre": "Abuelo/a"
+    },
+    {
+      "id": "5",
+      "nombre": "Tutor Legal"
+    },
+    {
+      "id": "6",
+      "nombre": "Otro"
+    }
   ],
   "configuracion": {
     "assets": {

@@ -15,11 +15,14 @@ import RegisterPage from '../pages/RegisterPage';
 import PerfilPage from '../pages/PerfilPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
 import PrivateRoute from './PrivateRoute';
+import ScrollToTop from '../components/ScrollToTop';
 
 
 const Routing = () => {
     return (
-        <Routes>
+        <>
+            <ScrollToTop />
+            <Routes>
             {/* Rutas Públicas */}
             <Route path="/" element={<HomePages />} />
             <Route path="/login" element={<LoginPage />} />
@@ -59,6 +62,7 @@ const Routing = () => {
             {/* Redirección por defecto */}
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+      </>
     );
 };
 

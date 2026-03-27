@@ -16,7 +16,7 @@ const Home = () => {
     const irAFormulario = (rol) => navegar(`/formulario?rol=${rol}`);
 
     const manejarUnete = () => navegar('/formulario');
-    const manejarConoceMas = () => console.log('Conocer más...');
+    const manejarConoceMas = () => navegar('/nosotros');
 
     const [counts, setCounts] = useState({
         atletas: 0,

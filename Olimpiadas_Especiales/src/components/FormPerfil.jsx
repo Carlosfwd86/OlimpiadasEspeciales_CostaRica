@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { updateAtleta, getAtletaById } from '../services/ServicesAtletas';
@@ -11,9 +11,33 @@ import '../styles/Perfil.css';
 
 function FormPerfil({ user, setRefreshUser }) {
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
+    const [avatarPreview, setAvatarPreview] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [linkedUser, setLinkedUser] = useState(null);
+
+    const handleAvatarClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarPreview(reader.result);
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Imagen adjuntada!',
+                    text: 'Has seleccionado una nueva imagen para tu perfil.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     // Fetch linked user info
     useEffect(() => {
@@ -83,17 +107,94 @@ function FormPerfil({ user, setRefreshUser }) {
 
     const badgeLabel = {
         'atleta': 'Atleta Oficial',
-        'tutor': 'Tutor/Encargado',
+        'tutor': 'Tutor / Familiar',
         'admin': 'Administrador',
         'entrenador': 'Entrenador',
-        'voluntario': 'Voluntario'
-    }[user.rol] || 'Usuario';
+        'voluntario': 'Voluntario',
+        'usuario': 'Usuario General'
+    }[user.rol] || (user.rol ? user.rol.charAt(0).toUpperCase() + user.rol.slice(1) : 'Usuario');
     
     // Generar avatar a partir de iniciales
     const iniciales = (user.nombre?.charAt(0) || '') + (user.apellido?.charAt(0) || user.tutorApellido?.charAt(0) || '');
 
     return (
-        <div className="perfil-container">
+        <div className="perfil-container" style={{ position: 'relative' }}>
+            <style>{`
+                .boton_regresar {
+                    position: absolute;
+                    top: 25px;
+                    left: 30px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 10px 20px;
+                    background: #ffffff;
+                    border: 1px solid #ff0000;
+                    border-radius: 12px;
+                    color: #ff0000;
+                    font-weight: 700;
+                    font-size: 0.9rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    z-index: 10;
+                }
+
+                .boton_regresar:hover {
+                    background: #f8fafc;
+                    color: #1e293b;
+                    border-color: #1e293b;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                    transform: translateX(-5px);
+                }
+
+                .boton_regresar svg {
+                    transition: transform 0.3s ease;
+                    stroke: #ff0000;
+                }
+
+                .boton_regresar:hover svg {
+                    transform: translateX(-3px);
+                    stroke: #1e293b;
+                }
+                
+                @media (max-width: 768px) {
+                    .boton_regresar {
+                        top: 15px;
+                        left: 15px;
+                        padding: 8px 15px;
+                        font-size: 0.8rem;
+                    }
+                }
+
+                .avatar-edit-icon {
+                    position: absolute;
+                    bottom: 0px;
+                    right: 4px;
+                    width: 28px;
+                    height: 28px;
+                    background: #ff0000;
+                    border: 2px solid #ffffff;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+                    transition: all 0.3s ease;
+                }
+
+                .avatar-edit-icon:hover {
+                    transform: scale(1.15);
+                    background: #1e293b;
+                }
+            `}</style>
+
+            <button className="boton_regresar" onClick={() => navigate(-1)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Regresar
+            </button>
             {/* Header / Cover */}
             <div className="perfil-header">
                 <div className="perfil-title">
@@ -112,8 +213,25 @@ function FormPerfil({ user, setRefreshUser }) {
                 {/* ID / Sidebar */}
                 <div className="perfil-sidebar">
                     <div className="id-card">
-                        <div className="id-card-avatar">
-                            {iniciales || '👤'}
+                        <div className="id-card-avatar" style={{ position: 'relative' }}>
+                            {avatarPreview ? (
+                                <img src={avatarPreview} alt="Avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                            ) : (
+                                iniciales || '👤'
+                            )}
+                            <div className="avatar-edit-icon" onClick={handleAvatarClick}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </div>
+                            <input 
+                                type="file" 
+                                ref={fileInputRef} 
+                                style={{ display: 'none' }} 
+                                onChange={handleFileChange}
+                                accept="image/png, image/jpeg, image/jpg"
+                            />
                         </div>
                         <h2>{user.nombre} {user.apellido || user.tutorApellido || ''}</h2>
                         <p>{user.correoElectronico || user.tutorCorreo}</p>
@@ -161,9 +279,17 @@ function FormPerfil({ user, setRefreshUser }) {
                     
                     {/* Sección General */}
                     <div className="perfil-section">
-                        <h3>Información Personal</h3>
+                        <h3>Información de {badgeLabel}</h3>
                         {user.rol === 'atleta' ? (
                             <div className="details-grid">
+                                <div className="detail-item">
+                                    <span className="detail-label">Nombre Completo</span>
+                                    <span className="detail-value">{user.nombre} {user.apellido}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Edad</span>
+                                    <span className="detail-value">{user.edad || 'N/A'}</span>
+                                </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Fecha de Nacimiento</span>
                                     <span className="detail-value">{user.fechaNacimiento || 'N/A'}</span>
@@ -184,6 +310,14 @@ function FormPerfil({ user, setRefreshUser }) {
                         ) : user.rol === 'tutor' ? (
                             <div className="details-grid">
                                 <div className="detail-item">
+                                    <span className="detail-label">Nombre Completo</span>
+                                    <span className="detail-value">{user.nombre} {user.tutorApellido || user.apellido || ''}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Edad</span>
+                                    <span className="detail-value">{user.edad || 'N/A'}</span>
+                                </div>
+                                <div className="detail-item">
                                     <span className="detail-label">Cédula / ID</span>
                                     <span className="detail-value">{user.cedula || 'N/A'}</span>
                                 </div>
@@ -191,46 +325,35 @@ function FormPerfil({ user, setRefreshUser }) {
                                     <span className="detail-label">Teléfono Primario</span>
                                     <span className="detail-value">{user.telefono || user.tutorTelefono || 'N/A'}</span>
                                 </div>
-                                <div className="detail-item">
-                                    <span className="detail-label">País / Región</span>
-                                    <span className="detail-value">{user.pais || user.tutorPais || 'N/A'}</span>
-                                </div>
                             </div>
-                        ) : (user.rol === 'entrenador' || user.rol === 'voluntario') ? (
+                        ) : (user.rol === 'entrenador' || user.rol === 'voluntario' || user.rol === 'usuario' || true) ? (
                             <div className="details-grid">
+                                <div className="detail-item">
+                                    <span className="detail-label">Nombre Completo</span>
+                                    <span className="detail-value">{user.nombre} {user.apellido || ''}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">Edad</span>
+                                    <span className="detail-value">{user.edad || 'N/A'}</span>
+                                </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Cédula / ID</span>
                                     <span className="detail-value">{user.cedula || 'N/A'}</span>
                                 </div>
                                 <div className="detail-item">
-                                    <span className="detail-label">Teléfono</span>
-                                    <span className="detail-value">{user.telefono || 'N/A'}</span>
-                                </div>
-                                <div className="detail-item">
-                                    <span className="detail-label">Especialidad/Interés</span>
-                                    <span className="detail-value">{user.especialidad || user.intereses || (user.rol === 'entrenador' ? 'Entrenador' : 'Apoyo General')}</span>
-                                </div>
-                                <div className="detail-item">
                                     <span className="detail-label">País / Región</span>
                                     <span className="detail-value">{user.pais || 'Costa Rica'}</span>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="details-grid">
                                 <div className="detail-item">
-                                    <span className="detail-label">ID Admin</span>
-                                    <span className="detail-value">#{user.id}</span>
-                                </div>
-                                <div className="detail-item">
-                                    <span className="detail-label">Correo de Soporte</span>
+                                    <span className="detail-label">Correo Registrado</span>
                                     <span className="detail-value">{user.correoElectronico}</span>
                                 </div>
                                 <div className="detail-item">
-                                    <span className="detail-label">Acceso</span>
-                                    <span className="detail-value">Total / Root</span>
+                                    <span className="detail-label">Rol en el programa</span>
+                                    <span className="detail-value">{badgeLabel}</span>
                                 </div>
                             </div>
-                        )}
+                        ) : null}
                     </div>
 
                     {/* Sección Médica (Solo Atleta) */}
