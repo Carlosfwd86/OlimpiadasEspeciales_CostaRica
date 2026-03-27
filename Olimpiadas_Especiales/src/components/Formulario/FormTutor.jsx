@@ -22,6 +22,20 @@ function FormTutor({ onVolver }) {
     getConfig('parentescos').then(setParentescos);
   }, []);
 
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      if (user.rol === 'usuario') {
+        setDatos(prev => ({
+          ...prev,
+          nombre: user.nombre || prev.nombre,
+          correoElectronico: user.correoElectronico || prev.correoElectronico
+        }));
+      }
+    }
+  }, []);
+
   const manejarCambio = (e) => {
     const { id, value } = e.target;
     setDatos(prev => ({ ...prev, [id]: value }));

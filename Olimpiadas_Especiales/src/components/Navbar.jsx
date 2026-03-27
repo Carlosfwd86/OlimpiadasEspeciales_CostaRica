@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
-import logoOlimpiadas from '../img/Logo Olimpiadas.png';
 
 const Navbar = () => {
   const navegar = useNavigate();
@@ -35,7 +34,7 @@ const Navbar = () => {
   const irAVoluntarios = () => navegar("/voluntarios");
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
-  const irARegistro = () => navegar("/formulario");
+  const irARegistro = () => navegar("/registro");
   const irAPanelAdmin = () => navegar("/admin");
   const irAPerfil = () => navegar("/perfil");
 
@@ -48,7 +47,7 @@ const Navbar = () => {
   return (
     <nav className="navbar_principal">
       <div className="navbar_logotipo" onClick={irAlInicio}>
-        <img src={logoOlimpiadas} alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
+        <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
       </div>
 
       <div className="navbar_menu_derecha">

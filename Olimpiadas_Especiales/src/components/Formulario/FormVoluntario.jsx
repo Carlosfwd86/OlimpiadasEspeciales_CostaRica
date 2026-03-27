@@ -16,6 +16,20 @@ function FormVoluntario({ onVolver }) {
     disponibilidad: '', experienciaPrevia: '',
   });
   const [errores, setErrores] = useState({});
+
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      if (user.rol === 'usuario') {
+        setDatos(prev => ({
+          ...prev,
+          nombre: user.nombre || prev.nombre,
+          correoElectronico: user.correoElectronico || prev.correoElectronico
+        }));
+      }
+    }
+  }, []);
   const [archivos, setArchivos] = useState({ cedula: null, delincuencia: null, foto: null });
   const [areasCatalogo, setAreasCatalogo] = useState([]);
 

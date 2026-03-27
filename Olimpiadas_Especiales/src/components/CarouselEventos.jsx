@@ -2,17 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/CarouselEventos.css';
 
-// Importación de imágenes (Mapeo por nombre de archivo en db.json)
-import imgCompetencia from '../img/evento_competencia.png';
-import imgNatacion from '../img/evento_natacion.png';
-import imgCeremonia from '../img/evento_ceremonia.png';
-
-const imagenMapa = {
-    "evento_competencia.png": imgCompetencia,
-    "evento_natacion.png": imgNatacion,
-    "evento_ceremonia.png": imgCeremonia
-};
-
 const CarouselEventos = () => {
     const navigate = useNavigate();
     const [eventos, setEventos] = useState([]);
@@ -53,7 +42,7 @@ const CarouselEventos = () => {
                         onClick={handleVerEventos}
                     >
                         <div className="evento-imagen-wrapper">
-                            <img src={imagenMapa[evento.img] || evento.img} alt={evento.nombre} />
+                            <img src={evento.img} alt={evento.nombre} />
                             <span className="evento-badge">{evento.categoria}</span>
                         </div>
                         <div className="evento-contenido">

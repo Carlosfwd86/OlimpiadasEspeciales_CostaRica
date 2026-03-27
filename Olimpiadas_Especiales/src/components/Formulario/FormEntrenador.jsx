@@ -17,6 +17,20 @@ function FormEntrenador({ onVolver }) {
     horarioDisponible: '', afeccionSalud: 'No', detalleSalud: '',
   });
   const [errores, setErrores] = useState({});
+
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      if (user.rol === 'usuario') {
+        setDatos(prev => ({
+          ...prev,
+          nombre: user.nombre || prev.nombre,
+          correoElectronico: user.correoElectronico || prev.correoElectronico
+        }));
+      }
+    }
+  }, []);
   const [archivos, setArchivos] = useState({
     cedula: null,
     titulo: null,
