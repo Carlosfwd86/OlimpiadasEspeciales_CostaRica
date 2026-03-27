@@ -173,8 +173,7 @@
       "direccion": "ZDNGZEDGHNRSEYXDG",
       "nombreAtleta": "Luis j",
       "relacionConAtleta": "Padre/Madre",
-      "ocupacion": "Arquitecto",
-      "motivacion": "QUIERO UNIRME PARA ESTAR AL TANTO DE LAS COMPENCIAS DE MIS HIJOS",
+      "accion": "QUIERO UNIRME PARA ESTAR AL TANTO DE LAS COMPENCIAS DE MIS HIJOS",
       "experienciaNecesidadesEspeciales": "No",
       "cedula_nombre": "voluntarios_accion.png",
       "foto_nombre": "No adjuntado",
@@ -229,7 +228,7 @@
       "lugar": "Estadio Nacional",
       "categoria": "Atletismo",
       "status": "Próximo",
-      "img": "evento_competencia.png"
+      "img": "/img/evento_competencia.png"
     },
     {
       "id": "2",
@@ -239,7 +238,7 @@
       "lugar": "Piscina María del Milagro París",
       "categoria": "Natación",
       "status": "Abierto",
-      "img": "evento_natacion.png"
+      "img": "/img/evento_natacion.png"
     }
   ],
   "consultas": [],
@@ -262,5 +261,52 @@
       "rol": "usuario",
       "fechaRegistro": "2026-03-26T21:44:20.764Z"
     }
-  ]
+  ],
+  "disciplinas": [
+    { "id": "1", "nombre": "Atletismo" },
+    { "id": "2", "nombre": "Natación" },
+    { "id": "3", "nombre": "Fútbol" },
+    { "id": "4", "nombre": "Baloncesto" },
+    { "id": "5", "nombre": "Bochas" },
+    { "id": "6", "nombre": "Tenis de Mesa" },
+    { "id": "7", "nombre": "Gimnasia" },
+    { "id": "8", "nombre": "Levantamiento de Pesas" }
+  ],
+  "programas": [
+    { "id": "1", "nombre": "San José" },
+    { "id": "2", "nombre": "Alajuela" },
+    { "id": "3", "nombre": "Heredia" },
+    { "id": "4", "nombre": "Cartago" },
+    { "id": "5", "nombre": "Limón" },
+    { "id": "6", "nombre": "Puntarenas" },
+    { "id": "7", "nombre": "Guanacaste" },
+    { "id": "8", "nombre": "San Carlos" }
+  ],
+  "niveles_habilidad": [
+    { "id": "1", "nombre": "Principiante" },
+    { "id": "2", "nombre": "Intermedio" },
+    { "id": "3", "nombre": "Avanzado" },
+    { "id": "4", "nombre": "Élite" }
+  ],
+  "areas_voluntariado": [
+    { "id": "1", "nombre": "Entrenador" },
+    { "id": "2", "nombre": "Logística en Eventos" },
+    { "id": "3", "nombre": "Salud y Medicina" },
+    { "id": "4", "nombre": "Comunicación y Redes" },
+    { "id": "5", "nombre": "Administración" }
+  ],
+  "parentescos": [
+    { "id": "1", "nombre": "Padre" },
+    { "id": "2", "nombre": "Madre" },
+    { "id": "3", "nombre": "Hermano/a" },
+    { "id": "4", "nombre": "Abuelo/a" },
+    { "id": "5", "nombre": "Tutor Legal" },
+    { "id": "6", "nombre": "Otro" }
+  ],
+  "configuracion": {
+    "assets": {
+      "video_berlin": "/img/berlin-film-2025-for-website.mp4",
+      "logo_oficial": "/img/Logo Olimpiadas.png"
+    }
+  }
 }
