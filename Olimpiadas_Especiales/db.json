@@ -243,7 +243,6 @@
   ],
   "consultas": [],
   "usuarios": [
-
     {
       "id": "6332",
       "nombre": "gerson",
@@ -305,6 +304,18 @@
       "edad": "20",
       "rol": "usuario",
       "fechaRegistro": "2026-03-27T11:44:01.262Z"
+    },
+    {
+      "id": "7ef4",
+      "nombre": "Braksley Camacho Garcia",
+      "cedula": "605100869",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "telefono": "",
+      "password": "holaamigoscomoestan",
+      "fechaNacimiento": "2008-02-20",
+      "genero": "Masculino",
+      "fechaRegistro": "2026-03-27T19:26:12.146Z",
+      "rol": "usuario"
     }
   ],
   "disciplinas": [

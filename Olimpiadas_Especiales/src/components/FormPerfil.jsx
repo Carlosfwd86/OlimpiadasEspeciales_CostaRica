@@ -262,7 +262,7 @@ function FormPerfil({ user, setRefreshUser }) {
                                 <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
                                 <Field label="Número de Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
                                 <Field label="Fecha de Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
-                                <Field label="Sexo" name="sexo" value={editData.sexo} editing={isEditing} onChange={handleChange}
+                                <Field label="Sexo" name="genero" value={editData.genero} editing={isEditing} onChange={handleChange}
                                     options={[{value:'',label:'— Seleccionar —'},{value:'Masculino',label:'Masculino'},{value:'Femenino',label:'Femenino'},{value:'Prefiero no indicar',label:'Prefiero no indicar'}]} />
                             </div>
                             <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
