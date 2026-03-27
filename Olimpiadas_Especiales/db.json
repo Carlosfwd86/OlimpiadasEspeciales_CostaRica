@@ -244,15 +244,6 @@
   "consultas": [],
   "usuarios": [
     {
-      "id": "90e1",
-      "nombre": "Braksley",
-      "correoElectronico": "bcamachogfwd@gmail.com",
-      "password": "holaperros123",
-      "edad": "18",
-      "rol": "usuario",
-      "fechaRegistro": "2026-03-26T21:38:33.117Z"
-    },
-    {
       "id": "6332",
       "nombre": "gerson",
       "correoElectronico": "dinartegerson@gmail.com",
@@ -313,6 +304,18 @@
       "edad": "20",
       "rol": "usuario",
       "fechaRegistro": "2026-03-27T11:44:01.262Z"
+    },
+    {
+      "id": "7ef4",
+      "nombre": "Braksley Camacho Garcia",
+      "cedula": "605100869",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "telefono": "",
+      "password": "holaamigoscomoestan",
+      "fechaNacimiento": "2008-02-20",
+      "genero": "Masculino",
+      "fechaRegistro": "2026-03-27T19:26:12.146Z",
+      "rol": "usuario"
     }
   ],
   "disciplinas": [

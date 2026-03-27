@@ -12,9 +12,9 @@ const Register = () => {
     telefono: '',
     password: '',
     confirmPassword: '',
-    edad: '',
-    rolUsuario: '',
-    otroRol: ''
+    genero: '',
+    fechaNacimiento: ''
+
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -48,8 +48,8 @@ const Register = () => {
         correoElectronico: formData.correoElectronico.toLowerCase(),
         telefono: formData.telefono,
         password: formData.password,
-        edad: formData.edad,
-        rol: formData.rolUsuario === 'otro' ? formData.otroRol : formData.rolUsuario,
+        fechaNacimiento: formData.fechaNacimiento,
+        genero: formData.genero,
         fechaRegistro: new Date().toISOString()
       };
 
@@ -163,74 +163,39 @@ const Register = () => {
             />
           </div>
 
+   
+
           <div className="form-group">
-            <label htmlFor="telefono">Telefono</label>
+            <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
             <input
-              type="tel"
-              id="telefono"
-              name="telefono"
-              placeholder="ejem: 8888-5050"
-              value={formData.telefono}
+              type="date"
+              id="fechaNacimiento"
+              name="fechaNacimiento"
+              placeholder="Tu fecha de nacimiento"
+              value={formData.fechaNacimiento}
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="rolUsuario">Yo soy:</label>
+
+          <div>
+            <label htmlFor="genero">Genero</label>
             <select
-              id="rolUsuario"
-              name="rolUsuario"
-              value={formData.rolUsuario}
+              id="genero"
+              name="genero"
+              value={formData.genero}
               onChange={handleChange}
               required
-              style={{
-                width: '100%',
-                padding: '16px',
-                borderRadius: '12px',
-                border: '1px solid #FF0000',
-                fontSize: '1rem',
-                backgroundColor: '#fff',
-                cursor: 'pointer',
-                fontFamily: 'inherit'
-              }}
             >
-              <option value="" disabled>Selecciona una opción</option>
-              <option value="atleta">Atleta</option>
-              <option value="entrenador">Entrenador</option>
-              <option value="tutor">Tutor / Familiar</option>
-              <option value="voluntario">Voluntario</option>
-              <option value="otro">Otro</option>
+              <option value="">Selecciona una opción</option>
+              <option value="NoDecir">Prefiero no decirlo</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
             </select>
           </div>
 
-          {formData.rolUsuario === 'otro' && (
-            <div className="form-group" style={{ animation: 'fadeIn 0.3s ease' }}>
-              <label htmlFor="otroRol">Indique cómo quiere registrarse:</label>
-              <input
-                type="text"
-                id="otroRol"
-                name="otroRol"
-                placeholder="Ej: Patrocinador, Prensa, etc."
-                value={formData.otroRol}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          )}
 
-          <div className="form-group">
-            <label htmlFor="edad">Edad</label>
-            <input
-              type="number"
-              id="edad"
-              name="edad"
-              placeholder="Tu edad"
-              value={formData.edad}
-              onChange={handleChange}
-              required
-            />
-          </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
             <div className="form-group">

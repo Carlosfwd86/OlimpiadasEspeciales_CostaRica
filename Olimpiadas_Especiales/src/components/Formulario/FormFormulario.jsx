@@ -9,8 +9,8 @@ import FormTutor from './FormTutor'
 import FormVoluntario from './FormVoluntario'
 
 function FormFormulario() {
-  const [rol, setRol] = useState(null)
   const [searchParams] = useSearchParams()
+  const [rol, setRol] = useState(searchParams.get('rol'))
   const navigate = useNavigate()
 
   useEffect(() => {

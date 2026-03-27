@@ -188,7 +188,7 @@ function FormTutor({ onVolver }) {
                   <label>Parentesco / Relación *</label>
                   <select id="relacionConAtleta" className="input-field" value={datos.relacionConAtleta} onChange={manejarCambio}>
                     <option value="">Seleccione...</option>
-                    {parentescos.map(p => <option key={p} value={p}>{p}</option>)}
+                    {parentescos.map(p => <option key={p.id || p.nombre} value={p.nombre}>{p.nombre}</option>)}
                   </select>
                 </div>
               </div>

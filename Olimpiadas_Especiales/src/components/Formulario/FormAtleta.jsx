@@ -517,8 +517,8 @@ function FormAtleta({ onVolver }) {
                 <div className='input-container'>
                   <label>Programa local de Olimpiadas Especiales:</label>
                   <select id='programa' className="input-field" value={datos.programa} onChange={manejarCambio}>
-                    <option value="">Seleccione programa...</option>
-                    {catalogos.programas.map(p => <option key={p} value={p}>{p}</option>)}
+                    <option value="">Seleccione Programa...</option>
+                    {catalogos.programas.map(p => <option key={p.id || p.nombre} value={p.nombre}>{p.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container">
@@ -899,15 +899,15 @@ function FormAtleta({ onVolver }) {
                 <div className="input-container">
                   <label>Disciplina Deportiva Principal</label>
                   <select name="disciplina" className="input-field" value={datos.disciplina} onChange={manejarCambio}>
-                    <option value="">Seleccione...</option>
-                    {catalogos.disciplinas.map(d => <option key={d} value={d}>{d}</option>)}
+                    <option value="">Seleccione Disciplina...</option>
+                    {catalogos.disciplinas.map(d => <option key={d.id || d.nombre} value={d.nombre}>{d.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container">
                   <label>Nivel de Habilidad</label>
                   <select name="nivelHabilidad" className="input-field" value={datos.nivelHabilidad} onChange={manejarCambio}>
-                    <option value="">Seleccione...</option>
-                    {catalogos.niveles_habilidad.map(n => <option key={n} value={n}>{n}</option>)}
+                    <option value="">Seleccione Nivel...</option>
+                    {catalogos.niveles_habilidad.map(n => <option key={n.id || n.nombre} value={n.nombre}>{n.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}>
