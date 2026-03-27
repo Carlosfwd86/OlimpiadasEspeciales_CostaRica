@@ -50,6 +50,21 @@ function FormAtleta({ onVolver }) {
     cargarCatalogos();
   }, []);
 
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      // Solo autocompletar si es un usuario básico que se está postulando
+      if (user.rol === 'usuario') {
+        setDatos(prev => ({
+          ...prev,
+          nombre: user.nombre || prev.nombre,
+          correoElectronico: user.correoElectronico || prev.correoElectronico
+        }));
+      }
+    }
+  }, []);
+
   // --- Manejadores Universales ---
   const manejarCambio = (e) => {
     const { id, name, value } = e.target;
