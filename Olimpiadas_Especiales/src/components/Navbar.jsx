@@ -72,7 +72,9 @@ const Navbar = () => {
             }}
             onMouseEnter={e => { e.currentTarget.style.background = '#cc0000'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >INSCRIBIRSE</li>
+          >
+            INSCRIBIRSE
+          </li>
         </ul>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
