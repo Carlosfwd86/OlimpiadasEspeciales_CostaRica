@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
-import logoOlimpiadas from '../img/Logo Olimpiadas.png';
 
 const Navbar = () => {
   const navegar = useNavigate();
@@ -35,7 +34,8 @@ const Navbar = () => {
   const irAVoluntarios = () => navegar("/voluntarios");
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
-  const irARegistro = () => navegar("/formulario");
+  const irARegistro = () => navegar("/registro");
+  const irAPlataformaRegistro = () => navegar("/plataforma-registro");
   const irAPanelAdmin = () => navegar("/admin");
   const irAPerfil = () => navegar("/perfil");
 
@@ -48,7 +48,7 @@ const Navbar = () => {
   return (
     <nav className="navbar_principal">
       <div className="navbar_logotipo" onClick={irAlInicio}>
-        <img src={logoOlimpiadas} alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
+        <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
       </div>
 
       <div className="navbar_menu_derecha">
@@ -58,6 +58,21 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
           <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
           <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
+          <li
+            className="enlace_nav"
+            onClick={irAPlataformaRegistro}
+            style={{
+              background: '#FF0000',
+              color: '#ffffff',
+              padding: '8px 18px',
+              borderRadius: '50px',
+              fontWeight: '900',
+              letterSpacing: '0.05em',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#cc0000'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'translateY(0)'; }}
+          >INSCRIBIRSE</li>
         </ul>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -96,9 +111,6 @@ const Navbar = () => {
             <>
               <button className="boton_accion_blanco" onClick={irALogin}>
                 INICIAR SESIÓN
-              </button>
-              <button className="boton_accion_rojo" onClick={irARegistro}>
-                REGISTRO
               </button>
             </>
           )}

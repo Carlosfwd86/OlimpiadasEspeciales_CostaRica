@@ -77,33 +77,6 @@
       "fechaRegistro": "2026-03-24T20:00:29.797Z"
     },
     {
-      "id": "afba",
-      "initials": "FR",
-      "name": "francela",
-      "email": "nporrasafwd@gmail.com",
-      "phone": "88800000",
-      "sport": "Baloncesto",
-      "region": "Puntarenas",
-      "time": "Registrado ahora",
-      "status": "ACTIVO",
-      "statusColor": "yellow",
-      "bgColor": "bg-light-blue",
-      "fechaRegistro": "2026-03-26T01:50:59.322Z",
-      "rol": "atleta"
-    },
-    {
-      "id": "43ee",
-      "nombre": "Ana López",
-      "correoElectronico": "ana@gmaill.com",
-      "telefono": "22334455",
-      "disciplina": "Atletismo",
-      "programa": "San José",
-      "status": "ACTIVO",
-      "rol": "atleta",
-      "fechaRegistro": "2026-03-26T16:28:55.131Z",
-      "password": "atleta123"
-    },
-    {
       "id": "f7b2",
       "nombre": "dsfghj",
       "fechaNacimiento": "2018-03-23",
@@ -138,46 +111,10 @@
       "dispositivosMedicos": [
         "Ninguno"
       ],
-      "especificacionDietetico": "",
-      "especificacionOtrosDispositivos": "",
-      "cantidadConmociones": "",
-      "fechaUltimaConmocion": "",
-      "especificacionAfeccionesMentales": "",
-      "tiposAlergia": [],
-      "especificacionAlergiaOtro": "",
-      "terminosAceptados": true,
-      "objecionTratamientoMedico": true,
-      "objecionTransfusiones": true,
-      "firmaAtleta": "adasdasd",
-      "fechaFirmaAtleta": "2026-03-25",
-      "firmaTutor": "Braksley Camacho Garcia",
-      "relacionTutor": "",
-      "fechaFirmaTutor": "2026-03-25",
-      "interesInvestigacion": "No",
-      "disciplina": "Levantamiento de Pesas",
-      "nivelHabilidad": "Principiante",
-      "relacionAtleta": "El Atleta mismo",
-      "relacionAtletaOtro": "",
-      "programa": "sdfgh",
-      "afeccionesMentales": "No",
-      "anemiaDepranocitica": "No",
-      "medicoLimitoDeportes": "Si",
-      "discAuditiva": "Si",
-      "diabetes": "No",
-      "afeccionCardiaca": "Si",
-      "reqDietetico": "No",
-      "otrosDispositivos": "No",
-      "asma": "Si",
-      "discVisual": "Si",
-      "trastornoHemorragico": "No",
-      "epilepsiaConvulsivo": "No",
-      "conmocionCerebral": "No",
-      "alergiasGraves": "No",
-      "tomaMedicamentos": "No",
-      "apellido": "",
-      "segundoNombre": "",
       "password": "hola123",
       "rol": "atleta",
+      "disciplina": "Levantamiento de Pesas",
+      "programa": "sdfgh",
       "fechaRegistro": "2026-03-25T21:50:40.115Z",
       "tutorVinculado": "ee1e"
     },
@@ -228,20 +165,6 @@
   "voluntarios": [],
   "tutores": [
     {
-      "id": "ee1e",
-      "nombre": "Braksley",
-      "apellido": "Camacho García",
-      "cedula": "1234567890",
-      "correoElectronico": "braksgpro123@gmail.com",
-      "telefono": "234567890",
-      "pais": "sdfghjk",
-      "relacionConAtleta": "Padre",
-      "password": "n2i85d1j",
-      "rol": "tutor",
-      "atletaVinculado": "f7b2",
-      "fechaRegistro": "2026-03-25T21:50:40.365Z"
-    },
-    {
       "id": "f9db",
       "nombre": "andres",
       "cedula": "23456789",
@@ -250,8 +173,7 @@
       "direccion": "ZDNGZEDGHNRSEYXDG",
       "nombreAtleta": "Luis j",
       "relacionConAtleta": "Padre/Madre",
-      "ocupacion": "Arquitecto",
-      "motivacion": "QUIERO UNIRME PARA ESTAR AL TANTO DE LAS COMPENCIAS DE MIS HIJOS",
+      "accion": "QUIERO SER VOLUNTARIO",
       "experienciaNecesidadesEspeciales": "No",
       "cedula_nombre": "voluntarios_accion.png",
       "foto_nombre": "No adjuntado",
@@ -262,12 +184,12 @@
   ],
   "estadisticas_generales": {
     "totalRegistros": {
-      "valor": "7",
+      "valor": "5",
       "porcentaje": "100%",
       "tendencia": "up"
     },
     "atletasActivos": {
-      "valor": "7",
+      "valor": "5",
       "porcentaje": "100%",
       "tendencia": "up"
     },
@@ -285,16 +207,16 @@
     "atletasPorDeporte": [
       { "name": "Fútbol", "value": 1 },
       { "name": "Natación", "value": 1 },
-      { "name": "Baloncesto", "value": 2 },
-      { "name": "Atletismo", "value": 2 },
+      { "name": "Baloncesto", "value": 1 },
+      { "name": "Atletismo", "value": 1 },
       { "name": "Levantamiento de Pesas", "value": 1 }
     ],
     "distribucionRegional": [
-      { "name": "San José", "value": 3 },
+      { "name": "San José", "value": 2 },
       { "name": "Alajuela", "value": 1 },
-      { "name": "Puntarenas", "value": 2 }
+      { "name": "Puntarenas", "value": 1 }
     ],
-    "totalGeneral": "7"
+    "totalGeneral": "5"
   },
   "registros_pendientes": [],
   "actividad_sistema": [
@@ -350,14 +272,14 @@
   "competiciones": [
     {
       "id": "1",
-      "nombre": "Próxima Competencia Nacional de Atletismo",
-      "resumen": "Nuestros atletas se preparan para la competencia regional. Ven a apoyarlos este fin de semana en el estadio nacional.",
+      "nombre": "Competición Nacional de Atletismo",
+      "resumen": "Próxima gran cita deportiva nacional en San José.",
       "fecha": "2026-05-15",
       "lugar": "Estadio Nacional",
       "categoria": "Atletismo",
       "status": "Próximo",
       "img": "evento_competencia.png",
-      "deporte": "Atletismo",
+      "deporte": "Fútbol",
       "fechaFin": "2026-03-28",
       "ubicacion": "",
       "descripcion": "",
@@ -367,45 +289,122 @@
     {
       "id": "2",
       "nombre": "Encuentro Regional de Natación",
-      "resumen": "Un evento acuático increíble para todas las edades. Contaremos con la participación de delegaciones de todo el país.",
+      "resumen": "Competencia acuática para delegaciones regionales.",
       "fecha": "2026-06-22",
       "lugar": "Piscina María del Milagro París",
       "categoria": "Natación",
       "status": "Abierto",
-      "img": "evento_natacion.png"
-    },
-    {
-      "id": "3",
-      "nombre": "Gala de Reconocimiento al Atleta",
-      "resumen": "Celebración especial para honrar el esfuerzo y la dedicación de nuestros deportistas durante el año.",
-      "fecha": "2026-07-10",
-      "lugar": "Teatro Nacional",
-      "categoria": "Social",
-      "status": "Por confirmar",
-      "img": "evento_ceremonia.png"
-    },
-    {
-      "id": "rk6pt51kz",
-      "nombre": "uky,il7,.u",
-      "deporte": "Atletismo",
-      "fecha": "2026-03-26",
-      "fechaFin": "2026-03-23",
-      "ubicacion": "kgkggykkkhbkh",
-      "descripcion": "kkukvkvhhukbkbhl",
-      "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIROd_m5TqdXbs60Y_ajK7p9pygWly6Y3zVA&s",
-      "enlace": "https://www.nsf.org/mx/es/alimentos-bebidas/alimentos-org%C3%A1nicos-especialidades/certificaci%C3%B3n-bebidas-hielo-empaquetado",
-      "status": "Programado"
+      "img": "/img/evento_natacion.png"
     }
+  ],
+  "usuarios": [
+    {
+      "id": "6332",
+      "nombre": "gerson",
+      "correoElectronico": "dinartegerson@gmail.com",
+      "password": "123456789",
+      "edad": "19",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-26T21:44:20.764Z"
+    },
+    {
+      "id": "2cf0",
+      "nombre": "Saul Andres Jimenez Villalobos",
+      "correoElectronico": "saujivi@gmail.com",
+      "password": "saujivi",
+      "edad": "14",
+      "rol": "entrenador",
+      "fechaRegistro": "2026-03-27T05:39:00.440Z"
+    },
+    {
+      "id": "a5f6",
+      "nombre": "Isaac Josue Jimenez Villalobos ",
+      "correoElectronico": "isajivi@gmail.com",
+      "password": "isajivi",
+      "edad": "9",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-27T06:09:47.695Z"
+    },
+    {
+      "id": "2345",
+      "nombre": "Cinthia Villalobos Campos",
+      "cedula": "601780178",
+      "correoElectronico": "cinvilla@gmail.com",
+      "telefono": "88506060",
+      "password": "cinvilla",
+      "edad": "38",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-27T06:22:56.317Z",
+      "pais": "Panama"
+    },
+    {
+      "id": "edc1",
+      "nombre": "Carlos Andres Jimenez Rojas",
+      "cedula": "603550322",
+      "correoElectronico": "cjimenezrfwd@gmail.com",
+      "telefono": "88183631",
+      "password": "carlosji",
+      "edad": "39",
+      "rol": "voluntario",
+      "fechaRegistro": "2026-03-27T06:48:21.479Z",
+      "pais": "Costa Rica"
+    },
+    {
+      "id": "015d",
+      "nombre": "Keylor Gonzalez",
+      "cedula": "604880955",
+      "correoElectronico": "keylor@gmail.com",
+      "telefono": "85864545",
+      "password": "keylor",
+      "edad": "20",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-27T11:44:01.262Z"
+    },
+    {
+      "id": "7ef4",
+      "nombre": "Braksley Camacho Garcia",
+      "cedula": "605100869",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "telefono": "",
+      "password": "holaamigoscomoestan",
+      "fechaNacimiento": "2008-02-20",
+      "genero": "Masculino",
+      "fechaRegistro": "2026-03-27T19:26:12.146Z",
+      "rol": "usuario"
+    }
+  ],
+  "disciplinas": [
+    { "id": "1", "nombre": "Atletismo" },
+    { "id": "2", "nombre": "Natación" },
+    { "id": "3", "nombre": "Fútbol" },
+    { "id": "4", "nombre": "Baloncesto" },
+    { "id": "5", "nombre": "Bochas" },
+    { "id": "6", "nombre": "Tenis de Mesa" },
+    { "id": "7", "nombre": "Gimnasia" },
+    { "id": "8", "nombre": "Levantamiento de Pesas" }
+  ],
+  "programas": [
+    { "id": "1", "nombre": "San José" },
+    { "id": "2", "nombre": "Alajuela" },
+    { "id": "3", "nombre": "Heredia" },
+    { "id": "4", "nombre": "Cartago" },
+    { "id": "5", "nombre": "Limón" },
+    { "id": "6", "nombre": "Puntarenas" },
+    { "id": "7", "nombre": "Guanacaste" },
+    { "id": "8", "nombre": "San Carlos" }
+  ],
+  "niveles_habilidad": [
+    { "id": "1", "nombre": "Principiante" },
+    { "id": "2", "nombre": "Intermedio" }
   ],
   "consultas": [
-    {
-      "id": "f271",
-      "user_name": "francella porras ",
-      "user_email": "nporrasafwd@gmail.com",
-      "user_subject": "SALUDO",
-      "message": "espero esten bien",
-      "fecha": "2026-03-26T21:02:59.838Z"
-    }
+    { "id": "6", "nombre": "Otro" }
   ],
+  "configuracion": {
+    "assets": {
+      "video_berlin": "/img/berlin-film-2025-for-website.mp4",
+      "logo_oficial": "/img/Logo Olimpiadas.png"
+    }
+  },
   "$schema": "./node_modules/json-server/schema.json"
 }

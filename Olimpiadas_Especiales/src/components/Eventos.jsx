@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Eventos.css';
 
-// Importación de imágenes (Mapeo por nombre de archivo en db.json)
-import imgCompetencia from '../img/evento_competencia.png';
-import imgNatacion from '../img/evento_natacion.png';
-import imgCeremonia from '../img/evento_ceremonia.png';
-
-const imagenMapa = {
-    "evento_competencia.png": imgCompetencia,
-    "evento_natacion.png": imgNatacion,
-    "evento_ceremonia.png": imgCeremonia
-};
-
 const Eventos = () => {
     const [eventos, setEventos] = useState([]);
     const [cargando, setCargando] = useState(true);
@@ -33,6 +22,20 @@ const Eventos = () => {
 
     return (
         <section className="seccion-eventos-completa">
+            {/* Hero Video Section */}
+            <div className="eventos-hero-video">
+                <video 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline 
+                    className="video-presentacion-berlin"
+                >
+                    <source src="/img/berlin-film-2025-for-website.mp4" type="video/mp4" />
+                    Tu navegador no soporta el tag de video.
+                </video>
+            </div>
+
             <div className="eventos-container">
                 <header className="eventos-header">
                     <h1>Calendario de Actividades</h1>
@@ -44,7 +47,7 @@ const Eventos = () => {
                         <div key={evento.id} className="evento-item-row">
                             <div className="evento-item-imagen">
                                 <img 
-                                    src={imagenMapa[evento.img] || evento.img} 
+                                    src={evento.img} 
                                     alt={evento.nombre} 
                                 />
                                 <span className={`status-badge ${(evento.status || 'proximo').toLowerCase().replace(' ', '-')}`}>

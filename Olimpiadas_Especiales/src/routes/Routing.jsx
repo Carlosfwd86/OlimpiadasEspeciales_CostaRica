@@ -11,20 +11,27 @@ import VoluntariosPages from '../pages/VoluntariosPages';
 import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
 import PerfilPage from '../pages/PerfilPage';
+import PlataformaRegistroPage from '../pages/PlataformaRegistroPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
 import PrivateRoute from './PrivateRoute';
+import ScrollToTop from '../components/ScrollToTop';
 
 
 const Routing = () => {
     return (
-        <Routes>
+        <>
+            <ScrollToTop />
+            <Routes>
             {/* Rutas Públicas */}
             <Route path="/" element={<HomePages />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegisterPage />} />
             <Route path="/nosotros" element={<NosotrosPages />} />
             <Route path="/contacto" element={<ContactoPages />} />
             <Route path="/formulario" element={<FormularioPages />} />
+            <Route path="/plataforma-registro" element={<PlataformaRegistroPage />} />
             <Route path="/eventos" element={<EventosPages />} />
             <Route path="/voluntarios" element={<VoluntariosPages />} />
 
@@ -57,6 +64,7 @@ const Routing = () => {
             {/* Redirección por defecto */}
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+      </>
     );
 };
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ cedula: '', contrasenia: '' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const Login = () => {
 
     try {
       // Fetch all user collections from the local server
-      const endpoints = ["Admin", "atletas", "entrenadores", "tutores", "voluntarios"];
+      const endpoints = ["Admin", "atletas", "entrenadores", "tutores", "voluntarios", "usuarios"];
       const baseUrl = "http://localhost:3001";
       
       const responses = await Promise.all(
@@ -35,20 +35,15 @@ const Login = () => {
       // Flatten all arrays into a single user list
       const todosLosUsuarios = responses.flat();
 
-      // Find user that matches cedula (or correoElectronico for admin) and password/contrasenia
+      // Find user that matches email and password
       const usuarioValido = todosLosUsuarios.find(user => {
-        const inputCred = formData.cedula.toLowerCase();
-        const userCedula = user.cedula ? user.cedula.toString().toLowerCase() : '';
+        const inputEmail = formData.email.toLowerCase();
         const userEmail = user.correoElectronico ? user.correoElectronico.toLowerCase() : '';
         
-        const matchesIdentifier = userCedula === inputCred || userEmail === inputCred;
-        
-        const inputPass = formData.contrasenia;
+        const inputPass = formData.password;
         const userPass = user.password || user.contrasenia;
         
-        const matchesPassword = userPass === inputPass;
-        
-        return matchesIdentifier && matchesPassword;
+        return userEmail === inputEmail && userPass === inputPass;
       });
 
       if (usuarioValido) {
@@ -58,24 +53,18 @@ const Login = () => {
         // Notificar a la Navbar para que actualice el botón en tiempo real
         window.dispatchEvent(new Event('sesionActualizada'));
         
-        alert(`Bienvenido(a), ingresaste como ${usuarioValido.rol}`);
+        // alert(`Bienvenido(a), ingresaste como ${usuarioValido.rol}`);
         
         // Redireccionar según el rol
-        switch (usuarioValido.rol?.toLowerCase()) {
-          case 'admin':
-            navigate('/admin');
-            break;
-          case 'atleta':
-          case 'tutor':
-          case 'entrenador':
-          case 'voluntario':
-            navigate('/perfil');
-            break;
-          default:
-            navigate('/');
+        const rol = usuarioValido.rol?.toLowerCase() || 'usuario';
+        if (rol === 'admin') {
+          navigate('/admin');
+        } else {
+          // El usuario basico y otros roles van al perfil
+          navigate('/perfil');
         }
       } else {
-        setError('Cédula o contraseña incorrectos.');
+        setError('Correo o contraseña incorrectos.');
       }
     } catch (err) {
       console.error(err);
@@ -86,7 +75,52 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container" style={{ position: 'relative' }}>
+      <style>{`
+        .boton_regresar {
+          position: absolute;
+          top: 30px;
+          left: 40px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 22px;
+          background: #ffffff;
+          border: 1px solid #ff0000;
+          border-radius: 12px;
+          color: #ff0000;
+          font-weight: 700;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          z-index: 10;
+        }
+
+        .boton_regresar:hover {
+          background: #f8fafc;
+          color: #1e293b;
+          border-color: #1e293b;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+          transform: translateX(-5px);
+        }
+
+        .boton_regresar svg {
+          transition: transform 0.3s ease;
+          stroke: #ff0000;
+        }
+
+        .boton_regresar:hover svg {
+          transform: translateX(-3px);
+          stroke: #1e293b;
+        }
+      `}</style>
+
+      <button className="boton_regresar" onClick={() => navigate('/')}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Regresar
+      </button>
       <div className="login-card">
         <h1>Iniciar Sesión</h1>
         <p>Ingresa tus credenciales para acceder a tu perfil</p>
@@ -95,26 +129,26 @@ const Login = () => {
 
         <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
-            <label htmlFor="cedula">Cédula</label>
+            <label htmlFor="email">Correo Electrónico</label>
             <input
-              type="text"
-              id="cedula"
-              name="cedula"
-              placeholder="Ej: 111111111"
-              value={formData.cedula}
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Ej: ejemplo@correo.com"
+              value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="contrasenia">Contraseña</label>
+            <label htmlFor="password">Contraseña</label>
             <input
               type="password"
-              id="contrasenia"
-              name="contrasenia"
+              id="password"
+              name="password"
               placeholder="••••••••"
-              value={formData.contrasenia}
+              value={formData.password}
               onChange={handleChange}
               required
             />
@@ -124,6 +158,10 @@ const Login = () => {
             {loading ? 'Verificando...' : 'Entrar'}
           </button>
         </form>
+
+        <div style={{ marginTop: '20px', fontSize: '0.9rem', color: '#666' }}>
+          ¿No tienes una cuenta? <span onClick={() => navigate('/registro')} style={{ color: '#FF0000', cursor: 'pointer', fontWeight: '600' }}>Regístrate aquí</span>
+        </div>
       </div>
     </div>
   );

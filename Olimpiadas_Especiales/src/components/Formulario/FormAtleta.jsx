@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import emailjs from '@emailjs/browser'
 import { createAtleta, updateAtleta } from '../../services/ServicesAtletas'
 import { createTutor } from '../../services/ServicesTutores'
+import { getFullConfig } from '../../services/ServicesConfig'
 import '../../styles/Formulario/FormAtleta.css'
 
 // Initialize EmailJS with Public Key
@@ -39,6 +40,30 @@ function FormAtleta({ onVolver }) {
   const [errores, setErrores] = useState({});
   const [archivos, setArchivos] = useState({ identificacion: null, certificado: null, foto: null, identificacionTutor: null });
   const [arrastrando, setArrastrando] = useState(null);
+  const [catalogos, setCatalogos] = useState({ disciplinas: [], programas: [], niveles_habilidad: [] });
+
+  useEffect(() => {
+    const cargarCatalogos = async () => {
+      const data = await getFullConfig();
+      setCatalogos(data);
+    };
+    cargarCatalogos();
+  }, []);
+
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      // Solo autocompletar si es un usuario básico que se está postulando
+      if (user.rol === 'usuario') {
+        setDatos(prev => ({
+          ...prev,
+          nombre: user.nombre || prev.nombre,
+          correoElectronico: user.correoElectronico || prev.correoElectronico
+        }));
+      }
+    }
+  }, []);
 
   // --- Manejadores Universales ---
   const manejarCambio = (e) => {
@@ -491,7 +516,10 @@ function FormAtleta({ onVolver }) {
               <div className="form-grid-ref">
                 <div className='input-container'>
                   <label>Programa local de Olimpiadas Especiales:</label>
-                  <input type="text" id='programa' className="input-field" placeholder="Escribe aqui" value={datos.programa} onChange={manejarCambio} />
+                  <select id='programa' className="input-field" value={datos.programa} onChange={manejarCambio}>
+                    <option value="">Seleccione Programa...</option>
+                    {catalogos.programas.map(p => <option key={p.id || p.nombre} value={p.nombre}>{p.nombre}</option>)}
+                  </select>
                 </div>
                 <div className="input-container">
                   <label>Nombre Completo</label>
@@ -871,39 +899,15 @@ function FormAtleta({ onVolver }) {
                 <div className="input-container">
                   <label>Disciplina Deportiva Principal</label>
                   <select name="disciplina" className="input-field" value={datos.disciplina} onChange={manejarCambio}>
-                    <option value="">Seleccione...</option>
-                    <option value="Atletismo">Atletismo</option>
-                    <option value="Baloncesto">Baloncesto</option>
-                    <option value="Fútbol">Fútbol</option>
-                    <option value="Deportes Acuáticos">Deportes Acuáticos</option>
-                    <option value="Voleibol de Playa">Voleibol de Playa</option>
-                    <option value="Gimnasia Artística">Gimnasia Artística</option>
-                    <option value="Boccia">Boccia</option>
-                    <option value="Bádminton">Bádminton</option>
-                    <option value="Bolos">Bolos</option>
-                    <option value="Ciclismo">Ciclismo</option>
-                    <option value="Golf">Golf</option>
-                    <option value="Triatlón">Triatlón</option>
-                    <option value="Balonmano (handball)">Balonmano (handball)</option>
-                    <option value="Floorball">Floorball</option>
-                    <option value="Softbol">Softbol</option>
-                    <option value="Piragüismo">Piragüismo</option>
-                    <option value="Levantamiento de Pesas">Levantamiento de Pesas</option>
-                    <option value="Tenis de Mesa">Tenis de Mesa</option>
-                    <option value="Petanca">Petanca</option>
-                    <option value="Gimnasia Ritmica">Gimnasia Ritmica</option>
-                    <option value="Levantamiento de Pesas">Levantamiento de Pesas</option>
-                    <option value="Raquetas de nieve">Raquetas de nieve</option>
-                    <option value="Voleibol">Voleibol</option>
+                    <option value="">Seleccione Disciplina...</option>
+                    {catalogos.disciplinas.map(d => <option key={d.id || d.nombre} value={d.nombre}>{d.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container">
                   <label>Nivel de Habilidad</label>
                   <select name="nivelHabilidad" className="input-field" value={datos.nivelHabilidad} onChange={manejarCambio}>
-                    <option value="">Seleccione...</option>
-                    <option value="Principiante">Principiante</option>
-                    <option value="Intermedio">Intermedio</option>
-                    <option value="Avanzado">Avanzado</option>
+                    <option value="">Seleccione Nivel...</option>
+                    {catalogos.niveles_habilidad.map(n => <option key={n.id || n.nombre} value={n.nombre}>{n.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}>
