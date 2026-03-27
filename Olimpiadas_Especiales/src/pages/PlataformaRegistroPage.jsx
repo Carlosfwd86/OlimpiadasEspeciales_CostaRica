@@ -3,7 +3,9 @@ import PlataformaRegistro from '../components/PlataformaRegistro'
 
 function PlataformaRegistroPage() {
   return (
-    <PlataformaRegistro />
+    <div>
+        <PlataformaRegistro />
+    </div>
   )
 }
 

@@ -81,7 +81,7 @@ const Navbar = () => {
             <>
               <span className="saludo_usuario" onClick={irAPerfil} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }}></i>
-                Hola, <strong>{usuarioSesion.nombre || usuarioSesion.cedula}</strong>
+                Hola, <strong>{usuarioSesion.nombre ? usuarioSesion.nombre.split(' ')[0] : usuarioSesion.cedula}</strong>
               </span>
               <button className="boton_accion_rojo" onClick={irAPerfil} style={{ padding: '8px 15px', fontSize: '12px' }}>
                 MI PERFIL

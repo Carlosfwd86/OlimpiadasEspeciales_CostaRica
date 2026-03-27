@@ -64,17 +64,6 @@ const roles = [
 const pasos = [
   {
     num: '01',
-    titulo: 'Crea tu cuenta',
-    desc: 'Regístrate en la plataforma con tu correo y elige tu rol dentro del programa.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
-        <line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
-      </svg>
-    ),
-  },
-  {
-    num: '02',
     titulo: 'Escoge tu formulario',
     desc: 'Selecciona el formulario que corresponde a tu perfil: Atleta, Entrenador, Tutor o Voluntario.',
     icon: (
@@ -87,7 +76,7 @@ const pasos = [
     ),
   },
   {
-    num: '03',
+    num: '02',
     titulo: 'Completa el formulario',
     desc: 'Llena la información personal, médica y deportiva de forma segura y detallada.',
     icon: (
@@ -98,7 +87,7 @@ const pasos = [
     ),
   },
   {
-    num: '04',
+    num: '03',
     titulo: 'Adjunta documentos',
     desc: 'Sube los requisitos legales, certificaciones médicas y consentimientos necesarios.',
     icon: (
