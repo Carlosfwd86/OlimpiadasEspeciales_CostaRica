@@ -232,28 +232,19 @@ function FormPerfil({ user, setRefreshUser }) {
                         </div>
                     </div>
 
-                    {/* Actions top-right */}
-                    <div style={{ position: 'absolute', top: '20px', right: '24px', display: 'flex', gap: '8px' }}>
-                        {isEditing ? (
-                            <>
-                                <button style={s.btnGhost} onClick={() => { setIsEditing(false); setEditData({...user}); }}>Cancelar</button>
-                                <button style={s.btnRed} onClick={handleSave}>Guardar Cambios</button>
-                            </>
-                        ) : (
-                            <>
-                                <button style={{ ...s.btnGhost, padding: '8px 14px' }} onClick={() => setIsEditing(true)} title="Editar perfil">
-                                    ✏️
-                                </button>
-                                <button style={{ ...s.btnGhost, padding: '8px 14px' }} onClick={() => setModalOpen(true)} title="Cambiar contraseña">
-                                    🔑
-                                </button>
-                                <button style={{ ...s.btnGhost, padding: '8px 14px', color: '#64748b', borderColor: '#e2e8f0' }}
-                                    onClick={() => { localStorage.removeItem('usuarioSesion'); navigate('/login'); }}
-                                    title="Cerrar sesión">
-                                    🚪
-                                </button>
-                            </>
-                        )}
+                    <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                        <button className="btn-primary" onClick={() => setModalOpen(true)}>
+                            Cambiar Contraseña
+                        </button>
+                        <button className="btn-success" onClick={() => navigate('/formulario')} style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '12px', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold' }}>
+                            Postularme
+                        </button>
+                        <button className="btn-secondary" onClick={() => {
+                            localStorage.removeItem('usuarioSesion'); // Changed from 'user' to 'usuarioSesion'
+                            window.location.href = '/login'; // O a donde redirija tu auth
+                        }}>
+                            Cerrar Sesión
+                        </button>
                     </div>
                 </div>
 
@@ -271,7 +262,7 @@ function FormPerfil({ user, setRefreshUser }) {
                                 <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
                                 <Field label="Número de Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
                                 <Field label="Fecha de Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
-                                <Field label="Sexo" name="sexo" value={editData.sexo} editing={isEditing} onChange={handleChange}
+                                <Field label="Sexo" name="genero" value={editData.genero} editing={isEditing} onChange={handleChange}
                                     options={[{value:'',label:'— Seleccionar —'},{value:'Masculino',label:'Masculino'},{value:'Femenino',label:'Femenino'},{value:'Prefiero no indicar',label:'Prefiero no indicar'}]} />
                             </div>
                             <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />

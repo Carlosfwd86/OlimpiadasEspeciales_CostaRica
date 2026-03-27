@@ -449,7 +449,7 @@ const Home = () => {
                 <div className="hero_tarjetas_inferiores">
 
                     {/* 1. Deportistas */}
-                    <div className="tarjeta_info stat_card" onClick={() => navegar('/atletas')}>
+                    <div className="tarjeta_info stat_card" onClick={() => navegar('/formulario?rol=atleta')}>
                         <div className="stat_number">{counts.atletas.toLocaleString()}</div>
                         <div className="stat_content">
                             <div className="icono_tarjeta">
@@ -466,7 +466,7 @@ const Home = () => {
                     </div>
 
                     {/* 2. Voluntarios */}
-                    <div className="tarjeta_info stat_card" onClick={() => navegar('/voluntarios')}>
+                    <div className="tarjeta_info stat_card" onClick={() => navegar('/formulario?rol=voluntario')}>
                         <div className="stat_number">{counts.voluntarios.toLocaleString()}</div>
                         <div className="stat_content">
                             <div className="icono_tarjeta">
