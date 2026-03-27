@@ -38,6 +38,16 @@ const Home = () => {
         '/img/voluntarios_accion.png'
     ];
 
+    // Configuración dinámica para el fondo decorativo según la imagen actual
+    const fondoConfig = [
+        { br: "40px 0 0 150px", tr: "translateX(40px) rotate(-5deg) scale(1.1)", color: "#FF0000", op: 0.85 },
+        { br: "150px 0 0 40px", tr: "translateX(-30px) rotate(3deg) scale(1.05)", color: "#D00000", op: 0.75 },
+        { br: "0 0 0 200px", tr: "translateY(-30px) rotate(-2deg) scale(1.15)", color: "#FF4D4D", op: 0.80 },
+        { br: "100px 100px 0 100px", tr: "translateX(20px) translateY(20px) rotate(5deg) scale(1.2)", color: "#E00000", op: 0.70 },
+        { br: "40px 0 150px 0", tr: "translateX(-20px) scale(1.1) rotate(-8deg)", color: "#FF1A1A", op: 0.90 },
+        { br: "80px 0 0 120px", tr: "translateY(30px) rotate(2deg) scale(1.08)", color: "#C00000", op: 0.82 }
+    ];
+
     useEffect(() => {
         const fetchCounts = async () => {
             try {
@@ -100,12 +110,12 @@ const Home = () => {
                         </h1>
 
                         <p className="hero_descripcion">
-                            Nuestra mision es proporcionar entrenamiento deportivo y competición atlética durante todo el año en una variedad de deportes de tipo olímpico para niños y adultos con discapacidad intelectual, ofreciéndoles oportunidades continuas para desarrollar su condición física, demostrar valentía, experimentar alegría y compartir sus talentos, habilidades y amistad con sus familias, otros atletas de las Olimpiadas Especiales y la comunidad.
+
                         </p>
 
                         <div className="hero_botones">
                             <button className="boton_rojo" onClick={manejarUnete}>
-                                Registrate <span className="flecha_boton">&gt;</span>
+                                Únete a nosotros <span className="flecha_boton">&gt;</span>
                             </button>
                             <button className="boton_blanco" onClick={manejarConoceMas}>
                                 Conoce más
@@ -113,7 +123,8 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="hero_imagen_derecha">
+                    <div className="hero_imagen_derecha" style={{ position: 'relative', width: '100%', height: '550px' }}>
+                        {/* Capa de fondo 1: Principal dinámica */}
                         <div
                             className="hero_fondo_derecha"
                             style={{
@@ -122,21 +133,65 @@ const Home = () => {
                                 right: '-5%',
                                 width: '100%',
                                 height: '110%',
-                                transform: `translateX(${(heroImageIndex % 2 - 0.5) * 40}px) translateY(${(heroImageIndex % 3 - 1) * 20}px) scale(${1 + (heroImageIndex % 2) * 0.1}) rotate(${(heroImageIndex % 3 - 1) * 3}deg)`,
+                                backgroundColor: '#FF0000',
+                                transform: `translateX(${(heroImageIndex % 2 - 0.5) * 40}px) rotate(${(heroImageIndex % 3 - 1) * 3}deg)`,
                                 borderRadius: heroImageIndex % 2 === 0 ? '40px 0 0 100px' : '100px 0 0 40px',
-                                transition: 'all 2.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                                transition: 'all 2.0s cubic-bezier(0.4, 0, 0.2, 1)',
                                 zIndex: 0
                             }}
                         ></div>
+
+                        {/* CUADROS VACÍOS INTERACTIVOS (Wireframes) */}
+                        <div
+                            className="cuadro_vacio_decorativo_1"
+                            style={{
+                                position: 'absolute',
+                                top: '-20px',
+                                left: '-20px',
+                                width: '100%',
+                                height: '100%',
+                                border: '8px solid white',
+                                borderRadius: heroImageIndex % 2 === 0 ? '100px 0 100px 0' : '0 100px 0 100px',
+                                transform: `translate(${heroImageIndex * 15}px, ${heroImageIndex * -10}px) rotate(${heroImageIndex * 2}deg)`,
+                                transition: 'all 2.5s ease-out',
+                                zIndex: 2,
+                                pointerEvents: 'none',
+                                opacity: 0.6
+                            }}
+                        ></div>
+
+                        <div
+                            className="cuadro_vacio_decorativo_2"
+                            style={{
+                                position: 'absolute',
+                                bottom: '-30px',
+                                right: '-30px',
+                                width: '80%',
+                                height: '80%',
+                                border: '8px solid rgba(255,255,255,0.4)',
+                                borderRadius: '50px',
+                                transform: `translate(${heroImageIndex * -20}px, ${heroImageIndex * 20}px) rotate(${heroImageIndex * -5}deg)`,
+                                transition: 'all 3s ease-in-out',
+                                zIndex: 2,
+                                pointerEvents: 'none',
+                                opacity: 0.4
+                            }}
+                        ></div>
+
                         {heroImages.map((src, idx) => (
                             <div
                                 key={idx}
                                 className="imagen_ejemplo"
                                 style={{
                                     backgroundImage: `url(${src})`,
-                                    position: idx === 0 ? 'relative' : 'absolute',
+                                    position: 'absolute',
                                     top: 0,
                                     left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    borderRadius: '40px 10px 40px 10px',
                                     opacity: heroImageIndex === idx ? 1 : 0,
                                     transition: 'opacity 1s ease-in-out',
                                     zIndex: 1
