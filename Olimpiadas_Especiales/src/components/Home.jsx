@@ -176,6 +176,7 @@ const Home = () => {
     return (
         <>
             {/* Banner CTA Flotante - Arriba del Hero */}
+            {/* Banner CTA Flotante - Arriba del Hero (Ahora con Video) */}
             <div style={{
                 background: 'linear-gradient(135deg, rgba(255,0,0,0.72) 0%, rgba(30,20,10,0.82) 100%)',
                 backdropFilter: 'blur(12px)',
@@ -185,66 +186,121 @@ const Home = () => {
                 fontFamily: "'Inter', 'Segoe UI', Roboto, sans-serif",
                 position: 'relative',
                 overflow: 'hidden',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'stretch', // Estirar para que la franja central sea de altura completa
+                minHeight: '600px',
+                width: '100%'
             }}>
+                {/* Video de Fondo (Limpio y Único para todo el ancho) */}
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        zIndex: 0
+                    }}
+                >
+                    <source src="/img/videoHome.mp4" type="video/mp4" />
+                </video>
+                
                 {/* Canvas de líneas animadas */}
-                <canvas ref={canvasRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:0 }} />
+                <canvas ref={canvasRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:1 }} />
 
-                {/* Contenido sobre el canvas */}
-                <div style={{ position:'relative', zIndex:1 }}>
-                {/* Círculos decorativos */}
-                <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'800px', height:'200px', borderRadius:'50%', background:'rgba(255,0,0,0.06)', pointerEvents:'none' }} />
-                <div style={{ position:'absolute', bottom:'-40px', left:'-40px', width:'150px', height:'150px', borderRadius:'50%', background:'rgba(255,0,0,0.04)', pointerEvents:'none' }} />
+                {/* Overlay Radial Sutil (Solo oscurece un poco el centro para legibilidad) */}
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 60%)',
+                    zIndex: 2
+                }} />
 
-                <p style={{
-                    color: '#f7efefff', fontWeight: '1000', textTransform: 'uppercase',
-                    letterSpacing: '0.12em', fontSize: '2.78rem', marginBottom: '14px',
-                }}>¿Primera vez aquí?</p>
-
-                <h2 style={{
-                    color: '#ffffff',
-                    fontSize: 'clamp(1.8rem, 4vw, 1.8rem)',
-                    fontWeight: '900',
-                    letterSpacing: '-1.5px',
-                    margin: '0 0 16px',
-                    lineHeight: '3.1',
+                {/* Contenido Central con Efecto de Halo */}
+                <div style={{ 
+                    position: 'relative', 
+                    zIndex: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '40px 20px',
+                    maxWidth: '900px',
+                    textAlign: 'center'
                 }}>
-                    Empieza creando tu cuenta
-                </h2>
+                    
+                    {/* Círculos decorativos */}
+                    <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'800px', height:'200px', borderRadius:'50%', background:'rgba(255,0,0,0.06)', pointerEvents:'none' }} />
+                    <div style={{ position:'absolute', bottom:'-40px', left:'-40px', width:'150px', height:'150px', borderRadius:'50%', background:'rgba(255,0,0,0.04)', pointerEvents:'none' }} />
 
-                <p style={{
-                    color: '#94a3b8', fontSize: '1.5rem', lineHeight: '1.0' ,
-                    maxWidth: '420px', margin: '0 auto 32px',
-                }}>
-                    Necesitas una cuenta para guardar tu progreso y completar la inscripción.
-                </p>
+                    <p style={{
+                        color: '#ffffff', fontWeight: '1000', textTransform: 'uppercase',
+                        letterSpacing: '0.12em', fontSize: 'clamp(1.5rem, 5vw, 3.5rem)', marginBottom: '14px',
+                        textShadow: `
+                            0 0 20px rgba(0,0,0,0.9),
+                            0 4px 10px rgba(0,0,0,0.8),
+                            0 0 5px rgba(0,0,0,1)
+                        `
+                    }}>¿Primera vez aquí?</p>
 
-                <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <button
-                        onClick={() => navegar('/registro')}
-                        style={{
-                            padding: '14px 36px', background: '#FF0000', color: 'rgba(255, 255, 255, 1)',
-                            border: 'none', borderRadius: '12px', fontSize: '0.98rem', fontWeight: '800',
-                            cursor: 'pointer', boxShadow: '0 8px 20px rgba(255,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#cc0000'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                    >
-                        Crear Cuenta
-                    </button>
-                    <button
-                        onClick={() => navegar('/login')}
-                        style={{
-                            padding: '14px 36px', background: 'hsla(0, 95%, 49%, 1.00)', color: 'rgba(255, 255, 255, 1)',
-                            border: '2px solid rgba(249, 248, 248, 1)', borderRadius: '12px', fontSize: '0.98rem', fontWeight: '800',
-                            cursor: 'pointer', transition: 'all 0.2s ease',
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#64748b'; e.currentTarget.style.color = '#ffffff'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#e2e8f0'; }}
-                    >
-                        Iniciar Sesión
-                    </button>
-                </div>
+                    <h2 style={{
+                        color: '#ffffff',
+                        fontSize: 'clamp(1.2rem, 4vw, 2.8rem)',
+                        fontWeight: '900',
+                        letterSpacing: '-1.5px',
+                        margin: '0 0 20px',
+                        lineHeight: '1.1',
+                        textShadow: '0 4px 15px rgba(0,0,0,0.8)'
+                    }}>
+                        Empieza creando tu cuenta
+                    </h2>
+
+                    <p style={{
+                        color: '#ffffff', fontSize: 'clamp(1rem, 2vw, 1.25rem)', lineHeight: '1.6',
+                        maxWidth: '550px', margin: '0 auto 40px',
+                        fontWeight: '500',
+                        textShadow: '0 2px 10px rgba(0,0,0,0.9)'
+                    }}>
+                        Necesitas una cuenta para guardar tu progreso y completar la inscripción.
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <button
+                            onClick={() => navegar('/registro')}
+                            style={{
+                                padding: '16px 40px', background: '#FF0000', color: '#fff',
+                                border: 'none', borderRadius: '14px', fontSize: '1rem', fontWeight: '800',
+                                cursor: 'pointer', boxShadow: '0 8px 25px rgba(255,0,0,0.4)',
+                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#e60000'; e.currentTarget.style.transform = 'scale(1.05) translateY(-3px)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'scale(1) translateY(0)'; }}
+                        >
+                            Crear Cuenta
+                        </button>
+                        <button
+                            onClick={() => navegar('/login')}
+                            style={{
+                                padding: '16px 40px', background: 'transparent', color: '#fff',
+                                border: '2px solid rgba(255, 255, 255, 0.8)', borderRadius: '14px', fontSize: '1rem', fontWeight: '800',
+                                cursor: 'pointer', transition: 'all 0.3s ease',
+                                backdropFilter: 'blur(5px)'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = '#ffffff'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; }}
+                        >
+                            Iniciar Sesión
+                        </button>
+                    </div>
                 </div>
             </div>
 
