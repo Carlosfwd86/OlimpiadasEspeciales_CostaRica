@@ -288,45 +288,11 @@ const Home = () => {
                             Cada día reafirmamos nuestro compromiso con la inclusión, el respeto y la igualdad de oportunidades a través del deporte.
                         </p>
 
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            <button
-                                onClick={() => navegar('/registro')}
-                                style={{
-                                    padding: '10px 22px',
-                                    background: '#ffffff',
-                                    color: '#FF0000',
-                                    border: 'none',
-                                    borderRadius: '0',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '900',
-                                    cursor: 'pointer',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = '#f0f0f0'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                            >
-                                Registrarme Ahora
+                        <div className="hero_botones">
+                            <button className="boton_rojo" onClick={() => navegar('/registro')}>
+                                Registrarme Ahora <span className="flecha_boton">&gt;</span>
                             </button>
-                            <button
-                                onClick={() => navegar('/login')}
-                                style={{
-                                    padding: '10px 22px',
-                                    background: 'transparent',
-                                    color: '#ffffff',
-                                    border: '2px solid #ffffff',
-                                    borderRadius: '0',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '800',
-                                    cursor: 'pointer',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                            >
+                            <button className="boton_blanco" onClick={() => navegar('/login')}>
                                 Iniciar Sesión
                             </button>
                         </div>
