@@ -34,9 +34,8 @@ const Footer = () => {
         
         {/* Sección de Identidad */}
         <div className="footer_info">
-          <div className="footer_logo">
-            <span className="footer_titulo">OLIMPÍADAS ESPECIALES</span>
-            <span className="footer_subtitulo">COSTA RICA</span>
+          <div className="footer_logo" onClick={() => irASeccion('/')} style={{ cursor: 'pointer' }}>
+            <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="footer_logo_img" />
           </div>
           <p className="footer_descripcion">
             Transformando vidas a través del deporte y la inclusión. 
@@ -50,7 +49,6 @@ const Footer = () => {
           <ul className="footer_lista">
             <li className="footer_item" onClick={() => irASeccion('/nosotros')}>Nosotros</li>
             <li className="footer_item" onClick={() => irASeccion('/eventos')}>Eventos</li>
-            <li className="footer_item" onClick={() => irASeccion('/voluntarios')}>Voluntarios</li>
           </ul>
         </div>
 

@@ -291,6 +291,7 @@ function PlataformaRegistro() {
         </div>
       </section>
 
+
       {/* PASOS */}
       <section id="pasos-section" style={{ padding: '90px 24px', background: '#ffffff' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
