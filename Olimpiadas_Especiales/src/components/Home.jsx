@@ -107,12 +107,10 @@ const Home = () => {
 
     const [heroImageIndex, setHeroImageIndex] = useState(0);
     const heroImages = [
-        '/img/atleta_down_1.png',
-        '/img/atleta_down_2.png',
-        '/img/evento_competencia.png',
-        '/img/evento_natacion.png',
-        '/img/evento_ceremonia.png',
-        '/img/voluntarios_accion.png'
+        '/img/Hero_contenedor_01.jpeg',
+        '/img/Hero_contenedor_02.jpeg',
+        '/img/Hero_contenedor_03.jpeg',
+        '/img/Hero_contenedor_04.jpeg'
     ];
 
     // Configuración dinámica para el fondo decorativo según la imagen actual
@@ -173,26 +171,24 @@ const Home = () => {
         return () => clearInterval(timer);
     }, []);
 
+    const [isBannerHovered, setIsBannerHovered] = useState(false);
+
     return (
         <>
             {/* Banner CTA Flotante - Arriba del Hero */}
             {/* Banner CTA Flotante - Arriba del Hero (Ahora con Video) */}
-            <div style={{
-                background: 'linear-gradient(135deg, rgba(255,0,0,0.72) 0%, rgba(30,20,10,0.82) 100%)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                padding: '48px 24px',
-                textAlign: 'center',
-                fontFamily: "'Inter', 'Segoe UI', Roboto, sans-serif",
+            {/* Banner CTA - Diseño Estilo Referencia (Tarjeta sobre Video) */}
+            <section style={{
                 position: 'relative',
+                minHeight: '600px',
+                width: '100%',
                 overflow: 'hidden',
                 display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'stretch', // Estirar para que la franja central sea de altura completa
-                minHeight: '600px',
-                width: '100%'
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                padding: '30px 5%'
             }}>
-                {/* Video de Fondo (Limpio y Único para todo el ancho) */}
+                {/* Video de Fondo */}
                 <video
                     autoPlay
                     muted
@@ -210,99 +206,133 @@ const Home = () => {
                 >
                     <source src="/img/videoHome.mp4" type="video/mp4" />
                 </video>
-                
-                {/* Canvas de líneas animadas */}
-                <canvas ref={canvasRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:1 }} />
 
-                {/* Overlay Radial Sutil (Solo oscurece un poco el centro para legibilidad) */}
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 60%)',
-                    zIndex: 2
-                }} />
+                {/* Overlay oscuro sutil para todo el video */}
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1 }} />
 
-                {/* Contenido Central con Efecto de Halo */}
-                <div style={{ 
-                    position: 'relative', 
-                    zIndex: 3,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '40px 20px',
-                    maxWidth: '900px',
-                    textAlign: 'center'
-                }}>
-                    
-                    {/* Círculos decorativos */}
-                    <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'800px', height:'200px', borderRadius:'50%', background:'rgba(255,0,0,0.06)', pointerEvents:'none' }} />
-                    <div style={{ position:'absolute', bottom:'-40px', left:'-40px', width:'150px', height:'150px', borderRadius:'50%', background:'rgba(255,0,0,0.04)', pointerEvents:'none' }} />
-
-                    <p style={{
-                        color: '#ffffff', fontWeight: '1000', textTransform: 'uppercase',
-                        letterSpacing: '0.12em', fontSize: 'clamp(1.5rem, 5vw, 3.5rem)', marginBottom: '14px',
-                        textShadow: `
-                            0 0 20px rgba(0,0,0,0.9),
-                            0 4px 10px rgba(0,0,0,0.8),
-                            0 0 5px rgba(0,0,0,1)
-                        `
-                    }}>¿Primera vez aquí?</p>
-
-                    <h2 style={{
-                        color: '#ffffff',
-                        fontSize: 'clamp(1.2rem, 4vw, 2.8rem)',
-                        fontWeight: '900',
-                        letterSpacing: '-1.5px',
-                        margin: '0 0 20px',
-                        lineHeight: '1.1',
-                        textShadow: '0 4px 15px rgba(0,0,0,0.8)'
-                    }}>
-                        Empieza creando tu cuenta
-                    </h2>
-
-                    <p style={{
-                        color: '#ffffff', fontSize: 'clamp(1rem, 2vw, 1.25rem)', lineHeight: '1.6',
-                        maxWidth: '550px', margin: '0 auto 40px',
-                        fontWeight: '500',
-                        textShadow: '0 2px 10px rgba(0,0,0,0.9)'
-                    }}>
-                        Necesitas una cuenta para guardar tu progreso y completar la inscripción.
-                    </p>
-
-                    <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <button
-                            onClick={() => navegar('/registro')}
+                {/* Tarjeta de Contenido Estilo Referencia */}
+                <div 
+                    style={{
+                        position: 'relative',
+                        zIndex: 2,
+                        maxWidth: '380px',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}
+                    onMouseEnter={() => setIsBannerHovered(true)}
+                    onMouseLeave={() => setIsBannerHovered(false)}
+                >
+                    {/* Parte Superior: Caja Roja con Título */}
+                    <div 
+                        className="caja-roja-titilante"
+                        style={{
+                            backgroundColor: '#FF0000',
+                            padding: '15px 30px',
+                            boxShadow: '0 8px 25px rgba(255,0,0,0.4)',
+                            width: 'fit-content',
+                            marginBottom: '5px',
+                            cursor: 'pointer',
+                            borderRadius: '16px',
+                            transition: 'all 0.3s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                        }}
+                    >
+                        <h2 style={{
+                            color: '#ffffff',
+                            fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
+                            fontWeight: '1000',
+                            margin: 0,
+                            lineHeight: '1.1',
+                            textTransform: 'none',
+                            textShadow: '0 4px 10px rgba(0,0,0,0.5)'
+                        }}>
+                            ¿Primera vez aquí?
+                        </h2>
+                        {/* Imagen de Puntero (Cargada desde public/img/hand-pointer.png) */}
+                        <img 
+                            src="/img/hand-pointer.png" 
+                            alt="Click indicator" 
+                            className="icono-click-titilante"
                             style={{
-                                padding: '16px 40px', background: '#FF0000', color: '#fff',
-                                border: 'none', borderRadius: '14px', fontSize: '1rem', fontWeight: '800',
-                                cursor: 'pointer', boxShadow: '0 8px 25px rgba(255,0,0,0.4)',
-                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                width: '35px',
+                                height: '35px',
+                                objectFit: 'contain',
+                                filter: 'brightness(0) invert(1)' // La hace blanca
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.background = '#e60000'; e.currentTarget.style.transform = 'scale(1.05) translateY(-3px)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'scale(1) translateY(0)'; }}
-                        >
-                            Crear Cuenta
-                        </button>
-                        <button
-                            onClick={() => navegar('/login')}
-                            style={{
-                                padding: '16px 40px', background: 'transparent', color: '#fff',
-                                border: '2px solid rgba(255, 255, 255, 0.8)', borderRadius: '14px', fontSize: '1rem', fontWeight: '800',
-                                cursor: 'pointer', transition: 'all 0.3s ease',
-                                backdropFilter: 'blur(5px)'
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = '#ffffff'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; }}
-                        >
-                            Iniciar Sesión
-                        </button>
+                        />
+                    </div>
+
+                    {/* Parte Inferior: Caja Gris Traslúcida con Descripción y Botones */}
+                    <div style={{
+                        backgroundColor: 'rgba(45, 45, 45, 0.7)',
+                        backdropFilter: 'blur(8px)',
+                        padding: '25px',
+                        boxShadow: '0 15px 40px rgba(0,0,0,0.4)',
+                        opacity: isBannerHovered ? 1 : 0,
+                        visibility: isBannerHovered ? 'visible' : 'hidden',
+                        transform: isBannerHovered ? 'translateY(0)' : 'translateY(-10px)',
+                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        pointerEvents: isBannerHovered ? 'auto' : 'none',
+                        borderRadius: '16px', // Redondeado uniforme
+                        marginTop: '5px'
+                    }}>
+                        <p style={{
+                            color: '#ffffff',
+                            fontSize: '1rem',
+                            lineHeight: '1.5',
+                            fontWeight: '700',
+                            margin: '0 0 20px'
+                        }}>
+                            Cada día reafirmamos nuestro compromiso con la inclusión, el respeto y la igualdad de oportunidades a través del deporte.
+                        </p>
+
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                            <button
+                                onClick={() => navegar('/registro')}
+                                style={{
+                                    padding: '10px 22px',
+                                    background: '#ffffff',
+                                    color: '#FF0000',
+                                    border: 'none',
+                                    borderRadius: '0',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '900',
+                                    cursor: 'pointer',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px',
+                                    transition: 'all 0.3s ease'
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = '#f0f0f0'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            >
+                                Registrarme Ahora
+                            </button>
+                            <button
+                                onClick={() => navegar('/login')}
+                                style={{
+                                    padding: '10px 22px',
+                                    background: 'transparent',
+                                    color: '#ffffff',
+                                    border: '2px solid #ffffff',
+                                    borderRadius: '0',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '800',
+                                    cursor: 'pointer',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px',
+                                    transition: 'all 0.3s ease'
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                            >
+                                Iniciar Sesión
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <section className="contenedor_hero_principal">
 
