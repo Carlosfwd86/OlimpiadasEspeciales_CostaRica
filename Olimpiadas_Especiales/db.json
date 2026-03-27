@@ -409,6 +409,19 @@
       "rol": "atleta",
       "pais": "Costa Rica",
       "direccion": "Atras de mi casa del rio"
+    },
+    {
+      "id": "a1e4",
+      "nombre": "Manuel Fernandez",
+      "cedula": "1234567890",
+      "correoElectronico": "maruchan2020@gmail.com",
+      "telefono": "",
+      "password": "hola123",
+      "fechaNacimiento": "2001-02-10",
+      "genero": "Femenino",
+      "fechaRegistro": "2026-03-27T21:05:10.613Z",
+      "rol": "usuario",
+      "pais": "Venezuela"
     }
   ],
   "disciplinas": [
