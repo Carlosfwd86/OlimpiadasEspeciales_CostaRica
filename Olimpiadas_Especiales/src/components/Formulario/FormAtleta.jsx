@@ -38,7 +38,7 @@ function FormAtleta({ onVolver }) {
     disciplina: '', nivelHabilidad: '', relacionAtleta: '', relacionAtletaOtro: ''
   });
   const [errores, setErrores] = useState({});
-  const [ archvivos, setArchivos] = useState({ identificacion: null, certificado: null, foto: null, identificacionTutor: null });
+  const [archivos, setArchivos] = useState({ identificacion: null, certificado: null, foto: null, identificacionTutor: null });
   const [arrastrando, setArrastrando] = useState(null);
   const [catalogos, setCatalogos] = useState({ disciplinas: [], programas: [], niveles_habilidad: [] });
 
