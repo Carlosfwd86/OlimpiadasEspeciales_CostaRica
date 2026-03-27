@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
-import { createTutor } from '../../services/ServicesTutores';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
 import '../../styles/Formulario/FormTutor.css';
 
@@ -26,13 +26,14 @@ function FormTutor({ onVolver }) {
     const sesion = localStorage.getItem('usuarioSesion');
     if (sesion) {
       const user = JSON.parse(sesion);
-      if (user.rol === 'usuario') {
-        setDatos(prev => ({
-          ...prev,
-          nombre: user.nombre || prev.nombre,
-          correoElectronico: user.correoElectronico || prev.correoElectronico
-        }));
-      }
+      setDatos(prev => ({
+        ...prev,
+        nombre: user.nombre || prev.nombre,
+        cedula: user.cedula || prev.cedula,
+        telefono: user.telefono || prev.telefono,
+        correoElectronico: user.correoElectronico || prev.correoElectronico,
+        direccion: user.direccion || prev.direccion
+      }));
     }
   }, []);
 
@@ -99,19 +100,33 @@ function FormTutor({ onVolver }) {
     }).then(async (res) => {
       if (res.isConfirmed) {
         Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
+        const sesion = JSON.parse(localStorage.getItem('usuarioSesion') || '{}');
         const pass = Math.random().toString(36).slice(-8);
         const archivosNombres = {
           cedula_nombre: archivos.cedula?.name || 'No adjuntado',
           foto_nombre: archivos.foto?.name || 'No adjuntado',
         };
-        const entry = { ...datos, ...archivosNombres, password: pass, rol: 'tutor', fechaRegistro: new Date().toISOString() };
+        const entry = { 
+          ...datos, 
+          ...archivosNombres, 
+          usuarioId: sesion.id || null,
+          password: pass, 
+          rol: 'tutor', 
+          fechaRegistro: new Date().toISOString(),
+          status: 'PENDIENTE',
+          statusColor: 'yellow',
+          bgColor: 'bg-light-blue',
+          name: datos.nombre,
+          initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''),
+          time: 'Registrado ahora'
+        };
 
         try {
-          await createTutor(entry);
+          await ServicesAdmin.saveRegistro(entry);
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', {
             to_email: datos.correoElectronico,
             to_name: datos.nombre,
-            message: `Has sido registrado como Tutor. Tu clave es: ${pass}\n\nDocumentos adjuntos:\n- Cédula: ${archivosNombres.cedula_nombre}\n- Foto: ${archivosNombres.foto_nombre}`
+            message: `Tus datos de postulación para el rol de Tutor han sido enviados correctamente. Un administrador revisará tu información pronto.\n\nPor favor, mantente atento a tu correo para la confirmación de aprobación.\n\nDocumentos adjuntos:\n- Cédula: ${archivosNombres.cedula_nombre}\n- Foto: ${archivosNombres.foto_nombre}`
           }, '4zWvRC7Yn7lUDqd1q');
           Swal.fire({ icon: 'success', title: '¡Completado!', text: 'Registro de tutor exitoso.' }).then(() => window.location.href = '/');
         } catch (error) {
@@ -171,9 +186,10 @@ function FormTutor({ onVolver }) {
             {paso === 1 && (
               <div className="form-grid-ref">
                 <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} /></div>
+                <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} readOnly={!!datos.cedula} /></div>
                 <div className="input-container"><label>Teléfono *</label><input type="text" id='telefono' className={`input-field ${errores.telefono ? 'error' : ''}`} value={datos.telefono} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Correo Electrónico *</label><input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error' : ''}`} value={datos.correoElectronico} onChange={manejarCambio} /></div>
+                <div className="input-container"><label>País *</label><input type="text" id='pais' className="input-field" value={datos.pais} onChange={manejarCambio} readOnly={!!datos.pais} /></div>
+                <div className="input-container"><label>Correo Electrónico *</label><input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error' : ''}`} value={datos.correoElectronico} onChange={manejarCambio} readOnly={!!datos.correoElectronico} /></div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}><label>Dirección Exacta *</label><textarea id="direccion" className={`input-field ${errores.direccion ? 'error' : ''}`} value={datos.direccion} onChange={manejarCambio}></textarea></div>
               </div>
             )}
@@ -188,7 +204,7 @@ function FormTutor({ onVolver }) {
                   <label>Parentesco / Relación *</label>
                   <select id="relacionConAtleta" className="input-field" value={datos.relacionConAtleta} onChange={manejarCambio}>
                     <option value="">Seleccione...</option>
-                    {parentescos.map(p => <option key={p} value={p}>{p}</option>)}
+                    {parentescos.map(p => <option key={p.id || p.nombre} value={p.nombre}>{p.nombre}</option>)}
                   </select>
                 </div>
               </div>
