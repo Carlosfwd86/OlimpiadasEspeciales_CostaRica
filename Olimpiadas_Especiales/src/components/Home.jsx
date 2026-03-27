@@ -7,7 +7,6 @@ import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
 import CarouselEventos from './CarouselEventos';
 import BannerVoluntarios from './BannerVoluntarios';
-import InfografiaImpacto from './InfografiaImpacto';
 
 const Home = () => {
 
@@ -524,7 +523,6 @@ const Home = () => {
                 </div>
             </div>
 
-            <InfografiaImpacto stats={counts} />
 
             <CarouselEventos />
             <BannerVoluntarios />
