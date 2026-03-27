@@ -243,15 +243,7 @@
   ],
   "consultas": [],
   "usuarios": [
-    {
-      "id": "90e1",
-      "nombre": "Braksley",
-      "correoElectronico": "bcamachogfwd@gmail.com",
-      "password": "holaperros123",
-      "edad": "18",
-      "rol": "usuario",
-      "fechaRegistro": "2026-03-26T21:38:33.117Z"
-    },
+
     {
       "id": "6332",
       "nombre": "gerson",

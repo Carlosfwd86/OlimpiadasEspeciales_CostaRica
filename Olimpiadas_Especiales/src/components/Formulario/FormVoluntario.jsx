@@ -204,9 +204,23 @@ function FormVoluntario({ onVolver }) {
                 <p style={{ fontWeight: 600, color: '#64748b', marginBottom: '15px' }}>Selecciona las áreas donde te gustaría colaborar:</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   {areasCatalogo.map(area => (
-                    <label key={area} className="checkbox-label">
-                      <input type="checkbox" checked={datos.areasInteres.includes(area)} onChange={() => manejarCheckbox(area)} style={{ accentColor: '#E00000', width: '16px', height: '16px' }} />
-                      <span>{area}</span>
+                    <label key={area.id || area.nombre} className="checkbox-label">
+                      <input 
+                        type="checkbox" 
+                        checked={datos.areasInteres.includes(area.nombre)} 
+                        onChange={() => {
+                          setDatos(prev => {
+                            const actual = [...prev.areasInteres];
+                            const areaNombre = area.nombre;
+                            return { 
+                              ...prev, 
+                              areasInteres: actual.includes(areaNombre) ? actual.filter(a => a !== areaNombre) : [...actual, areaNombre] 
+                            };
+                          });
+                        }} 
+                        style={{ accentColor: '#E00000', width: '16px', height: '16px' }} 
+                      />
+                      <span>{area.nombre}</span>
                     </label>
                   ))}
                 </div>

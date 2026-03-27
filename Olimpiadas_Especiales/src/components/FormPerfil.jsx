@@ -423,7 +423,11 @@ function FormPerfil({ user, setRefreshUser }) {
                         <button className="btn-primary" onClick={() => setModalOpen(true)}>
                             Cambiar Contraseña
                         </button>
-                        <button className="btn-success" onClick={() => navigate('/formulario')} style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '12px', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold' }}>
+                        <button 
+                            className="btn-success" 
+                            onClick={() => navigate(user.rol === 'usuario' ? '/formulario?rol=atleta' : '/formulario')} 
+                            style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '12px', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold' }}
+                        >
                             Postularme
                         </button>
                         <button className="btn-secondary" onClick={() => {

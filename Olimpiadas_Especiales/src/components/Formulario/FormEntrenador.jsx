@@ -215,7 +215,7 @@ function FormEntrenador({ onVolver }) {
                   <label>Disciplina Principal *</label>
                   <select id='disciplinaPrincipal' className="input-field" value={datos.disciplinaPrincipal} onChange={manejarCambio}>
                     <option value="">Seleccione...</option>
-                    {disciplinas.map(d => <option key={d} value={d}>{d}</option>)}
+                    {disciplinas.map(d => <option key={d.id || d.nombre} value={d.nombre}>{d.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}><label>Certificaciones / Títulos (resumen)</label><textarea id='certificaciones' className="input-field" rows={4} placeholder="Ej: Licenciatura en Educación Física, Certificación IAAF..." value={datos.certificaciones} onChange={manejarCambio}></textarea></div>
