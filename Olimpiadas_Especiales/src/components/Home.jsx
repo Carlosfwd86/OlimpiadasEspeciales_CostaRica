@@ -171,6 +171,8 @@ const Home = () => {
         return () => clearInterval(timer);
     }, []);
 
+    const [isBannerHovered, setIsBannerHovered] = useState(false);
+
     return (
         <>
             {/* Banner CTA Flotante - Arriba del Hero */}
@@ -209,39 +211,72 @@ const Home = () => {
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1 }} />
 
                 {/* Tarjeta de Contenido Estilo Referencia */}
-                <div style={{
-                    position: 'relative',
-                    zIndex: 2,
-                    maxWidth: '380px',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}>
+                <div 
+                    style={{
+                        position: 'relative',
+                        zIndex: 2,
+                        maxWidth: '380px',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}
+                    onMouseEnter={() => setIsBannerHovered(true)}
+                    onMouseLeave={() => setIsBannerHovered(false)}
+                >
                     {/* Parte Superior: Caja Roja con Título */}
-                    <div style={{
-                        backgroundColor: '#FF0000',
-                        padding: '10px 20px',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                        width: 'fit-content',
-                        marginBottom: '-1px'
-                    }}>
+                    <div 
+                        className="caja-roja-titilante"
+                        style={{
+                            backgroundColor: '#FF0000',
+                            padding: '15px 30px',
+                            boxShadow: '0 8px 25px rgba(255,0,0,0.4)',
+                            width: 'fit-content',
+                            marginBottom: '5px',
+                            cursor: 'pointer',
+                            borderRadius: '16px',
+                            transition: 'all 0.3s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                        }}
+                    >
                         <h2 style={{
                             color: '#ffffff',
-                            fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)',
-                            fontWeight: '900',
+                            fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
+                            fontWeight: '1000',
                             margin: 0,
                             lineHeight: '1.1',
-                            textTransform: 'none'
+                            textTransform: 'none',
+                            textShadow: '0 4px 10px rgba(0,0,0,0.5)'
                         }}>
                             ¿Primera vez aquí?
                         </h2>
+                        {/* Imagen de Puntero (Cargada desde public/img/hand-pointer.png) */}
+                        <img 
+                            src="/img/hand-pointer.png" 
+                            alt="Click indicator" 
+                            className="icono-click-titilante"
+                            style={{
+                                width: '35px',
+                                height: '35px',
+                                objectFit: 'contain',
+                                filter: 'brightness(0) invert(1)' // La hace blanca
+                            }}
+                        />
                     </div>
 
                     {/* Parte Inferior: Caja Gris Traslúcida con Descripción y Botones */}
                     <div style={{
                         backgroundColor: 'rgba(45, 45, 45, 0.7)',
                         backdropFilter: 'blur(8px)',
-                        padding: '20px',
-                        boxShadow: '0 15px 40px rgba(0,0,0,0.4)'
+                        padding: '25px',
+                        boxShadow: '0 15px 40px rgba(0,0,0,0.4)',
+                        opacity: isBannerHovered ? 1 : 0,
+                        visibility: isBannerHovered ? 'visible' : 'hidden',
+                        transform: isBannerHovered ? 'translateY(0)' : 'translateY(-10px)',
+                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        pointerEvents: isBannerHovered ? 'auto' : 'none',
+                        borderRadius: '16px', // Redondeado uniforme
+                        marginTop: '5px'
                     }}>
                         <p style={{
                             color: '#ffffff',
