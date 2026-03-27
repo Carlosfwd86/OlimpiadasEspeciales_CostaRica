@@ -1,154 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import Swal from 'sweetalert2';
-
-const roles = [
-  {
-    id: 'atleta',
-    icon: (
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="8" r="4"/>
-        <path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
-        <path d="M17 4l2 2-2 2"/>
-      </svg>
-    ),
-    titulo: 'Atleta',
-    descripcion: 'Inscríbete como atleta participante en los Juegos Olímpicos Especiales de Costa Rica.',
-    color: '#FF0000',
-    bgColor: '#FFF5F5',
-  },
-  {
-    id: 'entrenador',
-    icon: (
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-    ),
-    titulo: 'Entrenador',
-    descripcion: 'Registrate para gestionar y orientar a los atletas en sus disciplinas deportivas.',
-    color: '#1e40af',
-    bgColor: '#eff6ff',
-  },
-  {
-    id: 'tutor',
-    icon: (
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    ),
-    titulo: 'Tutor / Familiar',
-    descripcion: 'Regístrate para acompañar y representar a un atleta bajo tu cuidado.',
-    color: '#059669',
-    bgColor: '#ecfdf5',
-  },
-  {
-    id: 'voluntario',
-    icon: (
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 8h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2"/>
-        <path d="M12 2v12M9 5l3-3 3 3"/>
-      </svg>
-    ),
-    titulo: 'Voluntario',
-    descripcion: 'Únete a nuestro equipo de voluntarios y apoya la misión de Olimpiadas Especiales.',
-    color: '#7c3aed',
-    bgColor: '#f5f3ff',
-  }
-];
-
-const pasos = [
-  {
-    num: '01',
-    titulo: 'Crea tu cuenta',
-    desc: 'Regístrate en la plataforma con tu correo y elige tu rol dentro del programa.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
-        <line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
-      </svg>
-    ),
-  },
-  {
-    num: '02',
-    titulo: 'Escoge tu formulario',
-    desc: 'Selecciona el formulario que corresponde a tu perfil: Atleta, Entrenador, Tutor o Voluntario.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
-      </svg>
-    ),
-  },
-  {
-    num: '03',
-    titulo: 'Completa el formulario',
-    desc: 'Llena la información personal, médica y deportiva de forma segura y detallada.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="9 11 12 14 22 4"/>
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-      </svg>
-    ),
-  },
-  {
-    num: '04',
-    titulo: 'Adjunta documentos',
-    desc: 'Sube los requisitos legales, certificaciones médicas y consentimientos necesarios.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-      </svg>
-    ),
-  },
-];
+import React from 'react'
+import PlataformaRegistro from '../components/PlataformaRegistro'
 
 function PlataformaRegistroPage() {
-  const navigate = useNavigate();
-  const [hoveredRole, setHoveredRole] = useState(null);
-
-  const handleVerRequisitos = () => {
-    Swal.fire({
-      title: '<h4 style="color: #FF0000; font-weight: 900; margin: 0; letter-spacing: -1px;">REQUISITOS DE INSCRIPCIÓN</h4>',
-      html: `
-        <div style="text-align: left; padding: 10px 20px; font-family: 'Inter', sans-serif;">
-          <p style="color: #64748b; margin-bottom: 20px; line-height: 1.7;">Asegúrese de tener listos los siguientes documentos antes de iniciar:</p>
-          <div style="display: flex; flex-direction: column; gap: 14px;">
-            ${[
-              ['Identificación Oficial','Cédula de identidad, DIMEX o partida de nacimiento.'],
-              ['Edad Mínima','Atletas a partir de los 8 años de edad.'],
-              ['Certificación Médica','Diagnóstico formal de discapacidad intelectual.'],
-              ['Historial de Salud','Información sobre alergias o medicación actual.'],
-              ['Fotografía','Imagen del rostro tipo carné, clara y reciente.'],
-              ['Representación Legal','Firma de padre o tutor para menores de 18 años.'],
-            ].map(([titulo, desc], i) => `
-              <div style="display:flex; align-items:flex-start; gap:12px;">
-                <div style="background:#FFF5F5; color:#FF0000; min-width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; flex-shrink:0;">${i+1}</div>
-                <div style="line-height:1.5;"><strong style="color:#1e293b;">${titulo}:</strong> <span style="color:#475569;">${desc}</span></div>
-              </div>`).join('')}
-          </div>
-          <div style="margin-top: 24px; padding: 14px 16px; background: #f8fafc; border-radius: 12px; border-left: 4px solid #FF0000;">
-            <p style="margin:0; font-size:0.85rem; color:#64748b;"><strong>Nota:</strong> El formulario le solicitará adjuntar los documentos conforme avance.</p>
-          </div>
-        </div>`,
-      confirmButtonText: 'ENTENDIDO',
-      confirmButtonColor: '#FF0000',
-      width: '560px',
-      borderRadius: '20px',
-      showCloseButton: true,
-    });
-  };
-
-  const handleRoleClick = (rolId) => {
-    navigate(`/formulario?rol=${rolId}`);
-  };
-
   return (
     <div style={{ fontFamily: "'Inter', 'Segoe UI', Roboto, sans-serif", background: '#f8fafc', minHeight: '100vh' }}>
       <Navbar />
@@ -373,7 +226,8 @@ function PlataformaRegistroPage() {
         }
       `}</style>
     </div>
-  );
+  )
 }
 
-export default PlataformaRegistroPage;
+
+export default PlataformaRegistroPage

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
-import { createVoluntario } from '../../services/ServicesVoluntarios';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
 import '../../styles/Formulario/FormVoluntario.css';
 
@@ -21,13 +21,16 @@ function FormVoluntario({ onVolver }) {
     const sesion = localStorage.getItem('usuarioSesion');
     if (sesion) {
       const user = JSON.parse(sesion);
-      if (user.rol === 'usuario') {
-        setDatos(prev => ({
-          ...prev,
-          nombre: user.nombre || prev.nombre,
-          correoElectronico: user.correoElectronico || prev.correoElectronico
-        }));
-      }
+      setDatos(prev => ({
+        ...prev,
+        nombre: user.nombre || prev.nombre,
+        cedula: user.cedula || prev.cedula,
+        fechaNacimiento: user.fechaNacimiento || prev.fechaNacimiento,
+        genero: user.genero || prev.genero,
+        telefono: user.telefono || prev.telefono,
+        correoElectronico: user.correoElectronico || prev.correoElectronico,
+        direccion: user.direccion || prev.direccion
+      }));
     }
   }, []);
   const [archivos, setArchivos] = useState({ cedula: null, delincuencia: null, foto: null });
@@ -111,20 +114,34 @@ function FormVoluntario({ onVolver }) {
     }).then(async (res) => {
       if (res.isConfirmed) {
         Swal.fire({ title: 'Guardando registro...', didOpen: () => Swal.showLoading() });
+        const sesion = JSON.parse(localStorage.getItem('usuarioSesion') || '{}');
         const pass = Math.random().toString(36).slice(-8);
         const archivosNombres = {
           cedula_nombre: archivos.cedula?.name || 'No adjuntado',
           delincuencia_nombre: archivos.delincuencia?.name || 'No adjuntado',
           foto_nombre: archivos.foto?.name || 'No adjuntado',
         };
-        const entry = { ...datos, ...archivosNombres, password: pass, rol: 'voluntario', fechaRegistro: new Date().toISOString() };
+        const entry = { 
+          ...datos, 
+          ...archivosNombres, 
+          usuarioId: sesion.id || null,
+          password: pass, 
+          rol: 'voluntario', 
+          fechaRegistro: new Date().toISOString(),
+          status: 'PENDIENTE',
+          statusColor: 'yellow',
+          bgColor: 'bg-light-blue',
+          name: datos.nombre,
+          initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''),
+          time: 'Registrado ahora'
+        };
 
         try {
-          await createVoluntario(entry);
+          await ServicesAdmin.saveRegistro(entry);
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', {
             to_email: datos.correoElectronico,
             to_name: datos.nombre,
-            message: `¡Bienvenido al equipo de voluntarios! Tu clave es: ${pass}\n\nDocumentos adjuntos:\n- Cédula: ${archivosNombres.cedula_nombre}\n- Hoja Delincuencia: ${archivosNombres.delincuencia_nombre}\n- Foto: ${archivosNombres.foto_nombre}`
+            message: `Tus datos de postulación para el rol de Voluntario han sido enviados correctamente. Un administrador revisará tu información pronto.\n\nPor favor, mantente atento a tu correo para la confirmación de aprobación.\n\nDocumentos adjuntos:\n- Cédula: ${archivosNombres.cedula_nombre}\n- Antecedentes: ${archivosNombres.delincuencia_nombre}\n- Foto: ${archivosNombres.foto_nombre}`
           }, '4zWvRC7Yn7lUDqd1q');
           Swal.fire({ icon: 'success', title: '¡Bienvenido!', text: 'Te has unido exitosamente como voluntario.' }).then(() => window.location.href = '/');
         } catch (error) {
@@ -184,8 +201,8 @@ function FormVoluntario({ onVolver }) {
             {paso === 1 && (
               <div className="form-grid-ref">
                 <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Fecha de Nacimiento *</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} /></div>
+                <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} readOnly={!!datos.cedula} /></div>
+                <div className="input-container"><label>Fecha de Nacimiento *</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} readOnly={!!datos.fechaNacimiento} /></div>
                 <div className="input-container"><label>Género</label>
                   <select id="genero" className="input-field" value={datos.genero} onChange={manejarCambio}>
                     <option value="">Seleccione...</option>
@@ -194,7 +211,8 @@ function FormVoluntario({ onVolver }) {
                   </select>
                 </div>
                 <div className="input-container"><label>Teléfono *</label><input type="text" id='telefono' className={`input-field ${errores.telefono ? 'error' : ''}`} value={datos.telefono} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Correo Electrónico *</label><input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error' : ''}`} value={datos.correoElectronico} onChange={manejarCambio} /></div>
+                <div className="input-container"><label>País *</label><input type="text" id='pais' className="input-field" value={datos.pais} onChange={manejarCambio} readOnly={!!datos.pais} /></div>
+                <div className="input-container"><label>Correo Electrónico *</label><input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error' : ''}`} value={datos.correoElectronico} onChange={manejarCambio} readOnly={!!datos.correoElectronico} /></div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}><label>Dirección *</label><textarea id="direccion" className={`input-field ${errores.direccion ? 'error' : ''}`} value={datos.direccion} onChange={manejarCambio}></textarea></div>
               </div>
             )}
@@ -204,9 +222,23 @@ function FormVoluntario({ onVolver }) {
                 <p style={{ fontWeight: 600, color: '#64748b', marginBottom: '15px' }}>Selecciona las áreas donde te gustaría colaborar:</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   {areasCatalogo.map(area => (
-                    <label key={area} className="checkbox-label">
-                      <input type="checkbox" checked={datos.areasInteres.includes(area)} onChange={() => manejarCheckbox(area)} style={{ accentColor: '#E00000', width: '16px', height: '16px' }} />
-                      <span>{area}</span>
+                    <label key={area.id || area.nombre} className="checkbox-label">
+                      <input 
+                        type="checkbox" 
+                        checked={datos.areasInteres.includes(area.nombre)} 
+                        onChange={() => {
+                          setDatos(prev => {
+                            const actual = [...prev.areasInteres];
+                            const areaNombre = area.nombre;
+                            return { 
+                              ...prev, 
+                              areasInteres: actual.includes(areaNombre) ? actual.filter(a => a !== areaNombre) : [...actual, areaNombre] 
+                            };
+                          });
+                        }} 
+                        style={{ accentColor: '#E00000', width: '16px', height: '16px' }} 
+                      />
+                      <span>{area.nombre}</span>
                     </label>
                   ))}
                 </div>
