@@ -173,7 +173,7 @@
       "direccion": "ZDNGZEDGHNRSEYXDG",
       "nombreAtleta": "Luis j",
       "relacionConAtleta": "Padre/Madre",
-      "accion": "QUIERO UNIRME PARA ESTAR AL TANTO DE LAS COMPENCIAS DE MIS HIJOS",
+      "accion": "QUIERO SER VOLUNTARIO",
       "experienciaNecesidadesEspeciales": "No",
       "cedula_nombre": "voluntarios_accion.png",
       "foto_nombre": "No adjuntado",
@@ -302,6 +302,17 @@
       "rol": "voluntario",
       "fechaRegistro": "2026-03-27T06:48:21.479Z",
       "pais": "Costa Rica"
+    },
+    {
+      "id": "015d",
+      "nombre": "Keylor Gonzalez",
+      "cedula": "604880955",
+      "correoElectronico": "keylor@gmail.com",
+      "telefono": "85864545",
+      "password": "keylor",
+      "edad": "20",
+      "rol": "usuario",
+      "fechaRegistro": "2026-03-27T11:44:01.262Z"
     }
   ],
   "disciplinas": [
