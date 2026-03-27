@@ -302,6 +302,7 @@ function PlataformaRegistro() {
         </div>
       </section>
 
+
       {/* PASOS */}
       <section id="pasos-section" style={{ padding: '90px 24px', background: '#ffffff' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
@@ -428,47 +429,6 @@ function PlataformaRegistro() {
         </div>
       </section>
 
-      {/* CTA FINAL */}
-      <section style={{
-        padding: '80px 24px',
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        textAlign: 'center',
-      }}>
-        <p style={{ color: '#ff8080', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.85rem', marginBottom: '20px' }}>¿Primera vez aquí?</p>
-        <h2 style={{ color: '#ffffff', fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: '900', margin: '0 0 20px', letterSpacing: '-1.5px' }}>
-          Empieza creando tu cuenta
-        </h2>
-        <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto 40px', lineHeight: '1.7' }}>
-          Necesitas una cuenta para guardar tu progreso y completar la inscripción.
-        </p>
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => navigate('/registro')}
-            style={{
-              padding: '16px 44px', background: '#FF0000', color: '#fff',
-              border: 'none', borderRadius: '16px', fontSize: '1rem', fontWeight: '800',
-              cursor: 'pointer', boxShadow: '0 12px 24px rgba(255,0,0,0.3)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.background = '#cc0000'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.background = '#FF0000'; }}
-          >
-            Crear Cuenta
-          </button>
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              padding: '16px 44px', background: 'transparent', color: '#e2e8f0',
-              border: '2px solid #334155', borderRadius: '16px', fontSize: '1rem', fontWeight: '800',
-              cursor: 'pointer', transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.color = '#ffffff'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#e2e8f0'; }}
-          >
-            Iniciar Sesión
-          </button>
-        </div>
-      </section>
 
       <Footer />
 
