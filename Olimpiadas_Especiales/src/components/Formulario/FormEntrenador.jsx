@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
 import { createEntrenador } from '../../services/ServicesEntrenadores';
+import { getConfig } from '../../services/ServicesConfig';
 import '../../styles/Formulario/FormEntrenador.css';
 
 emailjs.init("4zWvRC7Yn7lUDqd1q");
@@ -35,6 +36,11 @@ function FormEntrenador({ onVolver }) {
     titulo: null,
     foto: null,
   });
+  const [disciplinas, setDisciplinas] = useState([]);
+
+  useEffect(() => {
+    getConfig('disciplinas').then(setDisciplinas);
+  }, []);
 
   const manejarCambio = (e) => {
     const { id, value } = e.target;
@@ -205,7 +211,13 @@ function FormEntrenador({ onVolver }) {
             {paso === 2 && (
               <div className="form-grid-ref">
                 <div className="input-container"><label>Años de Experiencia *</label><input type="number" id='aniosExperiencia' className="input-field" placeholder="Ej: 5" min="0" value={datos.aniosExperiencia} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Disciplina Principal *</label><input type="text" id='disciplinaPrincipal' className="input-field" placeholder="Ej: Atletismo" value={datos.disciplinaPrincipal} onChange={manejarCambio} /></div>
+                <div className="input-container">
+                  <label>Disciplina Principal *</label>
+                  <select id='disciplinaPrincipal' className="input-field" value={datos.disciplinaPrincipal} onChange={manejarCambio}>
+                    <option value="">Seleccione...</option>
+                    {disciplinas.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}><label>Certificaciones / Títulos (resumen)</label><textarea id='certificaciones' className="input-field" rows={4} placeholder="Ej: Licenciatura en Educación Física, Certificación IAAF..." value={datos.certificaciones} onChange={manejarCambio}></textarea></div>
               </div>
             )}

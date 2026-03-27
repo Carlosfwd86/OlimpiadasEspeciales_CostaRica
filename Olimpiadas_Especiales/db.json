@@ -165,20 +165,6 @@
   "voluntarios": [],
   "tutores": [
     {
-      "id": "ee1e",
-      "nombre": "Braksley",
-      "apellido": "Camacho García",
-      "cedula": "1234567890",
-      "correoElectronico": "braksgpro123@gmail.com",
-      "telefono": "234567890",
-      "pais": "sdfghjk",
-      "relacionConAtleta": "Padre",
-      "password": "n2i85d1j",
-      "rol": "tutor",
-      "atletaVinculado": "f7b2",
-      "fechaRegistro": "2026-03-25T21:50:40.365Z"
-    },
-    {
       "id": "f9db",
       "nombre": "andres",
       "cedula": "23456789",
@@ -198,75 +184,38 @@
     }
   ],
   "estadisticas_generales": {
-    "totalRegistros": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
-    "atletasActivos": { "valor": "5", "porcentaje": "100%", "tendencia": "up" },
-    "revisionesPendientes": { "valor": "1", "textoExtra": "" },
-    "voluntarios": { "valor": "0", "porcentaje": "0%", "tendencia": "none" }
+    "totalRegistros": {
+      "valor": "3",
+      "porcentaje": "100%",
+      "tendencia": "up"
+    },
+    "atletasActivos": {
+      "valor": "3",
+      "porcentaje": "100%",
+      "tendencia": "up"
+    },
+    "revisionesPendientes": {
+      "valor": "0",
+      "textoExtra": ""
+    },
+    "voluntarios": {
+      "valor": "0",
+      "porcentaje": "0%",
+      "tendencia": "none"
+    }
   },
   "graficos": {
     "atletasPorDeporte": [],
     "distribucionRegional": [],
-    "totalGeneral": "5"
+    "totalGeneral": "3"
   },
-  "registros_pendientes": [
-    {
-      "id": "bb6d",
-      "initials": "GD",
-      "name": "Gerson David Dinarte Fuentes",
-      "email": "gfuente@gmail.com",
-      "phone": "89074567",
-      "sport": "Atletismo",
-      "region": "Puntarenas",
-      "time": "Registrado ahora",
-      "status": "VERIFICACIÓN PEND.",
-      "statusColor": "yellow",
-      "bgColor": "bg-light-blue"
-    }
-  ],
+  "registros_pendientes": [],
   "actividad_sistema": [
     {
       "id": "1",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "c1c0",
-      "title": "Aprobación",
-      "details": "Se aprobó a Gerson David Dinarte Fuentes",
-      "id": "2333",
-      "title": "Aprobación",
-      "details": "Se aprobó a Nora Figueroa",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "dbc3",
-      "title": "Competición",
-      "details": "Edición competición: Próxima Competencia Nacional de Atletismo",
-      "id": "5b66",
-      "title": "Competición",
-      "details": "Nueva competición: uky,il7,.u",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "d5e0",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de Ana López",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "fabd",
-      "title": "Aprobación",
-      "details": "Se aprobó a Ana López",
-      "icon": "fa-solid fa-check-circle",
+      "title": "Sistema Iniciado",
+      "details": "Base de datos saneada y lista para operación real.",
+      "icon": "fa-solid fa-server",
       "iconColor": "green",
       "time": "Hace un momento"
     }
@@ -274,8 +223,8 @@
   "competiciones": [
     {
       "id": "1",
-      "nombre": "Próxima Competencia Nacional de Atletismo",
-      "resumen": "Nuestros atletas se preparan para la competencia regional. Ven a apoyarlos este fin de semana en el estadio nacional.",
+      "nombre": "Competición Nacional de Atletismo",
+      "resumen": "Próxima gran cita deportiva nacional en San José.",
       "fecha": "2026-05-15",
       "lugar": "Estadio Nacional",
       "categoria": "Atletismo",
@@ -285,22 +234,12 @@
     {
       "id": "2",
       "nombre": "Encuentro Regional de Natación",
-      "resumen": "Un evento acuático increíble para todas las edades. Contaremos con la participación de delegaciones de todo el país.",
+      "resumen": "Competencia acuática para delegaciones regionales.",
       "fecha": "2026-06-22",
       "lugar": "Piscina María del Milagro París",
       "categoria": "Natación",
       "status": "Abierto",
       "img": "evento_natacion.png"
-    },
-    {
-      "id": "3",
-      "nombre": "Gala de Reconocimiento al Atleta",
-      "resumen": "Celebración especial para honrar el esfuerzo y la dedicación de nuestros deportistas durante el año.",
-      "fecha": "2026-07-10",
-      "lugar": "Teatro Nacional",
-      "categoria": "Social",
-      "status": "Por confirmar",
-      "img": "evento_ceremonia.png"
     }
   ],
   "consultas": [],
