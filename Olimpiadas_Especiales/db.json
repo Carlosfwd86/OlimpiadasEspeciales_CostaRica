@@ -288,16 +288,40 @@
   },
   "graficos": {
     "atletasPorDeporte": [
-      { "name": "Fútbol", "value": 1 },
-      { "name": "Natación", "value": 1 },
-      { "name": "Baloncesto", "value": 1 },
-      { "name": "Atletismo", "value": 1 },
-      { "name": "Levantamiento de Pesas", "value": 1 }
+      {
+        "name": "Fútbol",
+        "value": 1
+      },
+      {
+        "name": "Natación",
+        "value": 1
+      },
+      {
+        "name": "Baloncesto",
+        "value": 1
+      },
+      {
+        "name": "Atletismo",
+        "value": 1
+      },
+      {
+        "name": "Levantamiento de Pesas",
+        "value": 1
+      }
     ],
     "distribucionRegional": [
-      { "name": "San José", "value": 2 },
-      { "name": "Alajuela", "value": 1 },
-      { "name": "Puntarenas", "value": 1 }
+      {
+        "name": "San José",
+        "value": 2
+      },
+      {
+        "name": "Alajuela",
+        "value": 1
+      },
+      {
+        "name": "Puntarenas",
+        "value": 1
+      }
     ],
     "totalGeneral": "5"
   },
@@ -493,34 +517,103 @@
       "fechaRegistro": "2026-03-27T21:05:10.613Z",
       "rol": "usuario",
       "pais": "Venezuela"
+    },
+    {
+      "id": "841a",
+      "nombre": "andres",
+      "cedula": "603550322",
+      "correoElectronico": "cajr1986@gmail.com",
+      "telefono": "",
+      "password": "Carlos",
+      "fechaNacimiento": "1986-05-18",
+      "genero": "Masculino",
+      "fechaRegistro": "2026-03-29T01:24:34.378Z",
+      "rol": "usuario"
     }
   ],
   "disciplinas": [
-    { "id": "1", "nombre": "Atletismo" },
-    { "id": "2", "nombre": "Natación" },
-    { "id": "3", "nombre": "Fútbol" },
-    { "id": "4", "nombre": "Baloncesto" },
-    { "id": "5", "nombre": "Bochas" },
-    { "id": "6", "nombre": "Tenis de Mesa" },
-    { "id": "7", "nombre": "Gimnasia" },
-    { "id": "8", "nombre": "Levantamiento de Pesas" }
+    {
+      "id": "1",
+      "nombre": "Atletismo"
+    },
+    {
+      "id": "2",
+      "nombre": "Natación"
+    },
+    {
+      "id": "3",
+      "nombre": "Fútbol"
+    },
+    {
+      "id": "4",
+      "nombre": "Baloncesto"
+    },
+    {
+      "id": "5",
+      "nombre": "Bochas"
+    },
+    {
+      "id": "6",
+      "nombre": "Tenis de Mesa"
+    },
+    {
+      "id": "7",
+      "nombre": "Gimnasia"
+    },
+    {
+      "id": "8",
+      "nombre": "Levantamiento de Pesas"
+    }
   ],
   "programas": [
-    { "id": "1", "nombre": "San José" },
-    { "id": "2", "nombre": "Alajuela" },
-    { "id": "3", "nombre": "Heredia" },
-    { "id": "4", "nombre": "Cartago" },
-    { "id": "5", "nombre": "Limón" },
-    { "id": "6", "nombre": "Puntarenas" },
-    { "id": "7", "nombre": "Guanacaste" },
-    { "id": "8", "nombre": "San Carlos" }
+    {
+      "id": "1",
+      "nombre": "San José"
+    },
+    {
+      "id": "2",
+      "nombre": "Alajuela"
+    },
+    {
+      "id": "3",
+      "nombre": "Heredia"
+    },
+    {
+      "id": "4",
+      "nombre": "Cartago"
+    },
+    {
+      "id": "5",
+      "nombre": "Limón"
+    },
+    {
+      "id": "6",
+      "nombre": "Puntarenas"
+    },
+    {
+      "id": "7",
+      "nombre": "Guanacaste"
+    },
+    {
+      "id": "8",
+      "nombre": "San Carlos"
+    }
   ],
   "niveles_habilidad": [
-    { "id": "1", "nombre": "Principiante" },
-    { "id": "2", "nombre": "Intermedio" }
+    {
+      "id": "1",
+      "nombre": "Principiante"
+    },
+    {
+      "id": "2",
+      "nombre": "Intermedio"
+    }
   ],
   "consultas": [
-    { "id": "6", "nombre": "Otro" }
+    {
+      "id": "6",
+      "nombre": "Otro"
+    }
   ],
   "configuracion": {
     "assets": {
