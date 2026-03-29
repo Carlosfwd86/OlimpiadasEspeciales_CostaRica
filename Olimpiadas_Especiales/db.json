@@ -267,12 +267,12 @@
   ],
   "estadisticas_generales": {
     "totalRegistros": {
-      "valor": "3",
+      "valor": "5",
       "porcentaje": "100%",
       "tendencia": "up"
     },
     "atletasActivos": {
-      "valor": "3",
+      "valor": "5",
       "porcentaje": "100%",
       "tendencia": "up"
     },
@@ -287,17 +287,67 @@
     }
   },
   "graficos": {
-    "atletasPorDeporte": [],
-    "distribucionRegional": [],
-    "totalGeneral": "3"
+    "atletasPorDeporte": [
+      { "name": "Fútbol", "value": 1 },
+      { "name": "Natación", "value": 1 },
+      { "name": "Baloncesto", "value": 1 },
+      { "name": "Atletismo", "value": 1 },
+      { "name": "Levantamiento de Pesas", "value": 1 }
+    ],
+    "distribucionRegional": [
+      { "name": "San José", "value": 2 },
+      { "name": "Alajuela", "value": 1 },
+      { "name": "Puntarenas", "value": 1 }
+    ],
+    "totalGeneral": "5"
   },
   "registros_pendientes": [],
   "actividad_sistema": [
     {
-      "id": "1",
-      "title": "Sistema Iniciado",
-      "details": "Base de datos saneada y lista para operación real.",
-      "icon": "fa-solid fa-server",
+      "id": "963e",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Samir Jacobo",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fa5a",
+      "title": "Aprobación",
+      "details": "Se aprobó a Samir Jacobo",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "95c3",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Nora Figueroa",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "2333",
+      "title": "Aprobación",
+      "details": "Se aprobó a Nora Figueroa",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "d5e0",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Ana López",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fabd",
+      "title": "Aprobación",
+      "details": "Se aprobó a Ana López",
+      "icon": "fa-solid fa-check-circle",
       "iconColor": "green",
       "time": "Hace un momento"
     },
@@ -335,7 +385,13 @@
       "lugar": "Estadio Nacional",
       "categoria": "Atletismo",
       "status": "Próximo",
-      "img": "/img/evento_competencia.png"
+      "img": "evento_competencia.png",
+      "deporte": "Fútbol",
+      "fechaFin": "2026-03-28",
+      "ubicacion": "",
+      "descripcion": "",
+      "imagen": "",
+      "enlace": ""
     },
     {
       "id": "2",
@@ -348,7 +404,6 @@
       "img": "/img/evento_natacion.png"
     }
   ],
-  "consultas": [],
   "usuarios": [
     {
       "id": "6332",
@@ -441,143 +496,37 @@
     }
   ],
   "disciplinas": [
-    {
-      "id": "1",
-      "nombre": "Atletismo"
-    },
-    {
-      "id": "2",
-      "nombre": "Natación"
-    },
-    {
-      "id": "3",
-      "nombre": "Fútbol"
-    },
-    {
-      "id": "4",
-      "nombre": "Baloncesto"
-    },
-    {
-      "id": "5",
-      "nombre": "Bochas"
-    },
-    {
-      "id": "6",
-      "nombre": "Tenis de Mesa"
-    },
-    {
-      "id": "7",
-      "nombre": "Gimnasia"
-    },
-    {
-      "id": "8",
-      "nombre": "Levantamiento de Pesas"
-    }
+    { "id": "1", "nombre": "Atletismo" },
+    { "id": "2", "nombre": "Natación" },
+    { "id": "3", "nombre": "Fútbol" },
+    { "id": "4", "nombre": "Baloncesto" },
+    { "id": "5", "nombre": "Bochas" },
+    { "id": "6", "nombre": "Tenis de Mesa" },
+    { "id": "7", "nombre": "Gimnasia" },
+    { "id": "8", "nombre": "Levantamiento de Pesas" }
   ],
   "programas": [
-    {
-      "id": "1",
-      "nombre": "San José"
-    },
-    {
-      "id": "2",
-      "nombre": "Alajuela"
-    },
-    {
-      "id": "3",
-      "nombre": "Heredia"
-    },
-    {
-      "id": "4",
-      "nombre": "Cartago"
-    },
-    {
-      "id": "5",
-      "nombre": "Limón"
-    },
-    {
-      "id": "6",
-      "nombre": "Puntarenas"
-    },
-    {
-      "id": "7",
-      "nombre": "Guanacaste"
-    },
-    {
-      "id": "8",
-      "nombre": "San Carlos"
-    }
+    { "id": "1", "nombre": "San José" },
+    { "id": "2", "nombre": "Alajuela" },
+    { "id": "3", "nombre": "Heredia" },
+    { "id": "4", "nombre": "Cartago" },
+    { "id": "5", "nombre": "Limón" },
+    { "id": "6", "nombre": "Puntarenas" },
+    { "id": "7", "nombre": "Guanacaste" },
+    { "id": "8", "nombre": "San Carlos" }
   ],
   "niveles_habilidad": [
-    {
-      "id": "1",
-      "nombre": "Principiante"
-    },
-    {
-      "id": "2",
-      "nombre": "Intermedio"
-    },
-    {
-      "id": "3",
-      "nombre": "Avanzado"
-    },
-    {
-      "id": "4",
-      "nombre": "Élite"
-    }
+    { "id": "1", "nombre": "Principiante" },
+    { "id": "2", "nombre": "Intermedio" }
   ],
-  "areas_voluntariado": [
-    {
-      "id": "1",
-      "nombre": "Entrenador"
-    },
-    {
-      "id": "2",
-      "nombre": "Logística en Eventos"
-    },
-    {
-      "id": "3",
-      "nombre": "Salud y Medicina"
-    },
-    {
-      "id": "4",
-      "nombre": "Comunicación y Redes"
-    },
-    {
-      "id": "5",
-      "nombre": "Administración"
-    }
-  ],
-  "parentescos": [
-    {
-      "id": "1",
-      "nombre": "Padre"
-    },
-    {
-      "id": "2",
-      "nombre": "Madre"
-    },
-    {
-      "id": "3",
-      "nombre": "Hermano/a"
-    },
-    {
-      "id": "4",
-      "nombre": "Abuelo/a"
-    },
-    {
-      "id": "5",
-      "nombre": "Tutor Legal"
-    },
-    {
-      "id": "6",
-      "nombre": "Otro"
-    }
+  "consultas": [
+    { "id": "6", "nombre": "Otro" }
   ],
   "configuracion": {
     "assets": {
       "video_berlin": "/img/berlin-film-2025-for-website.mp4",
       "logo_oficial": "/img/Logo Olimpiadas.png"
     }
-  }
+  },
+  "$schema": "./node_modules/json-server/schema.json"
 }
