@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../style/ModalNuevoRegistro.css';
+import Swal from 'sweetalert2';
 
 export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editData = null }) {
     const [formData, setFormData] = React.useState({
@@ -43,10 +44,17 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.nombre || !formData.fecha) {
-            alert("Nombre y fecha son requeridos");
+        
+        if (!formData.nombre.trim() || !formData.fecha || !formData.ubicacion.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Campos Incompletos',
+                text: 'El Nombre, la Fecha de inicio y la Ubicación son datos obligatorios para registrar un evento.',
+                confirmButtonColor: '#e62334'
+            });
             return;
         }
+        
         onSave(formData, editData?.id);
         onClose();
     };
@@ -91,26 +99,35 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                             value={formData.nombre}
                             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                             placeholder="Ej. Torneo Nacional de Verano 2026"
+                            required
+                            pattern=".*\S+.*"
                         />
                     </div>
 
-                    {/* Deporte */}
                     <div>
-                        <label style={labelStyle}>Deporte</label>
+                        <label style={labelStyle}>Deporte / Categoría *</label>
                         <select
                             style={fieldStyle}
                             value={formData.deporte}
                             onChange={(e) => setFormData({ ...formData, deporte: e.target.value })}
                         >
-                            <option>Fútbol</option>
-                            <option>Baloncesto</option>
-                            <option>Atletismo</option>
-                            <option>Natación</option>
-                            <option>Tenis</option>
-                            <option>Ciclismo</option>
-                            <option>Bolos</option>
-                            <option>Gimnasia</option>
-                            <option>Otro</option>
+                            <option value="Atletismo">Atletismo</option>
+                            <option value="Baloncesto">Baloncesto</option>
+                            <option value="Balonmano">Balonmano</option>
+                            <option value="Bochas">Bochas</option>
+                            <option value="Ciclismo">Ciclismo</option>
+                            <option value="Deportes de Invierno">Deportes de Invierno</option>
+                            <option value="Ecuestre">Ecuestre</option>
+                            <option value="Fútbol">Fútbol</option>
+                            <option value="Gimnasia Rítmica">Gimnasia Rítmica</option>
+                            <option value="Halterofilia">Halterofilia</option>
+                            <option value="Judo">Judo</option>
+                            <option value="Natación">Natación</option>
+                            <option value="Tenis de Campo">Tenis de Campo</option>
+                            <option value="Tenis de Mesa">Tenis de Mesa</option>
+                            <option value="Triatlón">Triatlón</option>
+                            <option value="Voleibol">Voleibol</option>
+                            <option value="Varios/Multideportivo">Varios / Multideportivo</option>
                         </select>
                     </div>
 
@@ -123,6 +140,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                                 style={fieldStyle}
                                 value={formData.fecha}
                                 onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
+                                required
                             />
                         </div>
                         <div>
@@ -136,15 +154,16 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                         </div>
                     </div>
 
-                    {/* Ubicación */}
                     <div>
-                        <label style={labelStyle}>Ubicación</label>
+                        <label style={labelStyle}>Sede / Ubicación *</label>
                         <input
                             type="text"
                             style={fieldStyle}
                             value={formData.ubicacion}
                             onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
-                            placeholder="Ej. Estadio Nacional, San José"
+                            placeholder="Ej. Estadio Nacional, La Sabana"
+                            required
+                            pattern=".*\S+.*"
                         />
                     </div>
 

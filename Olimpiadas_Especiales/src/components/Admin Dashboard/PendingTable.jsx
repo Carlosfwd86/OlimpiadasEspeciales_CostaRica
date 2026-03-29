@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../style/PendingTable.css';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import ModalDetalleRegistro from './ModalDetalleRegistro';
+import Swal from 'sweetalert2';
 
 export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery = '', onActionSuccess }) {
   const [registrations, setRegistrations] = useState([]);
@@ -28,46 +29,93 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   }, [refreshTrigger]);
 
   const handleApprove = (reg) => {
-    if(!window.confirm(`¿Seguro que deseas APROBAR a ${reg.name}? Pasará a la base de datos oficial.`)) return;
-    
-    ServicesAdmin.aprobarRegistro(reg)
-      .then(() => {
-        alert("¡Atleta aprobado y guardado en la base de datos oficial!");
-        ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${reg.name}`, "fa-solid fa-check-circle", "green");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-      })
-      .catch(err => {
-        console.error("Error al aprobar:", err);
-        alert("Error al procesar la aprobación.");
-      });
+    Swal.fire({
+      title: `¿Aprobar ${reg.rol === 'tutor' ? 'Tutor' : 'Atleta'}?`,
+      text: `¿Seguro que deseas APROBAR a ${reg.name}? Pasará a la base de datos oficial.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#22c55e',
+      cancelButtonColor: '#ef4444',
+      confirmButtonText: 'Sí, aprobar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Procesando...',
+          didOpen: () => { Swal.showLoading(); },
+          allowOutsideClick: false
+        });
+
+        ServicesAdmin.aprobarRegistro(reg)
+          .then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Aprobado!',
+              text: 'El atleta ha sido guardado en la base de datos oficial.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+            ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${reg.name}`, "fa-solid fa-check-circle", "green");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+          })
+          .catch(err => {
+            console.error("Error al aprobar:", err);
+            Swal.fire('Error', 'No se pudo procesar la aprobación.', 'error');
+          });
+      }
+    });
   };
 
   const handleReject = (id) => {
-    if(!window.confirm("¿Seguro que deseas marcar este registro como RECHAZADO?")) return;
-    
-    ServicesAdmin.saveRegistro({
-        status: 'RECHAZADO',
-        statusColor: 'red',
-        bgColor: 'bg-light-red'
-      }, id)
-    .then(() => {
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-    })
-    .catch(err => console.error("Error al rechazar:", err));
+    Swal.fire({
+      title: '¿Rechazar Registro?',
+      text: "El registro será marcado como RECHAZADO.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#eab308',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, rechazar',
+      cancelButtonText: 'Volver'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        ServicesAdmin.saveRegistro({
+            status: 'RECHAZADO',
+            statusColor: 'red',
+            bgColor: 'bg-light-red'
+          }, id)
+        .then(() => {
+            Swal.fire('Rechazado', 'El registro ha sido marcado como rechazado.', 'success');
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+        })
+        .catch(err => Swal.fire('Error', 'No se pudo rechazar el registro.', 'error'));
+      }
+    });
   };
 
   const handleDelete = (id) => {
-    if(!window.confirm("¿Estás seguro de que deseas ELIMINAR permanentemente este registro?")) return;
-    
-    ServicesAdmin.deleteRegistro(id)
-    .then(() => {
-        ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-    })
-    .catch(err => console.error("Error al eliminar:", err));
+    Swal.fire({
+      title: '¿Eliminar Registro?',
+      text: "Esta acción es permanente y no se puede deshacer.",
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        ServicesAdmin.deleteRegistro(id)
+        .then(() => {
+            Swal.fire('Eliminado', 'El registro ha sido eliminado permanentemente.', 'success');
+            ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+        })
+        .catch(err => Swal.fire('Error', 'No se pudo eliminar el registro.', 'error'));
+      }
+    });
   };
 
   if (loading) {
@@ -105,11 +153,22 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
             style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px' }}
           >
             <option value="">Todos los Deportes</option>
-            <option value="Fútbol">Fútbol</option>
-            <option value="Natación">Natación</option>
             <option value="Atletismo">Atletismo</option>
-            <option value="Bochas">Bochas</option>
             <option value="Baloncesto">Baloncesto</option>
+            <option value="Balonmano">Balonmano</option>
+            <option value="Bochas">Bochas</option>
+            <option value="Ciclismo">Ciclismo</option>
+            <option value="Deportes de Invierno">Deportes de Invierno</option>
+            <option value="Ecuestre">Ecuestre</option>
+            <option value="Fútbol">Fútbol</option>
+            <option value="Gimnasia Rítmica">Gimnasia Rítmica</option>
+            <option value="Halterofilia">Halterofilia</option>
+            <option value="Judo">Judo</option>
+            <option value="Natación">Natación</option>
+            <option value="Tenis de Campo">Tenis de Campo</option>
+            <option value="Tenis de Mesa">Tenis de Mesa</option>
+            <option value="Triatlón">Triatlón</option>
+            <option value="Voleibol">Voleibol</option>
           </select>
           <select 
             className="filter-select" 
@@ -133,7 +192,7 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
         <table className="pending-table">
           <thead>
             <tr>
-              <th>Atleta</th>
+              <th>Nombre / Miembro</th>
               <th>Deporte</th>
               <th>Región</th>
               <th>Estado</th>
@@ -162,7 +221,7 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
                       </div>
                     </div>
                   </td>
-                  <td>{reg.sport}</td>
+                  <td>{reg.sport || reg.disciplina || reg.disciplinaPrincipal || (reg.rol === 'tutor' ? `Tutor (${reg.relacionConAtleta || 'Familiar'})` : 'General')}</td>
                   <td>{reg.region}</td>
                   <td>
                     <span className={`status-badge status-${reg.statusColor}`}>

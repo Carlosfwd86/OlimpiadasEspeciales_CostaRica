@@ -8,9 +8,9 @@ export const ServicesAdmin = {
         return res.json();
     },
 
-    saveRegistro: async (data, id = null) => {
+    saveRegistro: async (data, id = null, table = 'registros_pendientes') => {
         const method = id ? 'PATCH' : 'POST';
-        const url = id ? `${BASE_URL}/registros_pendientes/${id}` : `${BASE_URL}/registros_pendientes`;
+        const url = id ? `${BASE_URL}/${table}/${id}` : `${BASE_URL}/${table}`;
         const res = await fetch(url, {
             method,
             headers: { 'Content-Type': 'application/json' },
@@ -90,11 +90,65 @@ export const ServicesAdmin = {
         return true;
     },
 
-    // Atletas Oficiales
     getAtletas: async () => {
         const res = await fetch(`${BASE_URL}/atletas`);
         if (!res.ok) throw new Error("Error al obtener atletas");
         return res.json();
+    },
+
+    deleteAthlete: async (id) => {
+        const res = await fetch(`${BASE_URL}/atletas/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error("Error al eliminar atleta");
+        return true;
+    },
+
+    getVoluntarios: async () => {
+        const res = await fetch(`${BASE_URL}/voluntarios`);
+        if (!res.ok) throw new Error("Error al obtener voluntarios");
+        return res.json();
+    },
+
+    deleteVoluntario: async (id) => {
+        const res = await fetch(`${BASE_URL}/voluntarios/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error("Error al eliminar voluntario");
+        return true;
+    },
+
+    getEntrenadores: async () => {
+        const res = await fetch(`${BASE_URL}/entrenadores`);
+        if (!res.ok) throw new Error("Error al obtener entrenadores");
+        return res.json();
+    },
+
+    deleteEntrenador: async (id) => {
+        const res = await fetch(`${BASE_URL}/entrenadores/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error("Error al eliminar entrenador");
+        return true;
+    },
+
+    getTutores: async () => {
+        const res = await fetch(`${BASE_URL}/tutores`);
+        if (!res.ok) throw new Error("Error al obtener tutores");
+        return res.json();
+    },
+
+    deleteTutor: async (id) => {
+        const res = await fetch(`${BASE_URL}/tutores/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error("Error al eliminar tutor");
+        return true;
+    },
+
+    // Consultas
+    getConsultas: async () => {
+        const res = await fetch(`${BASE_URL}/consultas`);
+        if (!res.ok) throw new Error("Error al obtener consultas");
+        return res.json();
+    },
+
+    deleteConsulta: async (id) => {
+        const res = await fetch(`${BASE_URL}/consultas/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error("Error al eliminar consulta");
+        return true;
     },
 
     // Actividad del Sistema
@@ -112,7 +166,7 @@ export const ServicesAdmin = {
 
     updateProfile: async (id, data) => {
         const res = await fetch(`${BASE_URL}/Admin/${id}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
@@ -174,14 +228,18 @@ export const ServicesAdmin = {
 
     // Estadísticas
     getStats: async () => {
-        const [atletas, pendientes, volunt] = await Promise.all([
-            fetch(`${BASE_URL}/atletas`).then(r => r.json()),
-            fetch(`${BASE_URL}/registros_pendientes`).then(r => r.json()),
-            fetch(`${BASE_URL}/voluntarios`).then(r => r.json())
+        const [atletas, pendientes, volunt, entren, tutor] = await Promise.all([
+            fetch(`${BASE_URL}/atletas`).then(r => r.json()).catch(() => []),
+            fetch(`${BASE_URL}/registros_pendientes`).then(r => r.json()).catch(() => []),
+            fetch(`${BASE_URL}/voluntarios`).then(r => r.json()).catch(() => []),
+            fetch(`${BASE_URL}/entrenadores`).then(r => r.json()).catch(() => []),
+            fetch(`${BASE_URL}/tutores`).then(r => r.json()).catch(() => [])
         ]);
 
+        const totalActivos = atletas.length + volunt.length + entren.length + tutor.length;
+
         return {
-            totalRegistros: { valor: atletas.length + pendientes.length, porcentaje: "+12%", tendencia: "up" },
+            totalRegistros: { valor: totalActivos + pendientes.length, porcentaje: "+12%", tendencia: "up" },
             atletasActivos: { valor: atletas.length, porcentaje: "+5%", tendencia: "up" },
             revisionesPendientes: { valor: pendientes.length, textoExtra: "Requieren acción" },
             voluntarios: { valor: volunt.length, porcentaje: "0%", tendencia: "none" }

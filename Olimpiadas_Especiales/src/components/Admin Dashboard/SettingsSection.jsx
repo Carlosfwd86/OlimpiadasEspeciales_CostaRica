@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
+import Swal from 'sweetalert2';
 
 export default function SettingsSection({ onThemeChange, initialSubTab = 'usuarios' }) {
     const [settings, setSettings] = useState(null);
@@ -40,10 +41,21 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             .then(() => {
                 setSaving(false);
                 ServicesAdmin.logActivity("Configuración", "Se actualizaron las preferencias del sistema", "fa-solid fa-gears", "purple");
-                alert("Configuración guardada correctamente");
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Guardado!',
+                    text: 'Configuración guardada correctamente.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             })
             .catch(err => {
-                alert("Error al guardar: " + err.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Guardado',
+                    text: err.message,
+                    confirmButtonColor: '#e62334'
+                });
                 setSaving(false);
             });
     };
@@ -55,53 +67,11 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
         <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
                 
-                {/* Sub-Navegación estilo captura */}
-                <div style={{ display: 'flex', gap: '30px', marginBottom: '25px', paddingLeft: '10px' }}>
-                    <button 
-                        onClick={() => setSubTab('usuarios')}
-                        style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            padding: '10px 20px',
-                            fontSize: '18px', 
-                            fontWeight: '700',
-                            color: subTab === 'usuarios' ? '#e62334' : 'var(--admin-text-muted)',
-                            borderBottom: subTab === 'usuarios' ? '3px solid #e62334' : '3px solid transparent',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            opacity: subTab === 'usuarios' ? 1 : 0.7
-                        }}
-                        onMouseOver={(e) => { if (subTab !== 'usuarios') e.currentTarget.style.opacity = 1 }}
-                        onMouseOut={(e) => { if (subTab !== 'usuarios') e.currentTarget.style.opacity = 0.7 }}
-                    >
-                        Usuarios
-                    </button>
-                    <button 
-                        onClick={() => setSubTab('configuracion')}
-                        style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            padding: '10px 20px',
-                            fontSize: '18px', 
-                            fontWeight: '700',
-                            color: subTab === 'configuracion' ? '#e62334' : 'var(--admin-text-muted)',
-                            borderBottom: subTab === 'configuracion' ? '3px solid #e62334' : '3px solid transparent',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            opacity: subTab === 'configuracion' ? 1 : 0.7
-                        }}
-                        onMouseOver={(e) => { if (subTab !== 'configuracion') e.currentTarget.style.opacity = 1 }}
-                        onMouseOut={(e) => { if (subTab !== 'configuracion') e.currentTarget.style.opacity = 0.7 }}
-                    >
-                        Configuración
-                    </button>
-                </div>
-
                 {subTab === 'usuarios' ? (
                     <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '30px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h3 style={{ margin: 0, color: 'var(--admin-text-main)' }}>Gestión de Usuarios</h3>
-                            <button className="btn-new-entry" onClick={() => alert("Añadir nuevo usuario...")}>+ Nuevo Usuario</button>
+                            <button className="btn-new-entry" onClick={() => Swal.fire({ icon: 'info', title: 'Próximamente', text: 'La gestión avanzada de usuarios estará disponible en la siguiente actualización.', confirmButtonColor: '#3b82f6' })}>+ Nuevo Usuario</button>
                         </div>
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -128,9 +98,23 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                                 <button 
                                                     style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
                                                     onClick={() => {
-                                                        if(window.confirm(`¿Seguro que deseas eliminar a ${u.nombre}?`)) {
-                                                            ServicesAdmin.deleteUser(u.id).then(() => setUsuarios(usuarios.filter(us => us.id !== u.id)));
-                                                        }
+                                                        Swal.fire({
+                                                            title: '¿Eliminar Usuario?',
+                                                            text: `¿Seguro que deseas eliminar a ${u.nombre}? Esta acción no se puede deshacer.`,
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#e62334',
+                                                            cancelButtonColor: '#94a3b8',
+                                                            confirmButtonText: 'Sí, eliminar',
+                                                            cancelButtonText: 'Cancelar'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                ServicesAdmin.deleteUser(u.id).then(() => {
+                                                                    setUsuarios(usuarios.filter(us => us.id !== u.id));
+                                                                    Swal.fire('¡Eliminado!', 'El usuario ha sido borrado.', 'success');
+                                                                });
+                                                            }
+                                                        });
                                                     }}
                                                 >
                                                     <i className="fa-solid fa-trash"></i>
@@ -242,24 +226,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                 </div>
                             </div>
 
-                            {/* Sección Regional */}
-                            <div>
-                                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '15px', color: 'var(--admin-text-main)' }}>Regional</h3>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <div>
-                                        <p style={{ fontWeight: '500', fontSize: '14px', margin: 0, color: 'var(--admin-text-main)' }}>Idioma Predeterminado</p>
-                                        <p style={{ fontSize: '12px', color: 'var(--admin-text-muted)', margin: 0 }}>Idioma para las exportaciones y PDFs.</p>
-                                    </div>
-                                    <select 
-                                        value={settings.idioma} 
-                                        onChange={(e) => setSettings({...settings, idioma: e.target.value})}
-                                        style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
-                                    >
-                                        <option value="es">Español (CR)</option>
-                                        <option value="en">Inglés (US)</option>
-                                    </select>
-                                </div>
-                            </div>
+                            {/* Sección Eliminada (Idioma: Solo Español CR por defecto) */}
 
                         </div>
 
