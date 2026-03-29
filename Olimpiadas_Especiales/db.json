@@ -308,6 +308,22 @@
       "icon": "fa-solid fa-check-circle",
       "iconColor": "green",
       "time": "Hace un momento"
+    },
+    {
+      "id": "12dd",
+      "title": "Reporte",
+      "details": "Exportación CSV de 6 registros (atletas)",
+      "icon": "fa-solid fa-file-csv",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "f6ce",
+      "title": "Reporte",
+      "details": "Exportación PDF de 6 registros (atletas)",
+      "icon": "fa-solid fa-file-pdf",
+      "iconColor": "red",
+      "time": "Hace un momento"
     }
   ],
   "competiciones": [
