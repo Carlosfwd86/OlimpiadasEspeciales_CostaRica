@@ -9,5 +9,4 @@ function PlataformaRegistroPage() {
   )
 }
 
-
 export default PlataformaRegistroPage

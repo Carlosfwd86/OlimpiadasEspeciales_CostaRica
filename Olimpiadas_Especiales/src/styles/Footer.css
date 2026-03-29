@@ -19,20 +19,14 @@
 
 .footer_logo {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.footer_titulo {
-  font-weight: 900;
-  font-size: 1.2rem;
-  letter-spacing: 1px;
-}
-
-.footer_subtitulo {
-  color: #FF0000; /* Rojo oficial */
-  font-weight: 700;
-  font-size: 0.8rem;
+.footer_logo_img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* Lo hacemos blanco para que resalte en el fondo oscuro */
 }
 
 .footer_descripcion {

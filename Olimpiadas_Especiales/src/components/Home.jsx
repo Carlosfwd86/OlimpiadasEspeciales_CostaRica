@@ -7,7 +7,6 @@ import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
 import CarouselEventos from './CarouselEventos';
 import BannerVoluntarios from './BannerVoluntarios';
-import InfografiaImpacto from './InfografiaImpacto';
 
 const Home = () => {
 
@@ -106,6 +105,7 @@ const Home = () => {
     });
 
     const [heroImageIndex, setHeroImageIndex] = useState(0);
+    const [usuarioSesion, setUsuarioSesion] = useState(null);
     const heroImages = [
         '/img/Hero_contenedor_01.jpeg',
         '/img/Hero_contenedor_02.jpeg',
@@ -168,6 +168,10 @@ const Home = () => {
             setHeroImageIndex((prev) => (prev + 1) % heroImages.length);
         }, 3000);
 
+        // Leer sesión
+        const sesion = localStorage.getItem('usuarioSesion');
+        if (sesion) setUsuarioSesion(JSON.parse(sesion));
+
         return () => clearInterval(timer);
     }, []);
 
@@ -175,7 +179,6 @@ const Home = () => {
 
     return (
         <>
-            {/* Banner CTA Flotante - Arriba del Hero */}
             {/* Banner CTA Flotante - Arriba del Hero (Ahora con Video) */}
             {/* Banner CTA - Diseño Estilo Referencia (Tarjeta sobre Video) */}
             <section style={{
@@ -210,128 +213,96 @@ const Home = () => {
                 {/* Overlay oscuro sutil para todo el video */}
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1 }} />
 
-                {/* Tarjeta de Contenido Estilo Referencia */}
-                <div 
-                    style={{
-                        position: 'relative',
-                        zIndex: 2,
-                        maxWidth: '380px',
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                    onMouseEnter={() => setIsBannerHovered(true)}
-                    onMouseLeave={() => setIsBannerHovered(false)}
-                >
-                    {/* Parte Superior: Caja Roja con Título */}
+                {/* Tarjeta de Contenido Estilo Referencia - Solo si no hay sesión */}
+                {!usuarioSesion && (
                     <div 
-                        className="caja-roja-titilante"
                         style={{
-                            backgroundColor: '#FF0000',
-                            padding: '15px 30px',
-                            boxShadow: '0 8px 25px rgba(255,0,0,0.4)',
-                            width: 'fit-content',
-                            marginBottom: '5px',
-                            cursor: 'pointer',
-                            borderRadius: '16px',
-                            transition: 'all 0.3s ease',
+                            position: 'relative',
+                            zIndex: 2,
+                            maxWidth: '380px',
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px'
+                            flexDirection: 'column'
                         }}
+                        onMouseEnter={() => setIsBannerHovered(true)}
+                        onMouseLeave={() => setIsBannerHovered(false)}
                     >
-                        <h2 style={{
-                            color: '#ffffff',
-                            fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
-                            fontWeight: '1000',
-                            margin: 0,
-                            lineHeight: '1.1',
-                            textTransform: 'none',
-                            textShadow: '0 4px 10px rgba(0,0,0,0.5)'
-                        }}>
-                            ¿Primera vez aquí?
-                        </h2>
-                        {/* Imagen de Puntero (Cargada desde public/img/hand-pointer.png) */}
-                        <img 
-                            src="/img/hand-pointer.png" 
-                            alt="Click indicator" 
-                            className="icono-click-titilante"
+                        {/* Parte Superior: Caja Roja con Título */}
+                        <div 
+                            className="caja-roja-titilante"
                             style={{
-                                width: '35px',
-                                height: '35px',
-                                objectFit: 'contain',
-                                filter: 'brightness(0) invert(1)' // La hace blanca
+                                backgroundColor: '#FF0000',
+                                padding: '15px 30px',
+                                boxShadow: '0 8px 25px rgba(255,0,0,0.4)',
+                                width: 'fit-content',
+                                marginBottom: '5px',
+                                cursor: 'pointer',
+                                borderRadius: '16px',
+                                transition: 'all 0.3s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px'
                             }}
-                        />
-                    </div>
+                        >
+                            <h2 style={{
+                                color: '#ffffff',
+                                fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
+                                fontWeight: '1000',
+                                margin: 0,
+                                lineHeight: '1.1',
+                                textTransform: 'none',
+                                textShadow: '0 4px 10px rgba(0,0,0,0.5)'
+                            }}>
+                                ¿Primera vez aquí?
+                            </h2>
+                            {/* Imagen de Puntero (Cargada desde public/img/hand-pointer.png) */}
+                            <img 
+                                src="/img/hand-pointer.png" 
+                                alt="Click indicator" 
+                                className="icono-click-titilante"
+                                style={{
+                                    width: '35px',
+                                    height: '35px',
+                                    objectFit: 'contain',
+                                    filter: 'brightness(0) invert(1)' // La hace blanca
+                                }}
+                            />
+                        </div>
 
-                    {/* Parte Inferior: Caja Gris Traslúcida con Descripción y Botones */}
-                    <div style={{
-                        backgroundColor: 'rgba(45, 45, 45, 0.7)',
-                        backdropFilter: 'blur(8px)',
-                        padding: '25px',
-                        boxShadow: '0 15px 40px rgba(0,0,0,0.4)',
-                        opacity: isBannerHovered ? 1 : 0,
-                        visibility: isBannerHovered ? 'visible' : 'hidden',
-                        transform: isBannerHovered ? 'translateY(0)' : 'translateY(-10px)',
-                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                        pointerEvents: isBannerHovered ? 'auto' : 'none',
-                        borderRadius: '16px', // Redondeado uniforme
-                        marginTop: '5px'
-                    }}>
-                        <p style={{
-                            color: '#ffffff',
-                            fontSize: '1rem',
-                            lineHeight: '1.5',
-                            fontWeight: '700',
-                            margin: '0 0 20px'
+                        {/* Parte Inferior: Caja Gris Traslúcida con Descripción y Botones */}
+                        <div style={{
+                            backgroundColor: 'rgba(45, 45, 45, 0.7)',
+                            backdropFilter: 'blur(8px)',
+                            padding: '25px',
+                            boxShadow: '0 15px 40px rgba(0,0,0,0.4)',
+                            opacity: isBannerHovered ? 1 : 0,
+                            visibility: isBannerHovered ? 'visible' : 'hidden',
+                            transform: isBannerHovered ? 'translateY(0)' : 'translateY(-10px)',
+                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                            pointerEvents: isBannerHovered ? 'auto' : 'none',
+                            borderRadius: '16px', // Redondeado uniforme
+                            marginTop: '5px'
                         }}>
-                            Cada día reafirmamos nuestro compromiso con la inclusión, el respeto y la igualdad de oportunidades a través del deporte.
-                        </p>
+                            <p style={{
+                                color: '#ffffff',
+                                fontSize: '1rem',
+                                lineHeight: '1.5',
+                                fontWeight: '700',
+                                margin: '0 0 20px'
+                            }}>
+                                Cada día reafirmamos nuestro compromiso con la inclusión, el respeto y la igualdad de oportunidades a través del deporte.
+                            </p>
 
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            <button
-                                onClick={() => navegar('/registro')}
-                                style={{
-                                    padding: '10px 22px',
-                                    background: '#ffffff',
-                                    color: '#FF0000',
-                                    border: 'none',
-                                    borderRadius: '0',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '900',
-                                    cursor: 'pointer',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = '#f0f0f0'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                            >
-                                Registrarme Ahora
-                            </button>
-                            <button
-                                onClick={() => navegar('/login')}
-                                style={{
-                                    padding: '10px 22px',
-                                    background: 'transparent',
-                                    color: '#ffffff',
-                                    border: '2px solid #ffffff',
-                                    borderRadius: '0',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '800',
-                                    cursor: 'pointer',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                            >
-                                Iniciar Sesión
-                            </button>
+                            <div className="hero_botones">
+                                <button className="boton_rojo" onClick={() => navegar('/registro')}>
+                                    Registrarme Ahora <span className="flecha_boton">&gt;</span>
+                                </button>
+                                <button className="boton_blanco" onClick={() => navegar('/login')}>
+                                    Iniciar Sesión
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </section>
 
             <section className="contenedor_hero_principal">
@@ -524,7 +495,6 @@ const Home = () => {
                 </div>
             </div>
 
-            <InfografiaImpacto stats={counts} />
 
             <CarouselEventos />
             <BannerVoluntarios />

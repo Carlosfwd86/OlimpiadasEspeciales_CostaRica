@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -64,17 +64,6 @@ const roles = [
 const pasos = [
   {
     num: '01',
-    titulo: 'Crea tu cuenta',
-    desc: 'Regístrate en la plataforma con tu correo y elige tu rol dentro del programa.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
-        <line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
-      </svg>
-    ),
-  },
-  {
-    num: '02',
     titulo: 'Escoge tu formulario',
     desc: 'Selecciona el formulario que corresponde a tu perfil: Atleta, Entrenador, Tutor o Voluntario.',
     icon: (
@@ -87,7 +76,7 @@ const pasos = [
     ),
   },
   {
-    num: '03',
+    num: '02',
     titulo: 'Completa el formulario',
     desc: 'Llena la información personal, médica y deportiva de forma segura y detallada.',
     icon: (
@@ -98,7 +87,7 @@ const pasos = [
     ),
   },
   {
-    num: '04',
+    num: '03',
     titulo: 'Adjunta documentos',
     desc: 'Sube los requisitos legales, certificaciones médicas y consentimientos necesarios.',
     icon: (
@@ -112,6 +101,13 @@ const pasos = [
 function PlataformaRegistro() {
   const navigate = useNavigate();
   const [hoveredRole, setHoveredRole] = useState(null);
+  const [highlightFirstStep, setHighlightFirstStep] = useState(false);
+  const [usuarioSesion, setUsuarioSesion] = useState(null);
+
+  useEffect(() => {
+    const sesion = localStorage.getItem('usuarioSesion');
+    if (sesion) setUsuarioSesion(JSON.parse(sesion));
+  }, []);
 
   const handleVerRequisitos = () => {
     Swal.fire({
@@ -243,7 +239,14 @@ function PlataformaRegistro() {
 
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '44px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => document.getElementById('roles-section').scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => {
+              if (usuarioSesion) {
+                document.getElementById('roles-section').scrollIntoView({ behavior: 'smooth' });
+              } else {
+                document.getElementById('pasos-section').scrollIntoView({ behavior: 'smooth' });
+                setHighlightFirstStep(true);
+              }
+            }}
             style={{
               padding: '16px 40px', background: '#FF0000', color: '#fff',
               border: 'none', borderRadius: '16px', fontSize: '1rem', fontWeight: '800',
@@ -253,8 +256,26 @@ function PlataformaRegistro() {
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(255,0,0,0.3)'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(255,0,0,0.25)'; }}
           >
-            Comenzar Registro
+            {usuarioSesion ? 'Explorar Roles' : 'Comenzar Registro'}
           </button>
+
+          {!usuarioSesion && (
+            <button
+              onClick={() => navigate('/login')}
+              style={{
+                padding: '16px 40px', background: '#ffffff', color: '#0f172a',
+                border: '1.5px solid #e2e8f0', borderRadius: '16px', fontSize: '1rem', fontWeight: '800',
+                cursor: 'pointer', transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+            >
+              Ya tengo cuenta
+            </button>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '24px', flexWrap: 'wrap' }}>
           <button
             onClick={handleVerRequisitos}
             style={{
@@ -270,94 +291,71 @@ function PlataformaRegistro() {
         </div>
       </section>
 
+
       {/* PASOS */}
-      <section style={{ padding: '90px 24px', background: '#ffffff' }}>
+      <section id="pasos-section" style={{ padding: '90px 24px', background: '#ffffff' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <p style={{ color: '#FF0000', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.85rem', marginBottom: '12px' }}>Proceso de Inscripción</p>
             <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-1.5px' }}>Pasos para el Registro</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '28px' }}>
-            {pasos.map((paso, i) => (
+          <div
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '28px' }}
+          >
+            {pasos.map((paso, i) => {
+              const isTarget = highlightFirstStep && i === 0;
+              const isDimmed = highlightFirstStep && i !== 0;
+              const isStep1Done = i === 0 && usuarioSesion;
+
+              return (
               <div key={i} style={{
                 background: '#f8fafc', borderRadius: '24px', padding: '32px 28px',
-                border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden',
-                transition: 'all 0.3s ease',
+                border: `1px solid ${isTarget ? '#FF0000' : (isStep1Done ? '#22c55e' : '#f1f5f9')}`, position: 'relative', overflow: 'hidden',
+                transition: 'all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1.1)',
+                cursor: (i === 0 && !usuarioSesion) ? 'pointer' : 'default',
+                transform: isTarget ? 'translateY(-15px) translateX(-10px) scale(1.06)' : (isDimmed ? 'translateX(120px) translateY(20px) scale(0.85)' : 'none'),
+                boxShadow: isTarget ? '0 35px 70px rgba(255,0,0,0.25)' : 'none',
+                opacity: isDimmed ? 0.15 : 1,
+                zIndex: isTarget ? 10 : 1,
+                pointerEvents: isDimmed ? 'none' : 'auto'
               }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,0,0,0.08)'; e.currentTarget.style.borderColor = '#fecaca'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
+                onClick={() => i === 0 && !usuarioSesion && navigate('/registro')}
+                onMouseEnter={e => {
+                  if (highlightFirstStep || isStep1Done) return;
+                  e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,0,0,0.08)'; e.currentTarget.style.borderColor = '#fecaca';
+                }}
+                onMouseLeave={e => {
+                  if (highlightFirstStep || isStep1Done) return;
+                  e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#f1f5f9';
+                }}
               >
                 <div style={{
                   position: 'absolute', top: '16px', right: '20px',
-                  fontSize: '3.5rem', fontWeight: '900', color: '#fee2e2', lineHeight: 1,
-                }}>{paso.num}</div>
+                  fontSize: isStep1Done ? '2.5rem' : '3.5rem',
+                  fontWeight: '900',
+                  color: isStep1Done ? '#dcfce7' : '#fee2e2',
+                  lineHeight: 1,
+                }}>
+                  {isStep1Done ? <i className="fa-solid fa-check"></i> : paso.num}
+                </div>
                 <div style={{
-                  width: '52px', height: '52px', background: '#fff1f2', borderRadius: '16px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', color: '#FF0000',
-                }}>{paso.icon}</div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>{paso.titulo}</h3>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: '1.65', margin: 0 }}>{paso.desc}</p>
+                  width: '52px', height: '52px', background: isStep1Done ? '#f0fdf4' : '#fff1f2', borderRadius: '16px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: isStep1Done ? '#22c55e' : '#FF0000', marginBottom: '24px',
+                  boxShadow: isStep1Done ? '0 8px 16px rgba(34,197,94,0.1)' : '0 8px 16px rgba(255,0,0,0.06)',
+                }}>
+                  {paso.icon}
+                </div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
+                  {isStep1Done ? 'Sesión Iniciada' : paso.titulo}
+                </h3>
+                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: '1.65', margin: 0 }}>
+                  {isStep1Done ? 'Ya tienes una cuenta activa. Continúa eligiendo tu rol abajo.' : paso.desc}
+                </p>
               </div>
-            ))}
+            );
+            })}
           </div>
-        </div>
-      </section>
-
-      {/* CTA INTERMEDIO */}
-      <section style={{ padding: '60px 24px', background: '#f8fafc' }}>
-        <div style={{
-          maxWidth: '900px',
-          margin: '0 auto',
-          background: '#FF0000',
-          borderRadius: '28px',
-          padding: '60px 48px',
-          textAlign: 'center',
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* Círculos decorativos */}
-          <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'180px', height:'180px', borderRadius:'50%', background:'rgba(255,255,255,0.08)', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', bottom:'-50px', left:'-30px', width:'140px', height:'140px', borderRadius:'50%', background:'rgba(255,255,255,0.06)', pointerEvents:'none' }} />
-          <div style={{ position:'absolute', top:'20px', left:'20px', width:'60px', height:'60px', borderRadius:'50%', background:'rgba(255,255,255,0.07)', pointerEvents:'none' }} />
-
-          <h2 style={{
-            color: '#ffffff',
-            fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-            fontWeight: '900',
-            letterSpacing: '-1.5px',
-            margin: '0 0 20px',
-            lineHeight: '1.15',
-          }}>
-            ¿Listo para empezar el proceso?
-          </h2>
-          <p style={{
-            color: 'rgba(255,255,255,0.85)',
-            fontSize: '1.05rem',
-            lineHeight: '1.75',
-            maxWidth: '520px',
-            margin: '0 auto 36px',
-          }}>
-            Únete a la comunidad de Olimpiadas Especiales Costa Rica y apoya el talento deportivo de cada atleta. El registro toma menos de 10 minutos.
-          </p>
-          <button
-            onClick={() => document.getElementById('roles-section').scrollIntoView({ behavior: 'smooth' })}
-            style={{
-              background: '#ffffff',
-              color: '#FF0000',
-              border: 'none',
-              padding: '16px 40px',
-              borderRadius: '14px',
-              fontSize: '1rem',
-              fontWeight: '800',
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 14px 28px rgba(0,0,0,0.2)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
-          >
-            Comenzar Registro Ahora
-          </button>
         </div>
       </section>
 
@@ -420,47 +418,6 @@ function PlataformaRegistro() {
         </div>
       </section>
 
-      {/* CTA FINAL */}
-      <section style={{
-        padding: '80px 24px',
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        textAlign: 'center',
-      }}>
-        <p style={{ color: '#ff8080', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.85rem', marginBottom: '20px' }}>¿Primera vez aquí?</p>
-        <h2 style={{ color: '#ffffff', fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: '900', margin: '0 0 20px', letterSpacing: '-1.5px' }}>
-          Empieza creando tu cuenta
-        </h2>
-        <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto 40px', lineHeight: '1.7' }}>
-          Necesitas una cuenta para guardar tu progreso y completar la inscripción.
-        </p>
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => navigate('/registro')}
-            style={{
-              padding: '16px 44px', background: '#FF0000', color: '#fff',
-              border: 'none', borderRadius: '16px', fontSize: '1rem', fontWeight: '800',
-              cursor: 'pointer', boxShadow: '0 12px 24px rgba(255,0,0,0.3)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.background = '#cc0000'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.background = '#FF0000'; }}
-          >
-            Crear Cuenta
-          </button>
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              padding: '16px 44px', background: 'transparent', color: '#e2e8f0',
-              border: '2px solid #334155', borderRadius: '16px', fontSize: '1rem', fontWeight: '800',
-              cursor: 'pointer', transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.color = '#ffffff'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#e2e8f0'; }}
-          >
-            Iniciar Sesión
-          </button>
-        </div>
-      </section>
 
       <Footer />
 
