@@ -5,12 +5,12 @@ import Swal from 'sweetalert2';
 export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editData = null }) {
     const [formData, setFormData] = React.useState({
         nombre: '',
-        deporte: 'Fútbol',
+        categoria: 'Fútbol',
         fecha: '',
         fechaFin: '',
         ubicacion: '',
-        descripcion: '',
-        imagen: '',
+        resumen: '',
+        img: '',
         enlace: ''
     });
 
@@ -18,23 +18,23 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
         if (editData) {
             setFormData({
                 nombre: editData.nombre || '',
-                deporte: editData.deporte || 'Fútbol',
+                categoria: editData.categoria || editData.deporte || 'Fútbol',
                 fecha: editData.fecha || '',
                 fechaFin: editData.fechaFin || '',
                 ubicacion: editData.ubicacion || '',
-                descripcion: editData.descripcion || '',
-                imagen: editData.imagen || '',
+                resumen: editData.resumen || editData.descripcion || '',
+                img: editData.img || editData.imagen || '',
                 enlace: editData.enlace || ''
             });
         } else {
             setFormData({
                 nombre: '',
-                deporte: 'Fútbol',
+                categoria: 'Fútbol',
                 fecha: '',
                 fechaFin: '',
                 ubicacion: '',
-                descripcion: '',
-                imagen: '',
+                resumen: '',
+                img: '',
                 enlace: ''
             });
         }
@@ -108,8 +108,8 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                         <label style={labelStyle}>Deporte / Categoría *</label>
                         <select
                             style={fieldStyle}
-                            value={formData.deporte}
-                            onChange={(e) => setFormData({ ...formData, deporte: e.target.value })}
+                            value={formData.categoria}
+                            onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
                         >
                             <option value="Atletismo">Atletismo</option>
                             <option value="Baloncesto">Baloncesto</option>
@@ -167,32 +167,32 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                         />
                     </div>
 
-                    {/* Descripción */}
+                    {/* Resumen / Descripción */}
                     <div>
-                        <label style={labelStyle}>Descripción</label>
+                        <label style={labelStyle}>Resumen / Descripción</label>
                         <textarea
                             style={{ ...fieldStyle, minHeight: '90px', resize: 'vertical' }}
-                            value={formData.descripcion}
-                            onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                            value={formData.resumen}
+                            onChange={(e) => setFormData({ ...formData, resumen: e.target.value })}
                             placeholder="Describe el evento, quiénes participan, qué se celebra..."
                         />
                     </div>
 
-                    {/* URL imagen */}
+                    {/* URL imagen /img/... */}
                     <div>
-                        <label style={labelStyle}>URL de imagen</label>
+                        <label style={labelStyle}>Ruta de imagen (Local o URL)</label>
                         <input
-                            type="url"
+                            type="text"
                             style={fieldStyle}
-                            value={formData.imagen}
-                            onChange={(e) => setFormData({ ...formData, imagen: e.target.value })}
-                            placeholder="https://ejemplo.com/imagen.jpg"
+                            value={formData.img}
+                            onChange={(e) => setFormData({ ...formData, img: e.target.value })}
+                            placeholder="Ej: /img/evento_competencia.png o https://url.com/img.png"
                         />
-                        {formData.imagen && (
+                        {formData.img && (
                             <img
-                                src={formData.imagen}
+                                src={formData.img}
                                 alt="Vista previa"
-                                style={{ marginTop: '8px', width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                                style={{ marginTop: '8px', width: '100%', height: '120px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#f8fafc' }}
                                 onError={(e) => e.target.style.display = 'none'}
                             />
                         )}

@@ -67,6 +67,16 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
           <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
+          {usuarioSesion?.rol === 'admin' && (
+            <li 
+              className="enlace_nav" 
+              onClick={irAPanelAdmin}
+              style={{ color: '#E62334', fontWeight: 'bold' }}
+            >
+              <i className="fa-solid fa-gauge-high" style={{ marginRight: '5px' }}></i>
+              PANEL ADMIN
+            </li>
+          )}
           <li
             className="enlace_nav"
             onClick={irAPlataformaRegistro}

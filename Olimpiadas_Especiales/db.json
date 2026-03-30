@@ -583,34 +583,62 @@
       "icon": "fa-solid fa-check-circle",
       "iconColor": "green",
       "time": "Hace un momento"
+    },
+    {
+      "id": "74a1",
+      "title": "Competición",
+      "details": "Edición competición: Competición Nacional de Atletismo",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "a817",
+      "title": "Competición",
+      "details": "Edición competición: Competición Nacional de Atletismo",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "e30f",
+      "title": "Competición",
+      "details": "Edición competición: Torneo Nacional de Fútbol 2026",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "645f",
+      "title": "Competición",
+      "details": "Edición competición: Torneo Nacional de Fútbol 2026",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
     }
   ],
   "competiciones": [
     {
       "id": "1",
-      "nombre": "Competición Nacional de Atletismo",
-      "resumen": "Próxima gran cita deportiva nacional en San José.",
-      "fecha": "2026-05-15",
-      "lugar": "Estadio Nacional",
+      "nombre": "Torneo Nacional de Fútbol 2026",
       "categoria": "Atletismo",
-      "status": "Próximo",
-      "img": "evento_competencia.png",
-      "deporte": "Fútbol",
-      "fechaFin": "2026-03-28",
-      "ubicacion": "",
-      "descripcion": "",
-      "imagen": "",
+      "fecha": "2026-05-15",
+      "ubicacion": "Estadio Nacional, San José",
+      "resumen": "Gran evento nacional donde se reunirán los mejores equipos del país para celebrar la inclusión a través del deporte.",
+      "img": "/img/evento_competencia.png",
+      "status": "Programado",
+      "fechaFin": "",
       "enlace": ""
     },
     {
       "id": "2",
       "nombre": "Encuentro Regional de Natación",
-      "resumen": "Competencia acuática para delegaciones regionales.",
-      "fecha": "2026-06-22",
-      "lugar": "Piscina María del Milagro París",
       "categoria": "Natación",
-      "status": "Abierto",
-      "img": "/img/evento_natacion.png"
+      "fecha": "2026-06-20",
+      "ubicacion": "Centro Acuático, La Sabana",
+      "resumen": "Competencias de relevos y estilos libres para atletas de todas las regiones.",
+      "img": "/img/evento_natacion.png",
+      "status": "Programado"
     }
   ],
   "usuarios": [
@@ -702,6 +730,18 @@
       "fechaRegistro": "2026-03-27T21:05:10.613Z",
       "rol": "usuario",
       "pais": "Venezuela"
+    },
+    {
+      "id": "9290",
+      "nombre": "errol gomez",
+      "cedula": "120046509",
+      "correoElectronico": "errol@gmail.com",
+      "telefono": "",
+      "password": "12345",
+      "fechaNacimiento": "2026-03-06",
+      "genero": "Masculino",
+      "fechaRegistro": "2026-03-30T16:16:13.261Z",
+      "rol": "usuario"
     }
   ],
   "disciplinas": [
