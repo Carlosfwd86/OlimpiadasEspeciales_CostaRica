@@ -481,139 +481,19 @@
       "time": "Hace un momento"
     },
     {
-      "id": "1522",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de franshsko porras",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "6d90",
-      "title": "Aprobación",
-      "details": "Se aprobó a franshsko porras",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "013f",
+      "id": "12dd",
       "title": "Reporte",
-      "details": "Exportación CSV de 1 registros (atletas)",
+      "details": "Exportación CSV de 6 registros (atletas)",
       "icon": "fa-solid fa-file-csv",
       "iconColor": "green",
       "time": "Hace un momento"
     },
     {
-      "id": "2235",
+      "id": "f6ce",
       "title": "Reporte",
-      "details": "Exportación PDF de 1 registros (atletas)",
+      "details": "Exportación PDF de 6 registros (atletas)",
       "icon": "fa-solid fa-file-pdf",
       "iconColor": "red",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "25ad",
-      "title": "Actualización",
-      "details": "Actualización de carlos",
-      "icon": "fa-solid fa-pen",
-      "iconColor": "purple",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "b0a8",
-      "title": "Reporte",
-      "details": "Exportación PDF de 7 registros (atletas)",
-      "icon": "fa-solid fa-file-pdf",
-      "iconColor": "red",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "5775",
-      "title": "Reporte",
-      "details": "Exportación PDF Expediente Completo de 7 registros (atletas)",
-      "icon": "fa-solid fa-file-pdf",
-      "iconColor": "red",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "8f7e",
-      "title": "Reporte",
-      "details": "Exportación CSV Completa de 7 registros (atletas)",
-      "icon": "fa-solid fa-file-csv",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "3918",
-      "title": "Aprobación",
-      "details": "Se aprobó a francela porras ",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "976d",
-      "title": "Aprobación",
-      "details": "Se aprobó a francela",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "cece",
-      "title": "Perfil",
-      "details": "Se actualizó la información del perfil administrador",
-      "icon": "fa-solid fa-user-pen",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "f841",
-      "title": "Nuevo Registro",
-      "details": "Nuevo Registro de salomon porras",
-      "icon": "fa-solid fa-user-plus",
-      "iconColor": "blue",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "7323",
-      "title": "Aprobación",
-      "details": "Se aprobó a salomon porras",
-      "icon": "fa-solid fa-check-circle",
-      "iconColor": "green",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "74a1",
-      "title": "Competición",
-      "details": "Edición competición: Competición Nacional de Atletismo",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "a817",
-      "title": "Competición",
-      "details": "Edición competición: Competición Nacional de Atletismo",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "e30f",
-      "title": "Competición",
-      "details": "Edición competición: Torneo Nacional de Fútbol 2026",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
-      "time": "Hace un momento"
-    },
-    {
-      "id": "645f",
-      "title": "Competición",
-      "details": "Edición competición: Torneo Nacional de Fútbol 2026",
-      "icon": "fa-solid fa-trophy",
-      "iconColor": "yellow",
       "time": "Hace un momento"
     }
   ],

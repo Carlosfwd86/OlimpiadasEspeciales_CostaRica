@@ -64,6 +64,17 @@ const roles = [
 const pasos = [
   {
     num: '01',
+    titulo: 'Crea tu Cuenta',
+    desc: 'Regístrate en nuestra plataforma o inicia sesión para poder comenzar el proceso de inscripción.',
+    icon: (
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    ),
+  },
+  {
+    num: '02',
     titulo: 'Escoge tu formulario',
     desc: 'Selecciona el formulario que corresponde a tu perfil: Atleta, Entrenador, Tutor o Voluntario.',
     icon: (
@@ -76,7 +87,7 @@ const pasos = [
     ),
   },
   {
-    num: '02',
+    num: '03',
     titulo: 'Completa el formulario',
     desc: 'Llena la información personal, médica y deportiva de forma segura y detallada.',
     icon: (
@@ -87,7 +98,7 @@ const pasos = [
     ),
   },
   {
-    num: '03',
+    num: '04',
     titulo: 'Adjunta documentos',
     desc: 'Sube los requisitos legales, certificaciones médicas y consentimientos necesarios.',
     icon: (
@@ -142,6 +153,25 @@ function PlataformaRegistro() {
   };
 
   const handleRoleClick = (rolId) => {
+    if (!usuarioSesion) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Requiere Inicio de Sesión',
+        text: 'No estás logueado con ninguna cuenta. Para poder entrar a los formularios, te invitamos a seguir los pasos de inscripción indicados en este mismo archivo/página.',
+        confirmButtonColor: '#FF0000',
+        confirmButtonText: 'Ver pasos'
+      }).then(() => {
+        setHighlightFirstStep(true);
+        setTimeout(() => {
+          const el = document.getElementById('pasos-section');
+          if (el) {
+            const y = el.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }, 350);
+      });
+      return;
+    }
     navigate(`/formulario?rol=${rolId}`);
   };
 
@@ -243,8 +273,14 @@ function PlataformaRegistro() {
               if (usuarioSesion) {
                 document.getElementById('roles-section').scrollIntoView({ behavior: 'smooth' });
               } else {
-                document.getElementById('pasos-section').scrollIntoView({ behavior: 'smooth' });
                 setHighlightFirstStep(true);
+                setTimeout(() => {
+                  const el = document.getElementById('pasos-section');
+                  if (el) {
+                    const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                  }
+                }, 150);
               }
             }}
             style={{
