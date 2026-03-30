@@ -23,30 +23,42 @@ const CompetitionCard = ({ competition, onEdit, onDelete }) => {
             borderLeft: '4px solid #e62334',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px'
+            gap: '12px',
+            overflow: 'hidden'
         }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ position: 'relative', margin: '-20px -20px 10px -20px', height: '140px', background: '#f8fafc', borderBottom: '1px solid #f1f5f9' }}>
+                {competition.img ? (
+                    <img 
+                        src={competition.img} 
+                        alt={competition.nombre} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                        }}
+                    />
+                ) : null}
                 <div style={{ 
-                    width: '40px', 
-                    height: '40px', 
-                    borderRadius: '8px', 
-                    background: '#fee2e2', 
-                    color: '#e62334', 
-                    display: 'flex', 
+                    display: competition.img ? 'none' : 'flex', 
+                    width: '100%', 
+                    height: '100%', 
                     alignItems: 'center', 
                     justifyContent: 'center',
-                    fontSize: '20px'
+                    fontSize: '48px',
+                    color: '#e62334',
+                    background: '#fee2e2'
                 }}>
-                    <i className={`fa-solid ${getSportIcon(competition.deporte)}`}></i>
+                    <i className={`fa-solid ${getSportIcon(competition.categoria || competition.deporte)}`}></i>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                
+                <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '8px' }}>
                     {onEdit && (
-                        <button onClick={() => onEdit(competition)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748b' }}>
+                        <button onClick={() => onEdit(competition)} style={{ width: '32px', height: '32px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)', cursor: 'pointer', color: '#64748b', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                             <i className="fa-solid fa-pen-to-square"></i>
                         </button>
                     )}
                     {onDelete && (
-                        <button onClick={() => onDelete(competition.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}>
+                        <button onClick={() => onDelete(competition.id)} style={{ width: '32px', height: '32px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)', cursor: 'pointer', color: '#ef4444', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                             <i className="fa-solid fa-trash"></i>
                         </button>
                     )}
@@ -54,22 +66,22 @@ const CompetitionCard = ({ competition, onEdit, onDelete }) => {
             </div>
             
             <div>
-                <h3 style={{ margin: '0', fontSize: '16px', color: '#1e293b' }}>{competition.nombre}</h3>
-                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>{competition.deporte}</p>
+                <h3 style={{ margin: '0', fontSize: '16px', color: '#1e293b', fontWeight: '700' }}>{competition.nombre}</h3>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#e62334', fontWeight: '600' }}>{competition.categoria || competition.deporte}</p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '5px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#64748b' }}>
-                    <i className="fa-solid fa-calendar-day" style={{ width: '14px' }}></i>
+                    <i className="fa-solid fa-calendar-day" style={{ width: '14px', color: '#94a3b8' }}></i>
                     <span>{new Date(competition.fecha).toLocaleDateString('es-CR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#64748b' }}>
-                    <i className="fa-solid fa-location-dot" style={{ width: '14px' }}></i>
+                    <i className="fa-solid fa-location-dot" style={{ width: '14px', color: '#94a3b8' }}></i>
                     <span>{competition.ubicacion || 'Por definir'}</span>
                 </div>
             </div>
 
-            <div className="card-actions" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+            <div className="card-actions" style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '10px' }}>
                 <button className="btn-details" style={{
                     flex: 1,
                     padding: '8px',

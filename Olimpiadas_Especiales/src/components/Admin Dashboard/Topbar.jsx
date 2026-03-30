@@ -19,6 +19,12 @@ export default function Topbar({ onSearch, onTabChange }) {
   }, [showNotif]);
 
   const handleNav = (path) => {
+    // Si la ruta es '/', asumimos que es un logout completo
+    if (path === '/') {
+      localStorage.removeItem('usuarioSesion');
+      // Despachar evento para que otros componentes (Navbar) se enteren
+      window.dispatchEvent(new Event('sesionActualizada'));
+    }
     navigate(path);
     setShowProfile(false);
     setShowNotif(false);
@@ -93,6 +99,9 @@ export default function Topbar({ onSearch, onTabChange }) {
                 <i className="fa-solid fa-gear"></i> Configuración
               </button>
               <div style={{ borderTop: '1px solid #f1f3f5', marginTop: '5px', paddingTop: '5px' }}>
+                <button className="dropdown-item" style={{ color: '#64748b' }} onClick={() => navigate('/')}>
+                  <i className="fa-solid fa-house"></i> Volver al Sitio
+                </button>
                 <button className="dropdown-item" style={{ color: '#e62334' }} onClick={() => handleNav('/')}>
                   <i className="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
                 </button>

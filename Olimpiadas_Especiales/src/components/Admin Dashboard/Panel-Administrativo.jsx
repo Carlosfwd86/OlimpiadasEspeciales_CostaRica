@@ -16,7 +16,9 @@ import SettingsSection from './SettingsSection';
 import ReportsSection from './ReportsSection';
 import RegionalMap from './RegionalMap';
 import CompetitionCard from './CompetitionCard';
+import ConsultasSection from './ConsultasSection';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
+import Swal from 'sweetalert2';
 
 export default function PanelAdministrativo() {
   const [stats, setStats] = useState(null);
@@ -54,23 +56,43 @@ export default function PanelAdministrativo() {
       .then(res => res.json())
       .then(data => {
         if (data.length === 0) {
-          alert("No hay datos para exportar.");
+          Swal.fire({
+            icon: 'info',
+            title: 'Sin datos',
+            text: 'No hay registros pendientes para exportar en este momento.',
+            confirmButtonColor: '#3b82f6'
+          });
           return;
         }
-        const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
+        Swal.fire({
+            title: 'Generando Reporte...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+        
+        const headers = "ID,Nombre,Email,Telefono,Deporte/Rol,Region,Estado\n";
         const csvContent = data.map(r => 
-          `${r.id},"${r.name}","${r.email || ''}","${r.phone || ''}","${r.sport}","${r.region}","${r.status}"`
+          `${r.id},"${r.name}","${r.email || ''}","${r.phone || ''}","${r.sport || r.rol}","${r.region}","${r.status}"`
         ).join("\n");
         
-        const blob = new Blob([headers + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob(["\ufeff" + headers + csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-        link.setAttribute("download", `reporte_atletas_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute("download", `reporte_pendientes_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
+        Swal.close();
+        Swal.fire({
+            icon: 'success',
+            title: '¡Exportado!',
+            text: 'El reporte CSV se ha descargado correctamente.',
+            timer: 2000,
+            showConfirmButton: false
+        });
       })
       .catch(err => console.error("Error al exportar:", err));
   };
@@ -100,10 +122,9 @@ export default function PanelAdministrativo() {
               <p>{activeTab === 'resumen' ? 'Resumen en tiempo real de las actividades de Olimpiadas Especiales Costa Rica.' : `Gestión de la sección de ${activeTab}.`}</p>
             </div>
             <div className="header-actions">
-              <button className="btn-export" onClick={handleExport}>
-                <i className="fa-solid fa-download"></i> Exportar
-              </button>
-              <button className="btn-new-entry" onClick={handleNewEntry}>+ Nuevo Registro</button>
+              {activeTab === 'registros' && (
+                  <button className="btn-new-entry" onClick={handleNewEntry}>+ Nuevo Registro</button>
+              )}
             </div>
           </div>
 
@@ -154,7 +175,6 @@ export default function PanelAdministrativo() {
                 searchQuery={searchQuery} 
                 onActionSuccess={handleSaveSuccess}
               />
-              <ActivityFeed />
             </>
           )}
 
@@ -172,10 +192,15 @@ export default function PanelAdministrativo() {
           {activeTab === 'atletas' && (
             <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
                 <div style={{ padding: '20px', background: 'var(--admin-white)', borderRadius: '15px', marginBottom: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                    <h3 style={{ color: 'var(--admin-text-main)' }}><i className="fa-solid fa-users" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Base de Datos Oficial de Atletas</h3>
-                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>Listado completo de atletas verificados en el sistema.</p>
+                    <h3 style={{ color: 'var(--admin-text-main)' }}><i className="fa-solid fa-users" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Directorio Oficial de Miembros</h3>
+                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>Listado completo de atletas, voluntarios y entrenadores verificados en el sistema.</p>
                 </div>
-                <AthleteTable refreshTrigger={refreshTrigger} />
+                <AthleteTable 
+                  refreshTrigger={refreshTrigger} 
+                  searchQuery={searchQuery}
+                  onEdit={handleEditEntry}
+                  onActionSuccess={handleSaveSuccess}
+                />
             </div>
           )}
 
@@ -206,11 +231,25 @@ export default function PanelAdministrativo() {
                                 competition={comp} 
                                 onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
                                 onDelete={(id) => {
-                                    if(window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
-                                        ServicesAdmin.deleteCompeticion(id)
-                                            .then(() => handleSaveSuccess())
-                                            .catch(err => alert(err.message));
-                                    }
+                                    Swal.fire({
+                                        title: '¿Eliminar Evento?',
+                                        text: "Esta acción no se puede deshacer.",
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#e62334',
+                                        cancelButtonColor: '#94a3b8',
+                                        confirmButtonText: 'Sí, eliminar',
+                                        cancelButtonText: 'Cancelar'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            ServicesAdmin.deleteCompeticion(id)
+                                                .then(() => {
+                                                    Swal.fire('¡Eliminado!', 'El evento ha sido borrado.', 'success');
+                                                    handleSaveSuccess();
+                                                })
+                                                .catch(err => Swal.fire('Error', err.message, 'error'));
+                                        }
+                                    });
                                 }}
                             />
                         ))}
@@ -237,18 +276,39 @@ export default function PanelAdministrativo() {
           {activeTab === 'rendimiento' && (
             <div className="tab-container">
                 <ChartSection onTabChange={setActiveTab} />
-                <ActivityFeed />
             </div>
           )}
 
           {activeTab === 'regiones' && (
             <div className="tab-container" style={{ padding: '20px' }}>
+                <div style={{ marginBottom: '20px' }}>
+                    <h3 style={{ color: 'var(--admin-text-main)' }}><i className="fa-solid fa-map-location-dot" style={{ color: '#ef4444', marginRight: '10px' }}></i> Distribución Geográfica Nacional</h3>
+                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>Visualización interactiva de la presencia de Olimpiadas Especiales en las 7 provincias.</p>
+                </div>
                 <RegionalMap />
+            </div>
+          )}
+          
+          {activeTab === 'bitacora' && (
+            <div className="tab-container" style={{ padding: '20px' }}>
+                <div style={{ marginBottom: '20px' }}>
+                    <h3 style={{ color: 'var(--admin-text-main)' }}><i className="fa-solid fa-clock-rotate-left" style={{ color: '#f59e0b', marginRight: '10px' }}></i> Bitácora de Auditoría del Sistema</h3>
+                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>Registro histórico de todas las acciones, cambios y eventos realizados por los administradores.</p>
+                </div>
+                <ActivityFeed fullWidth={true} />
             </div>
           )}
 
           {activeTab === 'reportes' && (
-            <ReportsSection />
+            <ReportsSection 
+              onEdit={handleEditEntry}
+              onActionSuccess={handleSaveSuccess}
+              refreshTrigger={refreshTrigger}
+            />
+          )}
+
+          {activeTab === 'consultas' && (
+            <ConsultasSection />
           )}
 
           {activeTab === 'perfil' && (
@@ -282,7 +342,14 @@ export default function PanelAdministrativo() {
                     ServicesAdmin.logActivity("Competición", `${id ? 'Edición' : 'Nueva'} competición: ${data.nombre}`, "fa-solid fa-trophy", "yellow");
                     handleSaveSuccess();
                 })
-                .catch(err => alert("Error al guardar: " + err.message));
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de Guardado',
+                        text: err.message,
+                        confirmButtonColor: '#e62334'
+                    });
+                });
         }}
       />
     </div>

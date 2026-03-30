@@ -58,7 +58,7 @@ const Login = () => {
         // Redireccionar según el rol
         const rol = usuarioValido.rol?.toLowerCase() || 'usuario';
         if (rol === 'admin') {
-          navigate('/admin');
+          navigate('/');
         } else {
           // El usuario basico y otros roles van al perfil
           navigate('/perfil');

@@ -47,17 +47,17 @@ const Eventos = () => {
                         <div key={evento.id} className="evento-item-row">
                             <div className="evento-item-imagen">
                                 <img 
-                                    src={evento.img} 
-                                    alt={evento.nombre} 
+                                    src={evento.img || evento.imagen || '/img/placeholder-event.jpg'} 
+                                    alt={evento.nombre || 'Evento'} 
                                 />
                                 <span className={`status-badge ${(evento.status || 'proximo').toLowerCase().replace(' ', '-')}`}>
                                     {evento.status}
                                 </span>
                             </div>
                             <div className="evento-item-info">
-                                <span className="evento-item-categoria">{evento.categoria}</span>
+                                <span className="evento-item-categoria">{evento.categoria || evento.deporte || evento.sport || 'General'}</span>
                                 <h2>{evento.nombre}</h2>
-                                <p>{evento.resumen}</p>
+                                <p>{evento.resumen || evento.descripcion || 'Sin descripción disponible.'}</p>
                                 <div className="evento-item-meta">
                                     <span className="fecha-evento">
                                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
