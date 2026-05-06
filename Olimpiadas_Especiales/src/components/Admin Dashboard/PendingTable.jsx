@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/PendingTable.css';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
+import ModalDetalleRegistro from './ModalDetalleRegistro';
 
 export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery = '', onActionSuccess }) {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterSport, setFilterSport] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
+  const [selectedReg, setSelectedReg] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
 
   const fetchRegistrations = () => {
     ServicesAdmin.getRegistrations()
@@ -168,6 +171,12 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
                   </td>
                   <td>
                     <div className="action-buttons">
+                      <button className="btn-action edit" title="Ver Detalles" 
+                        onClick={() => { setSelectedReg(reg); setShowDetail(true); }}
+                        style={{ backgroundColor: '#f1f5f9', color: '#64748b' }}
+                      >
+                        <i className="fa-solid fa-eye"></i>
+                      </button>
                       <button className="btn-action edit" title="Editar" onClick={() => onEdit(reg)}>
                         <i className="fa-solid fa-pen"></i>
                       </button>
@@ -192,6 +201,12 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
       <div className="table-footer">
         <a href="#" onClick={(e) => e.preventDefault()}>Ver todos</a>
       </div>
+
+      <ModalDetalleRegistro 
+        isOpen={showDetail} 
+        onClose={() => setShowDetail(false)} 
+        data={selectedReg} 
+      />
     </div>
   );
 }

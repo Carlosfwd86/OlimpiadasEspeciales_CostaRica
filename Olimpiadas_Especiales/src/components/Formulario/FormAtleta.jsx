@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import emailjs from '@emailjs/browser'
 import { createAtleta, updateAtleta } from '../../services/ServicesAtletas'
 import { createTutor } from '../../services/ServicesTutores'
+import { ServicesAdmin } from '../../services/ServicesAdmin'
 import { getFullConfig } from '../../services/ServicesConfig'
 import '../../styles/Formulario/FormAtleta.css'
 
@@ -54,14 +55,18 @@ function FormAtleta({ onVolver }) {
     const sesion = localStorage.getItem('usuarioSesion');
     if (sesion) {
       const user = JSON.parse(sesion);
-      // Solo autocompletar si es un usuario básico que se está postulando
-      if (user.rol === 'usuario') {
-        setDatos(prev => ({
-          ...prev,
-          nombre: user.nombre || prev.nombre,
-          correoElectronico: user.correoElectronico || prev.correoElectronico
-        }));
-      }
+      // Auto-completar datos si existen en la sesión
+      setDatos(prev => ({
+        ...prev,
+        nombre: user.nombre || prev.nombre,
+        cedula: user.cedula || prev.cedula,
+        correoElectronico: user.correoElectronico || prev.correoElectronico,
+        telefono: user.telefono || prev.telefono,
+        direccion: user.direccion || prev.direccion,
+        pais: user.pais || prev.pais,
+        genero: user.genero || prev.genero,
+        fechaNacimiento: user.fechaNacimiento || prev.fechaNacimiento
+      }));
     }
   }, []);
 
@@ -353,79 +358,49 @@ function FormAtleta({ onVolver }) {
     }).then(async (res) => {
       if (res.isConfirmed) {
         Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+        const sesion = JSON.parse(localStorage.getItem('usuarioSesion') || '{}');
         const pass = Math.random().toString(36).slice(-8);
-        
-        // Preparar datos para el envío (limpiando nulos y asegurando campos mínimos)
-        const datosParaEnvio = {
-          ...datos,
-          apellido: datos.apellido || '', // Asegurar campo para db.json
-          segundoNombre: datos.segundoNombre || '',
-          password: pass,
-          rol: 'atleta',
-          fechaRegistro: new Date().toISOString()
+        const archivosNombres = {
+          cedula_nombre: archivos.cedula?.name || 'No adjuntado',
+          consentimiento_nombre: archivos.consentimiento?.name || 'No adjuntado',
+          exoneracion_nombre: archivos.exoneracion?.name || 'No adjuntado',
+          foto_nombre: archivos.foto?.name || 'No adjuntado',
+        };
+        const entry = { 
+          ...datos, 
+          ...archivosNombres, 
+          usuarioId: sesion.id || null,
+          password: pass, 
+          rol: 'atleta', 
+          fechaRegistro: new Date().toISOString(),
+          status: 'PENDIENTE',
+          statusColor: 'yellow',
+          bgColor: 'bg-light-blue',
+          name: datos.nombre,
+          initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''),
+          time: 'Registrado ahora'
         };
 
         try {
-          // Crear atleta
-          const atletaCreado = await createAtleta(datosParaEnvio);
-          
-          if (esMenorDeEdad()) {
-            const passTutor = Math.random().toString(36).slice(-8);
-            const datosTutor = {
-              nombre: datos.tutorNombre,
-              apellido: datos.tutorApellido,
-              cedula: datos.tutorCedula,
-              correoElectronico: datos.tutorCorreo,
-              telefono: datos.tutorTelefono,
-              pais: datos.tutorPais,
-              relacionConAtleta: datos.tutorRelacion,
-              password: passTutor,
-              rol: 'tutor',
-              atletaVinculado: atletaCreado.id,
-              fechaRegistro: new Date().toISOString()
-            };
-            
-            // Crear el tutor y vincular con atleta
-            const tutorCreado = await createTutor(datosTutor);
-            
-            // Actualizar paciente para guardar el ID del tutor
-            await updateAtleta(atletaCreado.id, { ...atletaCreado, tutorVinculado: tutorCreado.id });
-            
-            // Enviar correo al tutor
-            if (datos.tutorCorreo) {
-              await emailjs.send('service_ttxcgou', 'template_2eklg8i', { to_email: datos.tutorCorreo, to_name: datos.tutorNombre, message: `Bienvenido. Has sido registrado como tutor en Olimpiadas Especiales CR. Tu clave temporal es: ${passTutor}` }, '4zWvRC7Yn7lUDqd1q');
-            }
-          }
+          const res = await ServicesAdmin.saveRegistro(entry);
+          const atletaCreado = res;
 
-          // Correo del atleta
-          try {
-            await emailjs.send(
-              'service_ttxcgou', 
-              'template_2eklg8i', 
-              {
-                to_email: datosParaEnvio.correoElectronico || datosParaEnvio.tutorCorreo,
-                to_name: datosParaEnvio.nombre,
-                message: `Tu cuenta ha sido creada. Tu contraseña temporal es: ${pass}. Por favor cámbiala al iniciar sesión.`,
-              },
-              '4zWvRC7Yn7lUDqd1q'
-            );
-            Swal.fire({ 
-              icon: 'success', 
-              title: '¡Inscripción Exitosa!', 
-              text: 'Se ha enviado un correo con tus credenciales de acceso.', 
-              confirmButtonColor: '#E00000' 
-            }).then(() => window.location.href = '/');
-          } catch (error) {
-            console.error("Error al guardar:", error);
-            Swal.fire({ icon: 'success', title: 'Guardado localmente (Modo Offline)' }).then(() => window.location.href = '/');
-          }
+          await emailjs.send('service_ttxcgou', 'template_2eklg8i', {
+            to_email: datos.correoElectronico,
+            to_name: datos.nombre,
+            message: `Tus datos de postulación para el rol de Atleta han sido enviados correctamente. Un administrador revisará tu información pronto.\n\nPor favor, mantente atento a tu correo para la confirmación de aprobación. Una vez aprobado, podrás ver tu información deportiva y médica en tu perfil.\n\nDocumentos adjuntos:\n- Cédula: ${archivosNombres.cedula_nombre}\n- Consentimiento: ${archivosNombres.consentimiento_nombre}\n- Exoneración: ${archivosNombres.exoneracion_nombre}\n- Foto: ${archivosNombres.foto_nombre}`
+          }, '4zWvRC7Yn7lUDqd1q');
+
+          Swal.fire({ icon: 'success', title: '¡Enviado!', text: 'Tu solicitud ha sido enviada al administrador.' }).then(() => {
+            window.location.href = '/';
+          });
         } catch (error) {
           console.error("Error al guardar:", error);
-          Swal.fire({ icon: 'error', title: 'Error al guardar', text: 'Hubo un problema al procesar tu inscripción. Inténtalo de nuevo.', confirmButtonColor: '#E00000' });
+          Swal.fire({ icon: 'error', title: 'Error al enviar', text: 'No se pudo enviar la solicitud. Intenta de nuevo.' });
         }
       }
     });
-  }
+  };
 
   // --- UI Helpers ---
   const porcentajeProgreso = paso * 25;
@@ -517,8 +492,8 @@ function FormAtleta({ onVolver }) {
                 <div className='input-container'>
                   <label>Programa local de Olimpiadas Especiales:</label>
                   <select id='programa' className="input-field" value={datos.programa} onChange={manejarCambio}>
-                    <option value="">Seleccione programa...</option>
-                    {catalogos.programas.map(p => <option key={p} value={p}>{p}</option>)}
+                    <option value="">Seleccione Programa...</option>
+                    {catalogos.programas.map(p => <option key={p.id || p.nombre} value={p.nombre}>{p.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container">
@@ -527,11 +502,11 @@ function FormAtleta({ onVolver }) {
                 </div>
                 <div className="input-container">
                   <label>Cédula / Identificación</label>
-                  <input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error-border' : ''}`} placeholder="0-0000-0000" value={datos.cedula} onChange={manejarCambio} style={errores.cedula ? { borderColor: '#E00000' } : {}} />
+                  <input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error-border' : ''}`} placeholder="0-0000-0000" value={datos.cedula} onChange={manejarCambio} style={errores.cedula ? { borderColor: '#E00000' } : {}} readOnly={!!datos.cedula} />
                 </div>
                 <div className="input-container">
                   <label>Fecha de Nacimiento</label>
-                  <input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error-border' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} style={errores.fechaNacimiento ? { borderColor: '#E00000' } : {}} />
+                  <input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error-border' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} style={errores.fechaNacimiento ? { borderColor: '#E00000' } : {}} readOnly={!!datos.fechaNacimiento} />
                 </div>
                 <div className="input-container">
                   <label>Género</label>
@@ -548,11 +523,11 @@ function FormAtleta({ onVolver }) {
                 </div>
                 <div className="input-container">
                   <label>País</label>
-                  <input type="text" id='pais' className={`input-field ${errores.pais ? 'error-border' : ''}`} placeholder="Costa Rica" value={datos.pais} onChange={manejarCambio} style={errores.pais ? { borderColor: '#E00000' } : {}} />
+                  <input type="text" id='pais' className={`input-field ${errores.pais ? 'error-border' : ''}`} placeholder="Costa Rica" value={datos.pais} onChange={manejarCambio} style={errores.pais ? { borderColor: '#E00000' } : {}} readOnly={!!datos.pais} />
                 </div>
                 <div className="input-container">
                   <label>Correo Electrónico</label>
-                  <input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error-border' : ''}`} placeholder="atleta@correo.com" value={datos.correoElectronico} onChange={manejarCambio} style={errores.correoElectronico ? { borderColor: '#E00000' } : {}} />
+                  <input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error-border' : ''}`} placeholder="atleta@correo.com" value={datos.correoElectronico} onChange={manejarCambio} style={errores.correoElectronico ? { borderColor: '#E00000' } : {}} readOnly={!!datos.correoElectronico} />
                 </div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}>
                   <label>Dirección Exacta</label>
@@ -899,15 +874,15 @@ function FormAtleta({ onVolver }) {
                 <div className="input-container">
                   <label>Disciplina Deportiva Principal</label>
                   <select name="disciplina" className="input-field" value={datos.disciplina} onChange={manejarCambio}>
-                    <option value="">Seleccione...</option>
-                    {catalogos.disciplinas.map(d => <option key={d} value={d}>{d}</option>)}
+                    <option value="">Seleccione Disciplina...</option>
+                    {catalogos.disciplinas.map(d => <option key={d.id || d.nombre} value={d.nombre}>{d.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container">
                   <label>Nivel de Habilidad</label>
                   <select name="nivelHabilidad" className="input-field" value={datos.nivelHabilidad} onChange={manejarCambio}>
-                    <option value="">Seleccione...</option>
-                    {catalogos.niveles_habilidad.map(n => <option key={n} value={n}>{n}</option>)}
+                    <option value="">Seleccione Nivel...</option>
+                    {catalogos.niveles_habilidad.map(n => <option key={n.id || n.nombre} value={n.nombre}>{n.nombre}</option>)}
                   </select>
                 </div>
                 <div className="input-container" style={{ gridColumn: 'span 2' }}>

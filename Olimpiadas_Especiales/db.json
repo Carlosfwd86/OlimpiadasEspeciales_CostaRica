@@ -150,6 +150,89 @@
       "status": "ACTIVO",
       "rol": "atleta",
       "fechaRegistro": "2026-03-26T16:42:25.862Z"
+    },
+    {
+      "id": "atleta_7ef4",
+      "nombre": "Braksley Camacho Garcia",
+      "fechaNacimiento": "2008-02-20",
+      "pais": "Costa Rica",
+      "cedula": "605100869",
+      "genero": "Masculino",
+      "direccion": "Atras de mi casa del rio",
+      "telefono": "63511090",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "emergenciaNombre": "Roberto Fernandez Mercedez",
+      "emergenciaTelefono": "7878787878",
+      "tutorNombre": "",
+      "tutorApellido": "",
+      "tutorRelacion": "",
+      "tutorCorreo": "",
+      "tutorTelefono": "",
+      "tutorPais": "",
+      "tutorCedula": "",
+      "medicamentos": [],
+      "condicionesMedicas": [
+        "Autismo"
+      ],
+      "dispositivosMovilidad": [
+        "Caminador"
+      ],
+      "ayudasEstiloVida": [
+        "CPAP"
+      ],
+      "comunicaciones": [
+        "Dispositivos de comunicación"
+      ],
+      "dispositivosMedicos": [
+        "Dispositivo implantable para convulsiones"
+      ],
+      "especificacionDietetico": "",
+      "especificacionOtrosDispositivos": "",
+      "cantidadConmociones": "",
+      "fechaUltimaConmocion": "",
+      "especificacionAfeccionesMentales": "",
+      "tiposAlergia": [],
+      "especificacionAlergiaOtro": "",
+      "terminosAceptados": true,
+      "objecionTratamientoMedico": true,
+      "objecionTransfusiones": true,
+      "firmaAtleta": "Braksley Camacho Garcia",
+      "fechaFirmaAtleta": "2026-03-27",
+      "firmaTutor": "",
+      "relacionTutor": "",
+      "fechaFirmaTutor": "2026-03-27",
+      "interesInvestigacion": "No",
+      "disciplina": "Baloncesto",
+      "nivelHabilidad": "Intermedio",
+      "relacionAtleta": "El Atleta mismo",
+      "relacionAtletaOtro": "",
+      "programa": "Puntarenas",
+      "alergiasGraves": "No",
+      "anemiaDepranocitica": "Si",
+      "epilepsiaConvulsivo": "No",
+      "afeccionesMentales": "No",
+      "discAuditiva": "Si",
+      "reqDietetico": "No",
+      "asma": "Si",
+      "otrosDispositivos": "No",
+      "diabetes": "Si",
+      "trastornoHemorragico": "No",
+      "afeccionCardiaca": "Si",
+      "discVisual": "No",
+      "medicoLimitoDeportes": "No",
+      "conmocionCerebral": "No",
+      "tomaMedicamentos": "No",
+      "cedula_nombre": "No adjuntado",
+      "consentimiento_nombre": "No adjuntado",
+      "exoneracion_nombre": "No adjuntado",
+      "foto_nombre": "No adjuntado",
+      "usuarioId": "7ef4",
+      "password": "cltimgmp",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-27T20:55:40.699Z",
+      "status": "ACTIVO",
+      "name": "Braksley Camacho Garcia",
+      "fechaAprobacion": "2026-03-27T20:57:07.189Z"
     }
   ],
   "Admin": [
@@ -217,6 +300,14 @@
       "icon": "fa-solid fa-server",
       "iconColor": "green",
       "time": "Hace un momento"
+    },
+    {
+      "id": "85cf",
+      "title": "Aprobación",
+      "details": "Se aprobó a Braksley Camacho Garcia",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
     }
   ],
   "competiciones": [
@@ -243,15 +334,6 @@
   ],
   "consultas": [],
   "usuarios": [
-    {
-      "id": "90e1",
-      "nombre": "Braksley",
-      "correoElectronico": "bcamachogfwd@gmail.com",
-      "password": "holaperros123",
-      "edad": "18",
-      "rol": "usuario",
-      "fechaRegistro": "2026-03-26T21:38:33.117Z"
-    },
     {
       "id": "6332",
       "nombre": "gerson",
@@ -313,6 +395,33 @@
       "edad": "20",
       "rol": "usuario",
       "fechaRegistro": "2026-03-27T11:44:01.262Z"
+    },
+    {
+      "id": "7ef4",
+      "nombre": "Braksley Camacho Garcia",
+      "cedula": "605100869",
+      "correoElectronico": "bcamachogfwd@gmail.com",
+      "telefono": "63511090",
+      "password": "holaamigoscomoestan",
+      "fechaNacimiento": "2008-02-20",
+      "genero": "Masculino",
+      "fechaRegistro": "2026-03-27T19:26:12.146Z",
+      "rol": "atleta",
+      "pais": "Costa Rica",
+      "direccion": "Atras de mi casa del rio"
+    },
+    {
+      "id": "a1e4",
+      "nombre": "Manuel Fernandez",
+      "cedula": "1234567890",
+      "correoElectronico": "maruchan2020@gmail.com",
+      "telefono": "",
+      "password": "hola123",
+      "fechaNacimiento": "2001-02-10",
+      "genero": "Femenino",
+      "fechaRegistro": "2026-03-27T21:05:10.613Z",
+      "rol": "usuario",
+      "pais": "Venezuela"
     }
   ],
   "disciplinas": [

@@ -31,7 +31,6 @@ const Navbar = () => {
   const irAlInicio = () => navegar("/");
   const irANosotros = () => navegar("/nosotros");
   const irAEventos = () => navegar("/eventos");
-  const irAVoluntarios = () => navegar("/voluntarios");
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
   const irARegistro = () => navegar("/registro");
@@ -56,7 +55,6 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irAlInicio}>INICIO</li>
           <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
-          <li className="enlace_nav" onClick={irAVoluntarios}>VOLUNTARIOS</li>
           <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
           <li
             className="enlace_nav"
@@ -72,7 +70,9 @@ const Navbar = () => {
             }}
             onMouseEnter={e => { e.currentTarget.style.background = '#cc0000'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >INSCRIBIRSE</li>
+          >
+            INSCRIBIRSE
+          </li>
         </ul>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -81,7 +81,7 @@ const Navbar = () => {
             <>
               <span className="saludo_usuario" onClick={irAPerfil} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }}></i>
-                Hola, <strong>{usuarioSesion.nombre || usuarioSesion.cedula}</strong>
+                Hola, <strong>{usuarioSesion.nombre ? usuarioSesion.nombre.split(' ')[0] : usuarioSesion.cedula}</strong>
               </span>
               <button className="boton_accion_rojo" onClick={irAPerfil} style={{ padding: '8px 15px', fontSize: '12px' }}>
                 MI PERFIL

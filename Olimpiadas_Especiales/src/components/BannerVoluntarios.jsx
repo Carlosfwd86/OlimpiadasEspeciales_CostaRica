@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/BannerVoluntarios.css';
-import imgVoluntarios from '../img/voluntarios_accion.png';
+import imgVoluntarios from '../img/fotoVoluntarios2.jpeg';
 
 const BannerVoluntarios = () => {
     const navigate = useNavigate();
