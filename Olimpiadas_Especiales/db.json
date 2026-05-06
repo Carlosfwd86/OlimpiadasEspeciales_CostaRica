@@ -2,14 +2,14 @@
   "atletas": [
     {
       "id": "4b97",
-      "nombre": "adasdasd",
+      "nombre": "carlosfwd",
       "fechaNacimiento": "2018-02-23",
       "pais": "sdfghjkl",
       "cedula": "12345679876543",
       "genero": "Masculino",
       "direccion": "sdfghjkl",
-      "telefono": "12345678",
-      "correoElectronico": "bcamachogfwd@gmail.com",
+      "telefono": "123456789",
+      "correoElectronico": "carlos@gmail.com",
       "emergenciaNombre": "asdfkj",
       "emergenciaTelefono": "2345678",
       "tutorNombre": "Braksley",
@@ -54,7 +54,7 @@
       "nivelHabilidad": "Principiante",
       "relacionAtleta": "El Atleta mismo",
       "relacionAtletaOtro": "",
-      "programa": "dddsaa",
+      "programa": "Limón",
       "anemiaDepranocitica": "No",
       "medicoLimitoDeportes": "No",
       "discAuditiva": "Si",
@@ -76,173 +76,15 @@
       "rol": "atleta",
       "fechaRegistro": "2026-03-24T20:00:29.797Z",
       "initials": "CA",
-      "name": "carlos",
+      "name": "carlosfwd",
       "email": "carlos@gmail.com",
-      "phone": "88800000",
+      "phone": "123456789",
       "sport": "Triatlón",
       "region": "Limón",
       "time": "Editado ahora",
       "status": "VERIFICACIÓN PEND.",
       "statusColor": "yellow",
       "bgColor": "bg-light-blue"
-    },
-    {
-      "id": "f7b2",
-      "nombre": "dsfghj",
-      "fechaNacimiento": "2018-03-23",
-      "pais": "dsfghj",
-      "cedula": "234567",
-      "genero": "Masculino",
-      "direccion": "degtfkjl",
-      "telefono": "1234567",
-      "correoElectronico": "bcamachogfwd@gmail.com",
-      "emergenciaNombre": "sdfghjk",
-      "emergenciaTelefono": "1234567890",
-      "tutorNombre": "Braksley",
-      "tutorApellido": "Camacho García",
-      "tutorRelacion": "Padre",
-      "tutorCorreo": "braksgpro123@gmail.com",
-      "tutorTelefono": "234567890",
-      "tutorPais": "sdfghjk",
-      "tutorCedula": "1234567890",
-      "medicamentos": [],
-      "condicionesMedicas": [
-        "Desconocido"
-      ],
-      "dispositivosMovilidad": [
-        "Caminador"
-      ],
-      "ayudasEstiloVida": [
-        "Gafas/lentes de contacto"
-      ],
-      "comunicaciones": [
-        "Audífono"
-      ],
-      "dispositivosMedicos": [
-        "Ninguno"
-      ],
-      "password": "hola123",
-      "rol": "atleta",
-      "disciplina": "Levantamiento de Pesas",
-      "programa": "sdfgh",
-      "fechaRegistro": "2026-03-25T21:50:40.115Z",
-      "tutorVinculado": "ee1e"
-    },
-    {
-      "id": "d4b0",
-      "nombre": "Gerson David Dinarte Fuentes",
-      "correoElectronico": "gfuentesfwd@gmail.com",
-      "telefono": "82074567",
-      "disciplina": "Fútbol",
-      "programa": "San José",
-      "status": "ACTIVO",
-      "rol": "atleta",
-      "fechaRegistro": "2026-03-26T16:40:22.308Z"
-    },
-    {
-      "id": "721b",
-      "nombre": "Samir Jacobo",
-      "correoElectronico": "samirito@gmail.com",
-      "telefono": "86869696",
-      "disciplina": "Natación",
-      "programa": "Alajuela",
-      "status": "ACTIVO",
-      "rol": "atleta",
-      "fechaRegistro": "2026-03-26T16:40:33.977Z"
-    },
-    {
-      "id": "b001",
-      "nombre": "Nora Figueroa",
-      "correoElectronico": "noaf@gmail.com",
-      "telefono": "88484848",
-      "disciplina": "Baloncesto",
-      "programa": "Puntarenas",
-      "status": "ACTIVO",
-      "rol": "atleta",
-      "fechaRegistro": "2026-03-26T16:42:25.862Z"
-    },
-    {
-      "id": "atleta_7ef4",
-      "nombre": "Braksley Camacho Garcia",
-      "fechaNacimiento": "2008-02-20",
-      "pais": "Costa Rica",
-      "cedula": "605100869",
-      "genero": "Masculino",
-      "direccion": "Atras de mi casa del rio",
-      "telefono": "63511090",
-      "correoElectronico": "bcamachogfwd@gmail.com",
-      "emergenciaNombre": "Roberto Fernandez Mercedez",
-      "emergenciaTelefono": "7878787878",
-      "tutorNombre": "",
-      "tutorApellido": "",
-      "tutorRelacion": "",
-      "tutorCorreo": "",
-      "tutorTelefono": "",
-      "tutorPais": "",
-      "tutorCedula": "",
-      "medicamentos": [],
-      "condicionesMedicas": [
-        "Autismo"
-      ],
-      "dispositivosMovilidad": [
-        "Caminador"
-      ],
-      "ayudasEstiloVida": [
-        "CPAP"
-      ],
-      "comunicaciones": [
-        "Dispositivos de comunicación"
-      ],
-      "dispositivosMedicos": [
-        "Dispositivo implantable para convulsiones"
-      ],
-      "especificacionDietetico": "",
-      "especificacionOtrosDispositivos": "",
-      "cantidadConmociones": "",
-      "fechaUltimaConmocion": "",
-      "especificacionAfeccionesMentales": "",
-      "tiposAlergia": [],
-      "especificacionAlergiaOtro": "",
-      "terminosAceptados": true,
-      "objecionTratamientoMedico": true,
-      "objecionTransfusiones": true,
-      "firmaAtleta": "Braksley Camacho Garcia",
-      "fechaFirmaAtleta": "2026-03-27",
-      "firmaTutor": "",
-      "relacionTutor": "",
-      "fechaFirmaTutor": "2026-03-27",
-      "interesInvestigacion": "No",
-      "disciplina": "Baloncesto",
-      "nivelHabilidad": "Intermedio",
-      "relacionAtleta": "El Atleta mismo",
-      "relacionAtletaOtro": "",
-      "programa": "Puntarenas",
-      "alergiasGraves": "No",
-      "anemiaDepranocitica": "Si",
-      "epilepsiaConvulsivo": "No",
-      "afeccionesMentales": "No",
-      "discAuditiva": "Si",
-      "reqDietetico": "No",
-      "asma": "Si",
-      "otrosDispositivos": "No",
-      "diabetes": "Si",
-      "trastornoHemorragico": "No",
-      "afeccionCardiaca": "Si",
-      "discVisual": "No",
-      "medicoLimitoDeportes": "No",
-      "conmocionCerebral": "No",
-      "tomaMedicamentos": "No",
-      "cedula_nombre": "No adjuntado",
-      "consentimiento_nombre": "No adjuntado",
-      "exoneracion_nombre": "No adjuntado",
-      "foto_nombre": "No adjuntado",
-      "usuarioId": "7ef4",
-      "password": "cltimgmp",
-      "rol": "atleta",
-      "fechaRegistro": "2026-03-27T20:55:40.699Z",
-      "status": "ACTIVO",
-      "name": "Braksley Camacho Garcia",
-      "fechaAprobacion": "2026-03-27T20:57:07.189Z"
     },
     {
       "id": "aa40",
@@ -270,6 +112,193 @@
       "sport": "Voleibol",
       "usuarioId": null,
       "fechaAprobacion": "2026-03-29T19:10:39.784Z"
+    },
+    {
+      "id": "f38b",
+      "rol": "atleta",
+      "name": "Gerson David Dinarte Fuentes",
+      "nombre": "Gerson David Dinarte Fuentes",
+      "email": "gfuentesfwd@gmail.com",
+      "correoElectronico": "gfuentesfwd@gmail.com",
+      "phone": "89074567",
+      "telefono": "89074567",
+      "region": "San José",
+      "programa": "San José",
+      "status": "ACTIVO",
+      "sport": "Tenis de Campo",
+      "usuarioId": null,
+      "fechaAprobacion": "2026-03-30T17:10:51.149Z"
+    },
+    {
+      "id": "atleta_fbcd",
+      "nombre": "keysha",
+      "cedula": "605000917",
+      "correoElectronico": "key@gmail.com",
+      "telefono": "89074567",
+      "password": "nr9903n6",
+      "fechaNacimiento": "2026-07-19",
+      "genero": "Femenino",
+      "fechaRegistro": "2026-03-30T17:43:33.118Z",
+      "rol": "atleta",
+      "direccion": "de la entrada del boli 300metros este",
+      "pais": "Costa Rica",
+      "emergenciaNombre": "rosa fuentes",
+      "emergenciaTelefono": "71944455",
+      "tutorNombre": "gerson",
+      "tutorApellido": "Dinarte Fuentes",
+      "tutorRelacion": "Tutor Legal",
+      "tutorCorreo": "gfuentesfwd@gmail.com",
+      "tutorTelefono": "77565776",
+      "tutorPais": "costa rica",
+      "tutorCedula": "606000917",
+      "medicamentos": [],
+      "condicionesMedicas": [
+        "Parálisis Cerebral"
+      ],
+      "dispositivosMovilidad": [
+        "Caminador"
+      ],
+      "ayudasEstiloVida": [
+        "Dentadura postiza"
+      ],
+      "comunicaciones": [
+        "Audífono"
+      ],
+      "dispositivosMedicos": [
+        "Ninguno"
+      ],
+      "especificacionDietetico": "sin gluten",
+      "especificacionOtrosDispositivos": "",
+      "cantidadConmociones": "",
+      "fechaUltimaConmocion": "",
+      "especificacionAfeccionesMentales": "",
+      "tiposAlergia": [],
+      "especificacionAlergiaOtro": "",
+      "terminosAceptados": true,
+      "objecionTratamientoMedico": false,
+      "objecionTransfusiones": false,
+      "firmaAtleta": "gerson dinarte fuentes",
+      "fechaFirmaAtleta": "2026-03-30",
+      "firmaTutor": "gerson dinarte fuentes",
+      "relacionTutor": "",
+      "fechaFirmaTutor": "2026-03-30",
+      "interesInvestigacion": "No",
+      "disciplina": "Atletismo",
+      "nivelHabilidad": "Intermedio",
+      "relacionAtleta": "El Atleta mismo",
+      "relacionAtletaOtro": "",
+      "programa": "Puntarenas",
+      "reqDietetico": "Si",
+      "asma": "No",
+      "otrosDispositivos": "No",
+      "afeccionCardiaca": "Si",
+      "discVisual": "Si",
+      "diabetes": "No",
+      "discAuditiva": "No",
+      "trastornoHemorragico": "No",
+      "medicoLimitoDeportes": "No",
+      "conmocionCerebral": "No",
+      "anemiaDepranocitica": "No",
+      "epilepsiaConvulsivo": "No",
+      "afeccionesMentales": "No",
+      "alergiasGraves": "No",
+      "tomaMedicamentos": "No",
+      "cedula_nombre": "No adjuntado",
+      "consentimiento_nombre": "No adjuntado",
+      "exoneracion_nombre": "No adjuntado",
+      "foto_nombre": "No adjuntado",
+      "usuarioId": "fbcd",
+      "status": "ACTIVO",
+      "name": "keysha",
+      "fechaAprobacion": "2026-03-30T17:45:56.162Z"
+    },
+    {
+      "id": "atleta_3df7",
+      "nombre": "Mauricio Perez Solis",
+      "fechaNacimiento": "2007-02-12",
+      "pais": "Costa Rica",
+      "cedula": "601890987",
+      "genero": "Masculino",
+      "direccion": "una prueba",
+      "telefono": "63511090",
+      "correoElectronico": "camaron@gmail.com",
+      "emergenciaNombre": "Braksley Camacho Grcia",
+      "emergenciaTelefono": "67892001",
+      "tutorNombre": "",
+      "tutorApellido": "",
+      "tutorRelacion": "",
+      "tutorCorreo": "",
+      "tutorTelefono": "",
+      "tutorPais": "",
+      "tutorCedula": "",
+      "medicamentos": [
+        {
+          "nombre": "zabutaml",
+          "dosis": "2 gramos ",
+          "frecuencia": "2 veces a la semana"
+        }
+      ],
+      "condicionesMedicas": [
+        "Síndrome de Down"
+      ],
+      "dispositivosMovilidad": [
+        "Caminador"
+      ],
+      "ayudasEstiloVida": [],
+      "comunicaciones": [
+        "Dispositivos de comunicación"
+      ],
+      "dispositivosMedicos": [
+        "Ninguno"
+      ],
+      "especificacionDietetico": "Vegetariano",
+      "especificacionOtrosDispositivos": "",
+      "cantidadConmociones": "",
+      "fechaUltimaConmocion": "",
+      "especificacionAfeccionesMentales": "",
+      "tiposAlergia": [],
+      "especificacionAlergiaOtro": "",
+      "terminosAceptados": true,
+      "objecionTratamientoMedico": false,
+      "objecionTransfusiones": true,
+      "firmaAtleta": "Braksley Camacho Garcia",
+      "fechaFirmaAtleta": "2026-03-30",
+      "firmaTutor": "",
+      "relacionTutor": "",
+      "fechaFirmaTutor": "2026-03-30",
+      "interesInvestigacion": "No",
+      "disciplina": "Fútbol",
+      "nivelHabilidad": "Principiante",
+      "relacionAtleta": "El Atleta mismo",
+      "relacionAtletaOtro": "",
+      "programa": "Puntarenas",
+      "reqDietetico": "Si",
+      "otrosDispositivos": "No",
+      "afeccionCardiaca": "Si",
+      "diabetes": "No",
+      "discAuditiva": "Si",
+      "medicoLimitoDeportes": "Si",
+      "anemiaDepranocitica": "No",
+      "afeccionesMentales": "No",
+      "alergiasGraves": "No",
+      "trastornoHemorragico": "Si",
+      "epilepsiaConvulsivo": "Si",
+      "discVisual": "No",
+      "asma": "Si",
+      "tomaMedicamentos": "Si",
+      "conmocionCerebral": "No",
+      "cedula_nombre": "No adjuntado",
+      "consentimiento_nombre": "No adjuntado",
+      "exoneracion_nombre": "No adjuntado",
+      "foto_nombre": "No adjuntado",
+      "cedula_base64": null,
+      "usuarioId": "3df7",
+      "password": "7p1m0jni",
+      "rol": "atleta",
+      "fechaRegistro": "2026-03-30T20:02:50.762Z",
+      "status": "ACTIVO",
+      "name": "Mauricio Perez Solis",
+      "fechaAprobacion": "2026-03-30T20:05:46.600Z"
     }
   ],
   "Admin": [
@@ -495,20 +524,100 @@
       "icon": "fa-solid fa-file-pdf",
       "iconColor": "red",
       "time": "Hace un momento"
+    },
+    {
+      "id": "077b",
+      "title": "Actualización",
+      "details": "Actualización de carlosfwd",
+      "icon": "fa-solid fa-pen",
+      "iconColor": "purple",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "bef7",
+      "title": "Actualización",
+      "details": "Actualización de carlosfwd",
+      "icon": "fa-solid fa-pen",
+      "iconColor": "purple",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fd14",
+      "title": "Competición",
+      "details": "Edición competición: Torneo Nacional de Basket",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "eebe",
+      "title": "Competición",
+      "details": "Edición competición: Torneo Nacional de Basket",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "90c8",
+      "title": "Nuevo Registro",
+      "details": "Nuevo Registro de Gerson David Dinarte Fuentes",
+      "icon": "fa-solid fa-user-plus",
+      "iconColor": "blue",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "c961",
+      "title": "Aprobación",
+      "details": "Se aprobó a Gerson David Dinarte Fuentes",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "0760",
+      "title": "Aprobación",
+      "details": "Se aprobó a keysha",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "7573",
+      "title": "Aprobación",
+      "details": "Se aprobó a Mauricio Perez Solis",
+      "icon": "fa-solid fa-check-circle",
+      "iconColor": "green",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "fa2e",
+      "title": "Competición",
+      "details": "Edición competición: Torneo Nacional de Basket",
+      "icon": "fa-solid fa-trophy",
+      "iconColor": "yellow",
+      "time": "Hace un momento"
+    },
+    {
+      "id": "6e7c",
+      "title": "Reporte",
+      "details": "Exportación PDF Expediente Completo de 6 registros (atletas)",
+      "icon": "fa-solid fa-file-pdf",
+      "iconColor": "red",
+      "time": "Hace un momento"
     }
   ],
   "competiciones": [
     {
       "id": "1",
-      "nombre": "Torneo Nacional de Fútbol 2026",
-      "categoria": "Atletismo",
-      "fecha": "2026-05-15",
+      "nombre": "Torneo Nacional de Basket",
+      "categoria": "Baloncesto",
+      "fecha": "2026-03-30",
       "ubicacion": "Estadio Nacional, San José",
       "resumen": "Gran evento nacional donde se reunirán los mejores equipos del país para celebrar la inclusión a través del deporte.",
-      "img": "/img/evento_competencia.png",
+      "img": "https://dotorg.brightspotcdn.com/dims4/default/e718c4e/2147483647/strip/true/crop/4344x2891+0+0/resize/800x532!/quality/90/?url=http%3A%2F%2Fsoi-brightspot.s3.amazonaws.com%2Fdotorg%2F8f%2F2d%2Fe455797841b180733b54828d564e%2F20180705-ajenner-bbo-52.jpg",
       "status": "Programado",
-      "fechaFin": "",
-      "enlace": ""
+      "fechaFin": "2026-03-31",
+      "enlace": "https://share.google/6k2V0kEPTHfLB4uqj"
     },
     {
       "id": "2",
@@ -622,6 +731,33 @@
       "genero": "Masculino",
       "fechaRegistro": "2026-03-30T16:16:13.261Z",
       "rol": "usuario"
+    },
+    {
+      "id": "fbcd",
+      "nombre": "keysha",
+      "cedula": "605000917",
+      "correoElectronico": "key@gmail.com",
+      "telefono": "89074567",
+      "password": "123456789",
+      "fechaNacimiento": "2026-07-19",
+      "genero": "Femenino",
+      "fechaRegistro": "2026-03-30T17:34:11.311Z",
+      "rol": "atleta",
+      "direccion": "de la entrada del boli 300metros este"
+    },
+    {
+      "id": "3df7",
+      "nombre": "Mauricio Perez Solis",
+      "cedula": "601890987",
+      "correoElectronico": "camaron@gmail.com",
+      "telefono": "63511090",
+      "password": "12345",
+      "fechaNacimiento": "2007-02-12",
+      "genero": "Masculino",
+      "pais": "Costa Rica",
+      "fechaRegistro": "2026-03-30T19:27:02.171Z",
+      "rol": "atleta",
+      "direccion": "una prueba"
     }
   ],
   "disciplinas": [
@@ -704,12 +840,20 @@
   ],
   "consultas": [
     {
-      "id": "6c7c",
-      "user_name": "francella porras ",
-      "user_email": "nporrasafwd@gmail.com",
-      "user_subject": "OTROS",
-      "message": "necesito ayuda con el formulario",
-      "fecha": "2026-03-29T17:44:48.663Z"
+      "id": "dc37",
+      "user_name": "gerson dinarte",
+      "user_email": "gfuentesfwd@gmail.com",
+      "user_subject": "SALUDO",
+      "message": "tengo problemas de la cabeza",
+      "fecha": "2026-03-30T17:07:46.499Z"
+    },
+    {
+      "id": "d9c0",
+      "user_name": "Gerson David Dinarte Fuentes",
+      "user_email": "gfuentesfwd@gmail.com",
+      "user_subject": "SALUDO",
+      "message": "hola es una prueba",
+      "fecha": "2026-03-30T19:56:36.077Z"
     }
   ],
   "usuarios_sistema": [
@@ -730,6 +874,13 @@
       "status": "Inactivo",
       "avatar": "SC",
       "bgColor": "bg-purple-500"
+    },
+    {
+      "id": "1826",
+      "nombre": "Gerson fuentes",
+      "email": "dinartegerson@gmail.com",
+      "rol": "Staff",
+      "estado": "Activo"
     }
   ],
   "system_settings": {

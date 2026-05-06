@@ -114,11 +114,46 @@ function PlataformaRegistro() {
   const [hoveredRole, setHoveredRole] = useState(null);
   const [highlightFirstStep, setHighlightFirstStep] = useState(false);
   const [usuarioSesion, setUsuarioSesion] = useState(null);
+  const [formularioCompletado, setFormularioCompletado] = useState(null); // null = no checked, false = none, or string with the role name
 
   useEffect(() => {
     const sesion = localStorage.getItem('usuarioSesion');
-    if (sesion) setUsuarioSesion(JSON.parse(sesion));
+    if (sesion) {
+      const user = JSON.parse(sesion);
+      setUsuarioSesion(user);
+      // Verificar si el usuario ya completó algún formulario
+      verificarFormularios(user);
+    }
   }, []);
+
+  const verificarFormularios = async (user) => {
+    const email = user.correoElectronico || user.email;
+    const userId = user.id;
+    const tablas = [
+      { endpoint: 'atletas', label: 'Atleta' },
+      { endpoint: 'entrenadores', label: 'Entrenador' },
+      { endpoint: 'voluntarios', label: 'Voluntario' },
+      { endpoint: 'tutores', label: 'Tutor' },
+    ];
+    try {
+      for (const tabla of tablas) {
+        const res = await fetch(`http://localhost:3001/${tabla.endpoint}`);
+        if (!res.ok) continue;
+        const datos = await res.json();
+        const encontrado = datos.find(d =>
+          (email && (d.correoElectronico === email || d.email === email)) ||
+          (userId && d.usuarioId === userId)
+        );
+        if (encontrado) {
+          setFormularioCompletado(tabla.label);
+          return;
+        }
+      }
+      setFormularioCompletado(false);
+    } catch {
+      setFormularioCompletado(false);
+    }
+  };
 
   const handleVerRequisitos = () => {
     Swal.fire({
@@ -172,6 +207,18 @@ function PlataformaRegistro() {
       });
       return;
     }
+
+    if (formularioCompletado) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Registro Completado',
+        text: `Ya has completado tu registro como ${formularioCompletado}. No es necesario llenar otro formulario.`,
+        confirmButtonColor: '#FF0000',
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
+
     navigate(`/formulario?rol=${rolId}`);
   };
 
@@ -341,12 +388,34 @@ function PlataformaRegistro() {
             {pasos.map((paso, i) => {
               const isTarget = highlightFirstStep && i === 0;
               const isDimmed = highlightFirstStep && i !== 0;
-              const isStep1Done = i === 0 && usuarioSesion;
+              const isStepDone = (i === 0 && usuarioSesion) || formularioCompletado;
+
+              let cardTitle = paso.titulo;
+              let cardDesc = paso.desc;
+
+              if (i === 0 && usuarioSesion) {
+                cardTitle = 'Sesión Iniciada';
+                cardDesc = 'Ya tienes una cuenta activa. Continúa con tu proceso.';
+              }
+              if (formularioCompletado) {
+                if (i === 1) {
+                  cardTitle = 'Rol Definido';
+                  cardDesc = `Has completado el formulario de perfil ${formularioCompletado}.`;
+                }
+                if (i === 2) {
+                  cardTitle = 'Formulario Listo';
+                  cardDesc = 'Tu información ha sido registrada y enviada exitosamente.';
+                }
+                if (i === 3) {
+                  cardTitle = 'Documentos Listos';
+                  cardDesc = 'Tus documentos y consentimientos han sido recibidos.';
+                }
+              }
 
               return (
               <div key={i} style={{
                 background: '#f8fafc', borderRadius: '24px', padding: '32px 28px',
-                border: `1px solid ${isTarget ? '#FF0000' : (isStep1Done ? '#22c55e' : '#f1f5f9')}`, position: 'relative', overflow: 'hidden',
+                border: `1px solid ${isTarget ? '#FF0000' : (isStepDone ? '#22c55e' : '#f1f5f9')}`, position: 'relative', overflow: 'hidden',
                 transition: 'all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1.1)',
                 cursor: (i === 0 && !usuarioSesion) ? 'pointer' : 'default',
                 transform: isTarget ? 'translateY(-15px) translateX(-10px) scale(1.06)' : (isDimmed ? 'translateX(120px) translateY(20px) scale(0.85)' : 'none'),
@@ -355,38 +424,38 @@ function PlataformaRegistro() {
                 zIndex: isTarget ? 10 : 1,
                 pointerEvents: isDimmed ? 'none' : 'auto'
               }}
-                onClick={() => i === 0 && !usuarioSesion && navigate('/registro')}
+                onClick={() => i === 0 && !usuarioSesion && navigate('/login')}
                 onMouseEnter={e => {
-                  if (highlightFirstStep || isStep1Done) return;
+                  if (highlightFirstStep || isStepDone) return;
                   e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,0,0,0.08)'; e.currentTarget.style.borderColor = '#fecaca';
                 }}
                 onMouseLeave={e => {
-                  if (highlightFirstStep || isStep1Done) return;
+                  if (highlightFirstStep || isStepDone) return;
                   e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#f1f5f9';
                 }}
               >
                 <div style={{
                   position: 'absolute', top: '16px', right: '20px',
-                  fontSize: isStep1Done ? '2.5rem' : '3.5rem',
+                  fontSize: isStepDone ? '2.5rem' : '3.5rem',
                   fontWeight: '900',
-                  color: isStep1Done ? '#dcfce7' : '#fee2e2',
+                  color: isStepDone ? '#dcfce7' : '#fee2e2',
                   lineHeight: 1,
                 }}>
-                  {isStep1Done ? <i className="fa-solid fa-check"></i> : paso.num}
+                  {isStepDone ? <i className="fa-solid fa-check"></i> : paso.num}
                 </div>
                 <div style={{
-                  width: '52px', height: '52px', background: isStep1Done ? '#f0fdf4' : '#fff1f2', borderRadius: '16px',
+                  width: '52px', height: '52px', background: isStepDone ? '#f0fdf4' : '#fff1f2', borderRadius: '16px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: isStep1Done ? '#22c55e' : '#FF0000', marginBottom: '24px',
-                  boxShadow: isStep1Done ? '0 8px 16px rgba(34,197,94,0.1)' : '0 8px 16px rgba(255,0,0,0.06)',
+                  color: isStepDone ? '#22c55e' : '#FF0000', marginBottom: '24px',
+                  boxShadow: isStepDone ? '0 8px 16px rgba(34,197,94,0.1)' : '0 8px 16px rgba(255,0,0,0.06)',
                 }}>
                   {paso.icon}
                 </div>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
-                  {isStep1Done ? 'Sesión Iniciada' : paso.titulo}
+                  {cardTitle}
                 </h3>
                 <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: '1.65', margin: 0 }}>
-                  {isStep1Done ? 'Ya tienes una cuenta activa. Continúa eligiendo tu rol abajo.' : paso.desc}
+                  {cardDesc}
                 </p>
               </div>
             );

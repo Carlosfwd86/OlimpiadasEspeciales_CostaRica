@@ -79,6 +79,14 @@ const CompetitionCard = ({ competition, onEdit, onDelete }) => {
                     <i className="fa-solid fa-location-dot" style={{ width: '14px', color: '#94a3b8' }}></i>
                     <span>{competition.ubicacion || 'Por definir'}</span>
                 </div>
+                {competition.enlace && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#2563eb' }}>
+                        <i className="fa-solid fa-link" style={{ width: '14px' }}></i>
+                        <a href={competition.enlace} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', fontWeight: '600' }}>
+                            Ver enlace externo <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '9px' }}></i>
+                        </a>
+                    </div>
+                )}
             </div>
 
             <div className="card-actions" style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '10px' }}>

@@ -82,6 +82,27 @@ function FormEntrenador({ onVolver }) {
         Swal.fire({ icon: 'error', title: 'Correo Inválido', text: 'Ingrese un correo válido.', confirmButtonColor: '#E00000' });
         return false;
       }
+      if (datos.fechaNacimiento) {
+        const hoy = new Date();
+        const nacimiento = new Date(datos.fechaNacimiento);
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const m = hoy.getMonth() - nacimiento.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+          edad--;
+        }
+        if (edad < 18) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso Denegado',
+            text: 'Debes ser mayor de 18 años para registrarte como entrenador.',
+            confirmButtonColor: '#E00000',
+            confirmButtonText: 'Entendido'
+          }).then(() => {
+            window.location.href = '/plataforma-registro'; // Kick them out
+          });
+          return false;
+        }
+      }
     }
     if (paso === 2 && (!datos.aniosExperiencia || !datos.disciplinaPrincipal)) {
       Swal.fire({ icon: 'error', title: 'Paso 2 Incompleto', text: 'Por favor complete experiencia y disciplina.', confirmButtonColor: '#E00000' });
@@ -124,9 +145,18 @@ function FormEntrenador({ onVolver }) {
           titulo_nombre: archivos.titulo?.name || 'No adjuntado',
           foto_nombre: archivos.foto?.name || 'No adjuntado',
         };
+        const getBase64 = (file) => new Promise((resolve) => {
+          if (!file) { resolve(null); return; }
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+        const cedula_base64 = await getBase64(archivos.cedula);
+
         const entry = { 
           ...datos, 
           ...archivosNombres, 
+          cedula_base64,
           usuarioId: sesion.id || null,
           password: pass, 
           rol: 'entrenador', 

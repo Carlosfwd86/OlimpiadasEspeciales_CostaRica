@@ -191,17 +191,29 @@ export const ServicesAdmin = {
     },
 
     getUsers: async () => {
-        const res = await fetch(`${BASE_URL}/usuarios_sistema`);
+        const res = await fetch(`${BASE_URL}/usuarios`);
         if (!res.ok) throw new Error("Error al obtener usuarios");
         return res.json();
     },
 
     deleteUser: async (id) => {
-        const res = await fetch(`${BASE_URL}/usuarios_sistema/${id}`, {
+        const res = await fetch(`${BASE_URL}/usuarios/${id}`, {
             method: 'DELETE'
         });
         if (!res.ok) throw new Error("Error al eliminar usuario");
         return true;
+    },
+
+    saveUser: async (data, id = null) => {
+        const method = id ? 'PATCH' : 'POST';
+        const url = id ? `${BASE_URL}/usuarios/${id}` : `${BASE_URL}/usuarios`;
+        const res = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error("Error al guardar usuario");
+        return res.json();
     },
 
     logActivity: async (title, details, icon = "fa-solid fa-circle-info", iconColor = "blue") => {

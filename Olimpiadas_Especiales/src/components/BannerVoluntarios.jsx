@@ -32,11 +32,7 @@ const BannerVoluntarios = () => {
                     No necesitas experiencia previa, solo las ganas de regalar alegría, 
                     ayudar a otros a superar sus límites y compartir momentos inolvidables.
                 </p>
-                <div className="banner-botones">
-                    <button className="boton-unete-voluntario" onClick={handleRedirect}>
-                        Quiero inscribirme &rarr;
-                    </button>
-                </div>
+
             </div>
 
             <div className="banner-voluntarios-imagen">

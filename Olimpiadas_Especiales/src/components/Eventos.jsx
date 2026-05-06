@@ -65,7 +65,19 @@ const Eventos = () => {
                                         </svg>
                                         {evento.fecha}
                                     </span>
-                                    <button className="boton-detalle-evento">Saber más</button>
+                                    <button 
+                                        className="boton-detalle-evento" 
+                                        onClick={() => {
+                                            if (evento.enlace) {
+                                                window.open(evento.enlace, '_blank');
+                                            } else {
+                                                alert("Este evento no cuenta con un enlace externo por el momento.");
+                                            }
+                                        }}
+                                        style={{ opacity: evento.enlace ? 1 : 0.6, cursor: evento.enlace ? 'pointer' : 'not-allowed' }}
+                                    >
+                                        Saber más
+                                    </button>
                                 </div>
                             </div>
                         </div>
