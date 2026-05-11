@@ -11,7 +11,6 @@ export default function Sidebar({ activeTab, onTabChange }) {
           alt="Special Olympics Logo" 
           className="logo-img" 
         />
-        <span className="logo-text"><b>Olimpiadas</b><br/>Especiales<br/><small>Costa Rica</small></span>
       </div>
 
       <div className="sidebar-menu-section">
@@ -36,7 +35,7 @@ export default function Sidebar({ activeTab, onTabChange }) {
             onClick={() => onTabChange('atletas')}
           >
             <i className="fa-solid fa-users nav-icon"></i>
-            Lista de Atletas
+            Directorio Oficial
           </li>
           <li 
             className={`nav-item ${activeTab === 'competiciones' ? 'active' : ''}`}
@@ -44,6 +43,13 @@ export default function Sidebar({ activeTab, onTabChange }) {
           >
             <i className="fa-solid fa-trophy nav-icon"></i>
             Competiciones y Eventos
+          </li>
+          <li 
+            className={`nav-item ${activeTab === 'consultas' ? 'active' : ''}`}
+            onClick={() => onTabChange('consultas')}
+          >
+            <i className="fa-solid fa-envelope-open-text nav-icon"></i>
+            Mensajes
           </li>
         </ul>
       </div>
@@ -66,6 +72,13 @@ export default function Sidebar({ activeTab, onTabChange }) {
             Regiones
           </li>
           <li 
+            className={`nav-item ${activeTab === 'bitacora' ? 'active' : ''}`}
+            onClick={() => onTabChange('bitacora')}
+          >
+            <i className="fa-solid fa-clock-rotate-left nav-icon"></i>
+            Bitácora
+          </li>
+          <li 
             className={`nav-item ${activeTab === 'reportes' ? 'active' : ''}`}
             onClick={() => onTabChange('reportes')}
           >
@@ -75,36 +88,7 @@ export default function Sidebar({ activeTab, onTabChange }) {
         </ul>
       </div>
 
-      <div className="sidebar-menu-section" style={{ marginTop: '20px' }}>
-        <h4 className="sidebar-heading">SISTEMA</h4>
-        <ul className="sidebar-nav">
-          <li 
-            className={`nav-item ${activeTab === 'usuarios_tab' ? 'active' : ''}`}
-            onClick={() => onTabChange('usuarios_tab')}
-          >
-            <i className="fa-solid fa-users-gear nav-icon"></i>
-            Usuarios
-          </li>
-          <li 
-            className={`nav-item ${activeTab === 'configuracion' ? 'active' : ''}`}
-            onClick={() => onTabChange('configuracion')}
-          >
-            <i className="fa-solid fa-gear nav-icon"></i>
-            Configuración
-          </li>
-          <li 
-            className="nav-item"
-            onClick={() => {
-                if(window.confirm("¿Seguro que deseas cerrar la sesión administrativa?")) {
-                    window.location.href = '/';
-                }
-            }}
-          >
-            <i className="fa-solid fa-right-from-bracket nav-icon"></i>
-            Cerrar Sesión
-          </li>
-        </ul>
-      </div>
+
 
     </aside>
 

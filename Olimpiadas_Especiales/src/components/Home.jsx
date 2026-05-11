@@ -123,16 +123,21 @@ const Home = () => {
         { br: "80px 0 0 120px", tr: "translateY(30px) rotate(2deg) scale(1.08)", color: "#C00000", op: 0.82 }
     ];
 
+    const [systemSettings, setSystemSettings] = useState(null);
+
     useEffect(() => {
         const fetchCounts = async () => {
             try {
-                const [atletas, tutores, entrenadores, voluntarios, compsRes] = await Promise.all([
+                const [atletas, tutores, entrenadores, voluntarios, compsRes, settings] = await Promise.all([
                     getAtletas().catch(() => []),
                     getTutores().catch(() => []),
                     getEntrenadores().catch(() => []),
                     getVoluntarios().catch(() => []),
-                    fetch('http://localhost:3001/competiciones').then(r => r.json()).catch(() => [])
+                    fetch('http://localhost:3001/competiciones').then(r => r.json()).catch(() => []),
+                    fetch('http://localhost:3001/system_settings').then(r => r.json()).catch(() => null)
                 ]);
+
+                setSystemSettings(settings);
 
                 // Calcular estadísticas detalladas
                 const masc = atletas.filter(a => a.genero === 'Masculino').length;
@@ -207,7 +212,7 @@ const Home = () => {
                         zIndex: 0
                     }}
                 >
-                    <source src="/img/videoHome.mp4" type="video/mp4" />
+                    <source src={systemSettings?.video_hero || "/img/videoHome.mp4"} type="video/mp4" />
                 </video>
 
                 {/* Overlay oscuro sutil para todo el video */}
@@ -312,8 +317,7 @@ const Home = () => {
 
                     <div className="hero_texto_izquierdo">
                         <h1 className="hero_titulo">
-                            Juntos transformamos <br />
-                            <span className="hero_titulo_rojo">vidas a través del deporte</span>
+                            {systemSettings?.slogan?.split(' ')[0] || "Juntos"} <span className="hero_titulo_rojo">{systemSettings?.slogan?.split(' ').slice(1).join(' ') || "transformamos vidas a través del deporte"}</span>
                         </h1>
 
                         <p className="hero_descripcion">

@@ -222,10 +222,6 @@ function FormPerfil({ user, setRefreshUser }) {
     const participaciones = user?.participaciones || [];
     const documentos = [
         { key: 'cedula_nombre', label: 'Cédula Identidad', icon: '🪪' },
-        { key: 'consentimiento_nombre', label: 'Consentimiento', icon: '✅' },
-        { key: 'exoneracion_nombre', label: 'Exoneración', icon: '📋' },
-        { key: 'titulo_nombre', label: 'Certificados', icon: '📜' },
-        { key: 'delincuencia_nombre', label: 'Antecedentes', icon: '⚖️' },
     ];
 
     return (
@@ -530,6 +526,44 @@ function FormPerfil({ user, setRefreshUser }) {
 
                                         return (
                                             <div key={doc.key} style={s.docBox}
+                                                onClick={() => {
+                                                    const base64Key = doc.key.replace('_nombre', '_base64');
+                                                    const base64Data = editData[base64Key];
+                                                    
+                                                    if (base64Data) {
+                                                        if (base64Data.startsWith('data:image/')) {
+                                                            Swal.fire({
+                                                                title: doc.label,
+                                                                imageUrl: base64Data,
+                                                                imageAlt: doc.label,
+                                                                confirmButtonText: 'Cerrar',
+                                                                confirmButtonColor: '#FF0000',
+                                                                width: '600px',
+                                                            });
+                                                        } else if (base64Data.startsWith('data:application/pdf')) {
+                                                            Swal.fire({
+                                                                title: doc.label,
+                                                                html: `<iframe src="${base64Data}" width="100%" height="500px" style="border:none; border-radius: 8px;"></iframe>`,
+                                                                confirmButtonText: 'Cerrar',
+                                                                confirmButtonColor: '#FF0000',
+                                                                width: '80%',
+                                                            });
+                                                        } else {
+                                                            Swal.fire({ icon: 'info', text: 'Documento adjuntado, pero no se puede visualizar en este momento.', confirmButtonColor: '#FF0000' });
+                                                        }
+                                                    } else if (docValue && docValue !== 'No adjuntado') {
+                                                        Swal.fire({
+                                                            icon: 'info',
+                                                            title: doc.label,
+                                                            text: `Documento antiguo.\nNombre: ${docValue}`,
+                                                            confirmButtonColor: '#FF0000'
+                                                        });
+                                                    } else {
+                                                        if (!isEditing) {
+                                                            Swal.fire({ icon: 'info', title: doc.label, text: 'No se adjuntó archivo.', confirmButtonColor: '#FF0000' });
+                                                        }
+                                                    }
+                                                }}
                                                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#FF0000'; e.currentTarget.style.background = '#fff5f5'; }}
                                                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#f8fafc'; }}>
                                                 <div style={{ fontSize: '1.8rem', marginBottom: '6px' }}>{doc.icon}</div>

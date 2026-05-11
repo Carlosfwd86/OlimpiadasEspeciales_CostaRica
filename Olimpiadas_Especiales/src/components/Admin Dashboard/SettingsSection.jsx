@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
+import Swal from 'sweetalert2';
 
 export default function SettingsSection({ onThemeChange, initialSubTab = 'usuarios' }) {
     const [settings, setSettings] = useState(null);
@@ -40,12 +41,100 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             .then(() => {
                 setSaving(false);
                 ServicesAdmin.logActivity("Configuración", "Se actualizaron las preferencias del sistema", "fa-solid fa-gears", "purple");
-                alert("Configuración guardada correctamente");
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Guardado!',
+                    text: 'Configuración guardada correctamente.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             })
             .catch(err => {
-                alert("Error al guardar: " + err.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Guardado',
+                    text: err.message,
+                    confirmButtonColor: '#e62334'
+                });
                 setSaving(false);
             });
+    };
+
+    const getRolBadge = (rol) => {
+        const styles = {
+            admin: { bg: '#fee2e2', color: '#dc2626' },
+            atleta: { bg: '#dbeafe', color: '#2563eb' },
+            entrenador: { bg: '#dcfce7', color: '#16a34a' },
+            voluntario: { bg: '#f3e8ff', color: '#9333ea' },
+            tutor: { bg: '#fef3c7', color: '#d97706' },
+            usuario: { bg: '#f1f5f9', color: '#64748b' },
+        };
+        const s = styles[rol] || styles.usuario;
+        return { padding: '4px 10px', borderRadius: '6px', background: s.bg, color: s.color, fontSize: '12px', fontWeight: '700', textTransform: 'capitalize' };
+    };
+
+    const handleUserForm = (user = null) => {
+        const isEdit = !!user;
+        Swal.fire({
+            title: isEdit ? `Editar: ${user.nombre}` : 'Crear Nuevo Usuario',
+            html: `
+                <div style="text-align: left; max-width: 400px; margin: 0 auto;">
+                    <label style="display:block; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #334155;">Nombre completo *</label>
+                    <input id="swal-nombre" class="swal2-input" value="${user?.nombre || ''}" placeholder="Ej. María López" style="margin-top: 0; width: 100%; box-sizing: border-box;">
+                    
+                    <label style="display:block; margin-top: 14px; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #334155;">Correo Electrónico *</label>
+                    <input id="swal-email" type="email" class="swal2-input" value="${user?.correoElectronico || ''}" placeholder="correo@ejemplo.com" style="margin-top: 0; width: 100%; box-sizing: border-box;">
+                    
+                    <label style="display:block; margin-top: 14px; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #334155;">Contraseña ${isEdit ? '(dejar vacío para no cambiar)' : '*'}</label>
+                    <input id="swal-password" type="password" class="swal2-input" placeholder="${isEdit ? '••••••••' : 'Mínimo 5 caracteres'}" style="margin-top: 0; width: 100%; box-sizing: border-box;">
+                    
+                    <label style="display:block; margin-top: 14px; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #334155;">Rol *</label>
+                    <select id="swal-rol" class="swal2-input" style="margin-top: 0; width: 100%; box-sizing: border-box; padding: 10px;">
+                        <option value="usuario" ${user?.rol === 'usuario' ? 'selected' : ''}>Usuario (sin permisos especiales)</option>
+                        <option value="atleta" ${user?.rol === 'atleta' ? 'selected' : ''}>Atleta</option>
+                        <option value="entrenador" ${user?.rol === 'entrenador' ? 'selected' : ''}>Entrenador</option>
+                        <option value="voluntario" ${user?.rol === 'voluntario' ? 'selected' : ''}>Voluntario</option>
+                        <option value="tutor" ${user?.rol === 'tutor' ? 'selected' : ''}>Tutor / Padre</option>
+                        <option value="admin" ${user?.rol === 'admin' ? 'selected' : ''}>Administrador</option>
+                    </select>
+                </div>
+            `,
+            width: 500,
+            showCancelButton: true,
+            confirmButtonText: isEdit ? 'Guardar Cambios' : 'Crear Usuario',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#e62334',
+            preConfirm: () => {
+                const nombre = document.getElementById('swal-nombre').value.trim();
+                const correoElectronico = document.getElementById('swal-email').value.trim();
+                const password = document.getElementById('swal-password').value;
+                const rol = document.getElementById('swal-rol').value;
+                
+                if (!nombre || !correoElectronico) {
+                    Swal.showValidationMessage('Nombre y Correo son obligatorios');
+                    return false;
+                }
+                if (!isEdit && (!password || password.length < 5)) {
+                    Swal.showValidationMessage('La contraseña es obligatoria y debe tener al menos 5 caracteres');
+                    return false;
+                }
+                
+                const data = { nombre, correoElectronico, rol };
+                if (password) data.password = password;
+                if (!isEdit) data.fechaRegistro = new Date().toISOString();
+                return data;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                ServicesAdmin.saveUser(result.value, user?.id)
+                    .then(() => {
+                        ServicesAdmin.getUsers().then(u => setUsuarios(u));
+                        ServicesAdmin.logActivity("Usuarios", `${isEdit ? 'Editado' : 'Creado'}: ${result.value.nombre} (${result.value.rol})`, "fa-solid fa-user-gear", "blue");
+                        Swal.fire({ icon: 'success', title: '¡Listo!', text: `Usuario ${isEdit ? 'actualizado' : 'creado'} correctamente.`, timer: 2000, showConfirmButton: false });
+                    })
+                    .catch(err => Swal.fire('Error', err.message, 'error'));
+            }
+        });
     };
 
     if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--admin-text-main)' }}>Cargando configuración...</div>;
@@ -53,84 +142,72 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
 
     return (
         <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
-            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
                 
-                {/* Sub-Navegación estilo captura */}
-                <div style={{ display: 'flex', gap: '30px', marginBottom: '25px', paddingLeft: '10px' }}>
-                    <button 
-                        onClick={() => setSubTab('usuarios')}
-                        style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            padding: '10px 20px',
-                            fontSize: '18px', 
-                            fontWeight: '700',
-                            color: subTab === 'usuarios' ? '#e62334' : 'var(--admin-text-muted)',
-                            borderBottom: subTab === 'usuarios' ? '3px solid #e62334' : '3px solid transparent',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            opacity: subTab === 'usuarios' ? 1 : 0.7
-                        }}
-                        onMouseOver={(e) => { if (subTab !== 'usuarios') e.currentTarget.style.opacity = 1 }}
-                        onMouseOut={(e) => { if (subTab !== 'usuarios') e.currentTarget.style.opacity = 0.7 }}
-                    >
-                        Usuarios
-                    </button>
-                    <button 
-                        onClick={() => setSubTab('configuracion')}
-                        style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            padding: '10px 20px',
-                            fontSize: '18px', 
-                            fontWeight: '700',
-                            color: subTab === 'configuracion' ? '#e62334' : 'var(--admin-text-muted)',
-                            borderBottom: subTab === 'configuracion' ? '3px solid #e62334' : '3px solid transparent',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            opacity: subTab === 'configuracion' ? 1 : 0.7
-                        }}
-                        onMouseOver={(e) => { if (subTab !== 'configuracion') e.currentTarget.style.opacity = 1 }}
-                        onMouseOut={(e) => { if (subTab !== 'configuracion') e.currentTarget.style.opacity = 0.7 }}
-                    >
-                        Configuración
-                    </button>
-                </div>
-
                 {subTab === 'usuarios' ? (
                     <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '30px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <h3 style={{ margin: 0, color: 'var(--admin-text-main)' }}>Gestión de Usuarios</h3>
-                            <button className="btn-new-entry" onClick={() => alert("Añadir nuevo usuario...")}>+ Nuevo Usuario</button>
+                            <div>
+                                <h3 style={{ margin: 0, color: 'var(--admin-text-main)' }}>Gestión de Usuarios Registrados</h3>
+                                <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--admin-text-muted)' }}>{usuarios.length} usuarios en el sistema</p>
+                            </div>
+                            <button className="btn-new-entry" onClick={() => handleUserForm()}>+ Nuevo Usuario</button>
                         </div>
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead style={{ borderBottom: '1px solid var(--admin-border)' }}>
-                                    <tr style={{ textAlign: 'left', color: 'var(--admin-text-muted)', fontSize: '13px' }}>
-                                        <th style={{ padding: '15px' }}>Nombre</th>
-                                        <th style={{ padding: '15px' }}>Email</th>
-                                        <th style={{ padding: '15px' }}>Rol</th>
-                                        <th style={{ padding: '15px' }}>Estado</th>
-                                        <th style={{ padding: '15px' }}>Acciones</th>
+                                <thead style={{ borderBottom: '2px solid var(--admin-border)' }}>
+                                    <tr style={{ textAlign: 'left', color: 'var(--admin-text-muted)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                        <th style={{ padding: '12px 15px' }}>Nombre</th>
+                                        <th style={{ padding: '12px 15px' }}>Email</th>
+                                        <th style={{ padding: '12px 15px' }}>Rol</th>
+                                        <th style={{ padding: '12px 15px' }}>Registro</th>
+                                        <th style={{ padding: '12px 15px' }}>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {usuarios.map(u => (
-                                        <tr key={u.id} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '14px', color: 'var(--admin-text-main)' }}>
-                                            <td style={{ padding: '15px' }}>{u.nombre}</td>
-                                            <td style={{ padding: '15px' }}>{u.email}</td>
-                                            <td style={{ padding: '15px' }}>{u.rol}</td>
-                                            <td style={{ padding: '15px' }}>
-                                                <span style={{ padding: '4px 8px', borderRadius: '4px', background: '#e6ffed', color: '#28a745', fontSize: '12px', fontWeight: '600' }}>{u.estado}</span>
+                                        <tr key={u.id} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '14px', color: 'var(--admin-text-main)', transition: 'background 0.2s' }}
+                                            onMouseEnter={e => e.currentTarget.style.background = 'var(--admin-hover, #f8fafc)'}
+                                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                        >
+                                            <td style={{ padding: '14px 15px', fontWeight: '500' }}>{u.nombre}</td>
+                                            <td style={{ padding: '14px 15px', color: 'var(--admin-text-muted)', fontSize: '13px' }}>{u.correoElectronico}</td>
+                                            <td style={{ padding: '14px 15px' }}>
+                                                <span style={getRolBadge(u.rol)}>{u.rol}</span>
                                             </td>
-                                            <td style={{ padding: '15px' }}>
-                                                <button style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '10px' }}><i className="fa-solid fa-pen"></i></button>
+                                            <td style={{ padding: '14px 15px', fontSize: '12px', color: 'var(--admin-text-muted)' }}>
+                                                {u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleDateString('es-CR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                                            </td>
+                                            <td style={{ padding: '14px 15px' }}>
                                                 <button 
-                                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+                                                    title="Editar usuario"
+                                                    style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '8px', fontSize: '14px' }}
+                                                    onClick={() => handleUserForm(u)}
+                                                >
+                                                    <i className="fa-solid fa-pen"></i>
+                                                </button>
+                                                <button 
+                                                    title="Eliminar usuario"
+                                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '14px' }}
                                                     onClick={() => {
-                                                        if(window.confirm(`¿Seguro que deseas eliminar a ${u.nombre}?`)) {
-                                                            ServicesAdmin.deleteUser(u.id).then(() => setUsuarios(usuarios.filter(us => us.id !== u.id)));
-                                                        }
+                                                        Swal.fire({
+                                                            title: '¿Eliminar Usuario?',
+                                                            html: `<p>¿Seguro que deseas eliminar a <strong>${u.nombre}</strong>?</p><p style="color:#ef4444; font-size:13px;">Esta acción eliminará su cuenta y no podrá iniciar sesión.</p>`,
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#e62334',
+                                                            cancelButtonColor: '#94a3b8',
+                                                            confirmButtonText: 'Sí, eliminar',
+                                                            cancelButtonText: 'Cancelar'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                ServicesAdmin.deleteUser(u.id).then(() => {
+                                                                    setUsuarios(usuarios.filter(us => us.id !== u.id));
+                                                                    ServicesAdmin.logActivity("Usuarios", `Eliminado: ${u.nombre}`, "fa-solid fa-user-minus", "red");
+                                                                    Swal.fire('¡Eliminado!', 'El usuario ha sido borrado del sistema.', 'success');
+                                                                });
+                                                            }
+                                                        });
                                                     }}
                                                 >
                                                     <i className="fa-solid fa-trash"></i>
@@ -242,24 +319,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                 </div>
                             </div>
 
-                            {/* Sección Regional */}
-                            <div>
-                                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '15px', color: 'var(--admin-text-main)' }}>Regional</h3>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <div>
-                                        <p style={{ fontWeight: '500', fontSize: '14px', margin: 0, color: 'var(--admin-text-main)' }}>Idioma Predeterminado</p>
-                                        <p style={{ fontSize: '12px', color: 'var(--admin-text-muted)', margin: 0 }}>Idioma para las exportaciones y PDFs.</p>
-                                    </div>
-                                    <select 
-                                        value={settings.idioma} 
-                                        onChange={(e) => setSettings({...settings, idioma: e.target.value})}
-                                        style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
-                                    >
-                                        <option value="es">Español (CR)</option>
-                                        <option value="en">Inglés (US)</option>
-                                    </select>
-                                </div>
-                            </div>
+                            {/* Sección Eliminada (Idioma: Solo Español CR por defecto) */}
 
                         </div>
 

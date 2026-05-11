@@ -5,19 +5,21 @@ import '../styles/Navbar.css';
 const Navbar = () => {
   const navegar = useNavigate();
   const [usuarioSesion, setUsuarioSesion] = useState(null);
+  const [logoUrl, setLogoUrl] = useState('/img/Logo Olimpiadas.png');
 
-  // Leer sesión al montar y cada vez que cambie localStorage
+  // 1. Cargar sesión inicial segura
   useEffect(() => {
-    const sesion = localStorage.getItem('usuarioSesion');
-    if (sesion) {
-      setUsuarioSesion(JSON.parse(sesion));
-    }
-
-    // Escuchar cambios de sesión desde otras pestañas o el mismo componente
     const handleStorageChange = () => {
-      const s = localStorage.getItem('usuarioSesion');
-      setUsuarioSesion(s ? JSON.parse(s) : null);
+      try {
+        const sesion = localStorage.getItem('usuarioSesion');
+        setUsuarioSesion(sesion ? JSON.parse(sesion) : null);
+      } catch (e) {
+        console.error("Error interpretando la sesión:", e);
+        setUsuarioSesion(null);
+      }
     };
+
+    handleStorageChange(); // Ejecutar al inicio
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('sesionActualizada', handleStorageChange);
@@ -27,13 +29,22 @@ const Navbar = () => {
     };
   }, []);
 
+  // 2. Cargar Logo Dinámico
+  useEffect(() => {
+    fetch('http://localhost:3001/system_settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data?.logo_url) setLogoUrl(data.logo_url);
+      })
+      .catch(err => console.error("Error cargando logo en Navbar:", err));
+  }, []);
+
   // Funciones de navegación
   const irAlInicio = () => navegar("/");
   const irANosotros = () => navegar("/nosotros");
   const irAEventos = () => navegar("/eventos");
   const irAContacto = () => navegar("/contacto");
   const irALogin = () => navegar("/login");
-  const irARegistro = () => navegar("/registro");
   const irAPlataformaRegistro = () => navegar("/plataforma-registro");
   const irAPanelAdmin = () => navegar("/admin");
   const irAPerfil = () => navegar("/perfil");
@@ -47,7 +58,7 @@ const Navbar = () => {
   return (
     <nav className="navbar_principal">
       <div className="navbar_logotipo" onClick={irAlInicio}>
-        <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
+        <img src={logoUrl} alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
       </div>
 
       <div className="navbar_menu_derecha">
@@ -56,6 +67,16 @@ const Navbar = () => {
           <li className="enlace_nav" onClick={irANosotros}>NOSOTROS</li>
           <li className="enlace_nav" onClick={irAEventos}>EVENTOS</li>
           <li className="enlace_nav" onClick={irAContacto}>CONTÁCTANOS</li>
+          {usuarioSesion?.rol === 'admin' && (
+            <li 
+              className="enlace_nav" 
+              onClick={irAPanelAdmin}
+              style={{ color: '#E62334', fontWeight: 'bold' }}
+            >
+              <i className="fa-solid fa-gauge-high" style={{ marginRight: '5px' }}></i>
+              PANEL ADMIN
+            </li>
+          )}
           <li
             className="enlace_nav"
             onClick={irAPlataformaRegistro}
@@ -79,12 +100,20 @@ const Navbar = () => {
           {usuarioSesion ? (
             /* --- Sesión activa: saludo + botón cerrar sesión --- */
             <>
-              <span className="saludo_usuario" onClick={irAPerfil} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span 
+                className="saludo_usuario" 
+                onClick={usuarioSesion.rol === 'admin' ? irAPanelAdmin : irAPerfil} 
+                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+              >
                 <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }}></i>
-                Hola, <strong>{usuarioSesion.nombre ? usuarioSesion.nombre.split(' ')[0] : usuarioSesion.cedula}</strong>
+                Hola, <strong>{usuarioSesion.nombre ? usuarioSesion.nombre.split(' ')[0] : 'Admin'}</strong>
               </span>
-              <button className="boton_accion_rojo" onClick={irAPerfil} style={{ padding: '8px 15px', fontSize: '12px' }}>
-                MI PERFIL
+              <button 
+                className="boton_accion_rojo" 
+                onClick={usuarioSesion.rol === 'admin' ? irAPanelAdmin : irAPerfil} 
+                style={{ padding: '8px 15px', fontSize: '12px' }}
+              >
+                {usuarioSesion.rol === 'admin' ? 'VER PANEL' : 'MI PERFIL'}
               </button>
               <button className="boton_cerrar_sesion" onClick={cerrarSesion}>
                 <svg

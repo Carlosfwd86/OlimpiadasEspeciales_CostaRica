@@ -3,9 +3,13 @@ import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import ModalDetalleRegistro from './ModalDetalleRegistro';
+import Swal from 'sweetalert2';
 
-export default function ReportsSection() {
+export default function ReportsSection({ onEdit, onActionSuccess, refreshTrigger }) {
     const [source, setSource] = useState('atletas');
+    const [showDetail, setShowDetail] = useState(false);
+    const [selectedDetail, setSelectedDetail] = useState(null);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState(new Set());
@@ -16,7 +20,7 @@ export default function ReportsSection() {
 
     useEffect(() => {
         loadData();
-    }, [source]);
+    }, [source, refreshTrigger]);
 
     const loadData = async () => {
         setLoading(true);
@@ -64,19 +68,69 @@ export default function ReportsSection() {
         return true;
     });
 
+    const handleDelete = (item) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `Vas a eliminar permanentemente a ${item.name || item.nombre}.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e62334',
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let deletePromise;
+                if (source === 'atletas') {
+                    deletePromise = ServicesAdmin.deleteAthlete(item.id);
+                } else if (source === 'registros') {
+                    deletePromise = ServicesAdmin.deleteRegistro(item.id);
+                } else {
+                    deletePromise = ServicesAdmin.deleteUser(item.id);
+                }
+                
+                deletePromise.then(() => {
+                    Swal.fire('¡Eliminado!', 'El registro ha sido borrado.', 'success');
+                    if (onActionSuccess) onActionSuccess();
+                    loadData();
+                }).catch(err => {
+                    Swal.fire('Error', 'Ocurrió un error al eliminar el registro.', 'error');
+                });
+            }
+        });
+    };
+
     const handleExportCSV = () => {
         const dataToExport = selectedRows.size > 0 
             ? data.filter(r => selectedRows.has(r.id)) 
             : filteredData;
 
         if (dataToExport.length === 0) {
-            alert("No hay datos cargados para exportar.");
+            Swal.fire({
+                icon: 'info',
+                title: 'Sin datos',
+                text: 'No hay datos seleccionados o cargados para exportar.',
+                confirmButtonColor: '#3b82f6'
+            });
             return;
         }
 
-        const headers = Object.keys(dataToExport[0]).join(",") + "\n";
+        const allKeys = new Set();
+        dataToExport.forEach(row => Object.keys(row).forEach(k => {
+            if (!['password', 'bgColor', 'statusColor', 'initials'].includes(k)) allKeys.add(k);
+        }));
+        const headersArr = Array.from(allKeys);
+        const headers = headersArr.join(",") + "\n";
+        
         const csvContent = dataToExport.map(row => {
-            return Object.values(row).map(value => `"${value}"`).join(",");
+            return headersArr.map(key => {
+                let val = row[key];
+                if (val === undefined || val === null) val = '';
+                if (typeof val === 'boolean') val = val ? 'Sí' : 'No';
+                if (Array.isArray(val)) val = val.join('; ');
+                // Escapar comillas dobles y envolver siempre el campo
+                return `"${String(val).replace(/"/g, '""')}"`;
+            }).join(",");
         }).join("\n");
 
         const blob = new Blob([headers + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -89,7 +143,7 @@ export default function ReportsSection() {
         link.click();
         document.body.removeChild(link);
         
-        ServicesAdmin.logActivity("Reporte", `Exportación CSV de ${dataToExport.length} registros (${source})`, "fa-solid fa-file-csv", "green");
+        ServicesAdmin.logActivity("Reporte", `Exportación CSV Completa de ${dataToExport.length} registros (${source})`, "fa-solid fa-file-csv", "green");
     };
 
     const handleExportPDF = () => {
@@ -98,44 +152,66 @@ export default function ReportsSection() {
             : filteredData;
 
         if (dataToExport.length === 0) {
-            alert("No hay datos para generar el PDF.");
+            Swal.fire({
+                icon: 'info',
+                title: 'Sin datos',
+                text: 'No hay datos suficientes para generar los expedientes PDF.',
+                confirmButtonColor: '#3b82f6'
+            });
             return;
         }
 
         const doc = new jsPDF();
         
-        // Header
-        doc.setFillColor(230, 35, 52); // Rojo oficial
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(22);
-        doc.text("Olimpiadas Especiales Costa Rica", 15, 25);
-        doc.setFontSize(10);
-        doc.text(`Reporte de ${source.toUpperCase()} - Generado el ${new Date().toLocaleDateString()}`, 15, 33);
-        
-        // Table content based on source
-        let tableHeaders = [];
-        let tableRows = [];
+        dataToExport.forEach((row, index) => {
+            if (index > 0) doc.addPage();
+            
+            // Diseño de la cabecera por página
+            doc.setFillColor(230, 35, 52); // Rojo oficial
+            doc.rect(0, 0, 210, 35, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text("Olimpiadas Especiales Costa Rica", 15, 20);
+            doc.setFontSize(10);
+            doc.text(`Expediente Completo - Generado el ${new Date().toLocaleDateString()}`, 15, 28);
+            
+            // Título del Expediente
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.text(`Expediente de: ${row.nombre || row.name || 'Usuario'}`, 15, 45);
+            doc.setFontSize(11);
+            doc.text(`Rol: ${(row.rol || 'Indefinido').toUpperCase()} | ID: #${row.id} | Estado: ${row.status || row.estado || 'Activo'}`, 15, 52);
+            
+            // Recolectar todos los datos para la tabla, ignorando configuraciones visuales irrelevantes
+            const tableRows = [];
+            Object.keys(row).forEach(key => {
+                if (['password', 'bgColor', 'statusColor', 'initials', 'time', 'id', 'nombre', 'name', 'rol', 'status', 'estado'].includes(key)) return;
+                
+                let val = row[key];
+                if (val === undefined || val === null || val === '') return;
+                if (typeof val === 'boolean') val = val ? 'Sí' : 'No';
+                if (Array.isArray(val)) val = val.length > 0 ? val.join(', ') : '';
+                
+                if (val === '') return;
 
-        if (source === 'usuarios') {
-            tableHeaders = [['ID', 'Nombre', 'Email', 'Rol', 'Estado']];
-            tableRows = dataToExport.map(u => [u.id, u.nombre, u.email, u.rol, u.estado]);
-        } else {
-            tableHeaders = [['ID', 'Nombre', 'Deporte', 'Región', 'Estado']];
-            tableRows = dataToExport.map(r => [r.id, r.name || r.nombre, r.sport || r.deporte, r.region, r.status || 'Activo']);
-        }
+                // Formatear la clave para lectura
+                const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                tableRows.push([formattedKey, String(val)]);
+            });
 
-        autoTable(doc, {
-            startY: 50,
-            head: tableHeaders,
-            body: tableRows,
-            theme: 'striped',
-            headStyles: { fillColor: [230, 35, 52] },
-            styles: { fontSize: 9 }
+            autoTable(doc, {
+                startY: 58,
+                head: [['Campo / Etiqueta', 'Valor Registrado']],
+                body: tableRows,
+                theme: 'striped',
+                headStyles: { fillColor: [40, 40, 40] },
+                styles: { fontSize: 9, cellPadding: 3 },
+                columnStyles: { 0: { fontStyle: 'bold', cellWidth: 70 } }
+            });
         });
 
-        doc.save(`reporte_${source}_${new Date().toISOString().split('T')[0]}.pdf`);
-        ServicesAdmin.logActivity("Reporte", `Exportación PDF de ${dataToExport.length} registros (${source})`, "fa-solid fa-file-pdf", "red");
+        doc.save(`expediente_completo_${source}_${new Date().toISOString().split('T')[0]}.pdf`);
+        ServicesAdmin.logActivity("Reporte", `Exportación PDF Expediente Completo de ${dataToExport.length} registros (${source})`, "fa-solid fa-file-pdf", "red");
     };
 
     return (
@@ -182,18 +258,10 @@ export default function ReportsSection() {
                     <h4 style={{ margin: '0 0 10px 0', color: 'var(--admin-text-main)' }}>Resumen de Selección</h4>
                     <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '0', color: '#e62334' }}>{selectedRows.size || filteredData.length}</p>
                     <p style={{ fontSize: '12px', color: 'var(--admin-text-muted)', marginBottom: '20px' }}>Registros listos para exportar</p>
-                    
-                    <button 
-                        className="btn-export" 
-                        onClick={handleExportCSV}
-                        style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
-                    >
-                        <i className="fa-solid fa-file-csv"></i> Descargar CSV
-                    </button>
                     <button 
                         className="btn-export" 
                         onClick={handleExportPDF}
-                        style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '10px' }}
+                        style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
                     >
                         <i className="fa-solid fa-file-pdf"></i> Generar PDF
                     </button>
@@ -223,6 +291,7 @@ export default function ReportsSection() {
                                     <th style={{ padding: '12px' }}>Nombre</th>
                                     <th style={{ padding: '12px' }}>{source === 'usuarios' ? 'Email' : 'Deporte/Rol'}</th>
                                     <th style={{ padding: '12px' }}>Región</th>
+                                    <th style={{ padding: '12px', textAlign: 'center' }}>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -244,6 +313,27 @@ export default function ReportsSection() {
                                         <td style={{ padding: '12px', fontWeight: '600' }}>{row.name || row.nombre}</td>
                                         <td style={{ padding: '12px' }}>{row.sport || row.deporte || row.rol || row.email}</td>
                                         <td style={{ padding: '12px' }}>{row.region || 'Sede Central'}</td>
+                                        <td style={{ padding: '12px', textAlign: 'center' }}>
+                                            <button 
+                                                title="Ver Detalles Completos"
+                                                onClick={(e) => { e.stopPropagation(); setSelectedDetail(row); setShowDetail(true); }}
+                                                style={{ background: '#eff6ff', color: '#2563eb', border: 'none', padding: '6px 10px', borderRadius: '5px', marginRight: '5px', cursor: 'pointer' }}
+                                            ><i className="fa-solid fa-eye"></i></button>
+                                            
+                                            {source !== 'usuarios' && (
+                                                <button 
+                                                    title="Editar Expediente"
+                                                    onClick={(e) => { e.stopPropagation(); onEdit && onEdit(row); }}
+                                                    style={{ background: '#fefce8', color: '#eab308', border: 'none', padding: '6px 10px', borderRadius: '5px', marginRight: '5px', cursor: 'pointer' }}
+                                                ><i className="fa-solid fa-pen"></i></button>
+                                            )}
+                                            
+                                            <button 
+                                                title="Borrar Registro"
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(row); }}
+                                                style={{ background: '#fef2f2', color: '#ef4444', border: 'none', padding: '6px 10px', borderRadius: '5px', cursor: 'pointer' }}
+                                            ><i className="fa-solid fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -251,6 +341,12 @@ export default function ReportsSection() {
                     )}
                 </div>
             </div>
+
+            <ModalDetalleRegistro 
+                isOpen={showDetail} 
+                onClose={() => setShowDetail(false)} 
+                data={selectedDetail || {}} 
+            />
         </div>
     );
 }

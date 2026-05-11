@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
+import Swal from 'sweetalert2';
 
 export default function ProfileSection() {
     const [profile, setProfile] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         ServicesAdmin.getProfile()
@@ -23,14 +25,42 @@ export default function ProfileSection() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        ServicesAdmin.updateProfile(formData)
+
+        if (!formData.nombre || !formData.nombre.trim()) {
+            Swal.fire('Error', 'El Nombre Completo es obligatorio.', 'error');
+            return;
+        }
+        const currentEmail = formData.email || '';
+        if (!currentEmail.trim()) {
+            Swal.fire('Error', 'El Correo Electrónico es obligatorio.', 'error');
+            return;
+        }
+        if (!formData.telefono || !formData.telefono.trim()) {
+            Swal.fire('Error', 'El Teléfono es obligatorio.', 'error');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Actualizando...',
+            didOpen: () => { Swal.showLoading(); },
+            allowOutsideClick: false
+        });
+
+        ServicesAdmin.updateProfile(formData.id, formData)
             .then(updated => {
                 setProfile(updated);
                 setEditMode(false);
+                setShowPassword(false);
                 ServicesAdmin.logActivity("Perfil", "Se actualizó la información del perfil administrador", "fa-solid fa-user-pen", "blue");
-                alert("Perfil actualizado correctamente");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Perfil Actualizado',
+                    text: 'Los cambios se han guardado correctamente.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             })
-            .catch(err => alert("Error al actualizar: " + err.message));
+            .catch(err => Swal.fire('Error', 'No se pudo actualizar el perfil: ' + err.message, 'error'));
     };
 
     if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Cargando perfil...</div>;
@@ -66,6 +96,8 @@ export default function ProfileSection() {
                                 onChange={(e) => setFormData({...formData, nombre: e.target.value})}
                                 disabled={!editMode}
                                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+                                required
+                                pattern=".*\S+.*"
                             />
                         </div>
                         <div className="form-group">
@@ -77,6 +109,8 @@ export default function ProfileSection() {
                                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                                 disabled={!editMode}
                                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+                                required
+                                pattern=".*\S+.*"
                             />
                         </div>
                         <div className="form-group">
@@ -100,6 +134,27 @@ export default function ProfileSection() {
                                 disabled={!editMode}
                                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
                             />
+                        </div>
+                        <div className="form-group">
+                            <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: 'var(--admin-text-muted)' }}>CONTRASEÑA</label>
+                            <div style={{ position: 'relative' }}>
+                                <input 
+                                    type={showPassword ? "text" : "password"}
+                                    className="form-control"
+                                    value={formData.password || ''}
+                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    disabled={!editMode}
+                                    style={{ width: '100%', padding: '12px', paddingRight: '45px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+                                    required
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer' }}
+                                >
+                                    <i className={showPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye"}></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 

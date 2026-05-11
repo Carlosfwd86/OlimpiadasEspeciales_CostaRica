@@ -366,9 +366,18 @@ function FormAtleta({ onVolver }) {
           exoneracion_nombre: archivos.exoneracion?.name || 'No adjuntado',
           foto_nombre: archivos.foto?.name || 'No adjuntado',
         };
+        const getBase64 = (file) => new Promise((resolve) => {
+          if (!file) { resolve(null); return; }
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+        const cedula_base64 = await getBase64(archivos.cedula);
+
         const entry = { 
           ...datos, 
           ...archivosNombres, 
+          cedula_base64,
           usuarioId: sesion.id || null,
           password: pass, 
           rol: 'atleta', 
@@ -682,145 +691,213 @@ function FormAtleta({ onVolver }) {
                 
                 <h3 style={{fontSize: '18px', fontWeight: 700, marginBottom: '20px'}}>Chequeo Rápido de Salud</h3>
                 <div className="medical-status-grid">
-                  {[
-                    { id: 'reqDietetico', label: 'Dieta Especial', desc: '¿Requiere alimentación específica?' },
-                    { id: 'otrosDispositivos', label: 'Otros Dispositivos', desc: '¿Usa algún otro no listado arriba?' },
-                    { id: 'afeccionCardiaca', label: 'Afección Cardíaca', desc: '¿Tiene problemas del corazón?' },
-                    { id: 'asma', label: 'Asma', desc: '¿Padece de dificultades respiratorias?' },
-                    { id: 'diabetes', label: 'Diabetes', desc: '¿Controla niveles de azúcar?' },
-                    { id: 'discVisual', label: 'Discapacidad Visual', desc: '¿Problemas severos de visión?' },
-                    { id: 'discAuditiva', label: 'Discapacidad Auditiva', desc: '¿Dificultad para escuchar?' },
-                    { id: 'trastornoHemorragico', label: 'Trastorno Hemorrágico', desc: '¿Problemas de coagulación?' },
-                    { id: 'medicoLimitoDeportes', label: 'Limitación Deportiva', desc: '¿Un médico ha limitado su actividad?' },
-                    { id: 'epilepsiaConvulsivo', label: 'Epilepsia', desc: '¿Padece convulsiones?' },
-                    { id: 'anemiaDepranocitica', label: 'Anemia Depranocítica', desc: '¿Células falciformes?' },
-                    { id: 'conmocionCerebral', label: 'Conmoción Cerebral', desc: '¿Alguna vez ha tenido una conmoción cerebral?' },
-                    { id: 'afeccionesMentales', label: 'Afecciones de Salud Mental / Conductuales', desc: '¿Tiene afecciones conductuales, de salud mental y/o sensoriales?' },
-                    { id: 'alergiasGraves', label: 'Alergias Graves', desc: 'Medicamentos, látex, comida.' }
-                  ].map((field) => (
-                    <div key={field.id} className={`status-tile ${errores[field.id] ? 'error-border' : ''}`} style={errores[field.id] ? {borderColor: '#E00000'} : {}}>
-                      <div className="status-info">
-                        <span className="status-label">{field.label}</span>
-                        <span className="status-desc">{field.desc}</span>
+                  {/* Fila 1: Dieta y Dispositivos */}
+                  <div className={`status-tile ${errores.reqDietetico ? 'error-border' : ''}`} style={errores.reqDietetico ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Dieta Especial</span>
+                      <span className="status-desc">¿Requiere alimentación específica?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.reqDietetico === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'reqDietetico', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.reqDietetico === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'reqDietetico', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+                  <div className={`status-tile ${errores.otrosDispositivos ? 'error-border' : ''}`} style={errores.otrosDispositivos ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Otros Dispositivos</span>
+                      <span className="status-desc">¿Usa algún otro no listado arriba?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.otrosDispositivos === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'otrosDispositivos', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.otrosDispositivos === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'otrosDispositivos', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+
+                  {/* Campos condicionales de Fila 1 */}
+                  {datos.reqDietetico === 'Si' && (
+                    <div className="input-container" style={{gridColumn: '1 / -1', padding: '20px', background: '#f8fafc', borderRadius: '15px', animation: 'slideDown 0.3s ease-out'}}>
+                      <label style={{color: '#334155', fontWeight: 700}}>Especifique el requerimiento dietético:</label>
+                      <input type="text" id="especificacionDietetico" className={`input-field ${errores.especificacionDietetico ? 'error-border' : ''}`} placeholder="Ej: Vegetariano, sin gluten..." value={datos.especificacionDietetico || ''} onChange={manejarCambio} style={errores.especificacionDietetico ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}} />
+                    </div>
+                  )}
+                  {datos.otrosDispositivos === 'Si' && (
+                    <div className="input-container" style={{gridColumn: '1 / -1', padding: '20px', background: '#f8fafc', borderRadius: '15px', animation: 'slideDown 0.3s ease-out'}}>
+                      <label style={{color: '#334155', fontWeight: 700}}>Especifique otros dispositivos de asistencia:</label>
+                      <input type="text" id="especificacionOtrosDispositivos" className={`input-field ${errores.especificacionOtrosDispositivos ? 'error-border' : ''}`} placeholder="Especifique..." value={datos.especificacionOtrosDispositivos || ''} onChange={manejarCambio} style={errores.especificacionOtrosDispositivos ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}} />
+                    </div>
+                  )}
+
+                  {/* Fila 2: Cardíaca y Asma */}
+                  <div className={`status-tile ${errores.afeccionCardiaca ? 'error-border' : ''}`} style={errores.afeccionCardiaca ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Afección Cardíaca</span>
+                      <span className="status-desc">¿Tiene problemas del corazón?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.afeccionCardiaca === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'afeccionCardiaca', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.afeccionCardiaca === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'afeccionCardiaca', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+                  <div className={`status-tile ${errores.asma ? 'error-border' : ''}`} style={errores.asma ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Asma</span>
+                      <span className="status-desc">¿Padece de dificultades respiratorias?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.asma === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'asma', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.asma === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'asma', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+
+                  {/* Fila 3: Diabetes y Visual */}
+                  <div className={`status-tile ${errores.diabetes ? 'error-border' : ''}`} style={errores.diabetes ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Diabetes</span>
+                      <span className="status-desc">¿Controla niveles de azúcar?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.diabetes === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'diabetes', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.diabetes === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'diabetes', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+                  <div className={`status-tile ${errores.discVisual ? 'error-border' : ''}`} style={errores.discVisual ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Discapacidad Visual</span>
+                      <span className="status-desc">¿Problemas severos de visión?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.discVisual === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'discVisual', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.discVisual === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'discVisual', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+
+                  {/* Fila 4: Auditiva y Hemorrágico */}
+                  <div className={`status-tile ${errores.discAuditiva ? 'error-border' : ''}`} style={errores.discAuditiva ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Discapacidad Auditiva</span>
+                      <span className="status-desc">¿Dificultad para escuchar?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.discAuditiva === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'discAuditiva', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.discAuditiva === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'discAuditiva', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+                  <div className={`status-tile ${errores.trastornoHemorragico ? 'error-border' : ''}`} style={errores.trastornoHemorragico ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Trastorno Hemorrágico</span>
+                      <span className="status-desc">¿Problemas de coagulación?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.trastornoHemorragico === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'trastornoHemorragico', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.trastornoHemorragico === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'trastornoHemorragico', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+
+                  {/* Fila 5: Limitación y Epilepsia */}
+                  <div className={`status-tile ${errores.medicoLimitoDeportes ? 'error-border' : ''}`} style={errores.medicoLimitoDeportes ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Limitación Deportiva</span>
+                      <span className="status-desc">¿Un médico ha limitado su actividad?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.medicoLimitoDeportes === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'medicoLimitoDeportes', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.medicoLimitoDeportes === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'medicoLimitoDeportes', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+                  <div className={`status-tile ${errores.epilepsiaConvulsivo ? 'error-border' : ''}`} style={errores.epilepsiaConvulsivo ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Epilepsia</span>
+                      <span className="status-desc">¿Padece convulsiones?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.epilepsiaConvulsivo === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'epilepsiaConvulsivo', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.epilepsiaConvulsivo === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'epilepsiaConvulsivo', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+
+                  {/* Fila 6: Anemia y Conmoción */}
+                  <div className={`status-tile ${errores.anemiaDepranocitica ? 'error-border' : ''}`} style={errores.anemiaDepranocitica ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Anemia Depranocítica</span>
+                      <span className="status-desc">¿Células falciformes?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.anemiaDepranocitica === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'anemiaDepranocitica', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.anemiaDepranocitica === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'anemiaDepranocitica', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+                  <div className={`status-tile ${errores.conmocionCerebral ? 'error-border' : ''}`} style={errores.conmocionCerebral ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Conmoción Cerebral</span>
+                      <span className="status-desc">¿Alguna vez ha tenido una conmoción?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.conmocionCerebral === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'conmocionCerebral', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.conmocionCerebral === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'conmocionCerebral', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+
+                  {/* Campo condicional: Conmoción */}
+                  {datos.conmocionCerebral === 'Si' && (
+                    <div style={{gridColumn: '1 / -1', padding: '20px', background: '#f8fafc', borderRadius: '15px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', animation: 'slideDown 0.3s ease-out'}}>
+                      <div className="input-container" style={{margin: 0}}>
+                        <label style={{color: '#334155', fontWeight: 700}}>¿Cuántas a lo largo de su vida?</label>
+                        <input type="number" id="cantidadConmociones" className={`input-field ${errores.cantidadConmociones ? 'error-border' : ''}`} placeholder="Ej: 1" value={datos.cantidadConmociones || ''} onChange={manejarCambio} style={errores.cantidadConmociones ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}} />
                       </div>
-                      <div className="switch-container">
-                        <div 
-                          className={`switch-option yes ${datos[field.id] === 'Si' ? 'active' : ''}`}
-                          onClick={() => manejarCambio({ target: { id: field.id, value: 'Si' } })}
-                        >SÍ</div>
-                        <div 
-                          className={`switch-option no ${datos[field.id] === 'No' ? 'active' : ''}`}
-                          onClick={() => manejarCambio({ target: { id: field.id, value: 'No' } })}
-                        >NO</div>
+                      <div className="input-container" style={{margin: 0}}>
+                        <label style={{color: '#334155', fontWeight: 700}}>Fecha de la última (mm/aaaa):</label>
+                        <input type="text" id="fechaUltimaConmocion" className={`input-field ${errores.fechaUltimaConmocion ? 'error-border' : ''}`} placeholder="mm/aaaa" value={datos.fechaUltimaConmocion || ''} onChange={manejarCambio} style={errores.fechaUltimaConmocion ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}} />
                       </div>
                     </div>
-                  ))}
+                  )}
 
+                  {/* Fila 7: Afecciones Mentales y Alergias */}
+                  <div className={`status-tile ${errores.afeccionesMentales ? 'error-border' : ''}`} style={errores.afeccionesMentales ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Salud Mental / Conductuales</span>
+                      <span className="status-desc">¿Afecciones conductuales o sensoriales?</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.afeccionesMentales === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'afeccionesMentales', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.afeccionesMentales === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'afeccionesMentales', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+                  <div className={`status-tile ${errores.alergiasGraves ? 'error-border' : ''}`} style={errores.alergiasGraves ? {borderColor: '#E00000'} : {}}>
+                    <div className="status-info">
+                      <span className="status-label">Alergias Graves</span>
+                      <span className="status-desc">Medicamentos, látex, comida.</span>
+                    </div>
+                    <div className="switch-container">
+                      <div className={`switch-option yes ${datos.alergiasGraves === 'Si' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'alergiasGraves', value: 'Si' } })}>SÍ</div>
+                      <div className={`switch-option no ${datos.alergiasGraves === 'No' ? 'active' : ''}`} onClick={() => manejarCambio({ target: { id: 'alergiasGraves', value: 'No' } })}>NO</div>
+                    </div>
+                  </div>
+
+                  {/* Campo condicional: Afecciones Mentales */}
+                  {datos.afeccionesMentales === 'Si' && (
+                    <div className="input-container" style={{gridColumn: '1 / -1', padding: '20px', background: '#f8fafc', borderRadius: '15px', animation: 'slideDown 0.3s ease-out'}}>
+                      <label style={{color: '#334155', fontWeight: 700}}>Especifique (afecciones conductuales / salud mental / sensoriales):</label>
+                      <input type="text" id="especificacionAfeccionesMentales" className={`input-field ${errores.especificacionAfeccionesMentales ? 'error-border' : ''}`} placeholder="Especifique..." value={datos.especificacionAfeccionesMentales || ''} onChange={manejarCambio} style={errores.especificacionAfeccionesMentales ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}} />
+                    </div>
+                  )}
+
+                  {/* Campo condicional: Alergias */}
                   {datos.alergiasGraves === 'Si' && (
-                    <div className="alergia-extra" style={{padding: '20px', background: '#fff1f2', borderRadius: '15px', marginTop: '10px'}}>
+                    <div className="alergia-extra" style={{padding: '20px', background: '#fff1f2', borderRadius: '15px'}}>
                       <label style={{color: '#E00000', fontWeight: 'bold', display: 'block', marginBottom: '15px'}}>En caso afirmativo, especifique si se trata de alguno de los siguientes:</label>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '15px' }}>
                         {['Picaduras de insectos', 'Medicamentos/drogas', 'Alimentos', 'Látex', 'Otros (especifique)'].map(opt => (
                           <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#475569' }}>
-                            <input 
-                              type="checkbox" 
-                              name="tiposAlergia" 
-                              value={opt} 
-                              onChange={manejarCambioArreglo} 
-                              checked={datos.tiposAlergia?.includes(opt) || false} 
-                              style={{ width: '16px', height: '16px', accentColor: '#E00000' }} 
-                            />
+                            <input type="checkbox" name="tiposAlergia" value={opt} onChange={manejarCambioArreglo} checked={datos.tiposAlergia?.includes(opt) || false} style={{ width: '16px', height: '16px', accentColor: '#E00000' }} />
                             <span style={errores.tiposAlergia ? {color: '#E00000'} : {}}>{opt}</span>
                           </label>
                         ))}
                       </div>
                       {datos.tiposAlergia?.includes('Otros (especifique)') && (
                         <div className="input-container" style={{margin: 0}}>
-                          <input 
-                            type="text" 
-                            id="especificacionAlergiaOtro" 
-                            className={`input-field ${errores.especificacionAlergiaOtro ? 'error-border' : ''}`} 
-                            placeholder="Especifique..." 
-                            value={datos.especificacionAlergiaOtro || ''} 
-                            onChange={manejarCambio} 
-                            style={errores.especificacionAlergiaOtro ? {background: 'white', borderColor: '#E00000', marginTop: '5px'} : {background: 'white', marginTop: '5px'}}
-                          />
+                          <input type="text" id="especificacionAlergiaOtro" className={`input-field ${errores.especificacionAlergiaOtro ? 'error-border' : ''}`} placeholder="Especifique..." value={datos.especificacionAlergiaOtro || ''} onChange={manejarCambio} style={errores.especificacionAlergiaOtro ? {background: 'white', borderColor: '#E00000', marginTop: '5px'} : {background: 'white', marginTop: '5px'}} />
                         </div>
                       )}
-                    </div>
-                  )}
-
-                  {datos.reqDietetico === 'Si' && (
-                    <div className="input-container" style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px'}}>
-                      <label style={{color: '#334155'}}>Especifique el requerimiento dietético:</label>
-                      <input 
-                        type="text" 
-                        id="especificacionDietetico" 
-                        className={`input-field ${errores.especificacionDietetico ? 'error-border' : ''}`} 
-                        placeholder="Ej: Vegetariano, sin gluten..." 
-                        value={datos.especificacionDietetico || ''} 
-                        onChange={manejarCambio} 
-                        style={errores.especificacionDietetico ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
-                      />
-                    </div>
-                  )}
-
-                  {datos.otrosDispositivos === 'Si' && (
-                    <div className="input-container" style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px'}}>
-                      <label style={{color: '#334155'}}>Especifique otros dispositivos de asistencia:</label>
-                      <input 
-                        type="text" 
-                        id="especificacionOtrosDispositivos" 
-                        className={`input-field ${errores.especificacionOtrosDispositivos ? 'error-border' : ''}`} 
-                        placeholder="Especifique..." 
-                        value={datos.especificacionOtrosDispositivos || ''} 
-                        onChange={manejarCambio} 
-                        style={errores.especificacionOtrosDispositivos ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
-                      />
-                    </div>
-                  )}
-
-                  {datos.conmocionCerebral === 'Si' && (
-                    <div style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px'}}>
-                      <div className="input-container" style={{margin: 0}}>
-                        <label style={{color: '#334155'}}>¿Cuántos a lo largo de su vida?</label>
-                        <input 
-                          type="number" 
-                          id="cantidadConmociones" 
-                          className={`input-field ${errores.cantidadConmociones ? 'error-border' : ''}`} 
-                          placeholder="Ej: 1" 
-                          value={datos.cantidadConmociones || ''} 
-                          onChange={manejarCambio} 
-                          style={errores.cantidadConmociones ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
-                        />
-                      </div>
-                      <div className="input-container" style={{margin: 0}}>
-                        <label style={{color: '#334155'}}>Fecha de la última (mm/aaaa):</label>
-                        <input 
-                          type="text" 
-                          id="fechaUltimaConmocion" 
-                          className={`input-field ${errores.fechaUltimaConmocion ? 'error-border' : ''}`} 
-                          placeholder="mm/aaaa" 
-                          value={datos.fechaUltimaConmocion || ''} 
-                          onChange={manejarCambio} 
-                          style={errores.fechaUltimaConmocion ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {datos.afeccionesMentales === 'Si' && (
-                    <div className="input-container" style={{padding: '20px', background: '#f8fafc', borderRadius: '15px', marginTop: '10px'}}>
-                      <label style={{color: '#334155'}}>En caso afirmativo, especifique (afecciones conductuales/salud mental/sensoriales):</label>
-                      <input 
-                        type="text" 
-                        id="especificacionAfeccionesMentales" 
-                        className={`input-field ${errores.especificacionAfeccionesMentales ? 'error-border' : ''}`} 
-                        placeholder="Especifique..." 
-                        value={datos.especificacionAfeccionesMentales || ''} 
-                        onChange={manejarCambio} 
-                        style={errores.especificacionAfeccionesMentales ? {background: 'white', borderColor: '#E00000'} : {background: 'white'}}
-                      />
                     </div>
                   )}
                 </div>

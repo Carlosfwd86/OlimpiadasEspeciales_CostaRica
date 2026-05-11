@@ -6,7 +6,12 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }) {
 
     // Helper para renderizar secciones de datos dinámicamente
     const renderSection = (title, fields) => {
-        const activeFields = fields.filter(f => data[f.key] !== undefined && data[f.key] !== null && data[f.key] !== '');
+        const activeFields = fields.filter(f => {
+            const val = data[f.key];
+            if (val === undefined || val === null || val === '') return false;
+            if (Array.isArray(val) && val.length === 0) return false;
+            return true;
+        });
         if (activeFields.length === 0) return null;
 
         return (
@@ -17,7 +22,11 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }) {
                         <div key={f.key}>
                             <label style={{ display: 'block', fontSize: '11px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', marginBottom: '4px' }}>{f.label}</label>
                             <div style={{ fontSize: '14px', color: '#334155', fontWeight: '500' }}>
-                                {typeof data[f.key] === 'boolean' ? (data[f.key] ? 'Sí' : 'No') : data[f.key]}
+                                {typeof data[f.key] === 'boolean' 
+                                    ? (data[f.key] ? 'Sí' : 'No') 
+                                    : Array.isArray(data[f.key]) 
+                                        ? data[f.key].join(', ') 
+                                        : String(data[f.key])}
                             </div>
                         </div>
                     ))}
@@ -55,14 +64,48 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }) {
                         { key: 'direccion', label: 'Dirección Exacta' },
                     ])}
 
-                    {/* Atleta Specific */}
-                    {renderSection("Información Médica", [
-                        { key: 'tipoSangre', label: 'Tipo de Sangre' },
-                        { key: 'tipoDiscapacidad', label: 'Discapacidad' },
-                        { key: 'usaSillaRuedas', label: 'Usa Silla de Ruedas' },
-                        { key: 'alergias', label: 'Alergias' },
+                    {renderSection("Deporte y Programa", [
+                        { key: 'disciplina', label: 'Disciplina' },
+                        { key: 'disciplinaPrincipal', label: 'Disciplina Principal' },
+                        { key: 'deporte', label: 'Deporte' },
+                        { key: 'sport', label: 'Deporte (Interno)' },
+                        { key: 'programa', label: 'Programa / Sede' },
+                        { key: 'nivelHabilidad', label: 'Nivel Habilidad' },
+                    ])}
+
+                    {/* Atleta Specific - Medical */}
+                    {renderSection("Historial Médico (Atleta)", [
+                        { key: 'condicionesMedicas', label: 'Condiciones Médicas' },
+                        { key: 'dispositivosMovilidad', label: 'Dispositivos Movilidad' },
+                        { key: 'ayudasEstiloVida', label: 'Ayudas Estilo de Vida' },
+                        { key: 'comunicaciones', label: 'Comunicaciones' },
+                        { key: 'dispositivosMedicos', label: 'Dispositivos Médicos' },
+                        { key: 'tiposAlergia', label: 'Alergias' },
+                        { key: 'especificacionAlergiaOtro', label: 'Detalle Alergias' },
                         { key: 'medicamentos', label: 'Medicamentos' },
-                        { key: 'detallesMedicos', label: 'Observaciones Médicas' },
+                    ])}
+
+                    {renderSection("Condiciones Específicas / Respuestas Médicas", [
+                        { key: 'anemiaDepranocitica', label: 'Anemia Depranocítica' },
+                        { key: 'medicoLimitoDeportes', label: 'Médico Limitó Deportes' },
+                        { key: 'discAuditiva', label: 'Disc. Auditiva' },
+                        { key: 'diabetes', label: 'Diabetes' },
+                        { key: 'afeccionCardiaca', label: 'Afección Cardíaca' },
+                        { key: 'reqDietetico', label: 'Requisito Dietético' },
+                        { key: 'especificacionDietetico', label: 'Detalle Dieta' },
+                        { key: 'otrosDispositivos', label: 'Otros Dispositivos' },
+                        { key: 'especificacionOtrosDispositivos', label: 'Detalle Dispositivos' },
+                        { key: 'asma', label: 'Asma' },
+                        { key: 'discVisual', label: 'Disc. Visual' },
+                        { key: 'trastornoHemorragico', label: 'Trast. Hemorrágico' },
+                        { key: 'epilepsiaConvulsivo', label: 'Epilepsia/Convulsivo' },
+                        { key: 'conmocionCerebral', label: 'Conmoción Cerebral' },
+                        { key: 'cantidadConmociones', label: 'Cant. Conmociones' },
+                        { key: 'fechaUltimaConmocion', label: 'Última Conmoción' },
+                        { key: 'alergiasGraves', label: 'Alergias Graves' },
+                        { key: 'afeccionesMentales', label: 'Afecciones Mentales' },
+                        { key: 'especificacionAfeccionesMentales', label: 'Detalle Mentales' },
+                        { key: 'tomaMedicamentos', label: 'Toma Medicación' },
                     ])}
 
                     {renderSection("Emergencia", [
@@ -71,33 +114,50 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }) {
                         { key: 'emergenciaParentesco', label: 'Parentesco' },
                     ])}
 
-                    {/* Entrenador Specific */}
-                    {renderSection("Perfil Profesional", [
-                        { key: 'disciplinaPrincipal', label: 'Disciplina' },
+                    {/* Entrenador / Voluntario Specific */}
+                    {renderSection("Perfil Entrenador / Voluntario", [
                         { key: 'aniosExperiencia', label: 'Años Experiencia' },
                         { key: 'certificaciones', label: 'Certificaciones' },
                         { key: 'horarioDisponible', label: 'Disponibilidad' },
-                    ])}
-
-                    {/* Voluntario Specific */}
-                    {renderSection("Colaboración", [
                         { key: 'areasInteres', label: 'Áreas de Interés' },
-                        { key: 'disponibilidad', label: 'Disponibilidad' },
-                        { key: 'experienciaPrevia', label: 'Experiencia' },
+                        { key: 'otraArea', label: 'Otra Área / Deporte' },
+                        { key: 'experienciaPrevia', label: 'Experiencia Previa' },
                     ])}
 
-                    {/* Tutor Specific */}
-                    {renderSection("Vínculo", [
-                        { key: 'nombreAtleta', label: 'Atleta a Cargo' },
-                        { key: 'relacionConAtleta', label: 'Relación' },
+                    {/* Autorizaciones y Tutores */}
+                    {renderSection("Información de Tutor / Familiar", [
+                        { key: 'nombreAtleta', label: 'Atleta que representa' },
+                        { key: 'relacionConAtleta', label: 'Relación / Parentesco' },
                         { key: 'ocupacion', label: 'Ocupación' },
+                        { key: 'motivacion', label: 'Motivación' },
+                        { key: 'experienciaNecesidadesEspeciales', label: 'Experiencia Nec. Especiales' },
                     ])}
 
-                    {renderSection("Documentación", [
-                        { key: 'cedula_nombre', label: 'Documento ID' },
-                        { key: 'consentimiento_nombre', label: 'Consentimiento' },
+                    {renderSection("Tutor / Responsable Legal (Atleta)", [
+                        { key: 'tutorNombre', label: 'Nombre Tutor' },
+                        { key: 'tutorApellido', label: 'Apellido Tutor' },
+                        { key: 'tutorRelacion', label: 'Relación con Atleta' },
+                        { key: 'tutorCorreo', label: 'Correo Tutor' },
+                        { key: 'tutorTelefono', label: 'Teléfono Tutor' },
+                        { key: 'tutorCedula', label: 'Cédula Tutor' },
+                    ])}
+
+                    {renderSection("Autorizaciones y Exoneración", [
+                        { key: 'terminosAceptados', label: 'Términos Aceptados' },
+                        { key: 'objecionTratamientoMedico', label: 'Objeción Tratamiento Médico' },
+                        { key: 'objecionTransfusiones', label: 'Objeción Transfusiones' },
+                        { key: 'interesInvestigacion', label: 'Interés en Investigación' },
+                        { key: 'firmaAtleta', label: 'Firma/Nombre Atleta' },
+                        { key: 'fechaFirmaAtleta', label: 'Fecha Firma Atleta' },
+                        { key: 'firmaTutor', label: 'Firma/Nombre Tutor' },
+                        { key: 'fechaFirmaTutor', label: 'Fecha Firma Tutor' },
+                    ])}
+
+                    {renderSection("Archivos Adjuntos (Nombres)", [
+                        { key: 'cedula_nombre', label: 'Cédula / ID' },
+                        { key: 'consentimiento_nombre', label: 'Consentimiento Clínico' },
                         { key: 'exoneracion_nombre', label: 'Exoneración' },
-                        { key: 'titulo_nombre', label: 'Certificados' },
+                        { key: 'titulo_nombre', label: 'Certificados / CV' },
                         { key: 'delincuencia_nombre', label: 'Hoja Delincuencia' },
                         { key: 'foto_nombre', label: 'Foto Perfil' },
                     ])}

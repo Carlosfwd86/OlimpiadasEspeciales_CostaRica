@@ -36,8 +36,8 @@ const Register = () => {
       return;
     }
 
-    if (parseInt(formData.edad) < 1) {
-      Swal.fire({ icon: 'error', title: 'Error', text: 'La edad debe ser un número válido.' });
+    if (!formData.fechaNacimiento) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Debe ingresar su fecha de nacimiento.' });
       return;
     }
 
@@ -51,6 +51,7 @@ const Register = () => {
         password: formData.password,
         fechaNacimiento: formData.fechaNacimiento,
         genero: formData.genero,
+        pais: formData.pais,
         fechaRegistro: new Date().toISOString()
       };
 

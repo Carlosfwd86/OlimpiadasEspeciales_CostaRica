@@ -1,15 +1,16 @@
 import React from 'react';
 import '../../style/ModalNuevoRegistro.css';
+import Swal from 'sweetalert2';
 
 export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editData = null }) {
     const [formData, setFormData] = React.useState({
         nombre: '',
-        deporte: 'Fútbol',
+        categoria: 'Fútbol',
         fecha: '',
         fechaFin: '',
         ubicacion: '',
-        descripcion: '',
-        imagen: '',
+        resumen: '',
+        img: '',
         enlace: ''
     });
 
@@ -17,23 +18,23 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
         if (editData) {
             setFormData({
                 nombre: editData.nombre || '',
-                deporte: editData.deporte || 'Fútbol',
+                categoria: editData.categoria || editData.deporte || 'Fútbol',
                 fecha: editData.fecha || '',
                 fechaFin: editData.fechaFin || '',
                 ubicacion: editData.ubicacion || '',
-                descripcion: editData.descripcion || '',
-                imagen: editData.imagen || '',
+                resumen: editData.resumen || editData.descripcion || '',
+                img: editData.img || editData.imagen || '',
                 enlace: editData.enlace || ''
             });
         } else {
             setFormData({
                 nombre: '',
-                deporte: 'Fútbol',
+                categoria: 'Fútbol',
                 fecha: '',
                 fechaFin: '',
                 ubicacion: '',
-                descripcion: '',
-                imagen: '',
+                resumen: '',
+                img: '',
                 enlace: ''
             });
         }
@@ -43,10 +44,17 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.nombre || !formData.fecha) {
-            alert("Nombre y fecha son requeridos");
+        
+        if (!formData.nombre.trim() || !formData.fecha || !formData.ubicacion.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Campos Incompletos',
+                text: 'El Nombre, la Fecha de inicio y la Ubicación son datos obligatorios para registrar un evento.',
+                confirmButtonColor: '#e62334'
+            });
             return;
         }
+        
         onSave(formData, editData?.id);
         onClose();
     };
@@ -91,26 +99,35 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                             value={formData.nombre}
                             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                             placeholder="Ej. Torneo Nacional de Verano 2026"
+                            required
+                            pattern=".*\S+.*"
                         />
                     </div>
 
-                    {/* Deporte */}
                     <div>
-                        <label style={labelStyle}>Deporte</label>
+                        <label style={labelStyle}>Deporte / Categoría *</label>
                         <select
                             style={fieldStyle}
-                            value={formData.deporte}
-                            onChange={(e) => setFormData({ ...formData, deporte: e.target.value })}
+                            value={formData.categoria}
+                            onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
                         >
-                            <option>Fútbol</option>
-                            <option>Baloncesto</option>
-                            <option>Atletismo</option>
-                            <option>Natación</option>
-                            <option>Tenis</option>
-                            <option>Ciclismo</option>
-                            <option>Bolos</option>
-                            <option>Gimnasia</option>
-                            <option>Otro</option>
+                            <option value="Atletismo">Atletismo</option>
+                            <option value="Baloncesto">Baloncesto</option>
+                            <option value="Balonmano">Balonmano</option>
+                            <option value="Bochas">Bochas</option>
+                            <option value="Ciclismo">Ciclismo</option>
+                            <option value="Deportes de Invierno">Deportes de Invierno</option>
+                            <option value="Ecuestre">Ecuestre</option>
+                            <option value="Fútbol">Fútbol</option>
+                            <option value="Gimnasia Rítmica">Gimnasia Rítmica</option>
+                            <option value="Halterofilia">Halterofilia</option>
+                            <option value="Judo">Judo</option>
+                            <option value="Natación">Natación</option>
+                            <option value="Tenis de Campo">Tenis de Campo</option>
+                            <option value="Tenis de Mesa">Tenis de Mesa</option>
+                            <option value="Triatlón">Triatlón</option>
+                            <option value="Voleibol">Voleibol</option>
+                            <option value="Varios/Multideportivo">Varios / Multideportivo</option>
                         </select>
                     </div>
 
@@ -123,6 +140,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                                 style={fieldStyle}
                                 value={formData.fecha}
                                 onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
+                                required
                             />
                         </div>
                         <div>
@@ -136,44 +154,45 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                         </div>
                     </div>
 
-                    {/* Ubicación */}
                     <div>
-                        <label style={labelStyle}>Ubicación</label>
+                        <label style={labelStyle}>Sede / Ubicación *</label>
                         <input
                             type="text"
                             style={fieldStyle}
                             value={formData.ubicacion}
                             onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
-                            placeholder="Ej. Estadio Nacional, San José"
+                            placeholder="Ej. Estadio Nacional, La Sabana"
+                            required
+                            pattern=".*\S+.*"
                         />
                     </div>
 
-                    {/* Descripción */}
+                    {/* Resumen / Descripción */}
                     <div>
-                        <label style={labelStyle}>Descripción</label>
+                        <label style={labelStyle}>Resumen / Descripción</label>
                         <textarea
                             style={{ ...fieldStyle, minHeight: '90px', resize: 'vertical' }}
-                            value={formData.descripcion}
-                            onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                            value={formData.resumen}
+                            onChange={(e) => setFormData({ ...formData, resumen: e.target.value })}
                             placeholder="Describe el evento, quiénes participan, qué se celebra..."
                         />
                     </div>
 
-                    {/* URL imagen */}
+                    {/* URL imagen /img/... */}
                     <div>
-                        <label style={labelStyle}>URL de imagen</label>
+                        <label style={labelStyle}>Ruta de imagen (Local o URL)</label>
                         <input
-                            type="url"
+                            type="text"
                             style={fieldStyle}
-                            value={formData.imagen}
-                            onChange={(e) => setFormData({ ...formData, imagen: e.target.value })}
-                            placeholder="https://ejemplo.com/imagen.jpg"
+                            value={formData.img}
+                            onChange={(e) => setFormData({ ...formData, img: e.target.value })}
+                            placeholder="Ej: /img/evento_competencia.png o https://url.com/img.png"
                         />
-                        {formData.imagen && (
+                        {formData.img && (
                             <img
-                                src={formData.imagen}
+                                src={formData.img}
                                 alt="Vista previa"
-                                style={{ marginTop: '8px', width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                                style={{ marginTop: '8px', width: '100%', height: '120px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#f8fafc' }}
                                 onError={(e) => e.target.style.display = 'none'}
                             />
                         )}

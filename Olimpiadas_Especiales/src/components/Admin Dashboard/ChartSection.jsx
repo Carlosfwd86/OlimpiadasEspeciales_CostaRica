@@ -8,35 +8,59 @@ export default function ChartSection({ onTabChange }) {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    Promise.all([
-      ServicesAdmin.getCharts(),
-      ServicesAdmin.getAtletas()
-    ]).then(([chartData, atletas]) => {
-      // If db.json charts are empty, calculate them dynamically
-      let processedCharts = { ...chartData };
-      
-      if (processedCharts.distribucionRegional.length === 0 && atletas.length > 0) {
+    ServicesAdmin.getAtletas()
+      .then(atletas => {
         const provinces = ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"];
-        const counts = {};
+        const sports = ["Fútbol", "Natación", "Atletismo", "Bochas", "Baloncesto", "Levantamiento de Pesas"];
+        
+        // 1. Calcular Distribución Regional
+        const regionalCounts = {};
         atletas.forEach(a => {
-          let r = a.region || "Desconocido";
-          if (r === "Desconocido" && a.direccion) {
-            const found = provinces.find(p => a.direccion.toLowerCase().includes(p.toLowerCase()));
-            if (found) r = found;
-          }
-          counts[r] = (counts[r] || 0) + 1;
+          let r = a.region || "Otro";
+          regionalCounts[r] = (regionalCounts[r] || 0) + 1;
         });
 
-        processedCharts.distribucionRegional = Object.entries(counts).map(([name, val]) => ({
+        const distribucionRegional = Object.entries(regionalCounts).map(([name, val]) => ({
           region: name,
           valor: val,
           colorClase: `color-${name.toLowerCase().replace(/\s/g, '-')}`
         }));
-        processedCharts.totalGeneral = atletas.length;
-      }
 
-      setGraficos(processedCharts);
-    }).catch(error => console.error("Error al cargar datos de gráficos:", error));
+        // 2. Calcular Atletas por Deporte
+        const officialSports = [
+            "Atletismo", "Baloncesto", "Balonmano", "Bochas", "Ciclismo", 
+            "Deportes de Invierno", "Ecuestre", "Fútbol", "Gimnasia Rítmica", 
+            "Halterofilia", "Judo", "Natación", "Tenis de Campo", 
+            "Tenis de Mesa", "Triatlón", "Voleibol"
+        ];
+        
+        const sportCounts = {};
+        officialSports.forEach(s => sportCounts[s] = 0);
+
+        atletas.forEach(a => {
+          let s = a.disciplina || a.sport || "Otro";
+          if (s === "Levantamiento de Pesas") s = "Halterofilia";
+          
+          if (sportCounts[s] !== undefined) {
+             sportCounts[s]++;
+          }
+        });
+
+        const totalAtletas = atletas.length || 1;
+        const atletasPorDeporte = Object.entries(sportCounts).map(([name, val]) => ({
+          deporte: name,
+          valor: val,
+          porcentaje: Math.round((val / totalAtletas) * 100),
+          colorClase: `color-${name.toLowerCase().replace(/\s/g, '-').replace(/[áéíóú]/g, 'a')}`
+        }));
+
+        setGraficos({
+          atletasPorDeporte,
+          distribucionRegional,
+          totalGeneral: atletas.length
+        });
+      })
+      .catch(error => console.error("Error al cargar datos de gráficos:", error));
   }, []);
 
 

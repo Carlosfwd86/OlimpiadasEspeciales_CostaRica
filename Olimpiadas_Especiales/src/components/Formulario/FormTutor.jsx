@@ -10,7 +10,7 @@ emailjs.init("4zWvRC7Yn7lUDqd1q");
 function FormTutor({ onVolver }) {
   const [paso, setPaso] = useState(1);
   const [datos, setDatos] = useState({
-    nombre: '', cedula: '', telefono: '', correoElectronico: '', direccion: '',
+    nombre: '', cedula: '', telefono: '', correoElectronico: '', direccion: '', fechaNacimiento: '',
     nombreAtleta: '', relacionConAtleta: '',
     ocupacion: '', motivacion: '', experienciaNecesidadesEspeciales: 'No',
   });
@@ -32,7 +32,8 @@ function FormTutor({ onVolver }) {
         cedula: user.cedula || prev.cedula,
         telefono: user.telefono || prev.telefono,
         correoElectronico: user.correoElectronico || prev.correoElectronico,
-        direccion: user.direccion || prev.direccion
+        direccion: user.direccion || prev.direccion,
+        fechaNacimiento: user.fechaNacimiento || prev.fechaNacimiento,
       }));
     }
   }, []);
@@ -63,12 +64,33 @@ function FormTutor({ onVolver }) {
     let falte = false;
 
     if (paso === 1) {
-      ['nombre', 'cedula', 'telefono', 'correoElectronico', 'direccion'].forEach(f => {
+      ['nombre', 'cedula', 'fechaNacimiento', 'telefono', 'correoElectronico', 'direccion'].forEach(f => {
         if (!datos[f]?.toString().trim()) { nuevosErrores[f] = true; falte = true; }
       });
       if (datos.correoElectronico && !/\S+@\S+\.\S+/.test(datos.correoElectronico)) {
         Swal.fire({ icon: 'error', title: 'Correo Inválido', text: 'Ingrese un correo válido.', confirmButtonColor: '#E00000' });
         return false;
+      }
+      if (datos.fechaNacimiento) {
+        const hoy = new Date();
+        const nacimiento = new Date(datos.fechaNacimiento);
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const m = hoy.getMonth() - nacimiento.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+          edad--;
+        }
+        if (edad < 18) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso Denegado',
+            text: 'Debes ser mayor de 18 años para registrarte como tutor.',
+            confirmButtonColor: '#E00000',
+            confirmButtonText: 'Entendido'
+          }).then(() => {
+            window.location.href = '/plataforma-registro'; // Kick them out
+          });
+          return false;
+        }
       }
     }
     if (paso === 2 && (!datos.nombreAtleta || !datos.relacionConAtleta)) {
@@ -106,9 +128,18 @@ function FormTutor({ onVolver }) {
           cedula_nombre: archivos.cedula?.name || 'No adjuntado',
           foto_nombre: archivos.foto?.name || 'No adjuntado',
         };
+        const getBase64 = (file) => new Promise((resolve) => {
+          if (!file) { resolve(null); return; }
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+        const cedula_base64 = await getBase64(archivos.cedula);
+
         const entry = { 
           ...datos, 
           ...archivosNombres, 
+          cedula_base64,
           usuarioId: sesion.id || null,
           password: pass, 
           rol: 'tutor', 
@@ -187,6 +218,7 @@ function FormTutor({ onVolver }) {
               <div className="form-grid-ref">
                 <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
                 <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} readOnly={!!datos.cedula} /></div>
+                <div className="input-container"><label>Fecha de Nacimiento *</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} readOnly={!!datos.fechaNacimiento} /></div>
                 <div className="input-container"><label>Teléfono *</label><input type="text" id='telefono' className={`input-field ${errores.telefono ? 'error' : ''}`} value={datos.telefono} onChange={manejarCambio} /></div>
                 <div className="input-container"><label>País *</label><input type="text" id='pais' className="input-field" value={datos.pais} onChange={manejarCambio} readOnly={!!datos.pais} /></div>
                 <div className="input-container"><label>Correo Electrónico *</label><input type="email" id='correoElectronico' className={`input-field ${errores.correoElectronico ? 'error' : ''}`} value={datos.correoElectronico} onChange={manejarCambio} readOnly={!!datos.correoElectronico} /></div>

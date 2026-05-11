@@ -54,12 +54,24 @@ const RegionalMap = ({ mini = false }) => {
   }, []);
 
   // Simple scale logic to replace d3-scale
-  const getColor = (count) => {
-    if (count === 0) return "#f1f5f9";
-    const counts = Object.values(data);
-    const max = Math.max(...counts, 1);
-    const index = Math.min(Math.floor((count / max) * (provinceColorScale.length - 1)), provinceColorScale.length - 1);
-    return provinceColorScale[index];
+  const getBaseColor = (provinceName) => {
+    const provinceColors = {
+      'Guanacaste': '#7c3aed', // Morado
+      'Alajuela': '#f97316', // Naranja
+      'Heredia': '#1e3a8a', // Azul oscuro
+      'Limón': '#ef4444', // Rojo
+      'Cartago': '#0ea5e9', // Azul claro
+      'San José': '#f59e0b', // Amarillo/Oro
+      'Puntarenas': '#22c55e' // Verde
+    };
+    return provinceColors[provinceName] || '#cbd5e1';
+  };
+
+  const getOpacity = (count) => {
+    if (count === 0) return 0.5; // Opacidad media si no hay atletas, para mostrar el color base atenuado
+    if (count < 5) return 0.7; // Algo más sólido
+    if (count < 15) return 0.9;
+    return 1.0; // Color completo para mucha concentración
   };
 
   return (
@@ -81,10 +93,10 @@ const RegionalMap = ({ mini = false }) => {
 
       <div className="map-wrapper" style={{ display: 'flex', justifyContent: 'center', padding: mini ? '0' : '20px', border: mini ? 'none' : '' }}>
         <svg 
-          viewBox="0 0 800 600" 
+          viewBox="-2 17.46 964 925.08" 
           width="100%" 
-          height={mini ? "200" : "400"}
-          style={{ maxWidth: mini ? '300px' : '600px' }}
+          height={mini ? "200" : "450"}
+          style={{ maxWidth: mini ? '300px' : '700px' }}
         >
           {provincePaths.map((prov) => {
             const count = data[prov.name] || 0;
@@ -92,13 +104,15 @@ const RegionalMap = ({ mini = false }) => {
               <path
                 key={prov.name}
                 d={prov.path}
-                fill={getColor(count)}
-                stroke="#fff"
-                strokeWidth="1"
+                fill={getBaseColor(prov.name)}
+                fillOpacity={getOpacity(count)}
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
                 onMouseEnter={() => setHoveredProvince({ name: prov.name, count })}
                 onMouseLeave={() => setHoveredProvince(null)}
                 style={{
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer',
                   outline: 'none'
                 }}
