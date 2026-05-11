@@ -5,7 +5,6 @@ import HomePages from '../pages/HomePages';
 import FormularioPages from '../pages/FormularioPages';
 import NosotrosPages from '../pages/NosotrosPages';
 import EventosPages from '../pages/EventosPages';
-import VoluntariosPages from '../pages/VoluntariosPages';
 import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
@@ -30,7 +29,7 @@ const Routing: React.FC = () => {
             <Route path="/formulario" element={<FormularioPages />} />
             <Route path="/plataforma-registro" element={<PlataformaRegistroPage />} />
             <Route path="/eventos" element={<EventosPages />} />
-            <Route path="/voluntarios" element={<VoluntariosPages />} />
+
 
             {/* Rutas Privadas - Protegidas por PrivateRoute */}
             <Route

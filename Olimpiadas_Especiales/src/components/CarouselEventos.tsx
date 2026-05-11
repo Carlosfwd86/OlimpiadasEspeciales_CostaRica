@@ -48,7 +48,13 @@ const CarouselEventos = (): React.JSX.Element => {
                     <article 
                         key={evento.id} 
                         className="evento-card" 
-                        onClick={handleVerEventos}
+                        onClick={() => {
+                            if (evento.enlace) {
+                                window.open(evento.enlace, '_blank');
+                            } else {
+                                handleVerEventos();
+                            }
+                        }}
                     >
                         <div className="evento-imagen-wrapper">
                             <img src={evento.img} alt={evento.nombre} />

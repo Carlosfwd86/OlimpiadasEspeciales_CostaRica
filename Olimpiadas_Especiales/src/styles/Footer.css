@@ -1,125 +1,184 @@
 .footer_principal {
-  background-color: #1a1a1a; /* Gris muy oscuro casi negro */
+  background-color: #1a1a1a;
   color: #ffffff;
-  padding: 60px 10% 20px 10%;
-  font-family: sans-serif;
+  padding: 60px 5% 40px 5%;
+  font-family: 'Inter', sans-serif;
 }
 
-.footer_contenido {
+.footer_top {
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  padding-bottom: 40px;
   margin-bottom: 40px;
 }
 
-.footer_info {
-  flex: 2;
+.footer_logo_section {
   max-width: 400px;
 }
 
-.footer_logo {
-  display: flex;
-  margin-bottom: 20px;
-}
-
 .footer_logo_img {
-  height: 60px;
+  height: 80px;
   width: auto;
-  object-fit: contain;
-  filter: brightness(0) invert(1); /* Lo hacemos blanco para que resalte en el fondo oscuro */
+  cursor: pointer;
+  filter: brightness(0) invert(1);
+  margin-bottom: 15px;
 }
 
-.footer_descripcion {
-  font-size: 0.9rem;
-  color: #b0b0b0;
-  line-height: 1.5;
+.footer_tagline {
+  font-size: 0.95rem;
+  color: #ccc;
+  font-style: italic;
 }
 
-.footer_h4 {
+.boton_donar_footer {
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.boton_donar_footer:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
+
+.footer_grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.footer_titulo {
   font-size: 1.1rem;
-  margin-bottom: 20px;
-  color: #ffffff;
+  color: #ff0000;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
 }
 
-.footer_lista {
+.footer_links, .footer_contact_info {
   list-style: none;
   padding: 0;
 }
 
-.footer_item {
-  color: #b0b0b0;
-  margin-bottom: 10px;
+.footer_links li {
+  margin-bottom: 12px;
+  color: #bbb;
   cursor: pointer;
-  transition: color 0.3s;
   font-size: 0.9rem;
+  transition: color 0.3s;
 }
 
-.footer_item:hover {
-  color: #FF0000;
+.footer_links li:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
-.iconos_contenedor {
+.footer_contact_info li {
+  margin-bottom: 15px;
+  color: #bbb;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer_contact_info a {
+  color: #bbb;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer_contact_info a:hover {
+  color: #fff;
+}
+
+.footer_social_icons {
   display: flex;
   gap: 15px;
+  margin-top: 20px;
 }
 
-.icono_circulo {
-  width: 40px;
-  height: 40px;
+.social_icon {
+  width: 35px;
+  height: 35px;
   background-color: #333;
-  border-radius: 50%;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  font-size: 0.8rem;
-  font-weight: bold;
+  transition: all 0.3s ease;
+  color: #fff;
 }
 
-.icono_circulo:hover {
-  background-color: #FF0000;
-  transform: translateY(-3px);
+.social_icon svg {
+  width: 18px;
+  height: 18px;
 }
 
-.footer_copyright {
+.social_icon:hover {
+  background-color: #ff0000;
+  transform: translateY(-5px);
+}
+
+.footer_bottom {
   border-top: 1px solid #333;
-  padding-top: 20px;
+  padding-top: 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #777;
 }
 
-.link_legal {
+.footer_legal {
+  display: flex;
+  gap: 20px;
+}
+
+.footer_legal span {
   cursor: pointer;
+  transition: color 0.3s;
 }
 
-.link_legal:hover {
-  text-decoration: underline;
+.footer_legal span:hover {
+  color: #fff;
 }
 
-/* --- RESPONSIVIDAD PARA CELULARES --- */
-
-@media (max-width: 768px) {
-  .footer_contenido {
+/* --- RESPONSIVIDAD --- */
+@media (max-width: 992px) {
+  .footer_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .footer_top {
     flex-direction: column;
     text-align: center;
     gap: 30px;
   }
+}
 
-  .footer_info {
-    max-width: 100%;
-  }
-
-  .iconos_contenedor {
-    justify-content: center;
-  }
-
-  .footer_copyright {
-    flex-direction: column;
-    gap: 10px;
+@media (max-width: 600px) {
+  .footer_grid {
+    grid-template-columns: 1fr;
     text-align: center;
   }
-}
+  .footer_social_icons {
+    justify-content: center;
+  }
+  .footer_bottom {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  .footer_contact_info li {
+    justify-content: center;
+  }
+}
