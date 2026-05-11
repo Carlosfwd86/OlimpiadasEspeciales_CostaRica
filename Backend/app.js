@@ -33,8 +33,8 @@ const startServer = async () => {
     console.log('✅ Conexión a la base de datos establecida exitosamente.');
     
     // Opcional: sincronizar modelos (crear tablas si no existen)
-    // await sequelize.sync({ alter: true }); 
-    // console.log('✅ Modelos sincronizados.');
+    await sequelize.sync({ alter: true }); 
+    console.log('✅ Modelos sincronizados.');
 
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
