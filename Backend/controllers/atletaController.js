@@ -1,4 +1,10 @@
-const { Atleta, AtletaDocumento, AtletaMedicamento, AtletaCondicion, AtletaDispositivo, AtletaAlergia } = require('../models');
+const Atleta = require('../models/Atleta');
+const AtletaDocumento = require('../models/AtletaDocumento');
+const AtletaMedicamento = require('../models/AtletaMedicamento');
+const AtletaCondicion = require('../models/AtletaCondicion');
+const AtletaDispositivo = require('../models/AtletaDispositivo');
+const AtletaAlergia = require('../models/AtletaAlergia');
+
 
 // [verde] Controlador para gestionar la lógica de negocio de los Atletas
 const atletaController = {
