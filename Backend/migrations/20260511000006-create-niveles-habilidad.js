@@ -8,6 +8,8 @@ module.exports = {
       nombre: { type: Sequelize.STRING(50), unique: true, allowNull: false },
       descripcion: { type: Sequelize.TEXT, allowNull: true }
     });
+
+    await queryInterface.sequelize.query(`ALTER TABLE niveles_habilidad ADD CONSTRAINT chk_niveles_nombre CHECK (CHAR_LENGTH(nombre) >= 2)`);
   },
 
   async down(queryInterface, Sequelize) {

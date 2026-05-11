@@ -9,6 +9,8 @@ module.exports = {
       descripcion: { type: Sequelize.TEXT, allowNull: true },
       activa: { type: Sequelize.BOOLEAN, defaultValue: true, allowNull: false }
     });
+
+    await queryInterface.sequelize.query(`ALTER TABLE disciplinas ADD CONSTRAINT chk_disciplinas_nombre CHECK (CHAR_LENGTH(nombre) >= 2)`);
   },
 
   async down(queryInterface, Sequelize) {

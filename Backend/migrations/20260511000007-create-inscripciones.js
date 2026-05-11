@@ -15,6 +15,15 @@ module.exports = {
       fecha_aprobacion: { type: Sequelize.DATE, allowNull: true },
       updated_at: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
     });
+
+    await queryInterface.addConstraint('inscripciones', {
+      fields: ['atleta_id', 'disciplina_id', 'programa_id'],
+      type: 'unique',
+      name: 'unique_inscripcion_compuesta'
+    });
+
+    // En MySQL, "fecha_aprobacion solo si estado = APROBADA"
+    await queryInterface.sequelize.query(`ALTER TABLE inscripciones ADD CONSTRAINT chk_inscripciones_fecha CHECK ((estado = 'APROBADA' AND fecha_aprobacion IS NOT NULL) OR (estado != 'APROBADA' AND fecha_aprobacion IS NULL))`);
   },
 
   async down(queryInterface, Sequelize) {

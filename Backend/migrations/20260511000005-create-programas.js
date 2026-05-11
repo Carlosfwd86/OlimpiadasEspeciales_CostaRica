@@ -9,6 +9,8 @@ module.exports = {
       provincia: { type: Sequelize.STRING(100), allowNull: true },
       activa: { type: Sequelize.BOOLEAN, defaultValue: true, allowNull: false }
     });
+
+    await queryInterface.sequelize.query(`ALTER TABLE programas ADD CONSTRAINT chk_programas_nombre CHECK (CHAR_LENGTH(nombre) >= 2)`);
   },
 
   async down(queryInterface, Sequelize) {

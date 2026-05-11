@@ -19,6 +19,10 @@ module.exports = {
       fecha_registro: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updated_at: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
     });
+
+    await queryInterface.sequelize.query(`ALTER TABLE tutores ADD CONSTRAINT chk_tutores_correo CHECK (correo_electronico IS NULL OR correo_electronico REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}$')`);
+    await queryInterface.sequelize.query(`ALTER TABLE tutores ADD CONSTRAINT chk_tutores_cedula CHECK (cedula IS NULL OR cedula REGEXP '^[a-zA-Z0-9\\\\-]+$')`);
+    await queryInterface.sequelize.query(`ALTER TABLE tutores ADD CONSTRAINT chk_tutores_telefono CHECK (telefono IS NULL OR telefono REGEXP '^[0-9+\\\\-\\\\s]+$')`);
   },
 
   async down(queryInterface, Sequelize) {
