@@ -1,7 +1,22 @@
 import React from 'react';
 import '../styles/InfografiaImpacto.css';
 
-const InfografiaImpacto = ({ stats }) => {
+interface StatsProps {
+    stats: {
+        porSexo: {
+            masc: number;
+            fem: number;
+        };
+        porEdad: {
+            ninos: number;
+            jovenes: number;
+            adultos: number;
+        };
+        atletas: number;
+    };
+}
+
+const InfografiaImpacto: React.FC<StatsProps> = ({ stats }) => {
     // Calcular porcentajes
     const totalSexo = stats.porSexo.masc + stats.porSexo.fem || 1;
     const porcMasc = Math.round((stats.porSexo.masc / totalSexo) * 100);
