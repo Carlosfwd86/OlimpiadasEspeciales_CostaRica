@@ -1,18 +1,19 @@
 require('dotenv').config();
 
+// [verde] Configuración para Sequelize CLI
 module.exports = {
   development: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || '1234',
-    database: process.env.DB_NAME || 'olimpiadas_db',
-    host: process.env.DB_HOST || '127.0.0.1',
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT || 'mysql'
   },
   test: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || '1234',
-    database: process.env.DB_NAME || 'olimpiadas_db_test',
-    host: process.env.DB_HOST || '127.0.0.1',
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT || 'mysql'
   },
   production: {
