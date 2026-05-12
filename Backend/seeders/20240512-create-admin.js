@@ -11,7 +11,7 @@ module.exports = {
         correo_electronico: 'admin@olimpiadas.cr',
         password_hash: '$2b$10$uCA06b0RG5H6sLV46GaZzO6Gcr98xbNT90gy36Bf3LbSnIyztwdmO',
         status: 'ACTIVO',
-        created_at: new Date(),
+        fecha_registro: new Date(),
         updated_at: new Date()
       }
     ]);

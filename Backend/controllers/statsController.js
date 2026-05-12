@@ -8,11 +8,14 @@ const { Atleta, Voluntario, Inscripcion, Consulta } = models;
  */
 const getStats = async (req, res) => {
   try {
-    const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas] = await Promise.all([
+    const { Atleta, Voluntario, Inscripcion, Consulta, Usuario } = models;
+
+    const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas, totalTutores] = await Promise.all([
       Atleta.count(),
       Voluntario.count(),
       Inscripcion.count(),
-      Consulta ? Consulta.count() : Promise.resolve(0)
+      Consulta ? Consulta.count() : Promise.resolve(0),
+      Usuario.count({ where: { rol_id: 4 } }) // Suponiendo rol_id 4 es tutor, o consultar directamente
     ]);
 
     return res.status(200).json({
@@ -20,7 +23,8 @@ const getStats = async (req, res) => {
         totalRegistros:       { valor: totalAtletas + totalInscripciones, porcentaje: '+12%', tendencia: 'up' },
         atletasActivos:       { valor: totalAtletas,      porcentaje: '+5%', tendencia: 'up' },
         revisionesPendientes: { valor: totalConsultas,    textoExtra: 'Requieren acción' },
-        voluntarios:          { valor: totalVoluntarios,  porcentaje: '0%',  tendencia: 'none' }
+        voluntarios:          { valor: totalVoluntarios,  porcentaje: '0%',  tendencia: 'none' },
+        tutores:              { valor: totalTutores }
       },
       message: 'OK',
       status: 200

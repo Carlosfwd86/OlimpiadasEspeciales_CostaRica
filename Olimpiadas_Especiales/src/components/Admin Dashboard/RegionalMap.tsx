@@ -31,15 +31,32 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
       try {
         setLoading(true);
 
-        const mapRes = await fetch("http://localhost:3001/mapa");
-        const mapPaths = await mapRes.json() as ProvincePath[];
+        // Paths SVG del mapa CR — datos estáticos (no dependen del backend)
+        const { default: mapPaths } = await import('../../data/mapa-cr.json') as { default: ProvincePath[] };
         setProvincePaths(mapPaths);
 
-        const athletesRes = await fetch("http://localhost:3001/atletas");
-        const atletas = await athletesRes.json() as Array<{ region?: string; direccion?: string }>;
+        // Atletas reales del backend con JWT
+        const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+        const token = localStorage.getItem('token') ?? '';
+        const athletesRes = await fetch(`${BACKEND_URL}/atletas`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        let atletas: Array<{ region?: string; direccion?: string }> = [];
+        if (athletesRes.ok) {
+          const json = await athletesRes.json() as unknown;
+          // Soporta { data: { items: [] } }, { data: [] } o []
+          if (Array.isArray(json)) {
+            atletas = json as typeof atletas;
+          } else {
+            const j = json as Record<string, unknown>;
+            const d = j?.data as Record<string, unknown> | undefined;
+            atletas = (Array.isArray(d?.items) ? d!.items : Array.isArray(j?.data) ? j.data : []) as typeof atletas;
+          }
+        }
 
         const counts: Record<string, number> = {};
-        const provincesList = ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"];
+        const provincesList = ['San José', 'Alajuela', 'Cartago', 'Heredia', 'Guanacaste', 'Puntarenas', 'Limón'];
 
         atletas.forEach((a) => {
           let region = a.region;
@@ -47,12 +64,12 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
             const found = provincesList.find(p => a.direccion!.toLowerCase().includes(p.toLowerCase()));
             if (found) region = found;
           }
-          if (!region) region = "Desconocido";
+          if (!region) region = 'Desconocido';
           counts[region] = (counts[region] || 0) + 1;
         });
         setData(counts);
       } catch (err) {
-        console.error("Error cargando datos para el mapa:", err);
+        console.error('Error cargando datos para el mapa:', err);
       } finally {
         setLoading(false);
       }

@@ -49,8 +49,9 @@ const Contacto = (): React.JSX.Element => {
     setError('');
 
     // ── 1. Guardado en DB (siempre se ejecuta) ─────────────────
+    const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
     try {
-      await fetch('http://localhost:3001/consultas', {
+      await fetch(`${BACKEND_URL}/consultas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

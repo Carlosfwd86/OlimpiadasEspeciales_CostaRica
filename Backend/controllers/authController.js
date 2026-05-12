@@ -56,7 +56,7 @@ const iniciarSesion = async (req, res) => {
 
     const usuario = await Usuario.findOne({ where: { correo_electronico } });
     if (!usuario) {
-      return res.status(404).json({ error: 'Usuario no encontrado.' });
+      return res.status(401).json({ error: 'Correo o contraseña incorrectos.' });
     }
 
     if (usuario.status !== 'ACTIVO') {

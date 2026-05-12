@@ -1,76 +1,76 @@
+import apiClient from '../api/apiClient';
 import type { Atleta } from '../types';
 
-const API_URL = "http://localhost:3001/atletas";
+/* [verde] Servicio encargado de centralizar todas las peticiones relacionadas con Atletas */
+export const ServicesAtletas = {
 
-// Obtener todos los atletas (Read)
-export const getAtletas = async (): Promise<Atleta[]> => {
+  /* [verde] Obtener lista de todos los atletas con su información de salud */
+  /* Endpoint: GET /api/atletas */
+  obtenerAtletas: async (): Promise<Atleta[]> => {
     try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Error al obtener los atletas");
-        return await response.json() as Atleta[];
+      const response = await apiClient.get<Atleta[]>('/atletas');
+      return response.data;
     } catch (error) {
-        console.error("Error en getAtletas:", error);
-        throw error;
+      console.error("Error en obtenerAtletas:", error);
+      throw error;
     }
+  },
+
+  /* [verde] Registrar un nuevo atleta en el sistema */
+  /* Endpoint: POST /api/atletas */
+  registrarAtleta: async (atleta: Partial<Atleta>): Promise<Atleta> => {
+    try {
+      const response = await apiClient.post<Atleta>('/atletas', atleta);
+      return response.data;
+    } catch (error) {
+      console.error("Error en registrarAtleta:", error);
+      throw error;
+    }
+  },
+
+  /* [verde] Actualizar condiciones médicas y estado de salud general */
+  /* Endpoint: PUT /api/atletas/:id */
+  actualizarEstadoSalud: async (id: number, datosSalud: Partial<Atleta>): Promise<Atleta> => {
+    try {
+      const response = await apiClient.put<Atleta>(`/atletas/${id}`, datosSalud);
+      return response.data;
+    } catch (error) {
+      console.error("Error en actualizarEstadoSalud:", error);
+      throw error;
+    }
+  },
+
+  subirDocumentosAtleta: async (id: number, formData: FormData): Promise<void> => {
+    try {
+      await apiClient.post(`/atletas/${id}/documentos`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    } catch (error) {
+      console.error("Error en subirDocumentosAtleta:", error);
+      throw error;
+    }
+  }
 };
 
-// Obtener un atleta por su ID (Read)
-export const getAtletaById = async (id: string): Promise<Atleta> => {
-    try {
-        const response = await fetch(`${API_URL}/${id}`);
-        if (!response.ok) throw new Error("Error al obtener el atleta");
-        return await response.json() as Atleta;
-    } catch (error) {
-        console.error("Error en getAtletaById:", error);
-        throw error;
-    }
+// Funciones individuales para compatibilidad con componentes antiguos
+export const getAtletaById = async (id: string | number): Promise<Atleta> => {
+  try {
+    const response = await apiClient.get<Atleta>(`/atletas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error en getAtletaById:", error);
+    throw error;
+  }
 };
 
-// Crear un nuevo atleta (Create)
-export const createAtleta = async (atleta: Omit<Atleta, 'id'>): Promise<Atleta> => {
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(atleta),
-        });
-        if (!response.ok) throw new Error("Error al crear el atleta");
-        return await response.json() as Atleta;
-    } catch (error) {
-        console.error("Error en createAtleta:", error);
-        throw error;
-    }
-};
-
-// Actualizar un atleta existente (Update)
-export const updateAtleta = async (id: string, atleta: Partial<Atleta>): Promise<Atleta> => {
-    try {
-        const response = await fetch(`${API_URL}/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(atleta),
-        });
-        if (!response.ok) throw new Error("Error al actualizar el atleta");
-        return await response.json() as Atleta;
-    } catch (error) {
-        console.error("Error en updateAtleta:", error);
-        throw error;
-    }
-};
-
-// Eliminar un atleta (Delete)
-export const deleteAtleta = async (id: string): Promise<void> => {
-    try {
-        const response = await fetch(`${API_URL}/${id}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) throw new Error("Error al eliminar el atleta");
-    } catch (error) {
-        console.error("Error en deleteAtleta:", error);
-        throw error;
-    }
+export const updateAtleta = async (id: string | number, atleta: Partial<Atleta>): Promise<Atleta> => {
+  try {
+    const response = await apiClient.put<Atleta>(`/atletas/${id}`, atleta);
+    return response.data;
+  } catch (error) {
+    console.error("Error en updateAtleta:", error);
+    throw error;
+  }
 };
