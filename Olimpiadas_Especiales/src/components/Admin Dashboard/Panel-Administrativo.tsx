@@ -192,14 +192,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
         isOpen={isCompModalOpen}
         onClose={() => setIsCompModalOpen(false)}
         editData={editData as Competicion | null}
-        onSave={(data, id) => {
-          ServicesAdmin.saveCompeticion(data, id ?? null)
-            .then(() => {
-              ServicesAdmin.logActivity("Competición", `${id ? 'Edición' : 'Nueva'} competición: ${data.nombre}`, "fa-solid fa-trophy", "yellow");
-              handleSaveSuccess();
-            })
-            .catch(err => alert("Error al guardar: " + (err as Error).message));
-        }}
+        onSaveSuccess={handleSaveSuccess}
       />
     </div>
   );
