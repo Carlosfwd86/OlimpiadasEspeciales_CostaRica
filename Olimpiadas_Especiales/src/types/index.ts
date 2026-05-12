@@ -22,25 +22,60 @@ export interface Usuario {
 }
 
 export interface Atleta {
-  id: string;
-  nombre?: string;
-  name?: string;
-  correoElectronico?: string;
-  email?: string;
+  id: number;
+  nombre: string;
+  primer_apellido: string;
+  segundo_apellido?: string;
+  fecha_nacimiento: string;
+  genero: 'Masculino' | 'Femenino' | 'Otro';
   telefono?: string;
-  phone?: string;
-  disciplina?: string;
-  sport?: string;
-  programa?: string;
-  region?: string;
-  direccion?: string;
-  fechaRegistro?: string;
-  status?: string;
-  usuarioId?: string | null;
-  rol?: string;
-  genero?: string;
-  fechaNacimiento?: string;
+  correo_electronico?: string;
+  fecha_registro?: string;
+  // [verde] Relaciones con tablas de salud y documentos
+  documentos?: AtletaDocumento[];
+  medicamentos?: AtletaMedicamento[];
+  condiciones?: AtletaCondicion[];
+  dispositivos?: AtletaDispositivo[];
+  alergias?: AtletaAlergia[];
 }
+
+export interface AtletaDocumento {
+  id: number;
+  atleta_id: number;
+  nombre_documento: string;
+  tipo_documento: string;
+  ruta_archivo: string;
+  fecha_subida?: string;
+}
+
+export interface AtletaMedicamento {
+  id: number;
+  atleta_id: number;
+  nombre: string;
+  dosis: string;
+  frecuencia: string;
+}
+
+export interface AtletaCondicion {
+  id: number;
+  atleta_id: number;
+  condicion: string;
+}
+
+export interface AtletaDispositivo {
+  id: number;
+  atleta_id: number;
+  tipo: string;
+  nombre: string;
+}
+
+export interface AtletaAlergia {
+  id: number;
+  atleta_id: number;
+  tipo_alergia: string;
+  especificacion?: string;
+}
+
 
 export interface Entrenador {
   id: string;
