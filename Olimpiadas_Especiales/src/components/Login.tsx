@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/Login.css';
 
 interface LoginFormData {
@@ -12,6 +13,7 @@ const Login = (): React.JSX.Element => {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -26,54 +28,11 @@ const Login = (): React.JSX.Element => {
     setLoading(true);
 
     try {
-      // Fetch all user collections from the local server
-      const endpoints = ["Admin", "atletas", "entrenadores", "tutores", "voluntarios", "usuarios"];
-      const baseUrl = "http://localhost:3001";
-      
-      const responses = await Promise.all(
-        endpoints.map(endpoint => fetch(`${baseUrl}/${endpoint}`).then(res => {
-          if (!res.ok) throw new Error(`Error al conectar con ${endpoint}`);
-          return res.json();
-        }))
-      );
-
-      // Flatten all arrays into a single user list
-      const todosLosUsuarios: any[] = responses.flat();
-
-      // Find user that matches email and password
-      const usuarioValido = todosLosUsuarios.find(user => {
-        const inputEmail = formData.email.toLowerCase();
-        const userEmail = user.correoElectronico ? user.correoElectronico.toLowerCase() : '';
-        
-        const inputPass = formData.password;
-        const userPass = user.password || user.contrasenia;
-        
-        return userEmail === inputEmail && userPass === inputPass;
-      });
-
-      if (usuarioValido) {
-        // Guardar sesión en localStorage
-        localStorage.setItem('usuarioSesion', JSON.stringify(usuarioValido));
-        
-        // Notificar a la Navbar para que actualice el botón en tiempo real
-        window.dispatchEvent(new Event('sesionActualizada'));
-        
-        // alert(`Bienvenido(a), ingresaste como ${usuarioValido.rol}`);
-        
-        // Redireccionar según el rol
-        const rol = usuarioValido.rol?.toLowerCase() || 'usuario';
-        if (rol === 'admin') {
-          navigate('/');
-        } else {
-          // El usuario basico y otros roles van al perfil
-          navigate('/perfil');
-        }
-      } else {
-        setError('Correo o contraseña incorrectos.');
-      }
+      await auth.login({ correo_electronico: formData.email, password: formData.password });
+      navigate('/perfil');
     } catch (err) {
       console.error(err);
-      setError('Ocurrió un error en la autenticación. Asegúrese de que el servidor esté corriendo en el puerto 3001.');
+      setError('Correo o contraseña incorrectos. Verifique sus credenciales.');
     } finally {
       setLoading(false);
     }
