@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const rolesController = require('../controllers/rolesController');
+const auth = require('../middlewares/authMiddleware');
+const checkRole = require('../middlewares/roleMiddleware');
 
-// Ruta para obtener todos los roles
+router.use(auth);
+
+// Obtener todos los roles
 router.get('/', rolesController.obtenerRoles);
 
-// Ruta para crear un nuevo rol
-router.post('/', rolesController.crearRol);
-
-// Ruta para actualizar un rol
-router.put('/:id', rolesController.actualizarRol);
-
-// Ruta para eliminar un rol
-router.delete('/:id', rolesController.eliminarRol);
+// Solo Admin puede crear, actualizar o eliminar roles
+router.post('/', checkRole([1]), rolesController.crearRol);
+router.put('/:id', checkRole([1]), rolesController.actualizarRol);
+router.delete('/:id', checkRole([1]), rolesController.eliminarRol);
 
 module.exports = router;
