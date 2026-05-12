@@ -1,4 +1,5 @@
-const { Disciplina } = require('../models');
+const { models } = require('../config/database');
+const { Disciplina } = models;
 
 exports.getAll = async (req, res, next) => {
   try {

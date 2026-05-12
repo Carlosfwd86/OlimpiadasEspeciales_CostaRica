@@ -1,4 +1,5 @@
-const { VoluntarioArea } = require('../models');
+const { models } = require('../config/database');
+const { VoluntarioArea } = models;
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 
 // Controlador para la gestión de áreas de interés de los voluntarios

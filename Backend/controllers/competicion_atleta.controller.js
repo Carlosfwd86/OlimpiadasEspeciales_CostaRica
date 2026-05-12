@@ -1,4 +1,5 @@
-const { CompeticionAtleta } = require('../models');
+const { models } = require('../config/database');
+const { CompeticionAtleta } = models;
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 
 // Controlador para gestionar la participación de atletas en competiciones (Tabla Pivote)

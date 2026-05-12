@@ -1,4 +1,5 @@
-const { Programa } = require('../models');
+const { models } = require('../config/database');
+const { Programa } = models;
 
 exports.getAll = async (req, res, next) => {
   try {

@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const validate = require('../middlewares/validationMiddleware');
+const validators = require('../utils/validators');
 
-// Ruta para registrar un nuevo usuario (atleta o cualquier rol)
-router.post('/registro', authController.registrarUsuario);
+// Ruta para el registro de nuevos usuarios con validación estricta
+router.post('/register', validators.registro, validate, authController.registrarUsuario);
 
-// Ruta para iniciar sesión
-router.post('/login', authController.iniciarSesion);
+// Ruta para el inicio de sesión con validación
+router.post('/login', validators.login, validate, authController.iniciarSesion);
 
-// Ruta para cerrar sesión (requeriría un token en el header)
+// Ruta para cerrar sesión (protegida por el cliente, pero el servidor invalida el token)
 router.post('/logout', authController.cerrarSesion);
 
 module.exports = router;

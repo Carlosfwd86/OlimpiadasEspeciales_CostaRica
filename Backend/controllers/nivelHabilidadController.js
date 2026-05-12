@@ -1,4 +1,5 @@
-const { NivelHabilidad } = require('../models');
+const { models } = require('../config/database');
+const { NivelHabilidad } = models;
 
 exports.getAll = async (req, res, next) => {
   try {
