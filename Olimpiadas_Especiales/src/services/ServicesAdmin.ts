@@ -217,5 +217,17 @@ export const ServicesAdmin = {
     deleteCompeticion: async (id: string): Promise<boolean> => {
         await apiClient.delete(`/competiciones/${id}`);
         return true;
+    },
+
+    /**
+     * Inscribe un atleta en una competición específica.
+     * Endpoint esperado: POST /api/competiciones/inscribir-atleta
+     * Payload: { atletaId: string | number; competicionId: string | number }
+     * Posibles respuestas:
+     * - 200/201: Creado/Éxito
+     * - 409: Conflicto (El atleta ya está inscrito en esta competición)
+     */
+    inscribirAtleta: async (payload: { atletaId: string | number; competicionId: string | number }): Promise<void> => {
+        await apiClient.post('/competiciones/inscribir-atleta', payload);
     }
 };
