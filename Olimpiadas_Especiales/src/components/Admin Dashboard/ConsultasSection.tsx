@@ -6,16 +6,19 @@ import type { Consulta } from '../../types';
 export default function ConsultasSection(): React.JSX.Element {
     const [consultas, setConsultas] = useState<Consulta[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchConsultas = () => {
-        (ServicesAdmin as any).getConsultas()
+        setLoading(true);
+        setError(null);
+        ServicesAdmin.getConsultas()
             .then((data: Consulta[]) => {
-                // Add error handling if data is missing, handle properly
                 setConsultas(Array.isArray(data) ? data.sort((a,b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) : []);
                 setLoading(false);
             })
             .catch((err: any) => {
                 console.error("Error al cargar consultas:", err);
+                setError("No se pudieron cargar las consultas. Por favor, intente de nuevo más tarde.");
                 setLoading(false);
             });
     };
@@ -24,7 +27,7 @@ export default function ConsultasSection(): React.JSX.Element {
         fetchConsultas();
     }, []);
 
-    const handleDelete = (id: string) => {
+    const handleDelete = (id: string | number) => {
         Swal.fire({
             title: '¿Eliminar Mensaje?',
             text: "Esta acción no se puede deshacer.",
@@ -36,7 +39,7 @@ export default function ConsultasSection(): React.JSX.Element {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                (ServicesAdmin as any).deleteConsulta(id)
+                ServicesAdmin.deleteConsulta(String(id))
                     .then(() => {
                         Swal.fire('¡Eliminado!', 'El mensaje ha sido borrado.', 'success');
                         fetchConsultas();
@@ -48,15 +51,15 @@ export default function ConsultasSection(): React.JSX.Element {
 
     const handleView = (consulta: Consulta) => {
         Swal.fire({
-            title: `Asunto: ${consulta.user_subject || 'Sin Asunto'}`,
+            title: `Asunto: ${consulta.asunto || 'Sin Asunto'}`,
             html: `
                 <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                    <p style="margin: 0 0 5px;"><strong>De:</strong> ${consulta.user_name}</p>
-                    <p style="margin: 0 0 5px;"><strong>Email:</strong> <a href="mailto:${consulta.user_email}" style="color: #3b82f6; text-decoration: none;">${consulta.user_email}</a></p>
+                    <p style="margin: 0 0 5px;"><strong>De:</strong> ${consulta.nombre}</p>
+                    <p style="margin: 0 0 5px;"><strong>Email:</strong> <a href="mailto:${consulta.correo}" style="color: #3b82f6; text-decoration: none;">${consulta.correo}</a></p>
                     <p style="margin: 0; font-size: 12px; color: #64748b;"><strong>Fecha:</strong> ${new Date(consulta.fecha).toLocaleString()}</p>
                 </div>
                 <div style="text-align: left; background: #ffffff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; white-space: pre-wrap; font-size: 14px; color: #334155;">
-                    ${consulta.message}
+                    ${consulta.mensaje}
                 </div>
             `,
             confirmButtonText: 'Cerrar',
@@ -66,7 +69,28 @@ export default function ConsultasSection(): React.JSX.Element {
     };
 
     if (loading) {
-        return <div style={{ padding: '40px', textAlign: 'center' }}>Cargando consultas...</div>;
+        return (
+            <div style={{ padding: '40px', textAlign: 'center' }}>
+                <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '24px', color: '#3b82f6', marginBottom: '10px' }}></i>
+                <p>Cargando consultas...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ padding: '40px', textAlign: 'center', color: '#ef4444' }}>
+                <i className="fa-solid fa-circle-exclamation" style={{ fontSize: '40px', marginBottom: '15px' }}></i>
+                <h4>Error</h4>
+                <p>{error}</p>
+                <button 
+                    onClick={fetchConsultas}
+                    style={{ marginTop: '15px', padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                >
+                    Reintentar
+                </button>
+            </div>
+        );
     }
 
     return (
@@ -97,9 +121,9 @@ export default function ConsultasSection(): React.JSX.Element {
                         <tbody>
                             {consultas.map(consulta => (
                                 <tr key={consulta.id} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '13px' }}>
-                                    <td style={{ padding: '12px', fontWeight: '500' }}>{consulta.user_name}</td>
-                                    <td style={{ padding: '12px', color: '#64748b' }}>{consulta.user_email}</td>
-                                    <td style={{ padding: '12px', color: '#1d1d1f' }}>{consulta.user_subject}</td>
+                                    <td style={{ padding: '12px', fontWeight: '500' }}>{consulta.nombre}</td>
+                                    <td style={{ padding: '12px', color: '#64748b' }}>{consulta.correo}</td>
+                                    <td style={{ padding: '12px', color: '#1d1d1f' }}>{consulta.asunto}</td>
                                     <td style={{ padding: '12px', color: '#64748b' }}>{new Date(consulta.fecha).toLocaleDateString()}</td>
                                     <td style={{ padding: '12px', textAlign: 'center' }}>
                                         <button 

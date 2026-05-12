@@ -87,9 +87,25 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
             
             onSaveSuccess();
             onClose();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error al guardar:", error);
-            const errorMessage = error.response?.data?.message || error.message || 'Error desconocido al guardar la competición.';
+            let errorMessage = 'Error desconocido al guardar la competición.';
+            
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+            
+            // Check for axios-like response errors safely
+            if (typeof error === 'object' && error !== null && 'response' in error) {
+                const responseObj = (error as Record<string, unknown>).response as Record<string, unknown> | undefined;
+                if (responseObj && typeof responseObj === 'object' && 'data' in responseObj) {
+                    const dataObj = responseObj.data as Record<string, unknown> | undefined;
+                    if (dataObj && typeof dataObj.message === 'string') {
+                        errorMessage = dataObj.message;
+                    }
+                }
+            }
+            
             setApiError(`Error del servidor: ${errorMessage}`);
         } finally {
             setIsSubmitting(false);

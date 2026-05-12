@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/AdminDashboard.css';
 
+// URL base del backend real (configurable por variable de entorno)
+const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api/v1";
+
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import StatCard from './StatCard';
@@ -15,6 +18,7 @@ import SettingsSection from './SettingsSection';
 import ReportsSection from './ReportsSection';
 import RegionalMap from './RegionalMap';
 import CompetitionCard from './CompetitionCard';
+import ConsultasSection from './ConsultasSection';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import type { Stats, Competicion, Registro } from '../../types';
 
@@ -52,7 +56,9 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    fetch('http://localhost:3001/registros_pendientes')
+    fetch(`${BACKEND_URL}/registros-pendientes`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token') ?? ''}` }
+      })
       .then(res => res.json())
       .then((data: Array<Record<string, unknown>>) => {
         if (data.length === 0) { alert("No hay datos para exportar."); return; }
@@ -173,6 +179,8 @@ export default function PanelAdministrativo(): React.JSX.Element {
               <RegionalMap />
             </div>
           )}
+          
+          {activeTab === 'consultas' && <ConsultasSection />}
 
           {activeTab === 'reportes' && <ReportsSection />}
           {activeTab === 'perfil' && <ProfileSection />}
