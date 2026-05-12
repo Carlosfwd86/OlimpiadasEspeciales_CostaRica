@@ -15,6 +15,7 @@ import SettingsSection from './SettingsSection';
 import ReportsSection from './ReportsSection';
 import RegionalMap from './RegionalMap';
 import CompetitionCard from './CompetitionCard';
+import ConsultasSection from './ConsultasSection';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import type { Stats, Competicion, Registro } from '../../types';
 
@@ -201,6 +202,8 @@ export default function PanelAdministrativo(): React.JSX.Element {
               <RegionalMap />
             </div>
           )}
+          
+          {activeTab === 'consultas' && <ConsultasSection />}
 
           {activeTab === 'reportes' && <ReportsSection />}
           {activeTab === 'perfil' && <ProfileSection />}

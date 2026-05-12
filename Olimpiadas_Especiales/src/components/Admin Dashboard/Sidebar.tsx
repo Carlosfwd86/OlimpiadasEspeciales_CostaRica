@@ -50,6 +50,13 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
             <i className="fa-solid fa-trophy nav-icon"></i>
             Competiciones y Eventos
           </li>
+          <li
+            className={`nav-item ${activeTab === 'consultas' ? 'active' : ''}`}
+            onClick={() => onTabChange('consultas')}
+          >
+            <i className="fa-solid fa-envelope nav-icon"></i>
+            Bandeja de Consultas
+          </li>
         </ul>
       </div>
 
