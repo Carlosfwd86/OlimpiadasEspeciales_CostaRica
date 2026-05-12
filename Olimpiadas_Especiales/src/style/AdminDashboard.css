@@ -47,7 +47,7 @@
 }
 
 .admin-dashboard-body {
-  padding: 30px 40px;
+  padding: 30px 40px 40px 40px; /* Padding ajustado para quitar el espacio en blanco extra */
   overflow-y: auto;
   flex: 1;
   display: flex;
