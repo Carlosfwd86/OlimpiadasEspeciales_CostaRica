@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/PendingTable.css';
-import { ServicesAdmin } from '../../services/ServicesAdmin';
+import { ServicesAtletas } from '../../services/ServicesAtletas';
 import type { Atleta } from '../../types';
 
+/* [verde] Interfaz para las propiedades del componente */
 interface AthleteTableProps {
   refreshTrigger?: number;
 }
 
+/* [verde] Componente que visualiza la lista oficial de atletas sincronizada con el backend */
 export default function AthleteTable({ refreshTrigger = 0 }: AthleteTableProps): React.JSX.Element {
   const [atletas, setAtletas] = useState<Atleta[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  /* [verde] Efecto para cargar los datos reales al montar el componente o refrescar */
   useEffect(() => {
-    ServicesAdmin.getAtletas()
+    ServicesAtletas.obtenerAtletas()
       .then(data => {
         setAtletas(data);
         setLoading(false);
       })
       .catch(error => {
-        console.error("Error al cargar atletas:", error);
+        console.error("Error al cargar atletas desde el backend:", error);
         setLoading(false);
       });
   }, [refreshTrigger]);
@@ -33,7 +36,7 @@ export default function AthleteTable({ refreshTrigger = 0 }: AthleteTableProps):
             <tr>
               <th>Atleta</th>
               <th>Contacto</th>
-              <th>Deporte / Programa</th>
+              <th>Información Médica</th>
               <th>Fecha Registro</th>
               <th>Estado</th>
             </tr>
@@ -43,24 +46,26 @@ export default function AthleteTable({ refreshTrigger = 0 }: AthleteTableProps):
               <tr key={atleta.id}>
                 <td>
                   <div className="atleta-info">
+                    {/* [verde] Generamos iniciales basadas en el nombre real */}
                     <div className="atleta-avatar bg-light-blue">
-                      {atleta.nombre ? atleta.nombre.substring(0, 2).toUpperCase() : (atleta.name ? atleta.name.substring(0, 2).toUpperCase() : 'AT')}
+                      {atleta.nombre ? atleta.nombre.substring(0, 2).toUpperCase() : 'AT'}
                     </div>
                     <div>
-                      <p className="atleta-name">{atleta.nombre || atleta.name || 'Sin nombre'}</p>
-                      <p className="atleta-id">ID: {atleta.id}</p>
+                      <p className="atleta-name">{atleta.nombre} {atleta.primer_apellido}</p>
+                      <p className="atleta-id">ID: #{atleta.id}</p>
                     </div>
                   </div>
                 </td>
                 <td>
-                  <p>{atleta.correoElectronico || atleta.email || 'N/A'}</p>
-                  <p className="atleta-phone">{atleta.telefono || atleta.phone || 'N/A'}</p>
+                  <p>{atleta.correo_electronico || 'Sin correo'}</p>
+                  <p className="atleta-phone">{atleta.telefono || 'Sin teléfono'}</p>
                 </td>
                 <td>
-                  <p>{atleta.disciplina || atleta.sport || 'N/A'}</p>
-                  <p className="atleta-region">{atleta.programa || atleta.region || 'N/A'}</p>
+                  {/* [verde] Mostramos cantidad de condiciones o medicamentos si existen */}
+                  <p>{atleta.condiciones?.length || 0} Condiciones</p>
+                  <p className="atleta-region">{atleta.medicamentos?.length || 0} Medicamentos</p>
                 </td>
-                <td>{atleta.fechaRegistro ? new Date(atleta.fechaRegistro).toLocaleDateString() : 'N/A'}</td>
+                <td>{atleta.fecha_registro ? new Date(atleta.fecha_registro).toLocaleDateString() : 'N/A'}</td>
                 <td>
                   <span className="status-badge green">ACTIVO</span>
                 </td>
@@ -68,7 +73,7 @@ export default function AthleteTable({ refreshTrigger = 0 }: AthleteTableProps):
             ))}
             {atletas.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '30px' }}>No hay atletas oficiales registrados aún.</td>
+                <td colSpan={5} style={{ textAlign: 'center', padding: '30px' }}>No hay atletas registrados en el sistema.</td>
               </tr>
             )}
           </tbody>

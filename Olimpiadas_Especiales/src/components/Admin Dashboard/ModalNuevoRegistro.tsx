@@ -1,246 +1,150 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/ModalNuevoRegistro.css';
-import { ServicesAdmin } from '../../services/ServicesAdmin';
-import type { Registro } from '../../types';
+import { ServicesAtletas } from '../../services/ServicesAtletas';
+import type { Atleta, Registro } from '../../types';
 
-interface RegistroFormData {
-  name: string;
-  email: string;
-  phone: string;
-  sport: string;
-  region: string;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  phone?: string;
+/* [verde] Interfaz para los datos temporales del formulario */
+interface AtletaFormData {
+  nombre: string;
+  primer_apellido: string;
+  segundo_apellido: string;
+  fecha_nacimiento: string;
+  genero: 'Masculino' | 'Femenino' | 'Otro';
+  telefono: string;
+  correo_electronico: string;
 }
 
 interface ModalNuevoRegistroProps {
   isOpen: boolean;
   onClose: () => void;
   onSaveSuccess: () => void;
-  editData?: Registro | null;
+  editData?: Registro | Atleta | null;
 }
 
+/* [verde] Componente Modal para el registro de nuevos atletas con conexión directa al Backend */
 export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, editData = null }: ModalNuevoRegistroProps): React.JSX.Element | null {
-  const [formData, setFormData] = useState<RegistroFormData>({
-    name: '', email: '', phone: '', sport: 'Fútbol', region: 'San José'
+  const [formData, setFormData] = useState<AtletaFormData>({
+    nombre: '', primer_apellido: '', segundo_apellido: '',
+    fecha_nacimiento: '', genero: 'Masculino', telefono: '', correo_electronico: ''
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  /* [verde] Efecto para cargar datos en caso de edición o limpiar al crear nuevo */
   useEffect(() => {
     if (isOpen && editData) {
+      // Mapeo de datos para edición (maneja campos de 'Registro' o 'Atleta')
       setFormData({
-        name: String(editData.name ?? ''),
-        email: String(editData.email ?? ''),
-        phone: String(editData.phone ?? ''),
-        sport: String(editData.sport ?? 'Fútbol'),
-        region: String(editData.region ?? 'San José')
+        nombre: (editData as any).nombre || (editData as any).name || '',
+        primer_apellido: (editData as any).primer_apellido || '',
+        segundo_apellido: (editData as any).segundo_apellido || '',
+        fecha_nacimiento: (editData as any).fecha_nacimiento || (editData as any).fechaNacimiento || '',
+        genero: (editData as any).genero || 'Masculino',
+        telefono: (editData as any).telefono || (editData as any).phone || '',
+        correo_electronico: (editData as any).correo_electronico || (editData as any).email || ''
       });
-      setErrors({});
-      setTouched({});
     } else if (isOpen) {
-      setFormData({ name: '', email: '', phone: '', sport: 'Fútbol', region: 'San José' });
-      setErrors({});
-      setTouched({});
+      setFormData({
+        nombre: '', primer_apellido: '', segundo_apellido: '',
+        fecha_nacimiento: '', genero: 'Masculino', telefono: '', correo_electronico: ''
+      });
     }
   }, [isOpen, editData]);
 
+
   if (!isOpen) return null;
 
-  const validate = (name: string, value: string, currentErrors: FormErrors = errors): FormErrors => {
-    const newErrors: FormErrors = { ...currentErrors };
-
-    if (name === 'name') {
-      if (!value || !value.trim()) {
-        newErrors.name = 'El nombre es requerido.';
-      } else if (!/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
-        newErrors.name = 'El nombre solo debe contener letras.';
-      } else {
-        delete newErrors.name;
-      }
-    }
-
-    if (name === 'email') {
-      if (!value || !value.trim()) {
-        newErrors.email = 'El correo es requerido.';
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        newErrors.email = 'Formato de correo inválido.';
-      } else {
-        delete newErrors.email;
-      }
-    }
-
-    if (name === 'phone') {
-      const cleanPhone = (value || '').replace(/\s/g, '');
-      if (!value || !value.trim()) {
-        newErrors.phone = 'El teléfono es requerido.';
-      } else if (!/^\d{8,10}$/.test(cleanPhone)) {
-        newErrors.phone = 'Debe tener entre 8 y 10 dígitos.';
-      } else {
-        delete newErrors.phone;
-      }
-    }
-
-    setErrors(newErrors);
-    return newErrors;
-  };
-
+  /* [verde] Maneja los cambios en los inputs de forma genérica */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
-    if (value.startsWith(' ')) return;
     setFormData({ ...formData, [name]: value });
-    if (touched[name]) validate(name, value);
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setTouched({ ...touched, [name]: true });
-    validate(name, value);
-  };
-
-  const hasErrors = Object.keys(errors).length > 0 || !formData.name.trim() || !formData.email.trim() || !formData.phone.trim();
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-
-    let currentErrors = validate('name', formData.name, {});
-    currentErrors = validate('email', formData.email, currentErrors);
-    currentErrors = validate('phone', formData.phone, currentErrors);
-
-    if (Object.keys(currentErrors).length > 0) {
-      alert("Por favor corrige los errores antes de continuar.");
+  /* [verde] Función principal para persistir los datos en la base de datos MySQL */
+  const manejarGuardado = async () => {
+    // [verde] Validación simple antes de enviar
+    if (!formData.nombre || !formData.primer_apellido || !formData.fecha_nacimiento) {
+      alert("Por favor, complete los campos obligatorios.");
       return;
     }
 
-    setIsSubmitting(true);
-
-    const nameTrimmed = formData.name.trim();
-    const words = nameTrimmed.split(' ');
-    let initials = 'AT';
-    if (words.length > 1) {
-      initials = (words[0][0] + (words[1][0] || '')).toUpperCase();
-    } else if (words.length === 1 && words[0].length > 0) {
-      initials = words[0].substring(0, Math.min(2, words[0].length)).toUpperCase();
+    try {
+      setIsSubmitting(true);
+      
+      /* [verde] Llamada al servicio que usa Axios (apiClient) */
+      await ServicesAtletas.registrarAtleta(formData);
+      
+      alert("¡Atleta registrado exitosamente!");
+      onSaveSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Error al registrar:", error);
+      alert("Ocurrió un error al intentar conectar con el servidor.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const payload: Partial<Registro> = {
-      initials,
-      name: nameTrimmed,
-      email: formData.email.trim().toLowerCase(),
-      phone: formData.phone.trim().replace(/\s/g, ''),
-      sport: formData.sport,
-      region: formData.region,
-      time: editData ? (String(editData.time ?? 'Editado ahora')) : 'Registrado ahora',
-      status: editData ? (String(editData.status ?? 'VERIFICACIÓN PEND.')) : 'VERIFICACIÓN PEND.',
-      statusColor: editData ? (String(editData.statusColor ?? 'yellow')) : 'yellow',
-      bgColor: editData ? (String(editData.bgColor ?? 'bg-light-blue')) : 'bg-light-blue'
-    };
-
-    ServicesAdmin.saveRegistro(payload, editData?.id ?? null)
-        .then(() => {
-          setIsSubmitting(false);
-          const action = editData ? "Actualización" : "Nuevo Registro";
-          ServicesAdmin.logActivity(action, `${action} de ${nameTrimmed}`, editData ? "fa-solid fa-pen" : "fa-solid fa-user-plus", editData ? "purple" : "blue");
-
-          if (!editData) {
-            setFormData({ name: '', email: '', phone: '', sport: 'Fútbol', region: 'San José' });
-            setErrors({});
-            setTouched({});
-            alert("¡Registro guardado exitosamente en Pendientes!");
-          } else {
-            alert("¡Registro actualizado exitosamente!");
-          }
-          onSaveSuccess();
-          onClose();
-        })
-        .catch(error => {
-          console.error("Error al guardar:", error);
-          alert("Error: " + ((error as Error).message || "No se pudo conectar con el servidor"));
-          setIsSubmitting(false);
-        });
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h2>{editData ? 'Editar Registro' : 'Nuevo Registro de Atleta'}</h2>
+          <h2>Nuevo Registro de Atleta Oficial</h2>
           <button className="btn-close-modal" onClick={onClose}><i className="fa-solid fa-xmark"></i></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <div className="modal-form">
           <div className="form-group">
-            <label>Nombre Completo del Atleta</label>
-            <input
-              type="text" name="name" placeholder="Ej. Juan Pérez"
-              value={formData.name} onChange={handleChange} onBlur={handleBlur}
-              className={touched.name && errors.name ? 'input-error' : ''}
-              autoComplete="off"
-            />
-            {touched.name && errors.name && <span className="error-text">{errors.name}</span>}
+            <label>Nombre</label>
+            <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Ej. Juan" />
           </div>
 
           <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
             <div className="form-group">
-              <label>Correo Electrónico</label>
-              <input
-                type="email" name="email" placeholder="juan@correo.com"
-                value={formData.email} onChange={handleChange} onBlur={handleBlur}
-                className={touched.email && errors.email ? 'input-error' : ''}
-              />
-              {touched.email && errors.email && <span className="error-text">{errors.email}</span>}
+              <label>Primer Apellido</label>
+              <input type="text" name="primer_apellido" value={formData.primer_apellido} onChange={handleChange} placeholder="Ej. Pérez" />
             </div>
-
             <div className="form-group">
-              <label>Teléfono</label>
-              <input
-                type="text" name="phone" placeholder="88887777"
-                value={formData.phone} onChange={handleChange} onBlur={handleBlur}
-                className={touched.phone && errors.phone ? 'input-error' : ''}
-              />
-              {touched.phone && errors.phone && <span className="error-text">{errors.phone}</span>}
+              <label>Segundo Apellido</label>
+              <input type="text" name="segundo_apellido" value={formData.segundo_apellido} onChange={handleChange} placeholder="Ej. Gómez" />
+            </div>
+          </div>
+
+          <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div className="form-group">
+              <label>Fecha de Nacimiento</label>
+              <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label>Género</label>
+              <select name="genero" value={formData.genero} onChange={handleChange}>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
             </div>
           </div>
 
           <div className="form-group">
-            <label>Deporte a Competir</label>
-            <select name="sport" value={formData.sport} onChange={handleChange}>
-              <option value="Fútbol">Fútbol</option>
-              <option value="Natación">Natación</option>
-              <option value="Atletismo">Atletismo</option>
-              <option value="Bochas">Bochas</option>
-              <option value="Baloncesto">Baloncesto</option>
-            </select>
+            <label>Correo Electrónico</label>
+            <input type="email" name="correo_electronico" value={formData.correo_electronico} onChange={handleChange} placeholder="atleta@correo.com" />
           </div>
 
           <div className="form-group">
-            <label>Región / Provincia</label>
-            <select name="region" value={formData.region} onChange={handleChange}>
-              <option value="San José">San José</option>
-              <option value="Alajuela">Alajuela</option>
-              <option value="Cartago">Cartago</option>
-              <option value="Heredia">Heredia</option>
-              <option value="Guanacaste">Guanacaste</option>
-              <option value="Puntarenas">Puntarenas</option>
-              <option value="Limón">Limón</option>
-            </select>
+            <label>Teléfono de Contacto</label>
+            <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} placeholder="88887777" />
           </div>
 
           <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-            <button type="button" className="btn-cancel" onClick={onClose} disabled={isSubmitting} style={{ padding: '10px 20px', cursor: 'pointer' }}>
+            <button className="btn-cancel" onClick={onClose} disabled={isSubmitting} style={{ padding: '10px 20px', cursor: 'pointer' }}>
               Cancelar
             </button>
-            <button type="submit" className="btn-primary-red" disabled={isSubmitting || hasErrors}
+            {/* [verde] Usamos un botón con evento onClick, no un submit de formulario */}
+            <button className="btn-primary-red" onClick={manejarGuardado} disabled={isSubmitting}
               style={{ padding: '10px 20px', backgroundColor: '#e62334', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
-              {isSubmitting ? 'Guardando...' : (editData ? 'Actualizar Registro' : 'Guardar Registro')}
+              {isSubmitting ? 'Guardando...' : 'Registrar Atleta'}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
