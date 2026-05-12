@@ -1,4 +1,5 @@
-const { Inscripcion } = require('../models');
+const { models } = require('../config/database');
+const { Inscripcion } = models;
 
 exports.getAll = async (req, res, next) => {
   try {

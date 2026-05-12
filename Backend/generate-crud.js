@@ -14,7 +14,8 @@ models.forEach(m => {
   const controllerName = `${m.name.charAt(0).toLowerCase() + m.name.slice(1)}Controller`;
   
   // Controller
-  const controllerCode = `const { ${m.name} } = require('../models');
+  const controllerCode = `const { models } = require('../config/database');
+const { ${m.name} } = models;
 
 exports.getAll = async (req, res, next) => {
   try {

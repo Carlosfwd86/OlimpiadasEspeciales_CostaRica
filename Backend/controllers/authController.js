@@ -1,5 +1,7 @@
-const bcrypt = require('bcrypt');
-const { Usuario, Sesion, TokenBlacklist } = require('../models');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { models } = require('../config/database');
+const { Usuario, Sesion, TokenBlacklist } = models;
 
 // Función para registrar un nuevo usuario
 const registrarUsuario = async (req, res) => {
@@ -32,7 +34,6 @@ const registrarUsuario = async (req, res) => {
       avatar_url
     });
 
-    // Retorna respuesta de éxito sin incluir el hash de la contraseña
     return res.status(201).json({
       mensaje: 'Usuario registrado exitosamente',
       usuario: {
@@ -43,7 +44,6 @@ const registrarUsuario = async (req, res) => {
     });
 
   } catch (error) {
-    // Maneja cualquier error inesperado
     console.error('Error al registrar usuario:', error);
     return res.status(500).json({ error: 'Ocurrió un error al registrar el usuario.' });
   }
@@ -54,29 +54,38 @@ const iniciarSesion = async (req, res) => {
   try {
     const { correo_electronico, password } = req.body;
 
-    // Busca al usuario por correo electrónico
     const usuario = await Usuario.findOne({ where: { correo_electronico } });
     if (!usuario) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
 
-    // Verifica si la cuenta está activa
     if (usuario.status !== 'ACTIVO') {
       return res.status(403).json({ error: 'La cuenta no está activa.' });
     }
 
-    // Compara la contraseña proporcionada con el hash guardado
     const passwordValido = await bcrypt.compare(password, usuario.password_hash);
     if (!passwordValido) {
       return res.status(401).json({ error: 'Contraseña incorrecta.' });
     }
 
-    // Aquí normalmente generaríamos un token JWT, lo simularemos por ahora
-    const token = `token_simulado_${usuario.id}_${Date.now()}`;
-    const expira_en = new Date();
-    expira_en.setHours(expira_en.getHours() + 2); // El token expira en 2 horas
+    // GENERACIÓN REAL DE JWT
+    const token = jwt.sign(
+      { id: usuario.id, rol_id: usuario.rol_id, email: usuario.correo_electronico },
+      process.env.JWT_SECRET || 'fallback_secret_key',
+      { expiresIn: '2h' }
+    );
 
-    // Guarda la sesión en la base de datos
+    // CONFIGURACIÓN DE COOKIE SEGURA
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 2 * 60 * 60 * 1000 // 2 horas
+    });
+
+    const expira_en = new Date();
+    expira_en.setHours(expira_en.getHours() + 2);
+
     await Sesion.create({
       usuario_id: usuario.id,
       token,
@@ -86,10 +95,9 @@ const iniciarSesion = async (req, res) => {
       activa: true
     });
 
-    // Retorna el token al cliente
     return res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
-      token,
+      token, // Se mantiene por compatibilidad
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
@@ -98,7 +106,6 @@ const iniciarSesion = async (req, res) => {
     });
 
   } catch (error) {
-    // Captura errores del servidor
     console.error('Error al iniciar sesión:', error);
     return res.status(500).json({ error: 'Error en el servidor al iniciar sesión.' });
   }
@@ -107,22 +114,16 @@ const iniciarSesion = async (req, res) => {
 // Función para cerrar sesión
 const cerrarSesion = async (req, res) => {
   try {
-    // Asumimos que el token viene en los headers (Authorization: Bearer <token>)
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    
+    if (!token) {
       return res.status(400).json({ error: 'Token no proporcionado.' });
     }
 
-    const token = authHeader.split(' ')[1];
-
-    // Busca la sesión activa correspondiente al token
     const sesion = await Sesion.findOne({ where: { token, activa: true } });
     
     if (sesion) {
-      // Invalida la sesión actualizándola en la base de datos
       await sesion.update({ activa: false });
-      
-      // Agrega el token a la lista negra
       await TokenBlacklist.create({
         usuario_id: sesion.usuario_id,
         token,
@@ -130,11 +131,12 @@ const cerrarSesion = async (req, res) => {
       });
     }
 
-    // Retorna éxito incluso si la sesión ya no existía (para evitar revelar estado)
+    // LIMPIAR COOKIE
+    res.clearCookie('token');
+
     return res.status(200).json({ mensaje: 'Sesión cerrada exitosamente.' });
 
   } catch (error) {
-    // Loguea el error en caso de fallo
     console.error('Error al cerrar sesión:', error);
     return res.status(500).json({ error: 'Ocurrió un error al cerrar la sesión.' });
   }

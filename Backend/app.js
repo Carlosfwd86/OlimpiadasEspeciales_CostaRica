@@ -1,24 +1,57 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const winston = require('winston');
 
 const { sequelize } = require('./config/database');
-const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
+
+// Logger profesional
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    })
+  ]
+});
 
 const app = express();
 
 // Middlewares globales
-app.use(helmet()); // Seguridad en cabeceras HTTP
-app.use(cors()); // Habilitar CORS
-app.use(express.json()); // Parsear JSON
+app.use(helmet()); 
+app.use(cors({ origin: true, credentials: true })); 
+app.use(cookieParser());
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev')); // Logger de peticiones
+app.use(morgan('dev')); 
 
-// Rutas
-app.use('/api', routes);
+// Registro manual de rutas (Sin index.js)
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/atletas', require('./routes/atletaRoutes'));
+app.use('/api/competiciones', require('./routes/competicion.routes'));
+app.use('/api/competicion-atleta', require('./routes/competicion_atleta.routes'));
+app.use('/api/consultas', require('./routes/consultas.routes'));
+app.use('/api/disciplinas', require('./routes/disciplinas.routes'));
+app.use('/api/entrenadores', require('./routes/entrenador.routes'));
+app.use('/api/inscripciones', require('./routes/inscripciones.routes'));
+app.use('/api/niveles-habilidad', require('./routes/nivelesHabilidad.routes'));
+app.use('/api/permisos', require('./routes/permisosRoutes'));
+app.use('/api/programas', require('./routes/programas.routes'));
+app.use('/api/roles', require('./routes/rolesRoutes'));
+app.use('/api/tutores', require('./routes/tutores.routes'));
+app.use('/api/voluntarios', require('./routes/voluntario.routes'));
+app.use('/api/voluntario-area', require('./routes/voluntario_area.routes'));
 
 // Middleware para manejar errores
 app.use(errorHandler);
@@ -28,19 +61,18 @@ const PORT = process.env.PORT || 3000;
 // Inicialización del servidor y base de datos
 const startServer = async () => {
   try {
-    // Autenticar la conexión a la base de datos
     await sequelize.authenticate();
-    console.log('✅ Conexión a la base de datos establecida exitosamente.');
+    logger.info('✅ Conexión a la base de datos establecida exitosamente.');
     
-    // Opcional: sincronizar modelos (crear tablas si no existen)
-    await sequelize.sync({ alter: true }); 
-    console.log('✅ Modelos sincronizados.');
+    // Recomendación: Usar migraciones en lugar de alter: true en producción
+    await sequelize.sync({ alter: false }); 
+    logger.info('✅ Modelos sincronizados.');
 
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+      logger.info(`🚀 Servidor corriendo en el puerto ${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Error al iniciar el servidor:', error);
+    logger.error('❌ Error al iniciar el servidor:', error);
     process.exit(1);
   }
 };
