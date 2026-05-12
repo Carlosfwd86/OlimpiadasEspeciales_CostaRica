@@ -1,0 +1,102 @@
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
+
+const Usuario = sequelize.define('Usuario', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false
+  },
+  rol_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'roles',
+      key: 'id'
+    }
+  },
+  nombre: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    validate: {
+      // Mínimo 2 caracteres
+      len: [2, 100]
+    }
+  },
+  apellido: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
+  cedula: {
+    type: DataTypes.STRING(20),
+    unique: true,
+    allowNull: true,
+    validate: {
+      // Solo dígitos
+      isNumeric: true
+    }
+  },
+  correo_electronico: {
+    type: DataTypes.STRING(150),
+    unique: true,
+    allowNull: false,
+    validate: {
+      // Formato email
+      isEmail: true
+    }
+  },
+  password_hash: {
+    type: DataTypes.STRING(255),
+    allowNull: false
+  },
+  telefono: {
+    type: DataTypes.STRING(15),
+    allowNull: true,
+    validate: {
+      // Solo dígitos y longitud mínima de 7
+      isNumeric: true,
+      len: [7, 15]
+    }
+  },
+  direccion: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  pais: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  fecha_nacimiento: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    validate: {
+      // Validar que no sea futura
+      isBefore: new Date().toISOString().split('T')[0]
+    }
+  },
+  genero: {
+    type: DataTypes.ENUM('Masculino', 'Femenino', 'Otro'),
+    allowNull: true
+  },
+  avatar_url: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+    validate: {
+      // Formato URL
+      isUrl: true
+    }
+  },
+  status: {
+    type: DataTypes.ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO'),
+    allowNull: false,
+    defaultValue: 'ACTIVO'
+  }
+}, {
+  tableName: 'usuarios',
+  timestamps: true,
+  createdAt: 'fecha_registro',
+  updatedAt: 'updated_at'
+});
+
+module.exports = Usuario;
