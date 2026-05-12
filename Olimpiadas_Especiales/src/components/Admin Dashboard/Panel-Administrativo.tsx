@@ -33,7 +33,6 @@ interface CompeticionFormData {
 
 export default function PanelAdministrativo(): React.JSX.Element {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [competiciones, setCompeticiones] = useState<Competicion[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isCompModalOpen, setIsCompModalOpen] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
@@ -46,10 +45,6 @@ export default function PanelAdministrativo(): React.JSX.Element {
     ServicesAdmin.getStats()
       .then(data => setStats(data))
       .catch(error => console.error("Error al cargar estadísticas:", error));
-
-    ServicesAdmin.getCompeticiones()
-      .then(data => setCompeticiones(data))
-      .catch(err => console.error("Error al cargar competiciones:", err));
 
     ServicesAdmin.getSettings()
       .then(data => { if (data.tema) setTheme(String(data.tema)); })
@@ -157,33 +152,10 @@ export default function PanelAdministrativo(): React.JSX.Element {
                 </button>
               </div>
 
-              {competiciones.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                  {competiciones.map(comp => (
-                    <CompetitionCard key={comp.id} competition={comp}
-                      onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
-                      onDelete={(id) => {
-                        if (window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
-                          ServicesAdmin.deleteCompeticion(id)
-                            .then(() => handleSaveSuccess())
-                            .catch(err => alert((err as Error).message));
-                        }
-                      }}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div style={{ padding: '60px', background: 'white', borderRadius: '15px', textAlign: 'center', border: '2px dashed #e2e8f0' }}>
-                  <div style={{ fontSize: '60px', color: '#cbd5e1', marginBottom: '20px' }}>
-                    <i className="fa-solid fa-calendar-plus"></i>
-                  </div>
-                  <h3 style={{ color: '#64748b' }}>No hay competiciones o eventos programados</h3>
-                  <p style={{ color: '#94a3b8' }}>Comienza creando tu primer evento deportivo nacional.</p>
-                  <button className="btn-new-entry" style={{ marginTop: '20px' }} onClick={() => setIsCompModalOpen(true)}>
-                    + Crear Evento
-                  </button>
-                </div>
-              )}
+              <CompetitionCard 
+                onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
+                onRefresh={handleSaveSuccess}
+              />
             </div>
           )}
 
