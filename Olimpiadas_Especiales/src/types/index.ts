@@ -46,6 +46,21 @@ export interface Atleta {
   [key: string]: unknown;
 }
 
+export interface AtletaDispositivo {
+  id: number;
+  atleta_id: number;
+  tipo: string;
+  nombre: string;
+}
+
+export interface AtletaAlergia {
+  id: number;
+  atleta_id: number;
+  tipo_alergia: string;
+  especificacion?: string;
+}
+
+
 export interface Entrenador {
   id: string | number;
   usuario_id?: string | number | null;

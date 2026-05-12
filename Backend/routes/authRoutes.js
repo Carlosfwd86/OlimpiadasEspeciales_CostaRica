@@ -13,4 +13,14 @@ router.post('/login', validators.login, validate, authController.iniciarSesion);
 // Ruta para cerrar sesión (protegida por el cliente, pero el servidor invalida el token)
 router.post('/logout', authController.cerrarSesion);
 
+// Nuevo endpoint para verificar sesión
+router.get('/me', require('../middlewares/authMiddleware'), (req, res) => {
+  res.status(200).json({ usuario: req.user });
+});
+
+// Perfil del usuario autenticado
+const auth = require('../middlewares/authMiddleware');
+router.get('/profile',  auth, authController.getProfile);
+router.patch('/profile', auth, authController.updateProfile);
+
 module.exports = router;

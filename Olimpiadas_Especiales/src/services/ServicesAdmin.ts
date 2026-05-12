@@ -113,6 +113,7 @@ export const ServicesAdmin = {
         return res.data;
     },
 
+    // Configuración del sistema — conectado al backend real
     getSettings: async (): Promise<SystemSettings> => {
         const res = await apiClient.get<SystemSettings>('/system_settings');
         return res.data;
@@ -123,6 +124,7 @@ export const ServicesAdmin = {
         return res.data;
     },
 
+    // Gestión de usuarios — conectado al backend real
     getUsers: async (): Promise<Record<string, unknown>[]> => {
         const res = await apiClient.get<Record<string, unknown>[]>('/usuarios/all');
         return res.data;
@@ -149,7 +151,7 @@ export const ServicesAdmin = {
         return res.data;
     },
 
-    // Estadísticas
+    // Estadísticas — una sola llamada al backend real
     getStats: async (): Promise<Stats> => {
         const [atletas, pendientes, volunt] = await Promise.all([
             apiClient.get<unknown[]>('/atletas'),

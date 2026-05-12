@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/PendingTable.css';
-import { ServicesAdmin } from '../../services/ServicesAdmin';
+import { ServicesAtletas } from '../../services/ServicesAtletas';
 import type { Atleta } from '../../types';
 
+/* [verde] Interfaz para las propiedades del componente */
 interface AthleteTableProps {
   refreshTrigger?: number;
 }
 
+/* [verde] Componente que visualiza la lista oficial de atletas sincronizada con el backend */
 export default function AthleteTable({ refreshTrigger = 0 }: AthleteTableProps): React.JSX.Element {
   const [atletas, setAtletas] = useState<Atleta[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  /* [verde] Efecto para cargar los datos reales al montar el componente o refrescar */
   useEffect(() => {
-    ServicesAdmin.getAtletas()
+    ServicesAtletas.obtenerAtletas()
       .then(data => {
         setAtletas(data);
         setLoading(false);
       })
       .catch(error => {
-        console.error("Error al cargar atletas:", error);
+        console.error("Error al cargar atletas desde el backend:", error);
         setLoading(false);
       });
   }, [refreshTrigger]);
@@ -33,7 +36,7 @@ export default function AthleteTable({ refreshTrigger = 0 }: AthleteTableProps):
             <tr>
               <th>Atleta</th>
               <th>Contacto</th>
-              <th>Deporte / Programa</th>
+              <th>Información Médica</th>
               <th>Fecha Registro</th>
               <th>Estado</th>
             </tr>
@@ -70,7 +73,7 @@ export default function AthleteTable({ refreshTrigger = 0 }: AthleteTableProps):
             ))}
             {atletas.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '30px' }}>No hay atletas oficiales registrados aún.</td>
+                <td colSpan={5} style={{ textAlign: 'center', padding: '30px' }}>No hay atletas registrados en el sistema.</td>
               </tr>
             )}
           </tbody>
