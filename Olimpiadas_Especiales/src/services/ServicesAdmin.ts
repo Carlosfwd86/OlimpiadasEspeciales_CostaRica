@@ -1,4 +1,5 @@
 import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta } from '../types';
+import apiClient from '../api/apiClient';
 
 const BASE_URL = "http://localhost:3001";
 
@@ -183,31 +184,38 @@ export const ServicesAdmin = {
     },
 
     // Competiciones
+    /**
+     * Obtiene la lista de competiciones desde el backend usando apiClient.
+     */
     getCompeticiones: async (): Promise<Competicion[]> => {
-        const res = await fetch(`${BASE_URL}/competiciones`);
-        if (!res.ok) throw new Error("Error al obtener competiciones");
-        return res.json() as Promise<Competicion[]>;
+        const res = await apiClient.get<Competicion[]>('/competiciones');
+        return res.data;
     },
 
+    /**
+     * Guarda una nueva competición o actualiza una existente usando apiClient.
+     * @param data Datos parciales de la competición.
+     * @param id ID opcional. Si se provee, se actualiza la competición.
+     */
     saveCompeticion: async (data: Partial<Competicion>, id: string | null = null): Promise<Competicion> => {
-        const method = id ? 'PATCH' : 'POST';
-        const url = id ? `${BASE_URL}/competiciones/${id}` : `${BASE_URL}/competiciones`;
-        const res = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(id ? data : {
+        if (id) {
+            const res = await apiClient.patch<Competicion>(`/competiciones/${id}`, data);
+            return res.data;
+        } else {
+            const res = await apiClient.post<Competicion>('/competiciones', {
                 ...data,
-                id: Math.random().toString(36).substr(2, 9),
-                status: 'Programado'
-            })
-        });
-        if (!res.ok) throw new Error("Error al guardar competición");
-        return res.json() as Promise<Competicion>;
+                status: data.status || 'Programado'
+            });
+            return res.data;
+        }
     },
 
+    /**
+     * Elimina una competición por su ID usando apiClient.
+     * @param id ID de la competición a eliminar.
+     */
     deleteCompeticion: async (id: string): Promise<boolean> => {
-        const res = await fetch(`${BASE_URL}/competiciones/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error("Error al eliminar competición");
+        await apiClient.delete(`/competiciones/${id}`);
         return true;
     }
 };
