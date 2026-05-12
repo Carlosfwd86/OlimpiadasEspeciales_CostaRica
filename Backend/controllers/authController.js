@@ -142,8 +142,80 @@ const cerrarSesion = async (req, res) => {
   }
 };
 
+// Función para obtener el perfil del usuario autenticado
+const getProfile = async (req, res) => {
+  try {
+    const usuario = await Usuario.findByPk(req.user.id, {
+      attributes: ['id', 'nombre', 'apellido', 'correo_electronico', 'rol_id', 'avatar_url', 'telefono']
+    });
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+    return res.status(200).json({
+      data: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        correoElectronico: usuario.correo_electronico,
+        rol: usuario.rol_id,
+        fotoPerfil: usuario.avatar_url || null,
+        telefono: usuario.telefono || null
+      },
+      message: 'OK',
+      status: 200
+    });
+  } catch (error) {
+    console.error('Error al obtener perfil:', error);
+    return res.status(500).json({ error: 'Error al obtener el perfil.' });
+  }
+};
+
+// Función para actualizar el perfil del usuario autenticado
+const updateProfile = async (req, res) => {
+  try {
+    const { nombre, correoElectronico, passwordActual, passwordNuevo } = req.body;
+
+    const usuario = await Usuario.findByPk(req.user.id);
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+    const updates = {};
+    if (nombre)             updates.nombre = nombre;
+    if (correoElectronico)  updates.correo_electronico = correoElectronico;
+
+    // Cambio de contraseña — requiere validar la contraseña actual
+    if (passwordNuevo) {
+      if (!passwordActual) {
+        return res.status(400).json({ message: 'Debes proporcionar tu contraseña actual para cambiarla.' });
+      }
+      const passwordValido = await bcrypt.compare(passwordActual, usuario.password_hash);
+      if (!passwordValido) {
+        return res.status(401).json({ message: 'La contraseña actual es incorrecta.' });
+      }
+      const salt = await bcrypt.genSalt(10);
+      updates.password_hash = await bcrypt.hash(passwordNuevo, salt);
+    }
+
+    await usuario.update(updates);
+
+    return res.status(200).json({
+      data: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        correoElectronico: usuario.correo_electronico,
+        rol: usuario.rol_id
+      },
+      message: 'Perfil actualizado correctamente',
+      status: 200
+    });
+  } catch (error) {
+    console.error('Error al actualizar perfil:', error);
+    return res.status(500).json({ error: 'Error al actualizar el perfil.' });
+  }
+};
+
 module.exports = {
   registrarUsuario,
   iniciarSesion,
-  cerrarSesion
+  cerrarSesion,
+  getProfile,
+  updateProfile
 };

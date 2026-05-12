@@ -53,6 +53,11 @@ app.use('/api/tutores', require('./routes/tutores.routes'));
 app.use('/api/voluntarios', require('./routes/voluntario.routes'));
 app.use('/api/voluntario-area', require('./routes/voluntario_area.routes'));
 
+// Nuevos endpoints requeridos por el frontend
+app.use('/api/stats', require('./routes/stats.routes'));
+app.use('/api/settings', require('./routes/settings.routes'));
+app.use('/api/registros-pendientes', require('./routes/registrosPendientes.routes'));
+
 // Middleware para manejar errores
 app.use(errorHandler);
 

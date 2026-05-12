@@ -1,6 +1,13 @@
 import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta } from '../types';
 
-const BASE_URL = "http://localhost:3001";
+// URL base del backend real (configurable por variable de entorno)
+const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api/v1";
+
+// Helper: retorna headers con JWT desde localStorage
+const authHeaders = (): HeadersInit => ({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`
+});
 
 export const ServicesAdmin = {
     // Registros Pendientes
@@ -87,11 +94,19 @@ export const ServicesAdmin = {
         return true;
     },
 
-    // Atletas Oficiales
+    // Atletas Oficiales — conectado al backend real
     getAtletas: async (): Promise<Atleta[]> => {
-        const res = await fetch(`${BASE_URL}/atletas`);
+        const res = await fetch(`${BACKEND_URL}/atletas?page=1&limit=500`, {
+            headers: authHeaders()
+        });
         if (!res.ok) throw new Error("Error al obtener atletas");
-        return res.json() as Promise<Atleta[]>;
+        const json = await res.json() as { data: { items: Atleta[] } };
+        // Normalización de campos: el backend puede usar sport/provincia en lugar de disciplina/region
+        return json.data.items.map(a => ({
+            ...a,
+            disciplina: a.disciplina ?? (a as Record<string, unknown>).sport as string ?? 'Otro',
+            region: a.region ?? (a as Record<string, unknown>).provincia as string ?? 'Otro'
+        }));
     },
 
     // Actividad del Sistema
@@ -101,46 +116,75 @@ export const ServicesAdmin = {
         return res.json() as Promise<Activity[]>;
     },
 
-    getProfile: async (id: number | string = 1): Promise<AdminProfile> => {
-        const res = await fetch(`${BASE_URL}/Admin/${id}`);
+    // Perfil del administrador — conectado al backend real
+    getProfile: async (): Promise<AdminProfile> => {
+        const res = await fetch(`${BACKEND_URL}/auth/profile`, {
+            headers: authHeaders()
+        });
         if (!res.ok) throw new Error("Error al obtener perfil");
-        return res.json() as Promise<AdminProfile>;
+        const json = await res.json() as { data: AdminProfile };
+        return json.data;
     },
 
-    updateProfile: async (id: number | string, data: Partial<AdminProfile>): Promise<AdminProfile> => {
-        const res = await fetch(`${BASE_URL}/Admin/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+    updateProfile: async (data: Partial<AdminProfile>): Promise<AdminProfile> => {
+        const res = await fetch(`${BACKEND_URL}/auth/profile`, {
+            method: 'PATCH',
+            headers: authHeaders(),
             body: JSON.stringify(data)
         });
-        if (!res.ok) throw new Error("Error al actualizar perfil");
-        return res.json() as Promise<AdminProfile>;
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({} as { message?: string })) as { message?: string };
+            throw new Error(err.message ?? "Error al actualizar perfil");
+        }
+        const json = await res.json() as { data: AdminProfile };
+        return json.data;
     },
 
+    // Configuración del sistema — conectado al backend real
     getSettings: async (): Promise<SystemSettings> => {
-        const res = await fetch(`${BASE_URL}/system_settings`);
+        const res = await fetch(`${BACKEND_URL}/settings`, {
+            headers: authHeaders()
+        });
         if (!res.ok) throw new Error("Error al obtener configuraciones");
-        return res.json() as Promise<SystemSettings>;
+        const json = await res.json() as { data: SystemSettings };
+        return json.data;
     },
 
     updateSettings: async (data: SystemSettings): Promise<SystemSettings> => {
-        const res = await fetch(`${BASE_URL}/system_settings`, {
+        const res = await fetch(`${BACKEND_URL}/settings`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: authHeaders(),
             body: JSON.stringify(data)
         });
         if (!res.ok) throw new Error("Error al actualizar configuraciones");
-        return res.json() as Promise<SystemSettings>;
+        const json = await res.json() as { data: SystemSettings };
+        return json.data;
     },
 
+    // Gestión de usuarios — conectado al backend real
     getUsers: async (): Promise<Record<string, unknown>[]> => {
-        const res = await fetch(`${BASE_URL}/usuarios_sistema`);
+        const res = await fetch(`${BACKEND_URL}/usuarios`, {
+            headers: authHeaders()
+        });
         if (!res.ok) throw new Error("Error al obtener usuarios");
-        return res.json() as Promise<Record<string, unknown>[]>;
+        const json = await res.json() as { data: { items: Record<string, unknown>[] } };
+        return json.data.items;
+    },
+
+    saveUser: async (data: Record<string, unknown>, id: string | null = null): Promise<Record<string, unknown>> => {
+        const method = id ? 'PATCH' : 'POST';
+        const url = id ? `${BACKEND_URL}/usuarios/${id}` : `${BACKEND_URL}/usuarios`;
+        const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(data) });
+        if (!res.ok) throw new Error("Error al guardar usuario");
+        const json = await res.json() as { data: Record<string, unknown> };
+        return json.data;
     },
 
     deleteUser: async (id: string): Promise<boolean> => {
-        const res = await fetch(`${BASE_URL}/usuarios_sistema/${id}`, { method: 'DELETE' });
+        const res = await fetch(`${BACKEND_URL}/usuarios/${id}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
         if (!res.ok) throw new Error("Error al eliminar usuario");
         return true;
     },
@@ -166,20 +210,14 @@ export const ServicesAdmin = {
         return res.json() as Promise<Graficos>;
     },
 
-    // Estadísticas
+    // Estadísticas — una sola llamada al backend real
     getStats: async (): Promise<Stats> => {
-        const [atletas, pendientes, volunt] = await Promise.all([
-            fetch(`${BASE_URL}/atletas`).then(r => r.json()) as Promise<unknown[]>,
-            fetch(`${BASE_URL}/registros_pendientes`).then(r => r.json()) as Promise<unknown[]>,
-            fetch(`${BASE_URL}/voluntarios`).then(r => r.json()) as Promise<unknown[]>
-        ]);
-
-        return {
-            totalRegistros: { valor: atletas.length + pendientes.length, porcentaje: "+12%", tendencia: "up" },
-            atletasActivos: { valor: atletas.length, porcentaje: "+5%", tendencia: "up" },
-            revisionesPendientes: { valor: pendientes.length, textoExtra: "Requieren acción" },
-            voluntarios: { valor: volunt.length, porcentaje: "0%", tendencia: "none" }
-        };
+        const res = await fetch(`${BACKEND_URL}/stats`, {
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error("Error al obtener estadísticas");
+        const json = await res.json() as { data: Stats };
+        return json.data; // shape idéntico al actual, sin cambios en Panel-Administrativo
     },
 
     // Competiciones

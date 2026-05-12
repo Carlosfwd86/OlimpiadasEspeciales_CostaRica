@@ -15,6 +15,12 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
     const [loading, setLoading] = useState<boolean>(true);
     const [saving, setSaving] = useState<boolean>(false);
 
+    // Estado para el sub-tab de perfil de administrador
+    const [perfil, setPerfil] = useState<{ nombre: string; correoElectronico: string; passwordActual: string; passwordNuevo: string }>({
+        nombre: '', correoElectronico: '', passwordActual: '', passwordNuevo: ''
+    });
+    const [savingPerfil, setSavingPerfil] = useState<boolean>(false);
+
     useEffect(() => { setSubTab(initialSubTab); }, [initialSubTab]);
 
     useEffect(() => {
@@ -22,8 +28,15 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             try {
                 const s = await ServicesAdmin.getSettings();
                 const u = await ServicesAdmin.getUsers();
+                // Cargar perfil del admin para el sub-tab 'perfil'
+                const p = await ServicesAdmin.getProfile();
                 setSettings(s);
                 setUsuarios(u);
+                setPerfil(prev => ({
+                    ...prev,
+                    nombre: (p as Record<string, unknown>).nombre as string ?? '',
+                    correoElectronico: (p as Record<string, unknown>).correoElectronico as string ?? ''
+                }));
             } catch (err) {
                 console.error("Error al cargar datos en Configuración:", err);
             } finally {
@@ -53,6 +66,30 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             });
     };
 
+    // Guardar perfil de administrador
+    const handleSavePerfil = (): void => {
+        setSavingPerfil(true);
+        const payload: Record<string, string> = {
+            nombre: perfil.nombre,
+            correoElectronico: perfil.correoElectronico
+        };
+        if (perfil.passwordActual) payload.passwordActual = perfil.passwordActual;
+        if (perfil.passwordNuevo) payload.passwordNuevo = perfil.passwordNuevo;
+
+        ServicesAdmin.updateProfile(payload)
+            .then(() => {
+                setSavingPerfil(false);
+                // Reutilizando el patrón de feedback existente en el componente
+                alert("Perfil actualizado correctamente");
+                // Limpiar campos de contraseña tras guardar
+                setPerfil(prev => ({ ...prev, passwordActual: '', passwordNuevo: '' }));
+            })
+            .catch(err => {
+                setSavingPerfil(false);
+                alert("Error al actualizar perfil: " + (err as Error).message);
+            });
+    };
+
     if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--admin-text-main)' }}>Cargando configuración...</div>;
     if (!settings) return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--admin-text-main)' }}>Error al cargar configuración</div>;
 
@@ -69,6 +106,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                 <div style={{ display: 'flex', gap: '30px', marginBottom: '25px', paddingLeft: '10px' }}>
                     <button onClick={() => setSubTab('usuarios')} style={tabBtnStyle('usuarios')}>Usuarios</button>
                     <button onClick={() => setSubTab('configuracion')} style={tabBtnStyle('configuracion')}>Configuración</button>
+                    <button onClick={() => setSubTab('perfil')} style={tabBtnStyle('perfil')}>Mi Perfil</button>
                 </div>
 
                 {subTab === 'usuarios' ? (
@@ -112,6 +150,55 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                ) : subTab === 'perfil' ? (
+                    // Sub-tab: Mi Perfil (edición de datos del administrador)
+                    <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '40px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                        <h2 style={{ fontSize: '24px', color: 'var(--admin-text-main)', marginBottom: '10px' }}>Mi Perfil</h2>
+                        <p style={{ color: 'var(--admin-text-muted)', marginBottom: '30px', fontSize: '14px' }}>Actualiza tus datos de acceso al panel administrativo.</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '500px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: 'var(--admin-text-main)', fontSize: '14px' }}>Nombre completo</label>
+                                <input
+                                    type="text"
+                                    value={perfil.nombre}
+                                    onChange={e => setPerfil(prev => ({ ...prev, nombre: e.target.value }))}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)', fontSize: '14px' }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: 'var(--admin-text-main)', fontSize: '14px' }}>Correo electrónico</label>
+                                <input
+                                    type="email"
+                                    value={perfil.correoElectronico}
+                                    onChange={e => setPerfil(prev => ({ ...prev, correoElectronico: e.target.value }))}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)', fontSize: '14px' }}
+                                />
+                            </div>
+                            <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '20px', marginTop: '5px' }}>
+                                <p style={{ color: 'var(--admin-text-muted)', fontSize: '13px', marginBottom: '15px' }}>Dejar en blanco si no deseas cambiar la contraseña.</p>
+                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: 'var(--admin-text-main)', fontSize: '14px' }}>Contraseña actual</label>
+                                <input
+                                    type="password"
+                                    value={perfil.passwordActual}
+                                    onChange={e => setPerfil(prev => ({ ...prev, passwordActual: e.target.value }))}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)', fontSize: '14px', marginBottom: '15px' }}
+                                />
+                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: 'var(--admin-text-main)', fontSize: '14px' }}>Nueva contraseña</label>
+                                <input
+                                    type="password"
+                                    value={perfil.passwordNuevo}
+                                    onChange={e => setPerfil(prev => ({ ...prev, passwordNuevo: e.target.value }))}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)', fontSize: '14px' }}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'flex-end' }}>
+                            <button onClick={handleSavePerfil} disabled={savingPerfil} className="btn-new-entry"
+                                style={{ backgroundColor: '#e62334', border: 'none', color: 'white', padding: '12px 30px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>
+                                {savingPerfil ? 'Guardando...' : 'Guardar Perfil'}
+                            </button>
                         </div>
                     </div>
                 ) : (
