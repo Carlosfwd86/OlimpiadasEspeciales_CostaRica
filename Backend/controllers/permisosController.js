@@ -1,4 +1,5 @@
-const { Permiso } = require('../models');
+const { models } = require('../config/database');
+const { Permiso } = models;
 
 // Función para obtener todos los permisos
 const obtenerPermisos = async (req, res) => {

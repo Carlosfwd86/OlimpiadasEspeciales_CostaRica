@@ -1,4 +1,5 @@
-const { Tutor } = require('../models');
+const { models } = require('../config/database');
+const { Tutor } = models;
 
 exports.getAll = async (req, res, next) => {
   try {

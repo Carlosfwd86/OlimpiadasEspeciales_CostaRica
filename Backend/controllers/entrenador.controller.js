@@ -1,4 +1,5 @@
-const { Entrenador } = require('../models');
+const { models } = require('../config/database');
+const { Entrenador } = models;
 
 // Controlador para la gestión de Entrenadores
 const entrenadorController = {

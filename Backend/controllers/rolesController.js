@@ -1,4 +1,5 @@
-const { Rol } = require('../models');
+const { models } = require('../config/database');
+const { Rol } = models;
 
 // Función para obtener todos los roles
 const obtenerRoles = async (req, res) => {

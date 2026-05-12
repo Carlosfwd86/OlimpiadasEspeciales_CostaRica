@@ -1,4 +1,5 @@
-const { Voluntario, VoluntarioArea } = require('../models');
+const { models } = require('../config/database');
+const { Voluntario, VoluntarioArea } = models;
 
 // Controlador para la gestión de Voluntarios
 const voluntarioController = {

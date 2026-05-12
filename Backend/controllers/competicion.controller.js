@@ -1,4 +1,5 @@
-const { Competicion, CompeticionAtleta } = require('../models');
+const { models } = require('../config/database');
+const { Competicion, CompeticionAtleta } = models;
 
 // Controlador para la gestión de Competiciones
 const competicionController = {
