@@ -52,6 +52,8 @@ app.use('/api/roles', require('./routes/rolesRoutes'));
 app.use('/api/tutores', require('./routes/tutores.routes'));
 app.use('/api/voluntarios', require('./routes/voluntario.routes'));
 app.use('/api/voluntario-area', require('./routes/voluntario_area.routes'));
+app.use('/api', require('./routes/admin.routes'));
+app.use('/api/usuarios', require('./routes/usuario.routes'));
 
 // Nuevos endpoints requeridos por el frontend
 app.use('/api/stats', require('./routes/stats.routes'));

@@ -11,10 +11,7 @@ const voluntarioController = {
       const voluntarios = await Voluntario.findAll({
         include: [{ model: VoluntarioArea }]
       });
-      return res.status(200).json({
-        ok: true,
-        data: voluntarios
-      });
+      return res.status(200).json(voluntarios);
     } catch (error) {
       return res.status(500).json({
         ok: false,
@@ -39,10 +36,7 @@ const voluntarioController = {
         });
       }
 
-      return res.status(200).json({
-        ok: true,
-        data: voluntario
-      });
+      return res.status(200).json(voluntario);
     } catch (error) {
       return res.status(500).json({
         ok: false,
@@ -96,10 +90,7 @@ const voluntarioController = {
       }
 
       await voluntario.update(req.body);
-      return res.status(200).json({
-        ok: true,
-        msg: 'Voluntario actualizado correctamente'
-      });
+      return res.status(200).json(voluntario);
     } catch (error) {
       return res.status(500).json({
         ok: false,
@@ -132,6 +123,37 @@ const voluntarioController = {
         msg: 'Error al eliminar registro',
         error: error.message
       });
+    }
+  },
+
+  // Métodos de Aprobación y Rechazo (Tarea 4)
+  aprobar: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const voluntario = await Voluntario.findByPk(id);
+      if (!voluntario) return res.status(404).json({ msg: 'No encontrado' });
+
+      await voluntario.update({ 
+        status: 'ACTIVO', 
+        fecha_aprobacion: new Date() 
+      });
+      
+      return res.status(200).json(voluntario);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  },
+
+  rechazar: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const voluntario = await Voluntario.findByPk(id);
+      if (!voluntario) return res.status(404).json({ msg: 'No encontrado' });
+
+      await voluntario.update({ status: 'INACTIVO' });
+      return res.status(200).json(voluntario);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
   }
 };

@@ -14,6 +14,7 @@ interface PendingTableProps {
 export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery = '', onActionSuccess }: PendingTableProps): React.JSX.Element {
   const [registrations, setRegistrations] = useState<Registro[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [processingId, setProcessingId] = useState<string | null>(null);
   const [filterSport, setFilterSport] = useState<string>('');
   const [filterRegion, setFilterRegion] = useState<string>('');
   const [selectedReg, setSelectedReg] = useState<Registro | null>(null);
@@ -38,9 +39,10 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   const handleApprove = (reg: Registro): void => {
     if (!window.confirm(`¿Seguro que deseas APROBAR a ${String(reg.name ?? '')}? Pasará a la base de datos oficial.`)) return;
 
+    setProcessingId(reg.id);
     ServicesAdmin.aprobarRegistro(reg)
       .then(() => {
-        alert("¡Atleta aprobado y guardado en la base de datos oficial!");
+        alert("¡Registro aprobado y guardado en la base de datos oficial!");
         ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${String(reg.name ?? '')}`, "fa-solid fa-check-circle", "green");
         if (onActionSuccess) onActionSuccess();
         fetchRegistrations();
@@ -48,30 +50,39 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
       .catch(err => {
         console.error("Error al aprobar:", err);
         alert("Error al procesar la aprobación.");
-      });
+      })
+      .finally(() => setProcessingId(null));
   };
 
-  const handleReject = (id: string): void => {
-    if (!window.confirm("¿Seguro que deseas marcar este registro como RECHAZADO?")) return;
+  const handleReject = (reg: Registro): void => {
+    if (!window.confirm(`¿Seguro que deseas marcar el registro de ${reg.name} como RECHAZADO?`)) return;
 
-    ServicesAdmin.saveRegistro({ status: 'RECHAZADO', statusColor: 'red', bgColor: 'bg-light-red' }, id)
+    setProcessingId(reg.id);
+    ServicesAdmin.rechazarRegistro(reg.id, reg.rol)
       .then(() => {
+        ServicesAdmin.logActivity("Rechazo", `Se rechazó a ${reg.name}`, "fa-solid fa-circle-xmark", "red");
         if (onActionSuccess) onActionSuccess();
         fetchRegistrations();
       })
-      .catch(err => console.error("Error al rechazar:", err));
+      .catch(err => {
+        console.error("Error al rechazar:", err);
+        alert("Error al procesar el rechazo.");
+      })
+      .finally(() => setProcessingId(null));
   };
 
   const handleDelete = (id: string): void => {
     if (!window.confirm("¿Estás seguro de que deseas ELIMINAR permanentemente este registro?")) return;
 
+    setProcessingId(id);
     ServicesAdmin.deleteRegistro(id)
       .then(() => {
         ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
         if (onActionSuccess) onActionSuccess();
         fetchRegistrations();
       })
-      .catch(err => console.error("Error al eliminar:", err));
+      .catch(err => console.error("Error al eliminar:", err))
+      .finally(() => setProcessingId(null));
   };
 
   if (loading) {
@@ -139,8 +150,8 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
         <table className="pending-table">
           <thead>
             <tr>
-              <th>Atleta</th>
-              <th>Deporte</th>
+              <th>Atleta/Usuario</th>
+              <th>Rol / Deporte</th>
               <th>Región</th>
               <th>Estado</th>
               <th>Acciones</th>
@@ -168,7 +179,10 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
                       </div>
                     </div>
                   </td>
-                  <td>{String(reg.sport ?? '')}</td>
+                  <td>
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#64748b', display: 'block', textTransform: 'uppercase' }}>{reg.rol}</span>
+                    {reg.sport && <span style={{ fontSize: '13px' }}>{reg.sport}</span>}
+                  </td>
                   <td>{String(reg.region ?? '')}</td>
                   <td>
                     <span className={`status-badge status-${String(reg.statusColor ?? '')}`}>
@@ -178,21 +192,30 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
                   <td>
                     <div className="action-buttons">
                       <button className="btn-action edit" title="Ver Detalles"
+                        disabled={processingId !== null}
                         onClick={() => { setSelectedReg(reg); setShowDetail(true); }}
                         style={{ backgroundColor: '#f1f5f9', color: '#64748b' }}
                       >
                         <i className="fa-solid fa-eye"></i>
                       </button>
-                      <button className="btn-action edit" title="Editar" onClick={() => onEdit(reg)}>
+                      <button className="btn-action edit" title="Editar" 
+                        disabled={processingId !== null}
+                        onClick={() => onEdit(reg)}>
                         <i className="fa-solid fa-pen"></i>
                       </button>
-                      <button className="btn-action approve" title="Aprobar" onClick={() => handleApprove(reg)}>
-                        <i className="fa-solid fa-check"></i>
+                      <button className="btn-action approve" title="Aprobar" 
+                        disabled={processingId !== null}
+                        onClick={() => handleApprove(reg)}>
+                        {processingId === reg.id ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-check"></i>}
                       </button>
-                      <button className="btn-action reject" title="Rechazar" onClick={() => handleReject(reg.id)}>
-                        <i className="fa-solid fa-xmark"></i>
+                      <button className="btn-action reject" title="Rechazar" 
+                        disabled={processingId !== null}
+                        onClick={() => handleReject(reg)}>
+                        {processingId === reg.id ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-xmark"></i>}
                       </button>
-                      <button className="btn-action delete" title="Eliminar" onClick={() => handleDelete(reg.id)}>
+                      <button className="btn-action delete" title="Eliminar" 
+                        disabled={processingId !== null}
+                        onClick={() => handleDelete(reg.id)}>
                         <i className="fa-solid fa-trash"></i>
                       </button>
                     </div>
