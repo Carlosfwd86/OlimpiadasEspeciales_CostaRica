@@ -1,23 +1,18 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface PrivateRouteProps {
   children: React.ReactNode;
 }
 
-/**
- * Componente para proteger rutas privadas.
- * Verifica si existe una sesión activa en localStorage.
- */
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const usuarioSesion = localStorage.getItem('usuarioSesion');
+  const { isAuthenticated, isLoading } = useAuth();
 
-  // Si no hay sesión, redirigir al login
-  if (!usuarioSesion) {
-    return <Navigate to="/login" replace />;
-  }
+  if (isLoading) return null;
 
-  // Si hay sesión, permitir el acceso al componente hijo
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+
   return <>{children}</>;
 };
 
