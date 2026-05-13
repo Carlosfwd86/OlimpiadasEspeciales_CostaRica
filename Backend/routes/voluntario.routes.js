@@ -10,10 +10,10 @@ router.use(auth);
 
 router.get('/', voluntarioController.obtenerTodos);
 router.get('/:id', voluntarioController.obtenerPorId);
-
-// Solo Admin
-router.post('/', checkRole([1]), voluntarioController.crear);
-router.put('/:id', checkRole([1]), voluntarioController.actualizar);
-router.delete('/:id', checkRole([1]), voluntarioController.eliminar);
+router.post('/', voluntarioController.crear);
+router.put('/:id', voluntarioController.actualizar);
+router.put('/:id/aprobar', voluntarioController.aprobar);
+router.put('/:id/rechazar', voluntarioController.rechazar);
+router.delete('/:id', voluntarioController.eliminar);
 
 module.exports = router;

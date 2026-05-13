@@ -6,16 +6,17 @@ import type { Consulta } from '../../types';
 export default function ConsultasSection(): React.JSX.Element {
     const [consultas, setConsultas] = useState<Consulta[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchConsultas = () => {
         ServicesAdmin.getConsultas()
             .then((data: Consulta[]) => {
-                // Add error handling if data is missing, handle properly
                 setConsultas(Array.isArray(data) ? data.sort((a,b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) : []);
                 setLoading(false);
             })
             .catch((err: any) => {
                 console.error("Error al cargar consultas:", err);
+                setError("No se pudieron cargar las consultas. Por favor, intente de nuevo más tarde.");
                 setLoading(false);
             });
     };
@@ -24,7 +25,7 @@ export default function ConsultasSection(): React.JSX.Element {
         fetchConsultas();
     }, []);
 
-    const handleDelete = (id: string) => {
+    const handleDelete = (id: string | number) => {
         Swal.fire({
             title: '¿Eliminar Mensaje?',
             text: "Esta acción no se puede deshacer.",
@@ -66,7 +67,28 @@ export default function ConsultasSection(): React.JSX.Element {
     };
 
     if (loading) {
-        return <div style={{ padding: '40px', textAlign: 'center' }}>Cargando consultas...</div>;
+        return (
+            <div style={{ padding: '40px', textAlign: 'center' }}>
+                <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '24px', color: '#3b82f6', marginBottom: '10px' }}></i>
+                <p>Cargando consultas...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ padding: '40px', textAlign: 'center', color: '#ef4444' }}>
+                <i className="fa-solid fa-circle-exclamation" style={{ fontSize: '40px', marginBottom: '15px' }}></i>
+                <h4>Error</h4>
+                <p>{error}</p>
+                <button 
+                    onClick={fetchConsultas}
+                    style={{ marginTop: '15px', padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                >
+                    Reintentar
+                </button>
+            </div>
+        );
     }
 
     return (

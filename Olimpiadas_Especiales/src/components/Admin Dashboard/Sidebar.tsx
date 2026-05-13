@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../style/Sidebar.css';
 import logoUrl from '../../img/Logo Olimpiadas.png';
+import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
   activeTab: string;
@@ -8,6 +9,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React.JSX.Element {
+  const { logout } = useAuth();
+
   return (
     <aside className="admin-sidebar">
       <div className="sidebar-logo">
@@ -49,6 +52,13 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
           >
             <i className="fa-solid fa-trophy nav-icon"></i>
             Competiciones y Eventos
+          </li>
+          <li
+            className={`nav-item ${activeTab === 'consultas' ? 'active' : ''}`}
+            onClick={() => onTabChange('consultas')}
+          >
+            <i className="fa-solid fa-envelope nav-icon"></i>
+            Bandeja de Consultas
           </li>
         </ul>
       </div>
@@ -100,9 +110,9 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
           <li
             className="nav-item"
             onClick={() => {
-                if (window.confirm("¿Seguro que deseas cerrar la sesión administrativa?")) {
-                    window.location.href = '/';
-                }
+              if (window.confirm('¿Seguro que deseas cerrar la sesión administrativa?')) {
+                logout();
+              }
             }}
           >
             <i className="fa-solid fa-right-from-bracket nav-icon"></i>

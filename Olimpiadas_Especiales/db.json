@@ -743,18 +743,6 @@
       "fechaRegistro": "2026-03-27T21:05:10.613Z",
       "rol": "usuario",
       "pais": "Venezuela"
-    },
-    {
-      "id": "841a",
-      "nombre": "andres",
-      "cedula": "603550322",
-      "correoElectronico": "cajr1986@gmail.com",
-      "telefono": "",
-      "password": "Carlos",
-      "fechaNacimiento": "1986-05-18",
-      "genero": "Masculino",
-      "fechaRegistro": "2026-03-29T01:24:34.378Z",
-      "rol": "usuario"
     }
   ],
   "disciplinas": [
@@ -836,48 +824,13 @@
     }
   ],
   "consultas": [
-    {
-      "id": "6",
-      "nombre": "Otro"
-    }
+    { "id": "6", "nombre": "Otro" }
   ],
-  "usuarios_sistema": [
-    {
-      "id": "u1",
-      "nombre": "Andrés Jiménez",
-      "email": "ajimenez@oechr.org",
-      "rol": "SuperAdmin",
-      "status": "Activo",
-      "avatar": "AJ",
-      "bgColor": "bg-blue-500"
-    },
-    {
-      "id": "u2",
-      "nombre": "Sofía Castro",
-      "email": "scastro@oechr.org",
-      "rol": "Editor",
-      "status": "Inactivo",
-      "avatar": "SC",
-      "bgColor": "bg-purple-500"
-    },
-    {
-      "id": "1826",
-      "nombre": "Gerson fuentes",
-      "email": "dinartegerson@gmail.com",
-      "rol": "Staff",
-      "estado": "Activo"
+  "configuracion": {
+    "assets": {
+      "video_berlin": "/img/berlin-film-2025-for-website.mp4",
+      "logo_oficial": "/img/Logo Olimpiadas.png"
     }
-  ],
-  "system_settings": {
-    "tema": "light",
-    "notificaciones": true,
-    "registro_automatico": false,
-    "idioma": "es",
-    "nombre_sitio": "Olimpiadas Especiales Costa Rica",
-    "email_contacto": "info@oe.cr",
-    "logo_url": "/img/Logo Olimpiadas.png",
-    "video_hero": "/img/berlin-film-2025-for-website.mp4",
-    "slogan": "Unidos por un sueño"
   },
   "$schema": "./node_modules/json-server/schema.json"
 }
