@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/AdminDashboard.css';
 
-// URL base del backend real (configurable por variable de entorno)
-const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api/v1";
-
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import StatCard from './StatCard';
@@ -21,6 +18,7 @@ import CompetitionCard from './CompetitionCard';
 import ConsultasSection from './ConsultasSection';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import type { Stats, Competicion, Registro } from '../../types';
+import apiClient from '../../api/apiClient';
 
 interface CompeticionFormData {
   nombre: string;
@@ -61,15 +59,13 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    fetch(`${BACKEND_URL}/registros-pendientes`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token') ?? ''}` }
-      })
-      .then(res => res.json())
-      .then((data: Array<Record<string, unknown>>) => {
+    apiClient.get('/registros-pendientes')
+      .then(res => {
+        const data = res.data.data || [];
         if (data.length === 0) { alert("No hay datos para exportar."); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
-        const csvContent = data.map(r =>
-          `${String(r.id)},"${String(r.name ?? '')}","${String(r.email ?? '')}","${String(r.phone ?? '')}","${String(r.sport ?? '')}","${String(r.region ?? '')}","${String(r.status ?? '')}"`
+        const csvContent = data.map((r: any) =>
+          `${String(r.id)},"${String(r.name ?? r.nombre ?? '')}","${String(r.email ?? r.correo_electronico ?? '')}","${String(r.phone ?? r.telefono ?? '')}","${String(r.sport ?? r.disciplina ?? '')}","${String(r.region ?? r.programa ?? '')}","${String(r.status ?? r.estado ?? '')}"`
         ).join("\n");
 
         const blob = new Blob([headers + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -84,6 +80,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
       })
       .catch(err => console.error("Error al exportar:", err));
   };
+
 
   const handleNewEntry = (): void => { setEditData(null); setIsModalOpen(true); };
   const handleEditEntry = (reg: Registro): void => { setEditData(reg); setIsModalOpen(true); };
