@@ -36,10 +36,10 @@ const validators = {
 
   // Validación para Consultas/Mensajes (Saneamiento contra XSS)
   consulta: [
-    body('user_name').trim().escape().notEmpty().withMessage('Nombre obligatorio'),
-    body('user_email').isEmail().withMessage('Email inválido'),
-    body('user_subject').trim().escape().optional(),
-    body('message').trim().escape().notEmpty().withMessage('El mensaje no puede estar vacío')
+    body('nombre').trim().escape().notEmpty().withMessage('Nombre obligatorio'),
+    body('correo').isEmail().withMessage('Email inválido'),
+    body('asunto').trim().escape().notEmpty().withMessage('Asunto obligatorio'),
+    body('mensaje').trim().escape().notEmpty().withMessage('El mensaje no puede estar vacío').isLength({ min: 10 }).withMessage('Mínimo 10 caracteres')
   ]
 };
 

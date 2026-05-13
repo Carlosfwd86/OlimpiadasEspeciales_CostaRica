@@ -50,24 +50,39 @@ const Contacto = (): React.JSX.Element => {
 
     // ── 1. Guardado en DB (siempre se ejecuta) ─────────────────
     const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+    let dbSuccess = false;
     try {
-      await fetch(`${BACKEND_URL}/consultas`, {
+      const response = await fetch(`${BACKEND_URL}/consultas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_name,
-          user_email,
-          user_subject,
-          message,
-          fecha: new Date().toISOString(),
+          nombre: user_name,
+          correo: user_email,
+          asunto: user_subject,
+          mensaje: message,
         }),
       });
+
+      if (response.ok) {
+        dbSuccess = true;
+      } else {
+        const errorData = await response.json();
+        console.error('Error del servidor:', errorData);
+        // Extraer el primer error de los detalles si existe
+        const msg = errorData.details?.[0] ? Object.values(errorData.details[0])[0] : (errorData.error || 'Error al procesar la consulta.');
+        setError(msg as string);
+        setLoading(false);
+        return; // Detener si falla el guardado en BD
+      }
     } catch (dbErr) {
-      console.error('Error al guardar en BD:', dbErr);
-      // No bloqueamos el flujo: mostramos éxito igual si EmailJS funciona
+      console.error('Error al conectar con la BD:', dbErr);
+      setError('No se pudo conectar con el servidor.');
+      setLoading(false);
+      return;
     }
 
     // ── 2. EmailJS (solo si las credenciales son reales) ───────
+    // ... rest of the logic
     const credencialesReales =
       EMAILJS_SERVICE_ID  !== 'YOUR_SERVICE_ID' &&
       EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID' &&
@@ -83,7 +98,7 @@ const Contacto = (): React.JSX.Element => {
         );
       } catch (emailErr) {
         console.error('Error al enviar email:', emailErr);
-        // Notificamos pero no bloqueamos el éxito de la BD
+        // Aquí no bloqueamos el flujo porque ya se guardó en BD
       }
     }
 

@@ -2,6 +2,7 @@ import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettin
 
 // URL base del backend real (configurable por variable de entorno)
 const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api/v1";
+const BASE_URL = import.meta.env.VITE_MOCK_URL ?? "http://localhost:3001";
 
 // Helper: retorna headers con JWT desde localStorage
 const authHeaders = (): HeadersInit => ({
@@ -246,6 +247,24 @@ export const ServicesAdmin = {
     deleteCompeticion: async (id: string): Promise<boolean> => {
         const res = await fetch(`${BASE_URL}/competiciones/${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error("Error al eliminar competición");
+        return true;
+    },
+
+    // Consultas — conectado al backend real
+    getConsultas: async (): Promise<Consulta[]> => {
+        const res = await fetch(`${BACKEND_URL}/consultas`, {
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error("Error al obtener consultas");
+        return res.json();
+    },
+
+    deleteConsulta: async (id: string): Promise<boolean> => {
+        const res = await fetch(`${BACKEND_URL}/consultas/${id}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error("Error al eliminar consulta");
         return true;
     }
 };

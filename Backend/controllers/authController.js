@@ -9,9 +9,17 @@ const registrarUsuario = async (req, res) => {
     const { rol_id, nombre, apellido, cedula, correo_electronico, password, telefono, direccion, pais, fecha_nacimiento, genero, avatar_url } = req.body;
 
     // Verifica si el correo ya está registrado
-    const usuarioExistente = await Usuario.findOne({ where: { correo_electronico } });
-    if (usuarioExistente) {
+    const correoExistente = await Usuario.findOne({ where: { correo_electronico } });
+    if (correoExistente) {
       return res.status(400).json({ error: 'El correo electrónico ya está en uso.' });
+    }
+
+    // Verifica si la cédula ya está registrada
+    if (cedula) {
+      const cedulaExistente = await Usuario.findOne({ where: { cedula } });
+      if (cedulaExistente) {
+        return res.status(400).json({ error: 'La identificación (cédula) ya está registrada.' });
+      }
     }
 
     // Encripta la contraseña antes de guardarla
@@ -45,6 +53,15 @@ const registrarUsuario = async (req, res) => {
 
   } catch (error) {
     console.error('Error al registrar usuario:', error);
+    
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ error: 'El correo o la identificación ya están registrados.' });
+    }
+    
+    if (error.name === 'SequelizeValidationError') {
+      return res.status(400).json({ error: error.errors[0].message });
+    }
+
     return res.status(500).json({ error: 'Ocurrió un error al registrar el usuario.' });
   }
 };

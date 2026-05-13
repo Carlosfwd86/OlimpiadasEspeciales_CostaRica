@@ -83,3 +83,5 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Forzar reinicio de nodemon - Sincronización de validadores

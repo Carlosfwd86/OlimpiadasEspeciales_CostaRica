@@ -8,7 +8,7 @@ export default function ConsultasSection(): React.JSX.Element {
     const [loading, setLoading] = useState<boolean>(true);
 
     const fetchConsultas = () => {
-        (ServicesAdmin as any).getConsultas()
+        ServicesAdmin.getConsultas()
             .then((data: Consulta[]) => {
                 // Add error handling if data is missing, handle properly
                 setConsultas(Array.isArray(data) ? data.sort((a,b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) : []);
@@ -36,7 +36,7 @@ export default function ConsultasSection(): React.JSX.Element {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                (ServicesAdmin as any).deleteConsulta(id)
+                ServicesAdmin.deleteConsulta(id)
                     .then(() => {
                         Swal.fire('¡Eliminado!', 'El mensaje ha sido borrado.', 'success');
                         fetchConsultas();
@@ -48,15 +48,15 @@ export default function ConsultasSection(): React.JSX.Element {
 
     const handleView = (consulta: Consulta) => {
         Swal.fire({
-            title: `Asunto: ${consulta.user_subject || 'Sin Asunto'}`,
+            title: `Asunto: ${consulta.asunto || 'Sin Asunto'}`,
             html: `
                 <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                    <p style="margin: 0 0 5px;"><strong>De:</strong> ${consulta.user_name}</p>
-                    <p style="margin: 0 0 5px;"><strong>Email:</strong> <a href="mailto:${consulta.user_email}" style="color: #3b82f6; text-decoration: none;">${consulta.user_email}</a></p>
+                    <p style="margin: 0 0 5px;"><strong>De:</strong> ${consulta.nombre}</p>
+                    <p style="margin: 0 0 5px;"><strong>Email:</strong> <a href="mailto:${consulta.correo}" style="color: #3b82f6; text-decoration: none;">${consulta.correo}</a></p>
                     <p style="margin: 0; font-size: 12px; color: #64748b;"><strong>Fecha:</strong> ${new Date(consulta.fecha).toLocaleString()}</p>
                 </div>
                 <div style="text-align: left; background: #ffffff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; white-space: pre-wrap; font-size: 14px; color: #334155;">
-                    ${consulta.message}
+                    ${consulta.mensaje}
                 </div>
             `,
             confirmButtonText: 'Cerrar',
@@ -97,9 +97,9 @@ export default function ConsultasSection(): React.JSX.Element {
                         <tbody>
                             {consultas.map(consulta => (
                                 <tr key={consulta.id} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '13px' }}>
-                                    <td style={{ padding: '12px', fontWeight: '500' }}>{consulta.user_name}</td>
-                                    <td style={{ padding: '12px', color: '#64748b' }}>{consulta.user_email}</td>
-                                    <td style={{ padding: '12px', color: '#1d1d1f' }}>{consulta.user_subject}</td>
+                                    <td style={{ padding: '12px', fontWeight: '500' }}>{consulta.nombre}</td>
+                                    <td style={{ padding: '12px', color: '#64748b' }}>{consulta.correo}</td>
+                                    <td style={{ padding: '12px', color: '#1d1d1f' }}>{consulta.asunto}</td>
                                     <td style={{ padding: '12px', color: '#64748b' }}>{new Date(consulta.fecha).toLocaleDateString()}</td>
                                     <td style={{ padding: '12px', textAlign: 'center' }}>
                                         <button 

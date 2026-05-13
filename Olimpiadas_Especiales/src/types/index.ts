@@ -206,3 +206,17 @@ export interface ConfigData {
 
 // ------ Tipos de rol ------
 export type RolType = 'atleta' | 'entrenador' | 'tutor' | 'voluntario';
+
+export interface Consulta {
+  id: string;
+  nombre: string;
+  correo: string;
+  asunto: string;
+  mensaje: string;
+  leida: boolean;
+  fecha: string;
+  user_name?: string; // Temporales para migración
+  user_email?: string;
+  user_subject?: string;
+  message?: string;
+}

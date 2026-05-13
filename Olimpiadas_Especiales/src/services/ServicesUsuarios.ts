@@ -46,18 +46,41 @@ export const getUsuarioById = async (id: string): Promise<Usuario> => {
     }
 };
 
-export const createUsuario = async (usuario: Omit<Usuario, 'id'>): Promise<Usuario> => {
+export const createUsuario = async (usuario: any): Promise<Usuario> => {
     try {
+        // Separar nombre y apellido del nombre completo
+        const nombres = (usuario.nombre || '').trim().split(' ');
+        const nombre = nombres[0] || 'Usuario';
+        const apellido = nombres.slice(1).join(' ') || '.';
+
+        const payload = {
+            nombre: nombre,
+            apellido: apellido,
+            cedula: usuario.cedula,
+            correo_electronico: usuario.correoElectronico || usuario.correo_electronico,
+            telefono: usuario.telefono,
+            password: usuario.password,
+            fecha_nacimiento: usuario.fechaNacimiento,
+            genero: usuario.genero === 'NoDecir' ? 'Otro' : usuario.genero,
+            rol_id: 2, // ID del rol Atleta/Usuario básico
+        };
+
         const response = await fetch(`${BACKEND_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                ...usuario,
-                rol_id: 2, // rol usuario por defecto
-                fechaRegistro: new Date().toISOString()
-            }),
+            body: JSON.stringify(payload),
         });
-        if (!response.ok) throw new Error('Error al registrar el usuario');
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Detalles del error:', errorData);
+            
+            // Extraer el primer error de los detalles si existe
+            const firstError = errorData.details?.[0] ? Object.values(errorData.details[0])[0] : null;
+            const errorMsg = (firstError as string) || errorData.error || 'Error al registrar el usuario';
+            
+            throw new Error(errorMsg);
+        }
         return unwrapOne<Usuario>(await response.json());
     } catch (error) {
         console.error('Error en createUsuario:', error);
