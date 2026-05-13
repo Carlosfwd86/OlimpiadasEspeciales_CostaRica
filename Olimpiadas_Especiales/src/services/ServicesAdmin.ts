@@ -1,34 +1,25 @@
-import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta } from '../types';
-
-// URL base del backend real (configurable por variable de entorno)
-const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api/v1";
-const BASE_URL = import.meta.env.VITE_MOCK_URL ?? "http://localhost:3001";
-
-// Helper: retorna headers con JWT desde localStorage
-const authHeaders = (): HeadersInit => ({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`
-});
+import apiClient from '../api/apiClient';
+import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta } from '../types';
 
 export const ServicesAdmin = {
     // Registros Pendientes
     getRegistrations: async (): Promise<Registro[]> => {
-        const res = await apiClient.get<Registro[]>('/registros_pendientes');
+        const res = await apiClient.get<Registro[]>('/registros-pendientes');
         return res.data;
     },
 
     saveRegistro: async (data: Partial<Registro>, id: string | null = null): Promise<Registro> => {
         if (id) {
-            const res = await apiClient.patch<Registro>(`/registros_pendientes/${id}`, data);
+            const res = await apiClient.patch<Registro>(`/registros-pendientes/${id}`, data);
             return res.data;
         } else {
-            const res = await apiClient.post<Registro>('/registros_pendientes', data);
+            const res = await apiClient.post<Registro>('/registros-pendientes', data);
             return res.data;
         }
     },
 
     deleteRegistro: async (id: string): Promise<void> => {
-        await apiClient.delete(`/registros_pendientes/${id}`);
+        await apiClient.delete(`/registros-pendientes/${id}`);
     },
 
     // Lógica de Aprobación Dinámica
@@ -38,7 +29,7 @@ export const ServicesAdmin = {
         // Aprobación específica para voluntarios
         if (role === 'voluntario') {
             await apiClient.put(`/voluntarios/${registro.id}/aprobar`);
-            await apiClient.delete(`/registros_pendientes/${registro.id}`);
+            await apiClient.delete(`/registros-pendientes/${registro.id}`);
             return true;
         }
 
@@ -55,7 +46,6 @@ export const ServicesAdmin = {
 
         if (!userId && userEmail) {
             try {
-                // Buscamos si el usuario ya existe en el sistema central
                 const resU = await apiClient.get<Array<{ id: string }>>(`/usuarios?correo_electronico=${userEmail}`);
                 if (resU.data.length > 0) userId = resU.data[0].id;
             } catch (e) { console.error("Error buscando usuario:", e); }
@@ -78,12 +68,11 @@ export const ServicesAdmin = {
             fecha_aprobacion: new Date().toISOString()
         };
 
-        // Limpiamos campos exclusivos de la tabla de pendientes
         const fieldsToDelete = ['statusColor', 'bgColor', 'time', 'initials'];
         fieldsToDelete.forEach(f => delete (officialData as any)[f]);
 
         await apiClient.post(`/${endpoint}`, officialData);
-        await apiClient.delete(`/registros_pendientes/${registro.id}`);
+        await apiClient.delete(`/registros-pendientes/${registro.id}`);
 
         return true;
     },
@@ -92,10 +81,8 @@ export const ServicesAdmin = {
         if (role === 'voluntario') {
             await apiClient.put(`/voluntarios/${id}/rechazar`);
         } else {
-            await apiClient.patch(`/registros_pendientes/${id}`, { 
-                status: 'RECHAZADO', 
-                statusColor: 'red', 
-                bgColor: 'bg-light-red' 
+            await apiClient.patch(`/registros-pendientes/${id}`, { 
+                status: 'RECHAZADO'
             });
         }
     },
@@ -108,8 +95,13 @@ export const ServicesAdmin = {
 
     // Actividad del Sistema
     getActivities: async (): Promise<Activity[]> => {
-        const res = await apiClient.get<Activity[]>('/actividad_sistema');
-        return res.data;
+        try {
+            const res = await apiClient.get<Activity[]>('/actividad-sistema');
+            return res.data;
+        } catch (error) {
+            console.warn("Actividad del sistema no disponible");
+            return [];
+        }
     },
 
     getProfile: async (id: number | string = 1): Promise<AdminProfile> => {
@@ -122,20 +114,20 @@ export const ServicesAdmin = {
         return res.data;
     },
 
-    // Configuración del sistema — conectado al backend real
+    // Configuración del sistema
     getSettings: async (): Promise<SystemSettings> => {
-        const res = await apiClient.get<SystemSettings>('/system_settings');
+        const res = await apiClient.get<SystemSettings>('/settings');
         return res.data;
     },
 
     updateSettings: async (data: SystemSettings): Promise<SystemSettings> => {
-        const res = await apiClient.put<SystemSettings>('/system_settings', data);
+        const res = await apiClient.put<SystemSettings>('/settings', data);
         return res.data;
     },
 
-    // Gestión de usuarios — conectado al backend real
+    // Gestión de usuarios
     getUsers: async (): Promise<Record<string, unknown>[]> => {
-        const res = await apiClient.get<Record<string, unknown>[]>('/usuarios/all');
+        const res = await apiClient.get<Record<string, unknown>[]>('/usuarios');
         return res.data;
     },
 
@@ -150,30 +142,22 @@ export const ServicesAdmin = {
         icon: string = "fa-solid fa-circle-info",
         iconColor: string = "blue"
     ): Promise<void> => {
-        const activity: Omit<Activity, 'id'> = { title, details, icon, iconColor, time: "Hace un momento" };
-        await apiClient.post('/actividad_sistema', activity);
+        try {
+            const activity = { title, details, icon, iconColor, time: new Date().toISOString() };
+            await apiClient.post('/actividad-sistema', activity);
+        } catch (e) { /* silent fail */ }
     },
 
     // Gráficos
     getCharts: async (): Promise<Graficos> => {
-        const res = await apiClient.get<Graficos>('/graficos');
+        const res = await apiClient.get<Graficos>('/stats/charts');
         return res.data;
     },
 
-    // Estadísticas — una sola llamada al backend real
+    // Estadísticas
     getStats: async (): Promise<Stats> => {
-        const [atletas, pendientes, volunt] = await Promise.all([
-            apiClient.get<unknown[]>('/atletas'),
-            apiClient.get<unknown[]>('/registros_pendientes'),
-            apiClient.get<unknown[]>('/voluntarios')
-        ]);
-
-        return {
-            totalRegistros: { valor: atletas.data.length + pendientes.data.length, porcentaje: "+12%", tendencia: 'up' },
-            atletasActivos: { valor: atletas.data.length, porcentaje: "+5%", tendencia: 'up' },
-            revisionesPendientes: { valor: pendientes.data.length, textoExtra: "Requieren acción" },
-            voluntarios: { valor: volunt.data.length, porcentaje: "0%", tendencia: 'none' }
-        };
+        const res = await apiClient.get<Stats>('/stats/summary');
+        return res.data;
     },
 
     // Competiciones
@@ -187,11 +171,7 @@ export const ServicesAdmin = {
             const res = await apiClient.patch<Competicion>(`/competiciones/${id}`, data);
             return res.data;
         } else {
-            const res = await apiClient.post<Competicion>('/competiciones', {
-                ...data,
-                id: Math.random().toString(36).substr(2, 9),
-                status: 'Programado'
-            });
+            const res = await apiClient.post<Competicion>('/competiciones', data);
             return res.data;
         }
     },
@@ -201,21 +181,14 @@ export const ServicesAdmin = {
         return true;
     },
 
-    // Consultas — conectado al backend real
+    // Consultas
     getConsultas: async (): Promise<Consulta[]> => {
-        const res = await fetch(`${BACKEND_URL}/consultas`, {
-            headers: authHeaders()
-        });
-        if (!res.ok) throw new Error("Error al obtener consultas");
-        return res.json();
+        const res = await apiClient.get<Consulta[]>('/consultas');
+        return res.data;
     },
 
     deleteConsulta: async (id: string): Promise<boolean> => {
-        const res = await fetch(`${BACKEND_URL}/consultas/${id}`, {
-            method: 'DELETE',
-            headers: authHeaders()
-        });
-        if (!res.ok) throw new Error("Error al eliminar consulta");
+        await apiClient.delete(`/consultas/${id}`);
         return true;
     }
 };
