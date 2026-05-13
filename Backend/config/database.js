@@ -65,4 +65,9 @@ if (Sesion && Usuario) {
   Sesion.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 }
 
+if (Atleta && models.NivelHabilidad) {
+  Atleta.belongsTo(models.NivelHabilidad, { foreignKey: 'nivel_habilidad_id', as: 'nivel_habilidad' });
+  models.NivelHabilidad.hasMany(Atleta, { foreignKey: 'nivel_habilidad_id' });
+}
+
 module.exports.models = models;
