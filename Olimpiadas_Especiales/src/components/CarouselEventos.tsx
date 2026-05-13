@@ -21,15 +21,26 @@ const CarouselEventos = (): React.JSX.Element => {
     };
 
     useEffect(() => {
-        fetch('http://localhost:3001/competiciones')
+        const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+        fetch(`${BACKEND_URL}/competiciones`)
             .then(res => res.json())
-            .then((data: Evento[]) => {
-                // Tomar los últimos 3 eventos o todos
-                setEventos(data.slice(-3));
+            .then((json: unknown) => {
+                // Soporta { data: [...] } o array directo
+                const raw = (json && typeof json === 'object' && 'data' in (json as object))
+                    ? (json as { data: Evento[] }).data
+                    : json as Evento[];
+                // Normalizar campos: el backend puede usar descripcion/imagen en lugar de resumen/img
+                const normalized = raw.map(e => ({
+                    ...e,
+                    resumen: e.resumen ?? (e as Record<string, unknown>).descripcion as string ?? '',
+                    img:     e.img    ?? (e as Record<string, unknown>).imagen as string ?? '',
+                    categoria: e.categoria ?? (e as Record<string, unknown>).deporte as string ?? '',
+                }));
+                setEventos(normalized.slice(-3));
                 setCargando(false);
             })
             .catch(err => {
-                console.error("Error cargando eventos carrusel:", err);
+                console.error('Error cargando eventos carrusel:', err);
                 setCargando(false);
             });
     }, []);
@@ -57,7 +68,7 @@ const CarouselEventos = (): React.JSX.Element => {
                         }}
                     >
                         <div className="evento-imagen-wrapper">
-                            <img src={evento.img} alt={evento.nombre} />
+                            <img src={evento.img || undefined} alt={evento.nombre} />
                             <span className="evento-badge">{evento.categoria}</span>
                         </div>
                         <div className="evento-contenido">

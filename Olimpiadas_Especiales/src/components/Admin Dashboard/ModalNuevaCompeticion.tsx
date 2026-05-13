@@ -5,22 +5,22 @@ import type { Competicion } from '../../types';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 
 interface CompeticionFormData {
-  nombre: string;
-  deporte: string;
-  fecha: string;
-  fechaFin: string;
-  ubicacion: string;
-  descripcion: string;
-  imagen: string;
-  enlace: string;
-  [key: string]: unknown;
+    nombre: string;
+    deporte: string;
+    fecha: string;
+    fechaFin: string;
+    ubicacion: string;
+    descripcion: string;
+    imagen: string;
+    enlace: string;
+    [key: string]: unknown;
 }
 
 interface ModalNuevaCompeticionProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSaveSuccess: () => void;
-  editData?: Competicion | null;
+    isOpen: boolean;
+    onClose: () => void;
+    onSaveSuccess: () => void;
+    editData?: Competicion | null;
 }
 
 export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, editData = null }: ModalNuevaCompeticionProps): React.JSX.Element | null {
@@ -74,7 +74,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
         try {
             await ServicesAdmin.saveCompeticion(formData, editData?.id ?? null);
             await ServicesAdmin.logActivity("Competición", `${editData?.id ? 'Edición' : 'Nueva'} competición: ${formData.nombre}`, "fa-solid fa-trophy", "yellow");
-            
+
             Swal.fire({
                 toast: true,
                 position: 'top-end',
@@ -84,28 +84,25 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
                 timer: 3000,
                 timerProgressBar: true
             });
-            
+
             onSaveSuccess();
             onClose();
         } catch (error: unknown) {
             console.error("Error al guardar:", error);
             let errorMessage = 'Error desconocido al guardar la competición.';
-            
+
             if (error instanceof Error) {
                 errorMessage = error.message;
             }
-            
+
             // Check for axios-like response errors safely
             if (typeof error === 'object' && error !== null && 'response' in error) {
-                const responseObj = (error as Record<string, unknown>).response as Record<string, unknown> | undefined;
-                if (responseObj && typeof responseObj === 'object' && 'data' in responseObj) {
-                    const dataObj = responseObj.data as Record<string, unknown> | undefined;
-                    if (dataObj && typeof dataObj.message === 'string') {
-                        errorMessage = dataObj.message;
-                    }
+                const responseObj = (error as Record<string, any>).response;
+                if (responseObj && responseObj.data && typeof responseObj.data.message === 'string') {
+                    errorMessage = responseObj.data.message;
                 }
             }
-            
+
             setApiError(`Error del servidor: ${errorMessage}`);
         } finally {
             setIsSubmitting(false);

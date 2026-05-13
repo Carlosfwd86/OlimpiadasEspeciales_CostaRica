@@ -65,9 +65,13 @@ const Register = (): React.JSX.Element => {
         navigate('/login');
       });
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo completar el registro. Inténtalo de nuevo.' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Error de Registro', 
+        text: err.message || 'No se pudo completar el registro. Inténtalo de nuevo.' 
+      });
     } finally {
       setLoading(false);
     }

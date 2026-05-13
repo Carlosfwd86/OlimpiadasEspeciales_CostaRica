@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
-import { getAtletas } from '../services/ServicesAtletas';
+import { ServicesAtletas } from '../services/ServicesAtletas';
 import { getTutores } from '../services/ServicesTutores';
 import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
@@ -128,38 +128,27 @@ const Home = (): React.JSX.Element => {
     useEffect(() => {
         const fetchCounts = async () => {
             try {
-                const [atletas, tutores, entrenadores, voluntarios, compsRes] = await Promise.all([
-                    getAtletas().catch(() => []) as Promise<Atleta[]>,
-                    getTutores().catch(() => []) as Promise<Tutor[]>,
-                    getEntrenadores().catch(() => []) as Promise<Entrenador[]>,
-                    getVoluntarios().catch(() => []) as Promise<Voluntario[]>,
-                    fetch('http://localhost:3001/competiciones').then(r => r.json()).catch(() => []) as Promise<Competicion[]>
+                const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+                const [statsRes, compsRes] = await Promise.all([
+                    fetch(`${BACKEND_URL}/stats/public`).then(r => r.ok ? r.json() : null).catch(() => null),
+                    fetch(`${BACKEND_URL}/competiciones`).then(r => r.ok ? r.json() : []).catch(() => [])
                 ]);
 
-                // Calcular estadísticas detalladas
-                const masc = atletas.filter(a => a.genero === 'Masculino').length;
-                const fem = atletas.filter(a => a.genero === 'Femenino').length;
+                if (statsRes?.data) {
+                    const stats = statsRes.data;
+                    setCounts({
+                        atletas: stats.atletasActivos?.valor || 0,
+                        tutores: stats.tutores?.valor || 0,
+                        entrenadores: 0, // Si es necesario, añadir en el backend
+                        voluntarios: stats.voluntarios?.valor || 0,
+                        competiciones: compsRes.length || 0,
+                        porSexo: { masc: 0, fem: 0 },
+                        porEdad: { jovenes: 0, adultos: 0, ninos: 0 }
+                    });
+                } else {
+                     setCounts(prev => ({ ...prev, competiciones: compsRes.length || 0 }));
+                }
 
-                const ahora = new Date();
-                const edades = atletas.map(a => {
-                    if (!a.fechaNacimiento) return -1;
-                    const cumple = new Date(a.fechaNacimiento as string);
-                    return ahora.getFullYear() - cumple.getFullYear();
-                }).filter(e => e >= 0);
-
-                setCounts({
-                    atletas: atletas.length || 0,
-                    tutores: tutores.length || 0,
-                    entrenadores: entrenadores.length || 0,
-                    voluntarios: voluntarios.length || 0,
-                    competiciones: compsRes.length || 0,
-                    porSexo: { masc, fem },
-                    porEdad: {
-                        ninos: edades.filter(e => e < 15).length,
-                        jovenes: edades.filter(e => e >= 15 && e < 25).length,
-                        adultos: edades.filter(e => e >= 25).length
-                    }
-                });
             } catch (error) {
                 console.error("Error fetching counts:", error);
             }

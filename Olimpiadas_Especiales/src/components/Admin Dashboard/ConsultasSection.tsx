@@ -9,8 +9,6 @@ export default function ConsultasSection(): React.JSX.Element {
     const [error, setError] = useState<string | null>(null);
 
     const fetchConsultas = () => {
-        setLoading(true);
-        setError(null);
         ServicesAdmin.getConsultas()
             .then((data: Consulta[]) => {
                 setConsultas(Array.isArray(data) ? data.sort((a,b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) : []);
@@ -39,7 +37,7 @@ export default function ConsultasSection(): React.JSX.Element {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                ServicesAdmin.deleteConsulta(String(id))
+                ServicesAdmin.deleteConsulta(id)
                     .then(() => {
                         Swal.fire('¡Eliminado!', 'El mensaje ha sido borrado.', 'success');
                         fetchConsultas();

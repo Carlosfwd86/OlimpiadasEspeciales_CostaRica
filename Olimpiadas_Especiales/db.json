@@ -743,19 +743,6 @@
       "fechaRegistro": "2026-03-27T21:05:10.613Z",
       "rol": "usuario",
       "pais": "Venezuela"
-    },
-    {
-      "id": "841a",
-      "nombre": "andres",
-      "cedula": "603550322",
-      "correoElectronico": "cajr1986@gmail.com",
-      "telefono": "",
-      "password": "Carlos",
-      "fechaNacimiento": "1986-05-18",
-      "genero": "Masculino",
-      "fechaRegistro": "2026-03-29T01:24:34.378Z",
-      "rol": "usuario"
-
     }
   ],
   "disciplinas": [
@@ -837,6 +824,7 @@
     }
   ],
   "consultas": [
+<<<<<<< HEAD
 
     {
       "id": "6",
@@ -881,6 +869,15 @@
     "video_hero": "/img/berlin-film-2025-for-website.mp4",
     "slogan": "Unidos por un sueño"
 
+=======
+    { "id": "6", "nombre": "Otro" }
+  ],
+  "configuracion": {
+    "assets": {
+      "video_berlin": "/img/berlin-film-2025-for-website.mp4",
+      "logo_oficial": "/img/Logo Olimpiadas.png"
+    }
+>>>>>>> a192f50d94ff0b1113b023d3bfe4043f761e22ec
   },
   "$schema": "./node_modules/json-server/schema.json"
 }
