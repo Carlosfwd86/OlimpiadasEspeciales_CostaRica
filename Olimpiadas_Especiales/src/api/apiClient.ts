@@ -13,8 +13,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      console.warn('Sesión expirada o no autorizada. Redirigiendo al login...');
-      // Aquí se podría forzar un logout en el estado global si fuera necesario
+      // Evitar mensaje de alerta si es la verificación inicial o un intento de login fallido
+      const excludeUrls = ['/auth/me', '/auth/login'];
+      if (error.config && !excludeUrls.some(url => error.config.url.includes(url))) {
+        console.warn('Sesión expirada o no autorizada. Redirigiendo al login...');
+      }
     }
     return Promise.reject(error);
   }

@@ -198,3 +198,37 @@ export interface Graficos {
   crecimiento: Array<{ mes: string; valor: number }>;
   distribucion: Array<{ label: string; valor: number }>;
 }
+
+// ------ Config / Catálogos ------
+export interface ConfigItem {
+  id: string | number;
+  nombre: string;
+  [key: string]: unknown;
+}
+
+export interface ConfigData {
+  disciplinas: ConfigItem[];
+  programas: ConfigItem[];
+  niveles_habilidad: ConfigItem[];
+  roles?: ConfigItem[];
+  areas_voluntariado?: ConfigItem[];
+  tipos_recursos?: ConfigItem[];
+  categorias_eventos?: ConfigItem[];
+}
+
+// ------ Tipos de rol ------
+export type RolType = 'atleta' | 'entrenador' | 'tutor' | 'voluntario';
+
+export interface Consulta {
+  id: string;
+  nombre: string;
+  correo: string;
+  asunto: string;
+  mensaje: string;
+  leida: boolean;
+  fecha: string;
+  user_name?: string; // Temporales para migración
+  user_email?: string;
+  user_subject?: string;
+  message?: string;
+}

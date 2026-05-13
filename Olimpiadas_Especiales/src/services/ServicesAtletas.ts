@@ -40,8 +40,6 @@ export const ServicesAtletas = {
     }
   },
 
-  /* [verde] Subir archivos adjuntos (Identificación, Médicos, etc.) */
-  /* Endpoint: POST /api/atletas/:id/documentos */
   subirDocumentosAtleta: async (id: number, formData: FormData): Promise<void> => {
     try {
       await apiClient.post(`/atletas/${id}/documentos`, formData, {
@@ -53,5 +51,26 @@ export const ServicesAtletas = {
       console.error("Error en subirDocumentosAtleta:", error);
       throw error;
     }
+  }
+};
+
+// Funciones individuales para compatibilidad con componentes antiguos
+export const getAtletaById = async (id: string | number): Promise<Atleta> => {
+  try {
+    const response = await apiClient.get<Atleta>(`/atletas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error en getAtletaById:", error);
+    throw error;
+  }
+};
+
+export const updateAtleta = async (id: string | number, atleta: Partial<Atleta>): Promise<Atleta> => {
+  try {
+    const response = await apiClient.put<Atleta>(`/atletas/${id}`, atleta);
+    return response.data;
+  } catch (error) {
+    console.error("Error en updateAtleta:", error);
+    throw error;
   }
 };

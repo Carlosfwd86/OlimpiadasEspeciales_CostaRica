@@ -20,14 +20,18 @@ const Eventos = (): React.JSX.Element => {
     const [cargando, setCargando] = useState<boolean>(true);
 
     useEffect(() => {
-        fetch('http://localhost:3001/competiciones')
+        const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+        fetch(`${BACKEND_URL}/competiciones`)
             .then(res => res.json())
-            .then(data => {
-                setEventos(data as Evento[]);
+            .then((json: unknown) => {
+                const raw = (json && typeof json === 'object' && 'data' in (json as object))
+                    ? (json as { data: Evento[] }).data
+                    : json as Evento[];
+                setEventos(raw);
                 setCargando(false);
             })
             .catch(err => {
-                console.error("Error cargando eventos:", err);
+                console.error('Error cargando eventos:', err);
                 setCargando(false);
             });
     }, []);
@@ -61,7 +65,7 @@ const Eventos = (): React.JSX.Element => {
                         <div key={evento.id} className="evento-item-row">
                             <div className="evento-item-imagen">
                                 <img 
-                                    src={evento.img || evento.imagen} 
+                                    src={evento.img || evento.imagen || undefined} 
                                     alt={evento.nombre} 
                                 />
                                 <span className={`status-badge ${(evento.status || 'proximo').toLowerCase().replace(' ', '-')}`}>

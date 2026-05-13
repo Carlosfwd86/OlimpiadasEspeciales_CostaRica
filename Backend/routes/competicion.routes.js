@@ -5,11 +5,12 @@ const competicionController = require('../controllers/competicion.controller.js'
 const auth = require('../middlewares/authMiddleware');
 const checkRole = require('../middlewares/roleMiddleware');
 
-// Rutas para la gestión de Competiciones
-router.use(auth);
-
+// Rutas públicas
 router.get('/', competicionController.obtenerTodas);
 router.get('/:id', competicionController.obtenerPorId);
+
+// A partir de aquí, todas las rutas requieren autenticación
+router.use(auth);
 
 // Operaciones de escritura (Solo Admin)
 router.post('/', checkRole([1]), competicionController.crear);

@@ -14,6 +14,10 @@ const sequelize = new Sequelize(
   }
 );
 
+// Exportar sequelize ANTES de requerir los modelos para evitar dependencia circular
+module.exports.sequelize = sequelize;
+
+
 // Importación Manual de Modelos (Evitando index.js)
 const models = {
   Usuario: require('../models/Usuario'),
@@ -21,14 +25,14 @@ const models = {
   Permiso: require('../models/Permiso'),
   RolPermiso: require('../models/RolPermiso'),
   Atleta: require('../models/Atleta'),
-  Programa: require('../models/Programa'),
-  Disciplina: require('../models/Disciplina'),
-  NivelHabilidad: require('../models/NivelHabilidad'),
-  Inscripcion: require('../models/Inscripcion'),
-  Consulta: require('../models/Consulta'),
+  Programa: require('../models/Programa')(sequelize),
+  Disciplina: require('../models/Disciplina')(sequelize),
+  NivelHabilidad: require('../models/NivelHabilidad')(sequelize),
+  Inscripcion: require('../models/Inscripcion')(sequelize),
+  Consulta: require('../models/Consulta')(sequelize),
   Sesion: require('../models/Sesion'),
   TokenBlacklist: require('../models/TokenBlacklist'),
-  Tutor: require('../models/Tutor'),
+  Tutor: require('../models/Tutor')(sequelize),
   Competicion: require('../models/competicion.model'),
   Entrenador: require('../models/entrenador.model'),
   Voluntario: require('../models/voluntario.model')
@@ -61,4 +65,4 @@ if (Sesion && Usuario) {
   Sesion.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 }
 
-module.exports = { sequelize, models };
+module.exports.models = models;

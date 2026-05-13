@@ -27,18 +27,24 @@ export default function ReportsSection(): React.JSX.Element {
         try {
             let results: DataRow[];
             if (source === 'atletas') {
-                const res = await fetch('http://localhost:3001/atletas');
-                results = await res.json() as DataRow[];
+                const atletas = await ServicesAdmin.getAtletas();
+                results = atletas as unknown as DataRow[];
             } else if (source === 'registros') {
-                const res = await fetch('http://localhost:3001/registros_pendientes');
-                results = await res.json() as DataRow[];
+                // Usar el endpoint real de registros pendientes
+                const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+                const token = localStorage.getItem('token') ?? '';
+                const res = await fetch(`${BACKEND_URL}/registros-pendientes`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const json = await res.json() as { data?: DataRow[] } | DataRow[];
+                results = (Array.isArray(json) ? json : (json as { data?: DataRow[] }).data) ?? [];
             } else {
                 results = await ServicesAdmin.getUsers() as DataRow[];
             }
             setData(results);
             setSelectedRows(new Set());
         } catch (err) {
-            console.error("Error cargando datos de reporte:", err);
+            console.error('Error cargando datos de reporte:', err);
         } finally {
             setLoading(false);
         }

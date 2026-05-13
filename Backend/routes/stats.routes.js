@@ -3,6 +3,9 @@ const router = express.Router();
 const { getStats } = require('../controllers/statsController');
 const auth = require('../middlewares/authMiddleware');
 
+// GET /api/stats/public — Estadísticas públicas para el landing page
+router.get('/public', getStats);
+
 // GET /api/stats — solo usuarios autenticados
 router.get('/', auth, getStats);
 

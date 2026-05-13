@@ -13,9 +13,18 @@ router.post('/login', validators.login, validate, authController.iniciarSesion);
 // Ruta para cerrar sesión (protegida por el cliente, pero el servidor invalida el token)
 router.post('/logout', authController.cerrarSesion);
 
-// Nuevo endpoint para verificar sesión
-router.get('/me', require('../middlewares/authMiddleware'), (req, res) => {
-  res.status(200).json({ usuario: req.user });
+// Nuevo endpoint para verificar sesión (sin devolver 401 para evitar errores en consola)
+const jwt = require('jsonwebtoken');
+router.get('/me', (req, res) => {
+  try {
+    const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    if (!token) return res.status(200).json({ usuario: null });
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
+    res.status(200).json({ usuario: decoded });
+  } catch (error) {
+    res.status(200).json({ usuario: null });
+  }
 });
 
 // Perfil del usuario autenticado
