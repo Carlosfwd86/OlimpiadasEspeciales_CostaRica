@@ -5,7 +5,6 @@ import { ServicesAtletas } from '../services/ServicesAtletas';
 import { getTutores } from '../services/ServicesTutores';
 import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
-import CarouselEventos from './CarouselEventos';
 import BannerVoluntarios from './BannerVoluntarios';
 import type { Atleta, Tutor, Entrenador, Voluntario, Competicion } from '../types';
 
@@ -486,7 +485,6 @@ const Home = (): React.JSX.Element => {
                 </div>
             </div>
 
-            <CarouselEventos />
             <BannerVoluntarios />
         </>
     );
