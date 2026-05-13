@@ -13,16 +13,16 @@ const getStats = async (req, res) => {
     const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas, totalTutores] = await Promise.all([
       Atleta.count(),
       Voluntario.count(),
-      Inscripcion.count(),
+      Inscripcion.count({ where: { estado: 'PENDIENTE' } }),
       Consulta ? Consulta.count() : Promise.resolve(0),
-      Usuario.count({ where: { rol_id: 4 } }) // Suponiendo rol_id 4 es tutor, o consultar directamente
+      Usuario.count({ where: { rol_id: 5 } }) // 5 = tutor según el seeder
     ]);
 
     return res.status(200).json({
       data: {
         totalRegistros:       { valor: totalAtletas + totalInscripciones, porcentaje: '+12%', tendencia: 'up' },
         atletasActivos:       { valor: totalAtletas,      porcentaje: '+5%', tendencia: 'up' },
-        revisionesPendientes: { valor: totalConsultas,    textoExtra: 'Requieren acción' },
+        revisionesPendientes: { valor: totalInscripciones, textoExtra: 'Inscripciones pendientes' },
         voluntarios:          { valor: totalVoluntarios,  porcentaje: '0%',  tendencia: 'none' },
         tutores:              { valor: totalTutores }
       },
@@ -34,5 +34,6 @@ const getStats = async (req, res) => {
     return res.status(500).json({ error: 'Error al calcular estadísticas del sistema.' });
   }
 };
+
 
 module.exports = { getStats };

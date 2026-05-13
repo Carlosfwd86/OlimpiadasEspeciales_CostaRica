@@ -2,42 +2,35 @@ import React, { useState, useEffect } from 'react';
 import FormPerfil from '../components/FormPerfil';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
 import { getUsuarioById } from '../services/ServicesUsuarios';
 import type { Usuario } from '../types';
 
 const PerfilPage: React.FC = () => {
-    const [user, setUser] = useState<Usuario | null>(null);
+    const { user: authUser, isAuthenticated, isLoading } = useAuth();
+    const [fullUserData, setFullUserData] = useState<Usuario | null>(null);
 
     useEffect(() => {
-        const refreshSession = async () => {
-            const storedUser = localStorage.getItem('usuarioSesion');
-            if (storedUser) {
-                const parsedUser = JSON.parse(storedUser) as Usuario;
-                setUser(parsedUser);
-
-                // Refrescar desde el servidor para obtener el rol más reciente
+        const fetchFullData = async () => {
+            if (authUser?.id) {
                 try {
-                    const latestData = await getUsuarioById(parsedUser.id);
-                    if (latestData && JSON.stringify(latestData) !== JSON.stringify(parsedUser)) {
-                        console.log("Sesión sincronizada con el servidor.");
-                        localStorage.setItem('usuarioSesion', JSON.stringify(latestData));
-                        setUser(latestData);
-                        // Emitir evento para que otros componentes (Navbar) se enteren
-                        window.dispatchEvent(new Event('sesionActualizada'));
-                    }
+                    const data = await getUsuarioById(authUser.id);
+                    setFullUserData(data);
                 } catch (e) {
-                    console.warn("No se pudo refrescar la sesión:", e);
+                    console.error("Error cargando perfil extendido:", e);
                 }
             }
         };
-        refreshSession();
-    }, []);
+        fetchFullData();
+    }, [authUser]);
+
+    if (isLoading) return <div style={{ padding: '100px', textAlign: 'center' }}>Cargando sesión...</div>;
 
     return (
         <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
             <Navbar />
-            {user ? (
-                <FormPerfil user={user} setRefreshUser={setUser} />
+            {isAuthenticated && (fullUserData || authUser) ? (
+                <FormPerfil user={(fullUserData || authUser) as Usuario} setRefreshUser={(u) => setFullUserData(u as Usuario)} />
             ) : (
                 <div style={{ padding: '100px', textAlign: 'center', fontFamily: 'Outfit' }}>
                     <h2>No has iniciado sesión</h2>
@@ -50,3 +43,4 @@ const PerfilPage: React.FC = () => {
 };
 
 export default PerfilPage;
+
