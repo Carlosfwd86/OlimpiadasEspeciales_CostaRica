@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
 import type { SystemSettings } from '../../types';
+import ModalNuevoUsuario from './ModalNuevoUsuario';
 
 interface SettingsSectionProps {
   onThemeChange?: (theme: string) => void;
@@ -10,10 +11,20 @@ interface SettingsSectionProps {
 
 export default function SettingsSection({ onThemeChange, initialSubTab = 'usuarios' }: SettingsSectionProps): React.JSX.Element {
     const [settings, setSettings] = useState<SystemSettings | null>(null);
-    const [usuarios, setUsuarios] = useState<Record<string, unknown>[]>([]);
+    const [usuarios, setUsuarios] = useState<any[]>([]);
     const [subTab, setSubTab] = useState<string>(initialSubTab);
     const [loading, setLoading] = useState<boolean>(true);
     const [saving, setSaving] = useState<boolean>(false);
+    const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
+
+    const loadUsers = async () => {
+        try {
+            const u = await ServicesAdmin.getUsers();
+            setUsuarios(u);
+        } catch (err) {
+            console.error("Error al cargar usuarios:", err);
+        }
+    };
 
     // Estado para el sub-tab de perfil de administrador
     const [perfil, setPerfil] = useState<{ nombre: string; correoElectronico: string; passwordActual: string; passwordNuevo: string }>({
@@ -27,15 +38,14 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
         const loadData = async (): Promise<void> => {
             try {
                 const s = await ServicesAdmin.getSettings();
-                const u = await ServicesAdmin.getUsers();
+                await loadUsers();
                 // Cargar perfil del admin para el sub-tab 'perfil'
                 const p = await ServicesAdmin.getProfile();
                 setSettings(s);
-                setUsuarios(u);
                 setPerfil(prev => ({
                     ...prev,
-                    nombre: (p as Record<string, unknown>).nombre as string ?? '',
-                    correoElectronico: (p as Record<string, unknown>).correoElectronico as string ?? ''
+                    nombre: (p as any).nombre ?? '',
+                    correoElectronico: (p as any).correoElectronico ?? ''
                 }));
             } catch (err) {
                 console.error("Error al cargar datos en Configuración:", err);
@@ -100,6 +110,18 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
         cursor: 'pointer', transition: 'all 0.3s'
     });
 
+    const getRoleName = (rolId: number): string => {
+        const roles: Record<number, string> = {
+            1: 'Administrador',
+            2: 'Atleta',
+            3: 'Entrenador',
+            4: 'Voluntario',
+            5: 'Tutor',
+            6: 'Usuario General'
+        };
+        return roles[rolId] || 'Usuario';
+    };
+
     return (
         <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -113,7 +135,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                     <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '30px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h3 style={{ margin: 0, color: 'var(--admin-text-main)' }}>Gestión de Usuarios</h3>
-                            <button className="btn-new-entry" onClick={() => alert("Añadir nuevo usuario...")}>+ Nuevo Usuario</button>
+                            <button className="btn-new-entry" onClick={() => setIsUserModalOpen(true)}>+ Nuevo Usuario</button>
                         </div>
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -129,18 +151,27 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                 <tbody>
                                     {usuarios.map(u => (
                                         <tr key={String(u.id)} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '14px', color: 'var(--admin-text-main)' }}>
-                                            <td style={{ padding: '15px' }}>{String(u.nombre ?? '')}</td>
-                                            <td style={{ padding: '15px' }}>{String(u.email ?? '')}</td>
-                                            <td style={{ padding: '15px' }}>{String(u.rol ?? '')}</td>
+                                            <td style={{ padding: '15px' }}>{String(u.nombre ?? '')} {String(u.apellido ?? '')}</td>
+                                            <td style={{ padding: '15px' }}>{String(u.correo_electronico || u.email || '')}</td>
+                                            <td style={{ padding: '15px' }}>{u.rol?.nombre || getRoleName(u.rol_id)}</td>
                                             <td style={{ padding: '15px' }}>
-                                                <span style={{ padding: '4px 8px', borderRadius: '4px', background: '#e6ffed', color: '#28a745', fontSize: '12px', fontWeight: '600' }}>{String(u.estado ?? '')}</span>
+                                                <span style={{ 
+                                                    padding: '4px 8px', 
+                                                    borderRadius: '4px', 
+                                                    background: u.status === 'ACTIVO' ? '#e6ffed' : '#fff5f5', 
+                                                    color: u.status === 'ACTIVO' ? '#28a745' : '#e62334', 
+                                                    fontSize: '12px', 
+                                                    fontWeight: '600' 
+                                                }}>
+                                                    {String(u.status || 'ACTIVO')}
+                                                </span>
                                             </td>
                                             <td style={{ padding: '15px' }}>
                                                 <button style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '10px' }}><i className="fa-solid fa-pen"></i></button>
                                                 <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
                                                     onClick={() => {
                                                         if (window.confirm(`¿Seguro que deseas eliminar a ${String(u.nombre ?? '')}?`)) {
-                                                            ServicesAdmin.deleteUser(String(u.id)).then(() => setUsuarios(usuarios.filter(us => us.id !== u.id)));
+                                                            ServicesAdmin.deleteUser(String(u.id)).then(() => loadUsers());
                                                         }
                                                     }}>
                                                     <i className="fa-solid fa-trash"></i>
@@ -151,6 +182,11 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                 </tbody>
                             </table>
                         </div>
+                        <ModalNuevoUsuario 
+                            isOpen={isUserModalOpen} 
+                            onClose={() => setIsUserModalOpen(false)} 
+                            onSaveSuccess={loadUsers} 
+                        />
                     </div>
                 ) : subTab === 'perfil' ? (
                     // Sub-tab: Mi Perfil (edición de datos del administrador)
