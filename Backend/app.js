@@ -31,16 +31,17 @@ const app = express();
 // CORS — whitelist de orígenes permitidos
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
-  : ['http://localhost:5173', 'http://localhost:3000'];
+  : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'];
 
 app.use(cors({
   origin: (origin, callback) => {
     // Permitir requests sin origin (Postman, curl, mobile apps)
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin) || origin.includes('localhost')) return callback(null, true);
     callback(new Error(`Origen no permitido por CORS: ${origin}`));
   },
   credentials: true
 }));
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

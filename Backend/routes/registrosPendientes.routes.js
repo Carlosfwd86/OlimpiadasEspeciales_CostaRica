@@ -18,22 +18,37 @@ router.get('/', auth, checkRole([1]), async (req, res) => {
       order: [['created_at', 'DESC']]
     });
 
-    // Mapear al shape que el frontend espera para el CSV export
-    const data = registros.map(r => ({
-      id:     r.id,
-      name:   r.atleta ? `${r.atleta.nombre} ${r.atleta.apellido}` : 'N/A',
-      email:  r.atleta ? r.atleta.correo_electronico : 'N/A',
-      phone:  r.atleta ? r.atleta.telefono : '',
-      sport:  r.disciplina || '',
-      region: r.atleta ? r.atleta.region : '',
-      status: r.estado
-    }));
+    // Mapear al shape que el frontend espera para el CSV export y la UI
+    const data = registros.map(r => {
+      const nombreCompleto = r.atleta ? `${r.atleta.nombre} ${r.atleta.apellido}` : 'N/A';
+      const initials = r.atleta ? (r.atleta.nombre.charAt(0) + (r.atleta.apellido ? r.atleta.apellido.charAt(0) : '')).toUpperCase() : '??';
+      const timeAgo = new Date(r.fecha_inscripcion).toLocaleDateString();
+      
+      const colors = ['blue', 'red', 'green', 'orange', 'purple', 'yellow'];
+      const bgColor = colors[r.id % colors.length];
+
+      return {
+        id:          r.id,
+        name:        nombreCompleto,
+        email:       r.atleta ? r.atleta.correo_electronico : 'N/A',
+        phone:       r.atleta ? r.atleta.telefono : '',
+        sport:       r.disciplina || 'Varios',
+        region:      r.atleta ? r.atleta.region : 'Nacional',
+        status:      r.estado,
+        statusColor: r.estado === 'PENDIENTE' ? 'orange' : (r.estado === 'APROBADA' ? 'green' : 'red'),
+        bgColor:     `bg-${bgColor}`,
+        initials:    initials,
+        time:        timeAgo,
+        rol:         'atleta' // Por defecto en inscripciones
+      };
+    });
 
     return res.status(200).json({
       data,
       message: 'OK',
       status: 200
     });
+
   } catch (error) {
     console.error('Error al obtener registros pendientes:', error);
     return res.status(500).json({ error: 'Error al obtener los registros pendientes.' });
