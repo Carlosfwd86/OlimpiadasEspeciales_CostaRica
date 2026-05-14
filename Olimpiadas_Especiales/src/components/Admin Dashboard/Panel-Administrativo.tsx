@@ -127,7 +127,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
               )}
               <ChartSection onTabChange={setActiveTab} />
               <PendingTable refreshTrigger={refreshTrigger} onEdit={handleEditEntry} searchQuery={searchQuery} onActionSuccess={handleSaveSuccess} />
-              <ActivityFeed />
+              <ActivityFeed searchQuery={searchQuery} />
             </>
           )}
 
@@ -164,7 +164,10 @@ export default function PanelAdministrativo(): React.JSX.Element {
 
               {competiciones.length > 0 ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                  {competiciones.map(comp => (
+                  {competiciones.filter(comp => {
+                    const q = searchQuery.toLowerCase();
+                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
+                  }).map(comp => (
                     <CompetitionCard key={comp.id} competition={comp}
                       onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
                       onDelete={(id) => {
@@ -176,6 +179,15 @@ export default function PanelAdministrativo(): React.JSX.Element {
                       }}
                     />
                   ))}
+                  {competiciones.filter(comp => {
+                    const q = searchQuery.toLowerCase();
+                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
+                  }).length === 0 && (
+                    <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', background: 'var(--admin-white)', borderRadius: '15px', color: 'var(--admin-text-muted)' }}>
+                      <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '30px', marginBottom: '10px', display: 'block' }}></i>
+                      No se encontraron competiciones que coincidan con "{searchQuery}"
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div style={{ padding: '60px', background: 'white', borderRadius: '15px', textAlign: 'center', border: '2px dashed #e2e8f0' }}>
@@ -196,7 +208,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
           {activeTab === 'rendimiento' && (
             <div className="tab-container">
               <ChartSection onTabChange={setActiveTab} />
-              <ActivityFeed />
+              <ActivityFeed searchQuery={searchQuery} />
             </div>
           )}
 
@@ -209,7 +221,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
           
           {activeTab === 'consultas' && <ConsultasSection searchQuery={searchQuery} />}
 
-          {activeTab === 'reportes' && <ReportsSection />}
+          {activeTab === 'reportes' && <ReportsSection searchQuery={searchQuery} />}
           {activeTab === 'perfil' && <ProfileSection />}
           {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" searchQuery={searchQuery} />}
           {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" searchQuery={searchQuery} />}

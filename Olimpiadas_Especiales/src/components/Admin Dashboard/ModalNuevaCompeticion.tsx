@@ -6,7 +6,7 @@ interface CompeticionFormData {
   nombre: string;
   deporte: string;
   fecha: string;
-  fechaFin: string;
+  fecha_fin: string;
   ubicacion: string;
   descripcion: string;
   imagen: string;
@@ -17,13 +17,13 @@ interface CompeticionFormData {
 interface ModalNuevaCompeticionProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: CompeticionFormData, id?: string) => void;
+  onSave: (data: CompeticionFormData, id?: string | number) => void;
   editData?: Competicion | null;
 }
 
 export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editData = null }: ModalNuevaCompeticionProps): React.JSX.Element | null {
     const [formData, setFormData] = useState<CompeticionFormData>({
-        nombre: '', deporte: 'Fútbol', fecha: '', fechaFin: '',
+        nombre: '', deporte: 'Fútbol', fecha: '', fecha_fin: '',
         ubicacion: '', descripcion: '', imagen: '', enlace: ''
     });
 
@@ -33,14 +33,14 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                 nombre: editData.nombre || '',
                 deporte: editData.deporte || 'Fútbol',
                 fecha: String(editData.fecha ?? ''),
-                fechaFin: String(editData.fechaFin ?? ''),
+                fecha_fin: String(editData.fecha_fin ?? ''),
                 ubicacion: String(editData.ubicacion ?? ''),
                 descripcion: String(editData.descripcion ?? ''),
                 imagen: String(editData.imagen ?? ''),
                 enlace: String(editData.enlace ?? '')
             });
         } else {
-            setFormData({ nombre: '', deporte: 'Fútbol', fecha: '', fechaFin: '', ubicacion: '', descripcion: '', imagen: '', enlace: '' });
+            setFormData({ nombre: '', deporte: 'Fútbol', fecha: '', fecha_fin: '', ubicacion: '', descripcion: '', imagen: '', enlace: '' });
         }
     }, [editData, isOpen]);
 
@@ -103,8 +103,8 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                         </div>
                         <div>
                             <label style={labelStyle}>Fecha fin</label>
-                            <input type="date" style={fieldStyle} value={formData.fechaFin}
-                                onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })} />
+                            <input type="date" style={fieldStyle} value={formData.fecha_fin}
+                                onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })} />
                         </div>
                     </div>
 

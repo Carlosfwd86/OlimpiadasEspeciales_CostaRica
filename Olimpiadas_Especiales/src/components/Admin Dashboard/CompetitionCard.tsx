@@ -4,7 +4,7 @@ import type { Competicion } from '../../types';
 interface CompetitionCardProps {
   competition: Competicion;
   onEdit?: (comp: Competicion) => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string | number) => void;
 }
 
 const CompetitionCard: React.FC<CompetitionCardProps> = ({ competition, onEdit, onDelete }) => {

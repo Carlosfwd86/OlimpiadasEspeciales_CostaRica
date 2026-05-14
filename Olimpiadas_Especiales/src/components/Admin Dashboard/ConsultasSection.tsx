@@ -11,6 +11,7 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
     const [consultas, setConsultas] = useState<Consulta[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [localSearch, setLocalSearch] = useState<string>('');
 
     const fetchConsultas = () => {
         ServicesAdmin.getConsultas()
@@ -30,7 +31,7 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
     }, []);
 
     const filteredConsultas = consultas.filter(c => {
-        const q = searchQuery.toLowerCase();
+        const q = (localSearch || searchQuery).toLowerCase();
         return (
             (c.nombre || '').toLowerCase().includes(q) ||
             (c.correo || '').toLowerCase().includes(q) ||
@@ -40,6 +41,7 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
     });
 
     const handleDelete = (id: string | number) => {
+        // ... existing logic
         Swal.fire({
             title: '¿Eliminar Mensaje?',
             text: "Esta acción no se puede deshacer.",
@@ -107,9 +109,21 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
 
     return (
         <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
-            <div style={{ marginBottom: '20px' }}>
-                <h3 style={{ color: 'var(--admin-text-main)' }}><i className="fa-solid fa-envelope" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Bandeja de Consultas</h3>
-                <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>Gestión de los mensajes recibidos desde el Formulario de Contacto público.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div>
+                    <h3 style={{ color: 'var(--admin-text-main)', margin: 0 }}><i className="fa-solid fa-envelope" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Bandeja de Consultas</h3>
+                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px', margin: 0 }}>Gestión de los mensajes recibidos desde el Formulario de Contacto público.</p>
+                </div>
+                <div style={{ position: 'relative' }}>
+                    <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }}></i>
+                    <input 
+                        type="text" 
+                        placeholder="Buscar mensajes..." 
+                        value={localSearch}
+                        onChange={(e) => setLocalSearch(e.target.value)}
+                        style={{ padding: '8px 12px 8px 35px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', width: '250px', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+                    />
+                </div>
             </div>
 
             <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '20px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
