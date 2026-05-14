@@ -150,6 +150,8 @@ const voluntarioController = {
       if (data.direccion) updates.direccion = data.direccion;
       if (data.disponibilidad) updates.disponibilidad = data.disponibilidad;
       if (data.experienciaPrevia || data.experiencia_previa) updates.experiencia_previa = data.experienciaPrevia || data.experiencia_previa;
+      if (data.equipo) updates.equipo = data.equipo;
+      if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
 
       await voluntario.update(updates);
       return res.status(200).json(voluntario);

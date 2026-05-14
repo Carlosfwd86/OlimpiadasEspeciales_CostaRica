@@ -113,6 +113,18 @@ const Atleta = sequelize.define('Atleta', {
     type: DataTypes.STRING(50),
     allowNull: true
   },
+  equipo: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  experiencia: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  proximos_retos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   fecha_registro: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW

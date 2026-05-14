@@ -66,6 +66,14 @@ const Voluntario = sequelize.define('Voluntario', {
     type: DataTypes.TEXT,
     allowNull: true
   },
+  equipo: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  proximos_retos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   status: {
     type: DataTypes.ENUM('ACTIVO', 'INACTIVO', 'PENDIENTE'),
     allowNull: false,

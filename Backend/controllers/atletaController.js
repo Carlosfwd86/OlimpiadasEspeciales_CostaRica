@@ -193,6 +193,9 @@ const atletaController = {
       if (data.direccion) updates.direccion = data.direccion;
       if (data.emergenciaNombre) updates.emergencia_nombre = data.emergenciaNombre;
       if (data.emergenciaTelefono) updates.emergencia_telefono = data.emergenciaTelefono;
+      if (data.equipo) updates.equipo = data.equipo;
+      if (data.experiencia) updates.experiencia = data.experiencia;
+      if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
 
       const [actualizado] = await Atleta.update(updates, { where: { id } });
 

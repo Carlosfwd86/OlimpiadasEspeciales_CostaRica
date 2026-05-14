@@ -164,6 +164,8 @@ const entrenadorController = {
       if (data.horarioDisponible || data.horario_disponible) updates.horario_disponible = data.horarioDisponible || data.horario_disponible;
       if (data.afeccionSalud !== undefined) updates.afeccion_salud = data.afeccionSalud === 'Si' || data.afeccionSalud === true;
       if (data.detalleSalud || data.detalle_salud) updates.detalle_salud = data.detalleSalud || data.detalle_salud;
+      if (data.equipo) updates.equipo = data.equipo;
+      if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
 
       // Actualización de los campos enviados
       await entrenador.update(updates);
