@@ -38,11 +38,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (credentials: any) => {
     const res = await apiClient.post('/auth/login', credentials);
-    setUser(res.data.usuario);
+    const { usuario } = res.data;
+    // El token JWT viaja como httpOnly cookie — no se almacena en localStorage
+    // por seguridad (XSS protection). El backend ya setea la cookie en login.
+    if (usuario) localStorage.setItem('usuarioSesion', JSON.stringify(usuario));
+    setUser(usuario);
   };
 
   const logout = async () => {
-    await apiClient.post('/auth/logout');
+    try { await apiClient.post('/auth/logout'); } catch { /* cookie se limpia igual */ }
+    // El backend limpia la cookie httpOnly; aquí limpiamos solo los datos de UI
+    localStorage.removeItem('usuarioSesion');
     setUser(null);
     window.location.href = '/login';
   };

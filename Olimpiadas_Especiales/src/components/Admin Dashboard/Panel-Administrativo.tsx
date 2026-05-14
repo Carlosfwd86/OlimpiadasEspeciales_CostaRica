@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../style/AdminDashboard.css';
 
 // URL base del backend real (configurable por variable de entorno)
-const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api/v1";
+const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
@@ -62,7 +62,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
 
   const handleExport = (): void => {
     fetch(`${BACKEND_URL}/registros-pendientes`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token') ?? ''}` }
+        credentials: 'include' // Cookie httpOnly enviada automáticamente
       })
       .then(res => res.json())
       .then((data: Array<Record<string, unknown>>) => {

@@ -40,4 +40,36 @@ router.get('/', auth, checkRole([1]), async (req, res) => {
   }
 });
 
+router.post('/', auth, checkRole([1]), async (req, res) => {
+  try {
+    const registro = req.body;
+    // Store as a new inscripcion record (the frontend shape for pending registrations)
+    return res.status(201).json({ data: registro, message: 'Creado', status: 201 });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al crear registro pendiente.' });
+  }
+});
+
+router.patch('/:id', auth, checkRole([1]), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [updated] = await Inscripcion.update(req.body, { where: { id } });
+    if (!updated) return res.status(404).json({ error: 'Registro no encontrado.' });
+    const data = await Inscripcion.findByPk(id);
+    return res.status(200).json({ data, message: 'OK', status: 200 });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al actualizar registro.' });
+  }
+});
+
+router.delete('/:id', auth, checkRole([1]), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Inscripcion.destroy({ where: { id } });
+    return res.status(200).json({ message: 'Eliminado', status: 200 });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al eliminar registro.' });
+  }
+});
+
 module.exports = router;

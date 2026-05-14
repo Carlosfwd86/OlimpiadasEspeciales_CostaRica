@@ -28,16 +28,28 @@ const logger = winston.createLogger({
 
 const app = express();
 
-// Middlewares globales
-app.use(helmet()); 
-app.use(cors({ origin: true, credentials: true })); 
+// CORS — whitelist de orígenes permitidos
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (Postman, curl, mobile apps)
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`Origen no permitido por CORS: ${origin}`));
+  },
+  credentials: true
+}));
 app.use(cookieParser());
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev')); 
+app.use(morgan('dev'));
 
 // Registro manual de rutas (Sin index.js)
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/usuarios', require('./routes/usuario.routes'));
+app.use('/api/Admin', require('./routes/admin.routes'));
 app.use('/api/atletas', require('./routes/atletaRoutes'));
 app.use('/api/competiciones', require('./routes/competicion.routes'));
 app.use('/api/competicion-atleta', require('./routes/competicion_atleta.routes'));
@@ -52,13 +64,13 @@ app.use('/api/roles', require('./routes/rolesRoutes'));
 app.use('/api/tutores', require('./routes/tutores.routes'));
 app.use('/api/voluntarios', require('./routes/voluntario.routes'));
 app.use('/api/voluntario-area', require('./routes/voluntario_area.routes'));
-app.use('/api', require('./routes/admin.routes'));
-app.use('/api/usuarios', require('./routes/usuario.routes'));
+
 
 // Nuevos endpoints requeridos por el frontend
 app.use('/api/stats', require('./routes/stats.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
 app.use('/api/registros-pendientes', require('./routes/registrosPendientes.routes'));
+app.use('/api/actividad-sistema', require('./routes/actividadSistema.routes'));
 
 // Middleware para manejar errores
 app.use(errorHandler);

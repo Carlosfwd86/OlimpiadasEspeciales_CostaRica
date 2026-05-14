@@ -4,23 +4,18 @@ const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const apiClient = axios.create({
   baseURL,
-  withCredentials: true,
+  withCredentials: true, // Envía la cookie httpOnly automáticamente en cada petición
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor para incluir el token JWT en cada petición si existe
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// ──────────────────────────────────────────────────────────────────────────────
+// AUTENTICACIÓN POR COOKIE HTTPONLY (apta para producción)
+// El token JWT NO se almacena en localStorage (protección contra XSS).
+// El backend setea la cookie en login y la limpia en logout.
+// withCredentials: true se encarga de enviarla automáticamente.
+// ──────────────────────────────────────────────────────────────────────────────
 
 // Interceptor para manejar errores globales (ej: 401 Unauthorized)
 apiClient.interceptors.response.use(
@@ -29,10 +24,12 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       const excludeUrls = ['/auth/me', '/auth/login'];
       const isExcluded = excludeUrls.some(url => error.config.url?.includes(url));
-      
+
       if (!isExcluded) {
         console.warn('Sesión expirada o no autorizada. Redirigiendo al login...');
-        // Opcional: localStorage.removeItem('token'); window.location.href = '/login';
+        // Solo limpiamos datos de UI — el token httpOnly lo borra el backend en /auth/logout
+        localStorage.removeItem('usuarioSesion');
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error);
