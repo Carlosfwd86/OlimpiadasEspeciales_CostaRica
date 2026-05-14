@@ -49,9 +49,9 @@ const Register = (): React.JSX.Element => {
         correoElectronico: formData.correoElectronico.toLowerCase(),
         telefono: formData.telefono,
         password: formData.password,
+        pais: formData.pais,
         fechaNacimiento: formData.fechaNacimiento,
         genero: formData.genero,
-        fechaRegistro: new Date().toISOString()
       };
 
       await createUsuario(newUser);
@@ -67,10 +67,19 @@ const Register = (): React.JSX.Element => {
 
     } catch (err: any) {
       console.error(err);
+      
+      // Extraer mensaje de error del backend si existe
+      let errorMessage = 'No se pudo completar el registro. Inténtalo de nuevo.';
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        errorMessage = err.response.data.errors.map((e: any) => e.msg).join('\n');
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      }
+
       Swal.fire({ 
         icon: 'error', 
         title: 'Error de Registro', 
-        text: err.message || 'No se pudo completar el registro. Inténtalo de nuevo.' 
+        text: errorMessage
       });
     } finally {
       setLoading(false);
@@ -181,8 +190,18 @@ const Register = (): React.JSX.Element => {
             />
           </div>
 
-   
-
+          <div className="form-group">
+            <label htmlFor="telefono">Teléfono</label>
+            <input
+              type="tel"
+              id="telefono"
+              name="telefono"
+              placeholder="+506 8888-8888"
+              value={formData.telefono}
+              onChange={handleChange}
+              required
+            />
+          </div>
           <div className="form-group">
             <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
             <input

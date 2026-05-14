@@ -16,7 +16,7 @@ const validators = {
       .matches(/[0-9]/).withMessage('Debe contener al menos un número')
       .matches(/[@$!%*?&]/).withMessage('Debe contener al menos un carácter especial (@$!%*?&)'),
     body('rol_id').isInt().withMessage('Rol inválido'),
-    body('cedula').optional().isNumeric().withMessage('La cédula debe ser numérica')
+    body('cedula').optional().isString().withMessage('La cédula debe tener formato válido')
   ],
 
   // Validación para inicio de sesión
