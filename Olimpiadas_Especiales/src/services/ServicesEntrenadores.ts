@@ -1,87 +1,38 @@
+import apiClient from '../api/apiClient';
 import type { Entrenador } from '../types';
 
-const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
-const ENDPOINT = `${BACKEND_URL}/entrenadores`;
+/* [verde] Servicio para la gestión de entrenadores conectado al Backend real */
+export const ServicesEntrenadores = {
+    
+    getEntrenadores: async (): Promise<Entrenador[]> => {
+        const response = await apiClient.get<Entrenador[]>('/entrenadores');
+        return response.data;
+    },
 
-// Helper: headers con JWT
-const authHeaders = (): HeadersInit => ({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`
-});
+    getEntrenadorById: async (id: string | number): Promise<Entrenador> => {
+        const response = await apiClient.get<Entrenador>(`/entrenadores/${id}`);
+        return response.data;
+    },
 
-// Extraer data de la respuesta envuelta { data: [...] } o array directo
-const unwrap = <T>(json: unknown): T => {
-    if (json && typeof json === 'object' && 'data' in (json as object))
-        return (json as { data: T }).data;
-    return json as T;
-};
+    createEntrenador: async (entrenador: Omit<Entrenador, 'id'>): Promise<Entrenador> => {
+        const response = await apiClient.post<Entrenador>('/entrenadores', entrenador);
+        return response.data;
+    },
 
-// Obtener todos los entrenadores (Read)
-export const getEntrenadores = async (): Promise<Entrenador[]> => {
-    try {
-        const response = await fetch(ENDPOINT, { headers: authHeaders() });
-        if (!response.ok) throw new Error('Error al obtener los entrenadores');
-        return unwrap<Entrenador[]>(await response.json());
-    } catch (error) {
-        console.error('Error en getEntrenadores:', error);
-        throw error;
+    updateEntrenador: async (id: string | number, entrenador: Partial<Entrenador>): Promise<Entrenador> => {
+        const response = await apiClient.patch<Entrenador>(`/entrenadores/${id}`, entrenador);
+        return response.data;
+    },
+
+    deleteEntrenador: async (id: string | number): Promise<void> => {
+        await apiClient.delete(`/entrenadores/${id}`);
     }
 };
 
-// Obtener un entrenador por su ID (Read)
-export const getEntrenadorById = async (id: string): Promise<Entrenador> => {
-    try {
-        const response = await fetch(`${ENDPOINT}/${id}`, { headers: authHeaders() });
-        if (!response.ok) throw new Error('Error al obtener el entrenador');
-        return unwrap<Entrenador>(await response.json());
-    } catch (error) {
-        console.error('Error en getEntrenadorById:', error);
-        throw error;
-    }
-};
+// Exportaciones individuales para mantener compatibilidad
+export const getEntrenadores = ServicesEntrenadores.getEntrenadores;
+export const getEntrenadorById = ServicesEntrenadores.getEntrenadorById;
+export const createEntrenador = ServicesEntrenadores.createEntrenador;
+export const updateEntrenador = ServicesEntrenadores.updateEntrenador;
+export const deleteEntrenador = ServicesEntrenadores.deleteEntrenador;
 
-// Crear un nuevo entrenador (Create)
-export const createEntrenador = async (entrenador: Omit<Entrenador, 'id'>): Promise<Entrenador> => {
-    try {
-        const response = await fetch(ENDPOINT, {
-            method: 'POST',
-            headers: authHeaders(),
-            body: JSON.stringify(entrenador),
-        });
-        if (!response.ok) throw new Error('Error al crear el entrenador');
-        return unwrap<Entrenador>(await response.json());
-    } catch (error) {
-        console.error('Error en createEntrenador:', error);
-        throw error;
-    }
-};
-
-// Actualizar un entrenador existente (Update)
-export const updateEntrenador = async (id: string, entrenador: Partial<Entrenador>): Promise<Entrenador> => {
-    try {
-        const response = await fetch(`${ENDPOINT}/${id}`, {
-            method: 'PATCH',
-            headers: authHeaders(),
-            body: JSON.stringify(entrenador),
-        });
-        if (!response.ok) throw new Error('Error al actualizar el entrenador');
-        return unwrap<Entrenador>(await response.json());
-    } catch (error) {
-        console.error('Error en updateEntrenador:', error);
-        throw error;
-    }
-};
-
-// Eliminar un entrenador (Delete)
-export const deleteEntrenador = async (id: string): Promise<void> => {
-    try {
-        const response = await fetch(`${ENDPOINT}/${id}`, {
-            method: 'DELETE',
-            headers: authHeaders(),
-        });
-        if (!response.ok) throw new Error('Error al eliminar el entrenador');
-    } catch (error) {
-        console.error('Error en deleteEntrenador:', error);
-        throw error;
-    }
-};

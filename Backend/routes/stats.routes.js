@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getStats } = require('../controllers/statsController');
+const { getSummary, getCharts } = require('../controllers/statsController');
 const auth = require('../middlewares/authMiddleware');
 
-// GET /api/stats/public — Estadísticas públicas para el landing page
-router.get('/public', getStats);
+// GET /api/stats/summary — Estadísticas para StatCards
+router.get('/summary', auth, getSummary);
 
-// GET /api/stats — solo usuarios autenticados
-router.get('/', auth, getStats);
+// GET /api/stats/charts — Datos para gráficos
+router.get('/charts', auth, getCharts);
+
+// Compatibilidad con Landing Page (opcional, podrías hacer un getPublicStats)
+router.get('/public', getSummary);
 
 module.exports = router;

@@ -3,6 +3,18 @@ const jwt = require('jsonwebtoken');
 const { models } = require('../config/database');
 const { Usuario, Sesion, TokenBlacklist } = models;
 
+// ── Seguridad: JWT_SECRET es OBLIGATORIO ──────────────────────────────────────
+// Si la variable no está definida el proceso se detiene inmediatamente.
+// Esto evita que en producción se use un secreto débil por omisión.
+if (!process.env.JWT_SECRET) {
+  throw new Error(
+    '[authController] JWT_SECRET no está definido en las variables de entorno. ' +
+    'Agrega JWT_SECRET=<valor-seguro> en tu archivo .env antes de iniciar el servidor.'
+  );
+}
+const JWT_SECRET = process.env.JWT_SECRET;
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Función para registrar un nuevo usuario
 const registrarUsuario = async (req, res) => {
   try {
@@ -88,7 +100,7 @@ const iniciarSesion = async (req, res) => {
     // GENERACIÓN REAL DE JWT
     const token = jwt.sign(
       { id: usuario.id, rol_id: usuario.rol_id, email: usuario.correo_electronico },
-      process.env.JWT_SECRET || 'fallback_secret_key',
+      JWT_SECRET,
       { expiresIn: '2h' }
     );
 

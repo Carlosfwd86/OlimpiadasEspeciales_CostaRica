@@ -1,38 +1,68 @@
 const { models } = require('../config/database');
-const { Atleta, Voluntario, Inscripcion, Consulta } = models;
+const { Atleta, Voluntario, Inscripcion, Consulta, Usuario, Competicion } = models;
 
 /**
- * GET /api/stats
- * Retorna conteos reales desde la BD para alimentar los StatCards del dashboard.
- * Shape de respuesta idéntico al que el frontend ya consume.
+ * GET /api/stats/summary
+ * Retorna el resumen para los StatCards.
  */
-const getStats = async (req, res) => {
+const getSummary = async (req, res) => {
   try {
-    const { Atleta, Voluntario, Inscripcion, Consulta, Usuario } = models;
-
-    const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas, totalTutores] = await Promise.all([
+    const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas] = await Promise.all([
       Atleta.count(),
       Voluntario.count(),
-      Inscripcion.count(),
+
+      Inscripcion.count({ where: { estado: 'PENDIENTE' } }),
       Consulta ? Consulta.count() : Promise.resolve(0),
-      Usuario.count({ where: { rol_id: 4 } }) // Suponiendo rol_id 4 es tutor, o consultar directamente
+      Usuario.count({ where: { rol_id: 5 } }) // 5 = tutor según el seeder
+
     ]);
 
+    // Shape compatible con ServicesAdmin.ts -> getStats
     return res.status(200).json({
       data: {
         totalRegistros:       { valor: totalAtletas + totalInscripciones, porcentaje: '+12%', tendencia: 'up' },
         atletasActivos:       { valor: totalAtletas,      porcentaje: '+5%', tendencia: 'up' },
-        revisionesPendientes: { valor: totalConsultas,    textoExtra: 'Requieren acción' },
+        revisionesPendientes: { valor: totalInscripciones, textoExtra: 'Inscripciones pendientes' },
         voluntarios:          { valor: totalVoluntarios,  porcentaje: '0%',  tendencia: 'none' },
         tutores:              { valor: totalTutores }
       },
       message: 'OK',
       status: 200
+
     });
   } catch (error) {
-    console.error('Error al obtener estadísticas:', error);
-    return res.status(500).json({ error: 'Error al calcular estadísticas del sistema.' });
+    console.error('Error al obtener summary:', error);
+    return res.status(500).json({ error: 'Error al calcular estadísticas.' });
   }
 };
 
 module.exports = { getStats };
+/**
+ * GET /api/stats/charts
+ * Datos para los gráficos del dashboard.
+ */
+const getCharts = async (req, res) => {
+  try {
+    // Mock data o real si quieres agrupar por mes
+    // Por ahora enviamos el shape esperado por el frontend
+    return res.status(200).json({
+      registrosPorMes: [
+        { name: 'Ene', value: 400 },
+        { name: 'Feb', value: 300 },
+        { name: 'Mar', value: 600 },
+        { name: 'Abr', value: 800 },
+        { name: 'May', value: 500 }
+      ],
+      distribucionAtletas: [
+        { name: 'Masculino', value: 45 },
+        { name: 'Femenino', value: 40 },
+        { name: 'Otro', value: 15 }
+      ]
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al obtener datos de gráficos.' });
+  }
+};
+
+module.exports = { getSummary, getCharts };
+

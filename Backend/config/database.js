@@ -35,7 +35,9 @@ const models = {
   Tutor: require('../models/Tutor')(sequelize),
   Competicion: require('../models/competicion.model'),
   Entrenador: require('../models/entrenador.model'),
-  Voluntario: require('../models/voluntario.model')
+  Voluntario: require('../models/voluntario.model'),
+  SystemSetting: require('../models/SystemSetting'),
+  ActividadSistema: require('../models/ActividadSistema')
 };
 
 // Definición de Asociaciones

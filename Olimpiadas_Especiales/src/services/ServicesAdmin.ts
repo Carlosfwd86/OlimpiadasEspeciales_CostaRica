@@ -1,3 +1,4 @@
+
 import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta } from '../types';
 import apiClient from '../api/apiClient';
 
@@ -12,35 +13,38 @@ const authHeaders = (): HeadersInit => ({
     Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`
 });
 
+
+/* [verde] Servicio administrativo centralizado conectado al Backend real */
 export const ServicesAdmin = {
-    // Registros Pendientes
+    
+    // Registros Pendientes (Inscripciones)
     getRegistrations: async (): Promise<Registro[]> => {
-        const res = await apiClient.get<Registro[]>('/registros_pendientes');
-        return res.data;
+        // El backend devuelve { data: [...] }
+        const res = await apiClient.get<{ data: Registro[] }>('/registros-pendientes');
+        return res.data.data;
     },
 
     saveRegistro: async (data: Partial<Registro>, id: string | null = null): Promise<Registro> => {
-        if (id) {
-            const res = await apiClient.patch<Registro>(`/registros_pendientes/${id}`, data);
-            return res.data;
-        } else {
-            const res = await apiClient.post<Registro>('/registros_pendientes', data);
-            return res.data;
-        }
+        const res = id 
+            ? await apiClient.patch<Registro>(`/registros-pendientes/${id}`, data)
+            : await apiClient.post<Registro>('/registros-pendientes', data);
+        return res.data;
     },
 
     deleteRegistro: async (id: string): Promise<void> => {
-        await apiClient.delete(`/registros_pendientes/${id}`);
+        await apiClient.delete(`/registros-pendientes/${id}`);
     },
 
-    // Lógica de Aprobación Dinámica
+    // Lógica de Aprobación
     aprobarRegistro: async (registro: Registro): Promise<boolean> => {
+        // En el backend real, esto se maneja vía /api/inscripciones/:id/aprobar o similar
+        // Por ahora mantenemos la lógica pero apuntando a los endpoints correctos
         const role = registro.rol || 'atleta';
 
         // Aprobación específica para voluntarios
         if (role === 'voluntario') {
             await apiClient.put(`/voluntarios/${registro.id}/aprobar`);
-            await apiClient.delete(`/registros_pendientes/${registro.id}`);
+            await apiClient.delete(`/registros-pendientes/${registro.id}`);
             return true;
         }
 
@@ -57,7 +61,6 @@ export const ServicesAdmin = {
 
         if (!userId && userEmail) {
             try {
-                // Buscamos si el usuario ya existe en el sistema central
                 const resU = await apiClient.get<Array<{ id: string }>>(`/usuarios?correo_electronico=${userEmail}`);
                 if (resU.data.length > 0) userId = resU.data[0].id;
             } catch (e) { console.error("Error buscando usuario:", e); }
@@ -80,12 +83,11 @@ export const ServicesAdmin = {
             fecha_aprobacion: new Date().toISOString()
         };
 
-        // Limpiamos campos exclusivos de la tabla de pendientes
         const fieldsToDelete = ['statusColor', 'bgColor', 'time', 'initials'];
         fieldsToDelete.forEach(f => delete (officialData as any)[f]);
 
         await apiClient.post(`/${endpoint}`, officialData);
-        await apiClient.delete(`/registros_pendientes/${registro.id}`);
+        await apiClient.delete(`/registros-pendientes/${registro.id}`);
 
         return true;
     },
@@ -94,10 +96,8 @@ export const ServicesAdmin = {
         if (role === 'voluntario') {
             await apiClient.put(`/voluntarios/${id}/rechazar`);
         } else {
-            await apiClient.patch(`/registros_pendientes/${id}`, { 
-                status: 'RECHAZADO', 
-                statusColor: 'red', 
-                bgColor: 'bg-light-red' 
+            await apiClient.patch(`/registros-pendientes/${id}`, { 
+                status: 'RECHAZADO'
             });
         }
     },
@@ -108,15 +108,20 @@ export const ServicesAdmin = {
         return res.data;
     },
 
-    // Actividad del Sistema
+    // Actividad del Sistema (Mockeado si no hay endpoint real)
     getActivities: async (): Promise<Activity[]> => {
-        const res = await apiClient.get<Activity[]>('/actividad_sistema');
-        return res.data;
+        try {
+            const res = await apiClient.get<Activity[]>('/stats/activities');
+            return res.data;
+        } catch {
+            return []; // Fallback seguro
+        }
     },
 
-    getProfile: async (id: number | string = 1): Promise<AdminProfile> => {
-        const res = await apiClient.get<AdminProfile>(`/Admin/${id}`);
-        return res.data;
+    // Perfil Administrativo
+    getProfile: async (): Promise<AdminProfile> => {
+        const res = await apiClient.get<{ data: AdminProfile }>('/auth/profile');
+        return res.data.data;
     },
 
     updateProfile: async (id: number | string, data: Partial<AdminProfile>): Promise<AdminProfile> => {
@@ -124,58 +129,37 @@ export const ServicesAdmin = {
         return res.data;
     },
 
-    // Configuración del sistema — conectado al backend real
+    // Configuración del sistema
     getSettings: async (): Promise<SystemSettings> => {
-        const res = await apiClient.get<SystemSettings>('/system_settings');
+        const res = await apiClient.get<SystemSettings>('/settings');
         return res.data;
     },
 
     updateSettings: async (data: SystemSettings): Promise<SystemSettings> => {
-        const res = await apiClient.put<SystemSettings>('/system_settings', data);
+        const res = await apiClient.put<SystemSettings>('/settings', data);
         return res.data;
     },
 
-    // Gestión de usuarios — conectado al backend real
-    getUsers: async (): Promise<Record<string, unknown>[]> => {
-        const res = await apiClient.get<Record<string, unknown>[]>('/usuarios/all');
+    // Gestión de usuarios
+    getUsers: async (): Promise<any[]> => {
+        const res = await apiClient.get<any[]>('/usuarios');
         return res.data;
-    },
-
-    deleteUser: async (id: string): Promise<boolean> => {
-        await apiClient.delete(`/usuarios/${id}`);
-        return true;
-    },
-
-    logActivity: async (
-        title: string,
-        details: string,
-        icon: string = "fa-solid fa-circle-info",
-        iconColor: string = "blue"
-    ): Promise<void> => {
-        const activity: Omit<Activity, 'id'> = { title, details, icon, iconColor, time: "Hace un momento" };
-        await apiClient.post('/actividad_sistema', activity);
     },
 
     // Gráficos
     getCharts: async (): Promise<Graficos> => {
-        const res = await apiClient.get<Graficos>('/graficos');
-        return res.data;
+        try {
+            const res = await apiClient.get<Graficos>('/stats/charts');
+            return res.data;
+        } catch {
+            return { crecimiento: [], distribucion: [] };
+        }
     },
 
-    // Estadísticas — una sola llamada al backend real
+    // Estadísticas — Llamada unificada al endpoint profesional del backend
     getStats: async (): Promise<Stats> => {
-        const [atletas, pendientes, volunt] = await Promise.all([
-            apiClient.get<unknown[]>('/atletas'),
-            apiClient.get<unknown[]>('/registros_pendientes'),
-            apiClient.get<unknown[]>('/voluntarios')
-        ]);
-
-        return {
-            totalRegistros: { valor: atletas.data.length + pendientes.data.length, porcentaje: "+12%", tendencia: 'up' },
-            atletasActivos: { valor: atletas.data.length, porcentaje: "+5%", tendencia: 'up' },
-            revisionesPendientes: { valor: pendientes.data.length, textoExtra: "Requieren acción" },
-            voluntarios: { valor: volunt.data.length, porcentaje: "0%", tendencia: 'none' }
-        };
+        const res = await apiClient.get<{ data: Stats }>('/stats');
+        return res.data.data;
     },
 
     // Competiciones
@@ -217,20 +201,13 @@ export const ServicesAdmin = {
     // Consultas — conectado al backend real
 
     getConsultas: async (): Promise<Consulta[]> => {
-        const res = await fetch(`${BACKEND_URL}/consultas`, {
-            headers: authHeaders()
-        });
-        if (!res.ok) throw new Error("Error al obtener consultas");
-        return res.json();
+        const res = await apiClient.get<Consulta[]>('/consultas');
+        return res.data;
     },
 
     deleteConsulta: async (id: string): Promise<boolean> => {
-        const res = await fetch(`${BACKEND_URL}/consultas/${id}`, {
-            method: 'DELETE',
-            headers: authHeaders()
-        });
-        if (!res.ok) throw new Error("Error al eliminar consulta");
+        await apiClient.delete(`/consultas/${id}`);
         return true;
-
     }
 };
+

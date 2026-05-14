@@ -42,7 +42,7 @@ const atletaController = {
       });
 
       if (!atleta) {
-        return res.status(44).json({ mensaje: 'Atleta no encontrado' });
+        return res.status(404).json({ mensaje: 'Atleta no encontrado' });
       }
 
       res.status(200).json(atleta);
@@ -97,6 +97,59 @@ const atletaController = {
       res.status(404).json({ mensaje: 'Atleta no encontrado' });
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al eliminar el atleta', error: error.message });
+    }
+  },
+  // [verde] Obtener documentos de un atleta
+  obtenerDocumentosAtleta: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const documentos = await AtletaDocumento.findAll({ where: { atleta_id: id } });
+      res.status(200).json(documentos);
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al obtener documentos', error: error.message });
+    }
+  },
+
+  // [verde] Agregar un documento a un atleta
+  // Body esperado: { nombre_documento, tipo_documento, ruta_archivo }
+  // ruta_archivo debe ser una URL (CDN, S3, etc.) o ruta relativa del servidor
+  agregarDocumento: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { nombre_documento, tipo_documento, ruta_archivo } = req.body;
+
+      if (!nombre_documento || !tipo_documento || !ruta_archivo) {
+        return res.status(400).json({ mensaje: 'Faltan campos obligatorios: nombre_documento, tipo_documento, ruta_archivo' });
+      }
+
+      const doc = await AtletaDocumento.create({
+        atleta_id: id,
+        nombre_documento,
+        tipo_documento,
+        ruta_archivo
+      });
+
+      res.status(201).json({ mensaje: 'Documento agregado exitosamente', data: doc });
+    } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors.map(e => e.message) });
+      }
+      res.status(500).json({ mensaje: 'Error al agregar documento', error: error.message });
+    }
+  },
+
+  // [verde] Eliminar un documento de un atleta
+  eliminarDocumento: async (req, res) => {
+    try {
+      const { id, docId } = req.params;
+      const eliminado = await AtletaDocumento.destroy({ where: { id: docId, atleta_id: id } });
+
+      if (eliminado) {
+        return res.status(200).json({ mensaje: 'Documento eliminado correctamente' });
+      }
+      res.status(404).json({ mensaje: 'Documento no encontrado' });
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al eliminar el documento', error: error.message });
     }
   }
 };
