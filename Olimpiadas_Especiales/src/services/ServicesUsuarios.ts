@@ -29,6 +29,7 @@ export const ServicesUsuarios = {
             password: usuario.password,
             fecha_nacimiento: usuario.fechaNacimiento,
             genero: usuario.genero === 'NoDecir' ? 'Otro' : usuario.genero,
+            pais: usuario.pais,
             rol_id: usuario.rol_id || 6, // 6 = Usuario General por defecto
         };
 
