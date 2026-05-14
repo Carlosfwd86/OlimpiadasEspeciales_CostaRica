@@ -68,6 +68,22 @@ const Atleta = sequelize.define('Atleta', {
   fecha_registro: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  programa_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'programas',
+      key: 'id'
+    }
+  },
+  nivel_habilidad_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'niveles_habilidad',
+      key: 'id'
+    }
   }
 }, {
   tableName: 'atletas',
