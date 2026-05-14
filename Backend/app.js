@@ -72,6 +72,7 @@ app.use('/api/stats', require('./routes/stats.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
 app.use('/api/registros-pendientes', require('./routes/registrosPendientes.routes'));
 app.use('/api/actividad-sistema', require('./routes/actividadSistema.routes'));
+app.use('/api/ia', require('./routes/ia.routes'));
 
 // Middleware para manejar errores
 app.use(errorHandler);
