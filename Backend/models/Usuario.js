@@ -80,11 +80,19 @@ const Usuario = sequelize.define('Usuario', {
   },
   avatar_url: {
     type: DataTypes.STRING(500),
-    allowNull: true,
-    validate: {
-      // Formato URL
-      isUrl: true
-    }
+    allowNull: true
+  },
+  equipo: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  experiencia: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  proximos_retos: {
+    type: DataTypes.TEXT,
+    allowNull: true
   },
   status: {
     type: DataTypes.ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO'),

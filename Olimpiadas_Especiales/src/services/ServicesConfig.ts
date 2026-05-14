@@ -10,6 +10,19 @@ const ENDPOINT_MAP: Record<string, string> = {
 };
 
 export const getConfig = async (key: string): Promise<ConfigItem[]> => {
+    // Interceptar areas_voluntariado para retornar opciones estáticas
+    // ya que el backend no tiene un catálogo en base de datos para esto.
+    if (key === 'areas_voluntariado') {
+        return [
+            { id: 1, nombre: 'Entrenamiento Deportivo' },
+            { id: 2, nombre: 'Eventos y Logística' },
+            { id: 3, nombre: 'Recaudación de Fondos' },
+            { id: 4, nombre: 'Salud y Bienestar' },
+            { id: 5, nombre: 'Apoyo Administrativo' },
+            { id: 6, nombre: 'Comunicaciones y Redes Sociales' }
+        ];
+    }
+
     try {
         const path = ENDPOINT_MAP[key] ?? key;
         const response = await apiClient.get<ConfigItem[]>(`/${path}`);

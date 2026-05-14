@@ -110,9 +110,19 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
     const [loadingRoleData, setLoadingRoleData] = useState<boolean>(false);
 
     useEffect(() => { 
-        setEditData({ ...user });
+        const mappedUser = {
+            ...user,
+            correoElectronico: user?.correo_electronico || user?.correoElectronico,
+            fechaNacimiento: user?.fecha_nacimiento || user?.fechaNacimiento,
+            avatarUrl: user?.avatar_url || user?.avatarUrl,
+            rol_id: user?.rol_id || user?.rolId,
+            proximosRetos: user?.proximos_retos || user?.proximosRetos,
+            equipo: user?.equipo || user?.equipo,
+            experiencia: user?.experiencia || user?.experiencia
+        };
+        setEditData(mappedUser);
         const savedAvatar = localStorage.getItem(`avatar_${user?.id}`);
-        setAvatarPreview(user?.avatarUrl || savedAvatar || null);
+        setAvatarPreview(mappedUser.avatarUrl || savedAvatar || null);
     }, [user]);
 
     useEffect(() => {
@@ -130,7 +140,18 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                 else if (user.rol === 'tutor') data = await getTutorById(roleId);
 
                 if (data) {
-                    setEditData((prev: any) => ({ ...prev, ...data }));
+                    const mappedData = {
+                        ...data,
+                        correoElectronico: data.correo_electronico || data.correoElectronico,
+                        fechaNacimiento: data.fecha_nacimiento || data.fechaNacimiento,
+                        aniosExperiencia: data.anios_experiencia || data.aniosExperiencia,
+                        experiencia: data.experiencia || data.experiencia_previa || data.experiencia,
+                        emergenciaNombre: data.emergencia_nombre || data.emergenciaNombre,
+                        emergenciaTelefono: data.emergencia_telefono || data.emergenciaTelefono,
+                        proximosRetos: data.proximos_retos || data.proximosRetos,
+                        equipo: data.equipo || data.disciplina || data.equipo
+                    };
+                    setEditData((prev: any) => ({ ...prev, ...mappedData }));
                     
                     // Manejar vinculación si existe
                     if (user.rol === 'atleta' && data.tutorVinculado) {
