@@ -1,5 +1,18 @@
-import apiClient from '../api/apiClient';
+
 import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta } from '../types';
+import apiClient from '../api/apiClient';
+
+
+// URL base del backend real (configurable por variable de entorno)
+const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api/v1";
+const BASE_URL = import.meta.env.VITE_MOCK_URL ?? "http://localhost:3001";
+
+// Helper: retorna headers con JWT desde localStorage
+const authHeaders = (): HeadersInit => ({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`
+});
+
 
 /* [verde] Servicio administrativo centralizado conectado al Backend real */
 export const ServicesAdmin = {
@@ -154,27 +167,43 @@ export const ServicesAdmin = {
     },
 
     // Competiciones
+    /**
+     * Obtiene la lista de competiciones desde el backend usando apiClient.
+     */
     getCompeticiones: async (): Promise<Competicion[]> => {
         const res = await apiClient.get<Competicion[]>('/competiciones');
         return res.data;
     },
 
+    /**
+     * Guarda una nueva competición o actualiza una existente usando apiClient.
+     * @param data Datos parciales de la competición.
+     * @param id ID opcional. Si se provee, se actualiza la competición.
+     */
     saveCompeticion: async (data: Partial<Competicion>, id: string | null = null): Promise<Competicion> => {
         if (id) {
             const res = await apiClient.patch<Competicion>(`/competiciones/${id}`, data);
             return res.data;
         } else {
-            const res = await apiClient.post<Competicion>('/competiciones', data);
+            const res = await apiClient.post<Competicion>('/competiciones', {
+                ...data,
+                status: data.status || 'Programado'
+            });
             return res.data;
         }
     },
 
-    deleteCompeticion: async (id: number | string): Promise<boolean> => {
+    /**
+     * Elimina una competición por su ID usando apiClient.
+     * @param id ID de la competición a eliminar.
+     */
+    deleteCompeticion: async (id: string): Promise<boolean> => {
         await apiClient.delete(`/competiciones/${id}`);
         return true;
     },
 
-    // Consultas
+    // Consultas — conectado al backend real
+
     getConsultas: async (): Promise<Consulta[]> => {
         const res = await apiClient.get<Consulta[]>('/consultas');
         return res.data;
@@ -183,19 +212,6 @@ export const ServicesAdmin = {
     deleteConsulta: async (id: string | number): Promise<boolean> => {
         await apiClient.delete(`/consultas/${id}`);
         return true;
-    },
-
-    // Log de actividad del sistema
-    logActivity: async (
-        title: string,
-        details: string,
-        icon: string = 'fa-solid fa-circle-info',
-        iconColor: string = 'blue'
-    ): Promise<void> => {
-        try {
-            const activity = { title, details, icon, iconColor, time: new Date().toISOString() };
-            await apiClient.post('/stats/activities', activity);
-        } catch { /* silent fail — no bloquear la UI si el log falla */ }
     }
 };
 

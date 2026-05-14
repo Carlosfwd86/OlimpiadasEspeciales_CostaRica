@@ -82,6 +82,7 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.STRING(500),
     allowNull: true
   },
+/*
   equipo: {
     type: DataTypes.STRING(100),
     allowNull: true
@@ -94,6 +95,7 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.TEXT,
     allowNull: true
   },
+*/
   status: {
     type: DataTypes.ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO'),
     allowNull: false,
