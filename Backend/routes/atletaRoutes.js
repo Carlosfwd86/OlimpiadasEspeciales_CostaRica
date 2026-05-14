@@ -16,10 +16,13 @@ router.use(auth);
 // [verde] Listado y detalle (Cualquier usuario autenticado)
 router.get('/', atletaController.obtenerTodosLosAtletas);
 router.get('/:id', atletaController.obtenerAtletaPorId);
+router.get('/:id/documentos', atletaController.obtenerDocumentosAtleta);
 
 // [verde] Operaciones de escritura (Solo Administradores - ID: 1)
 router.post('/', checkRole([1]), validators.atleta, validate, atletaController.crearAtleta);
+router.post('/:id/documentos', checkRole([1]), atletaController.agregarDocumento);
 router.put('/:id', checkRole([1]), validators.atleta, validate, atletaController.actualizarAtleta);
 router.delete('/:id', checkRole([1]), atletaController.eliminarAtleta);
+router.delete('/:id/documentos/:docId', checkRole([1]), atletaController.eliminarDocumento);
 
 module.exports = router;

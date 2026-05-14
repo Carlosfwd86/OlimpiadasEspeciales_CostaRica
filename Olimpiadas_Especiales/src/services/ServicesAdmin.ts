@@ -1,5 +1,5 @@
 import apiClient from '../api/apiClient';
-import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta } from '../types';
+import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta } from '../types';
 
 /* [verde] Servicio administrativo centralizado conectado al Backend real */
 export const ServicesAdmin = {
@@ -27,11 +27,66 @@ export const ServicesAdmin = {
         // En el backend real, esto se maneja vía /api/inscripciones/:id/aprobar o similar
         // Por ahora mantenemos la lógica pero apuntando a los endpoints correctos
         const role = registro.rol || 'atleta';
-        const endpoint = role === 'atleta' ? 'atletas' : `${role}s`; 
-        
-        await apiClient.post(`/atletas`, { ...registro, status: 'ACTIVO' });
+
+        // Aprobación específica para voluntarios
+        if (role === 'voluntario') {
+            await apiClient.put(`/voluntarios/${registro.id}/aprobar`);
+            await apiClient.delete(`/registros-pendientes/${registro.id}`);
+            return true;
+        }
+
+        const targetEndpoint: Record<string, string> = {
+            'atleta': 'atletas',
+            'entrenador': 'entrenadores',
+            'voluntario': 'voluntarios',
+            'tutor': 'tutores'
+        };
+        const endpoint = targetEndpoint[role] || 'atletas';
+
+        const userEmail = registro.email?.toLowerCase();
+        let userId = registro.usuario_id;
+
+        if (!userId && userEmail) {
+            try {
+                const resU = await apiClient.get<Array<{ id: string }>>(`/usuarios?correo_electronico=${userEmail}`);
+                if (resU.data.length > 0) userId = resU.data[0].id;
+            } catch (e) { console.error("Error buscando usuario:", e); }
+        }
+
+        if (userId) {
+            try {
+                await apiClient.patch(`/usuarios/${userId}`, {
+                    rol: role,
+                    status: 'ACTIVO'
+                });
+            } catch (e) { console.error("Error actualizando usuario base:", e); }
+        }
+
+        const officialData = {
+            ...registro,
+            id: userId ? `${role}_${userId}` : registro.id,
+            usuario_id: userId || null,
+            status: 'ACTIVO',
+            fecha_aprobacion: new Date().toISOString()
+        };
+
+        const fieldsToDelete = ['statusColor', 'bgColor', 'time', 'initials'];
+        fieldsToDelete.forEach(f => delete (officialData as any)[f]);
+
+        await apiClient.post(`/${endpoint}`, officialData);
         await apiClient.delete(`/registros-pendientes/${registro.id}`);
+
         return true;
+    },
+
+    rechazarRegistro: async (id: string, role: string = 'atleta'): Promise<void> => {
+        if (role === 'voluntario') {
+            await apiClient.put(`/voluntarios/${id}/rechazar`);
+        } else {
+            await apiClient.patch(`/registros-pendientes/${id}`, { 
+                status: 'RECHAZADO'
+            });
+        }
     },
 
     // Atletas Oficiales
@@ -54,6 +109,11 @@ export const ServicesAdmin = {
     getProfile: async (): Promise<AdminProfile> => {
         const res = await apiClient.get<{ data: AdminProfile }>('/auth/profile');
         return res.data.data;
+    },
+
+    updateProfile: async (id: number | string, data: Partial<AdminProfile>): Promise<AdminProfile> => {
+        const res = await apiClient.put<AdminProfile>(`/Admin/${id}`, data);
+        return res.data;
     },
 
     // Configuración del sistema
@@ -96,10 +156,13 @@ export const ServicesAdmin = {
     },
 
     saveCompeticion: async (data: Partial<Competicion>, id: string | null = null): Promise<Competicion> => {
-        const res = id 
-            ? await apiClient.put<Competicion>(`/competiciones/${id}`, data)
-            : await apiClient.post<Competicion>('/competiciones', data);
-        return res.data;
+        if (id) {
+            const res = await apiClient.patch<Competicion>(`/competiciones/${id}`, data);
+            return res.data;
+        } else {
+            const res = await apiClient.post<Competicion>('/competiciones', data);
+            return res.data;
+        }
     },
 
     deleteCompeticion: async (id: number | string): Promise<boolean> => {
@@ -107,9 +170,28 @@ export const ServicesAdmin = {
         return true;
     },
 
-    logActivity: async (title: string, details: string, icon: string = "fa-solid fa-circle-info", iconColor: string = "blue"): Promise<void> => {
-        // Enviar log al backend si existe el endpoint
-        console.log(`Log: ${title} - ${details}`);
+    // Consultas
+    getConsultas: async (): Promise<Consulta[]> => {
+        const res = await apiClient.get<Consulta[]>('/consultas');
+        return res.data;
+    },
+
+    deleteConsulta: async (id: string): Promise<boolean> => {
+        await apiClient.delete(`/consultas/${id}`);
+        return true;
+    },
+
+    // Log de actividad del sistema
+    logActivity: async (
+        title: string,
+        details: string,
+        icon: string = 'fa-solid fa-circle-info',
+        iconColor: string = 'blue'
+    ): Promise<void> => {
+        try {
+            const activity = { title, details, icon, iconColor, time: new Date().toISOString() };
+            await apiClient.post('/stats/activities', activity);
+        } catch { /* silent fail — no bloquear la UI si el log falla */ }
     }
 };
 

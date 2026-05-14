@@ -1,5 +1,13 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+
+// ── Seguridad: JWT_SECRET es OBLIGATORIO ──────────────────────────────────────
+if (!process.env.JWT_SECRET) {
+  throw new Error(
+    '[authMiddleware] JWT_SECRET no está definido en las variables de entorno.'
+  );
+}
+const JWT_SECRET = process.env.JWT_SECRET;
+// ─────────────────────────────────────────────────────────────────────────────
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -11,8 +19,8 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // Verificar el token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
-    
+    const decoded = jwt.verify(token, JWT_SECRET);
+
     // Adjuntar la información del usuario a la petición
     req.user = decoded;
     next();

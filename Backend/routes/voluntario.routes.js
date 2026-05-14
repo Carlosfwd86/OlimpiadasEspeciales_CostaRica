@@ -10,10 +10,11 @@ router.use(auth);
 
 router.get('/', voluntarioController.obtenerTodos);
 router.get('/:id', voluntarioController.obtenerPorId);
-router.post('/', voluntarioController.crear);
-router.put('/:id', voluntarioController.actualizar);
+// ⚠️ Las rutas específicas DEBEN ir ANTES de PUT /:id (orden crítico en Express)
 router.put('/:id/aprobar', voluntarioController.aprobar);
 router.put('/:id/rechazar', voluntarioController.rechazar);
+router.put('/:id', voluntarioController.actualizar);
+router.post('/', voluntarioController.crear);
 router.delete('/:id', voluntarioController.eliminar);
 
 module.exports = router;

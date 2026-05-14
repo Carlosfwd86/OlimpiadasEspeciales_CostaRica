@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/AdminDashboard.css';
 
+// URL base del backend real (configurable por variable de entorno)
+const BACKEND_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import StatCard from './StatCard';
@@ -59,9 +62,11 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    apiClient.get('/registros-pendientes')
-      .then(res => {
-        const data = res.data.data || [];
+    fetch(`${BACKEND_URL}/registros-pendientes`, {
+        credentials: 'include' // Cookie httpOnly enviada automáticamente
+      })
+      .then(res => res.json())
+      .then((data: Array<Record<string, unknown>>) => {
         if (data.length === 0) { alert("No hay datos para exportar."); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
         const csvContent = data.map((r: any) =>
