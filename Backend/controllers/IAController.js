@@ -4,7 +4,9 @@
  */
 const IAService = require('../services/IAService');
 const IAHelper = require('../helpers/IAHelper');
-const { Atleta, AtletaCondicion, AtletaMedicamento } = require('../models');
+const Atleta = require('../models/Atleta');
+const AtletaCondicion = require('../models/AtletaCondicion');
+const AtletaMedicamento = require('../models/AtletaMedicamento');
 
 const IAController = {
     /**
