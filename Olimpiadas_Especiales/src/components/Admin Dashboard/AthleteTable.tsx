@@ -13,6 +13,7 @@ interface AthleteTableProps {
 export default function AthleteTable({ refreshTrigger = 0, searchQuery = '' }: AthleteTableProps): React.JSX.Element {
   const [atletas, setAtletas] = useState<Atleta[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [localSearch, setLocalSearch] = useState<string>('');
 
   /* [verde] Efecto para cargar los datos reales al montar el componente o refrescar */
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function AthleteTable({ refreshTrigger = 0, searchQuery = '' }: A
   if (loading) return <div className="pending-table-container">Cargando lista oficial...</div>;
 
   const filteredAtletas = atletas.filter(atleta => {
-    const q = searchQuery.toLowerCase();
+    const q = (localSearch || searchQuery).toLowerCase();
     const fullName = `${atleta.nombre} ${atleta.primer_apellido} ${atleta.segundo_apellido || ''}`.toLowerCase();
     return (
       fullName.includes(q) ||
@@ -41,6 +42,19 @@ export default function AthleteTable({ refreshTrigger = 0, searchQuery = '' }: A
 
   return (
     <div className="pending-table-container" style={{ marginTop: '0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '0 5px' }}>
+        <h3 style={{ margin: 0, color: 'var(--admin-text-main)', fontSize: '16px' }}>Base de Datos Oficial</h3>
+        <div style={{ position: 'relative' }}>
+          <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }}></i>
+          <input 
+            type="text" 
+            placeholder="Buscar atletas..." 
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
+            style={{ padding: '8px 12px 8px 35px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', width: '250px', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+          />
+        </div>
+      </div>
       <div className="table-wrapper">
         <table className="pending-table">
           <thead>

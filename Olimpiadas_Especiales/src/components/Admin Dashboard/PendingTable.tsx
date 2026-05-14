@@ -19,6 +19,7 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   const [filterRegion, setFilterRegion] = useState<string>('');
   const [selectedReg, setSelectedReg] = useState<Registro | null>(null);
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [localSearch, setLocalSearch] = useState<string>('');
 
   const fetchRegistrations = (): void => {
     ServicesAdmin.getRegistrations()
@@ -37,6 +38,7 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   }, [refreshTrigger]);
 
   const handleApprove = (reg: Registro): void => {
+    // ... existing logic
     if (!window.confirm(`¿Seguro que deseas APROBAR a ${String(reg.name ?? '')}? Pasará a la base de datos oficial.`)) return;
 
     setProcessingId(reg.id);
@@ -98,12 +100,11 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   }
 
   const filteredRegs = registrations.filter(reg => {
-    const name = String(reg.name ?? '');
-    const email = String(reg.email ?? '');
-    const matchesSearch = !searchQuery ||
-      name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      email.toLowerCase().includes(searchQuery.toLowerCase());
-
+    const q = (localSearch || searchQuery).toLowerCase();
+    const name = String(reg.name ?? '').toLowerCase();
+    const email = String(reg.email ?? '').toLowerCase();
+    
+    const matchesSearch = !q || name.includes(q) || email.includes(q);
     const matchesSport = !filterSport || reg.sport === filterSport;
     const matchesRegion = !filterRegion || reg.region === filterRegion;
 
@@ -113,7 +114,19 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   return (
     <div className="pending-table-container">
       <div className="table-header">
-        <h3>Registros Pendientes</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <h3 style={{ margin: 0 }}>Registros Pendientes</h3>
+          <div style={{ position: 'relative' }}>
+            <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }}></i>
+            <input 
+              type="text" 
+              placeholder="Buscar registros..." 
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+              style={{ padding: '8px 12px 8px 35px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', width: '220px', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+            />
+          </div>
+        </div>
         <div className="table-filters" style={{ display: 'flex', gap: '10px' }}>
           <select
             className="filter-select"

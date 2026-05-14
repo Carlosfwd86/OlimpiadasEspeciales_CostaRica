@@ -3,7 +3,11 @@ import '../../style/ActivityFeed.css';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import type { Activity } from '../../types';
 
-export default function ActivityFeed(): React.JSX.Element {
+interface ActivityFeedProps {
+  searchQuery?: string;
+}
+
+export default function ActivityFeed({ searchQuery = '' }: ActivityFeedProps): React.JSX.Element {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -19,6 +23,11 @@ export default function ActivityFeed(): React.JSX.Element {
       });
   }, []);
 
+  const filteredActivities = activities.filter(a => {
+    const q = searchQuery.toLowerCase();
+    return a.title.toLowerCase().includes(q) || a.details.toLowerCase().includes(q);
+  });
+
   if (loading) return <div className="activity-feed-container">Cargando actividad...</div>;
 
   return (
@@ -28,7 +37,7 @@ export default function ActivityFeed(): React.JSX.Element {
       </div>
 
       <div className="feed-list">
-        {activities.map((activity, idx) => (
+        {filteredActivities.length > 0 ? filteredActivities.map((activity, idx) => (
           <div key={activity.id ?? idx} className="feed-item">
             <div className={`feed-icon-wrapper feed-${activity.iconColor}`}>
               <i className={activity.icon}></i>
@@ -41,7 +50,11 @@ export default function ActivityFeed(): React.JSX.Element {
               </p>
             </div>
           </div>
-        ))}
+        )) : (
+          <div style={{ padding: '20px', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+            No se encontraron actividades.
+          </div>
+        )}
       </div>
     </div>
   );

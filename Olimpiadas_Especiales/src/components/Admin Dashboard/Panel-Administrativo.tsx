@@ -122,7 +122,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
               )}
               <ChartSection onTabChange={setActiveTab} />
               <PendingTable refreshTrigger={refreshTrigger} onEdit={handleEditEntry} searchQuery={searchQuery} onActionSuccess={handleSaveSuccess} />
-              <ActivityFeed />
+              <ActivityFeed searchQuery={searchQuery} />
             </>
           )}
 
@@ -157,10 +157,45 @@ export default function PanelAdministrativo(): React.JSX.Element {
                 </button>
               </div>
 
-              <CompetitionCard 
-                onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
-                onRefresh={handleSaveSuccess}
-              />
+              {competiciones.length > 0 ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                  {competiciones.filter(comp => {
+                    const q = searchQuery.toLowerCase();
+                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
+                  }).map(comp => (
+                    <CompetitionCard key={comp.id} competition={comp}
+                      onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
+                      onDelete={(id) => {
+                        if (window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
+                          ServicesAdmin.deleteCompeticion(id)
+                            .then(() => handleSaveSuccess())
+                            .catch(err => alert((err as Error).message));
+                        }
+                      }}
+                    />
+                  ))}
+                  {competiciones.filter(comp => {
+                    const q = searchQuery.toLowerCase();
+                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
+                  }).length === 0 && (
+                    <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', background: 'var(--admin-white)', borderRadius: '15px', color: 'var(--admin-text-muted)' }}>
+                      <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '30px', marginBottom: '10px', display: 'block' }}></i>
+                      No se encontraron competiciones que coincidan con "{searchQuery}"
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ padding: '60px', background: 'white', borderRadius: '15px', textAlign: 'center', border: '2px dashed #e2e8f0' }}>
+                  <div style={{ fontSize: '60px', color: '#cbd5e1', marginBottom: '20px' }}>
+                    <i className="fa-solid fa-calendar-plus"></i>
+                  </div>
+                  <h3 style={{ color: '#64748b' }}>No hay competiciones o eventos programados</h3>
+                  <p style={{ color: '#94a3b8' }}>Comienza creando tu primer evento deportivo nacional.</p>
+                  <button className="btn-new-entry" style={{ marginTop: '20px' }} onClick={() => setIsCompModalOpen(true)}>
+                    + Crear Evento
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -168,7 +203,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
           {activeTab === 'rendimiento' && (
             <div className="tab-container">
               <ChartSection onTabChange={setActiveTab} />
-              <ActivityFeed />
+              <ActivityFeed searchQuery={searchQuery} />
             </div>
           )}
 
@@ -181,7 +216,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
           
           {activeTab === 'consultas' && <ConsultasSection searchQuery={searchQuery} />}
 
-          {activeTab === 'reportes' && <ReportsSection />}
+          {activeTab === 'reportes' && <ReportsSection searchQuery={searchQuery} />}
           {activeTab === 'perfil' && <ProfileSection />}
           {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" searchQuery={searchQuery} />}
           {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" searchQuery={searchQuery} />}

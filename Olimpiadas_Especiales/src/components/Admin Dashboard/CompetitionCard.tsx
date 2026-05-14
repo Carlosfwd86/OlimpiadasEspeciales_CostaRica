@@ -5,7 +5,7 @@ import { ServicesAdmin } from '../../services/ServicesAdmin';
 
 interface CompetitionCardProps {
   onEdit?: (comp: Competicion) => void;
-  onRefresh?: () => void;
+  onDelete?: (id: string | number) => void;
 }
 
 const CompetitionCard: React.FC<CompetitionCardProps> = ({ onEdit, onRefresh }) => {
