@@ -48,7 +48,25 @@ const usuarioController = {
       const usuario = await Usuario.findByPk(req.params.id);
       if (!usuario) return res.status(404).json({ msg: 'Usuario no encontrado' });
       
-      await usuario.update(req.body);
+      const data = req.body;
+      const updates = {};
+      
+      // Mapeo de campos
+      if (data.nombre) updates.nombre = data.nombre;
+      if (data.apellido) updates.apellido = data.apellido;
+      if (data.cedula) updates.cedula = data.cedula;
+      if (data.correoElectronico || data.correo_electronico) updates.correo_electronico = data.correoElectronico || data.correo_electronico;
+      if (data.telefono) updates.telefono = data.telefono;
+      if (data.direccion) updates.direccion = data.direccion;
+      if (data.pais) updates.pais = data.pais;
+      if (data.fechaNacimiento || data.fecha_nacimiento) updates.fecha_nacimiento = data.fechaNacimiento || data.fecha_nacimiento;
+      if (data.genero) updates.genero = data.genero;
+      if (data.avatarUrl || data.avatar_url) updates.avatar_url = data.avatarUrl || data.avatar_url;
+      if (data.equipo) updates.equipo = data.equipo;
+      if (data.experiencia) updates.experiencia = data.experiencia;
+      if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
+
+      await usuario.update(updates);
       return res.status(200).json(usuario);
     } catch (error) {
       return res.status(500).json({ error: error.message });

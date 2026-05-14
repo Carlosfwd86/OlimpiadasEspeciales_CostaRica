@@ -53,6 +53,18 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(50),
       allowNull: true
     },
+    nombre_atleta: {
+      type: DataTypes.STRING(150),
+      allowNull: true
+    },
+    ocupacion: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    motivacion: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     experiencia_necesidades_especiales: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

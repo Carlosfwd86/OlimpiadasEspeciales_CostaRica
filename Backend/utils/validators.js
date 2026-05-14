@@ -10,13 +10,9 @@ const validators = {
     body('apellido').trim().notEmpty().withMessage('El apellido es obligatorio'),
     body('correo_electronico').isEmail().withMessage('Email inválido').normalizeEmail(),
     body('password')
-      .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres')
-      .matches(/[A-Z]/).withMessage('Debe contener al menos una mayúscula')
-      .matches(/[a-z]/).withMessage('Debe contener al menos una minúscula')
-      .matches(/[0-9]/).withMessage('Debe contener al menos un número')
-      .matches(/[@$!%*?&]/).withMessage('Debe contener al menos un carácter especial (@$!%*?&)'),
+      .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
     body('rol_id').isInt().withMessage('Rol inválido'),
-    body('cedula').optional().isNumeric().withMessage('La cédula debe ser numérica')
+    body('cedula').optional().isString().withMessage('La cédula debe tener formato válido')
   ],
 
   // Validación para inicio de sesión

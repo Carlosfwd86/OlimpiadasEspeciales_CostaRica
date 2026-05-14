@@ -33,8 +33,7 @@ const Usuario = sequelize.define('Usuario', {
     unique: true,
     allowNull: true,
     validate: {
-      // Solo dígitos
-      isNumeric: true
+      // isNumeric: true // Removido para soportar guiones
     }
   },
   correo_electronico: {
@@ -54,9 +53,9 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.STRING(15),
     allowNull: true,
     validate: {
-      // Solo dígitos y longitud mínima de 7
-      isNumeric: true,
-      len: [7, 15]
+      // Solo dígitos y longitud mínima de 7 (relajado para permitir formatos con +, -, etc)
+      // len: [7, 20] 
+      // Se quita isNumeric para permitir +506 8888-8888
     }
   },
   direccion: {
@@ -81,12 +80,22 @@ const Usuario = sequelize.define('Usuario', {
   },
   avatar_url: {
     type: DataTypes.STRING(500),
-    allowNull: true,
-    validate: {
-      // Formato URL
-      isUrl: true
-    }
+    allowNull: true
   },
+/*
+  equipo: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  experiencia: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  proximos_retos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+*/
   status: {
     type: DataTypes.ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO'),
     allowNull: false,

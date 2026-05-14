@@ -62,6 +62,10 @@ export default function Topbar({ onSearch, onTabChange }: TopbarProps): React.JS
             <span className="notification-badge"></span>
           </button>
 
+          <button className="notification-btn" title="Ver Sitio Público" onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>
+            <i className="fa-solid fa-globe"></i>
+          </button>
+
           {showNotif && (
             <div className="dropdown-menu">
               <div className="dropdown-header">

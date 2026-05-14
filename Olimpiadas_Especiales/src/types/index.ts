@@ -197,6 +197,9 @@ export interface SystemSettings {
 export interface Graficos {
   crecimiento: Array<{ mes: string; valor: number }>;
   distribucion: Array<{ label: string; valor: number }>;
+  distribucionRegional?: Array<{ region: string; valor: number; colorClase: string }>;
+  totalGeneral?: number;
+  atletasPorDeporte?: Array<{ deporte: string; porcentaje: number; valor: number; colorClase: string }>;
 }
 
 // ------ Config / Catálogos ------
