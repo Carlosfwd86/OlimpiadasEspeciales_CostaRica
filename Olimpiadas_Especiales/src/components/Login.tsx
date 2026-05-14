@@ -12,6 +12,7 @@ const Login = (): React.JSX.Element => {
   const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
   const auth = useAuth();
 
