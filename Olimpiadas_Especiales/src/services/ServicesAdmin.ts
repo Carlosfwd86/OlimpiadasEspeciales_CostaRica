@@ -133,6 +133,10 @@ export const ServicesAdmin = {
         return res.data;
     },
 
+    deleteUser: async (id: string | number): Promise<void> => {
+        await apiClient.delete(`/usuarios/${id}`);
+    },
+
     // Gráficos
     getCharts: async (): Promise<Graficos> => {
         try {
