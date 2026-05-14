@@ -7,14 +7,12 @@ const { Atleta, Voluntario, Inscripcion, Consulta, Usuario, Competicion } = mode
  */
 const getSummary = async (req, res) => {
   try {
-    const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas] = await Promise.all([
+    const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas, totalTutores] = await Promise.all([
       Atleta.count(),
       Voluntario.count(),
-
       Inscripcion.count({ where: { estado: 'PENDIENTE' } }),
       Consulta ? Consulta.count() : Promise.resolve(0),
       Usuario.count({ where: { rol_id: 5 } }) // 5 = tutor según el seeder
-
     ]);
 
     // Shape compatible con ServicesAdmin.ts -> getStats
@@ -28,7 +26,6 @@ const getSummary = async (req, res) => {
       },
       message: 'OK',
       status: 200
-
     });
   } catch (error) {
     console.error('Error al obtener summary:', error);
@@ -36,8 +33,8 @@ const getSummary = async (req, res) => {
   }
 };
 
-module.exports = { getStats };
 /**
+
  * GET /api/stats/charts
  * Datos para los gráficos del dashboard.
  */
