@@ -176,7 +176,7 @@ export const ServicesAdmin = {
         return res.data;
     },
 
-    deleteConsulta: async (id: string): Promise<boolean> => {
+    deleteConsulta: async (id: string | number): Promise<boolean> => {
         await apiClient.delete(`/consultas/${id}`);
         return true;
     },

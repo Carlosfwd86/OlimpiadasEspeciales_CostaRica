@@ -63,7 +63,7 @@ function Entrenadores(): React.JSX.Element {
     }
   };
 
-  const handleDelete = async (id: string): Promise<void> => {
+  const handleDelete = async (id: string | number): Promise<void> => {
     if (window.confirm("¿Está seguro de que desea eliminar este entrenador?")) {
       try {
         await deleteEntrenador(id);
@@ -171,7 +171,7 @@ function Entrenadores(): React.JSX.Element {
             <div className="empty-state">No hay entrenadores registrados aún.</div>
           ) : (
             <div className="entrenadores-grid">
-              {entrenadores.map(entrenador => (
+              {entrenadores.map((entrenador: any) => (
                 <div key={entrenador.id} className="entrenador-card">
                   <div className="entrenador-header">
                     <h3>{entrenador.nombre} {entrenador.apellidos}</h3>
