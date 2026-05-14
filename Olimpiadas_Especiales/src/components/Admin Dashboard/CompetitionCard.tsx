@@ -1,13 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import apiClient from '../../api/apiClient';
 import type { Competicion } from '../../types';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 
 interface CompetitionCardProps {
-  competition: Competicion;
   onEdit?: (comp: Competicion) => void;
   onDelete?: (id: string | number) => void;
 }
 
-const CompetitionCard: React.FC<CompetitionCardProps> = ({ competition, onEdit, onDelete }) => {
+const CompetitionCard: React.FC<CompetitionCardProps> = ({ onEdit, onRefresh }) => {
+    const [competiciones, setCompeticiones] = useState<Competicion[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCompeticiones = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await apiClient.get<Competicion[]>('/competiciones');
+                setCompeticiones(response.data);
+            } catch (err: any) {
+                setError('No se pudieron cargar las competiciones. Por favor, intenta nuevamente más tarde.');
+                console.error("Error fetching competiciones:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCompeticiones();
+    }, []);
     const getSportIcon = (sport: string): string => {
         switch(sport) {
             case 'Fútbol': return 'fa-futbol';
@@ -19,8 +41,52 @@ const CompetitionCard: React.FC<CompetitionCardProps> = ({ competition, onEdit, 
         }
     };
 
+    const handleDelete = async (id: string) => {
+        if (window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
+            try {
+                await ServicesAdmin.deleteCompeticion(id);
+                setCompeticiones(prev => prev.filter(c => c.id !== id));
+                if (onRefresh) onRefresh();
+            } catch (err: any) {
+                alert("Error al eliminar competición: " + err.message);
+            }
+        }
+    };
+
+    if (loading) {
+        return (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                {[1, 2, 3].map(i => (
+                    <div key={i} style={{ background: '#f8fafc', borderRadius: '12px', padding: '20px', height: '180px', animation: 'pulse 1.5s infinite' }} />
+                ))}
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ padding: '20px', background: '#fef2f2', color: '#991b1b', borderRadius: '8px', border: '1px solid #fecaca' }}>
+                <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '8px' }}></i>
+                {error}
+            </div>
+        );
+    }
+
+    if (competiciones.length === 0) {
+        return (
+            <div style={{ padding: '60px', background: 'white', borderRadius: '15px', textAlign: 'center', border: '2px dashed #e2e8f0' }}>
+                <div style={{ fontSize: '60px', color: '#cbd5e1', marginBottom: '20px' }}>
+                    <i className="fa-solid fa-calendar-plus"></i>
+                </div>
+                <h3 style={{ color: '#64748b' }}>No hay competiciones o eventos programados</h3>
+            </div>
+        );
+    }
+
     return (
-        <div className="competition-card" style={{
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            {competiciones.map(competition => (
+                <div key={competition.id} className="competition-card" style={{
             background: 'white',
             borderRadius: '12px',
             padding: '20px',
@@ -52,11 +118,9 @@ const CompetitionCard: React.FC<CompetitionCardProps> = ({ competition, onEdit, 
                             <i className="fa-solid fa-pen-to-square"></i>
                         </button>
                     )}
-                    {onDelete && (
-                        <button onClick={() => competition.id && onDelete(competition.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}>
-                            <i className="fa-solid fa-trash"></i>
-                        </button>
-                    )}
+                    <button onClick={() => competition.id && handleDelete(competition.id.toString())} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}>
+                        <i className="fa-solid fa-trash"></i>
+                    </button>
                 </div>
             </div>
 
@@ -119,7 +183,13 @@ const CompetitionCard: React.FC<CompetitionCardProps> = ({ competition, onEdit, 
                 .btn-edit-comp:hover {
                     background: #2563eb;
                 }
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: .5; }
+                }
             `}} />
+        </div>
+        ))}
         </div>
     );
 };

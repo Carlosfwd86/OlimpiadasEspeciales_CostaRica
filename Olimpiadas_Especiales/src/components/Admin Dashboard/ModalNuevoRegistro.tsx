@@ -71,7 +71,7 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
       setIsSubmitting(true);
       
       /* [verde] Llamada al servicio que usa Axios (apiClient) */
-      await ServicesAtletas.registrarAtleta(formData);
+      await ServicesAtletas.registrarAtleta(formData as Partial<Atleta>);
       
       alert("¡Atleta registrado exitosamente!");
       onSaveSuccess();

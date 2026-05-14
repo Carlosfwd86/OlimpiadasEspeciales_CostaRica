@@ -19,7 +19,7 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
     ]).then(([chartData, atletas]) => {
       const processedCharts: Graficos = { ...chartData };
 
-      if (processedCharts.distribucionRegional.length === 0 && atletas.length > 0) {
+      if ((processedCharts.distribucionRegional?.length || 0) === 0 && atletas.length > 0) {
         const provinces = ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"];
         const counts: Record<string, number> = {};
         atletas.forEach(a => {
@@ -28,7 +28,8 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
             const found = provinces.find(p => a.direccion!.toLowerCase().includes(p.toLowerCase()));
             if (found) r = found;
           }
-          counts[r] = (counts[r] || 0) + 1;
+          const key = r as string;
+          counts[key] = (counts[key] || 0) + 1;
         });
 
         processedCharts.distribucionRegional = Object.entries(counts).map(([name, val]) => ({
@@ -56,7 +57,7 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
         </div>
 
         <div className="progress-list">
-          {graficos.atletasPorDeporte.map((deporte, i) => (
+          {(graficos.atletasPorDeporte || []).map((deporte, i) => (
             <div className="progress-item" key={i}>
               <div className="progress-info">
                 <span>{deporte.deporte}</span>
@@ -79,7 +80,7 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
 
         <div className="regional-content">
           <div className="regional-list">
-            {graficos.distribucionRegional.map((region, i) => (
+            {(graficos.distribucionRegional || []).map((region, i) => (
               <div className="region-item" key={i}>
                 <span className={`region-dot ${region.colorClase}`}></span>
                 <span className="region-name">{region.region}</span>

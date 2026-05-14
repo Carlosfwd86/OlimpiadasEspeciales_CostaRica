@@ -35,6 +35,7 @@ const getStats = async (req, res) => {
 };
 
 /**
+
  * GET /api/stats/charts
  * Datos para los gráficos del dashboard.
  */

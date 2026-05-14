@@ -36,7 +36,6 @@ interface CompeticionFormData {
 
 export default function PanelAdministrativo(): React.JSX.Element {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [competiciones, setCompeticiones] = useState<Competicion[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isCompModalOpen, setIsCompModalOpen] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
@@ -49,10 +48,6 @@ export default function PanelAdministrativo(): React.JSX.Element {
     ServicesAdmin.getStats()
       .then(data => setStats(data))
       .catch(error => console.error("Error al cargar estadísticas:", error));
-
-    ServicesAdmin.getCompeticiones()
-      .then(data => setCompeticiones(data))
-      .catch(err => console.error("Error al cargar competiciones:", err));
 
     ServicesAdmin.getSettings()
       .then(data => { if (data.tema) setTheme(String(data.tema)); })
@@ -239,14 +234,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
         isOpen={isCompModalOpen}
         onClose={() => setIsCompModalOpen(false)}
         editData={editData as Competicion | null}
-        onSave={(data, id) => {
-          ServicesAdmin.saveCompeticion(data, id ?? null)
-            .then(() => {
-              ServicesAdmin.logActivity("Competición", `${id ? 'Edición' : 'Nueva'} competición: ${data.nombre}`, "fa-solid fa-trophy", "yellow");
-              handleSaveSuccess();
-            })
-            .catch(err => alert("Error al guardar: " + (err as Error).message));
-        }}
+        onSaveSuccess={handleSaveSuccess}
       />
     </div>
   );
