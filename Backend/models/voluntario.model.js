@@ -29,6 +29,14 @@ const Voluntario = sequelize.define('Voluntario', {
     unique: true,
     allowNull: true
   },
+  direccion: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  pais: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
   fecha_nacimiento: {
     type: DataTypes.DATEONLY,
     allowNull: true
@@ -55,6 +63,14 @@ const Voluntario = sequelize.define('Voluntario', {
     allowNull: true
   },
   experiencia_previa: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  equipo: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  proximos_retos: {
     type: DataTypes.TEXT,
     allowNull: true
   },

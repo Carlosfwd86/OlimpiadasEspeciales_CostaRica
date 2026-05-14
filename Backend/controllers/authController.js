@@ -59,7 +59,16 @@ const registrarUsuario = async (req, res) => {
       usuario: {
         id: nuevoUsuario.id,
         nombre: nuevoUsuario.nombre,
-        correo_electronico: nuevoUsuario.correo_electronico
+        apellido: nuevoUsuario.apellido,
+        cedula: nuevoUsuario.cedula,
+        correo_electronico: nuevoUsuario.correo_electronico,
+        telefono: nuevoUsuario.telefono,
+        direccion: nuevoUsuario.direccion,
+        pais: nuevoUsuario.pais,
+        fecha_nacimiento: nuevoUsuario.fecha_nacimiento,
+        genero: nuevoUsuario.genero,
+        avatar_url: nuevoUsuario.avatar_url,
+        rol_id: nuevoUsuario.rol_id
       }
     });
 
@@ -130,6 +139,15 @@ const iniciarSesion = async (req, res) => {
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        cedula: usuario.cedula,
+        correo_electronico: usuario.correo_electronico,
+        telefono: usuario.telefono,
+        direccion: usuario.direccion,
+        pais: usuario.pais,
+        fecha_nacimiento: usuario.fecha_nacimiento,
+        genero: usuario.genero,
+        avatar_url: usuario.avatar_url,
         rol_id: usuario.rol_id
       }
     });
