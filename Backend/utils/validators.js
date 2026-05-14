@@ -11,9 +11,8 @@ const validators = {
     body('correo_electronico').isEmail().withMessage('Email inválido').normalizeEmail(),
     body('password')
       .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
-
     body('rol_id').isInt().withMessage('Rol inválido'),
-    body('cedula').optional().isNumeric().withMessage('La cédula debe ser numérica')
+    body('cedula').optional().isString().withMessage('La cédula debe tener formato válido')
   ],
 
   // Validación para inicio de sesión

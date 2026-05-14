@@ -27,7 +27,10 @@ export const ServicesUsuarios = {
             cedula: usuario.cedula || null,
             correo_electronico: (usuario.correoElectronico || usuario.correo_electronico || '').toLowerCase(),
             password: usuario.password,
-            rol_id: usuario.rol_id || 6, // 6 = Usuario General
+            fecha_nacimiento: usuario.fechaNacimiento,
+            genero: usuario.genero === 'NoDecir' ? 'Otro' : usuario.genero,
+            pais: usuario.pais,
+            rol_id: usuario.rol_id || 6, // 6 = Usuario General por defecto
         };
 
         // Solo enviamos campos opcionales si tienen contenido para evitar fallos de validación (isNumeric, etc)
