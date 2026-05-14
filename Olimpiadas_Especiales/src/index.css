@@ -49,3 +49,20 @@ h1, h2, h3, h4, h5, h6 {
 a {
   text-decoration: none;
 }
+
+/* Layout wrapper compartido por todas las páginas */
+.pagina-inicio-completa {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.pagina-inicio-completa main {
+  flex: 0 0 auto; /* el main NO se estira, ocupa solo lo que necesita */
+  display: block;
+}
+
+.pagina-inicio-completa footer {
+  margin-top: auto; /* footer siempre al fondo si hay espacio sobrante */
+}
