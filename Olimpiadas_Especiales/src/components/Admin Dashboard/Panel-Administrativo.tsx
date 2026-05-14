@@ -145,7 +145,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
                 <h3 style={{ color: 'var(--admin-text-main)' }}><i className="fa-solid fa-users" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Base de Datos Oficial de Atletas</h3>
                 <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>Listado completo de atletas verificados en el sistema.</p>
               </div>
-              <AthleteTable refreshTrigger={refreshTrigger} />
+              <AthleteTable refreshTrigger={refreshTrigger} searchQuery={searchQuery} />
             </div>
           )}
 
@@ -207,12 +207,12 @@ export default function PanelAdministrativo(): React.JSX.Element {
             </div>
           )}
           
-          {activeTab === 'consultas' && <ConsultasSection />}
+          {activeTab === 'consultas' && <ConsultasSection searchQuery={searchQuery} />}
 
           {activeTab === 'reportes' && <ReportsSection />}
           {activeTab === 'perfil' && <ProfileSection />}
-          {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" />}
-          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" />}
+          {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" searchQuery={searchQuery} />}
+          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" searchQuery={searchQuery} />}
         </div>
       </main>
 

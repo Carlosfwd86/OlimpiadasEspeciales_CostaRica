@@ -3,7 +3,11 @@ import { ServicesAdmin } from '../../services/ServicesAdmin';
 import Swal from 'sweetalert2';
 import type { Consulta } from '../../types';
 
-export default function ConsultasSection(): React.JSX.Element {
+interface ConsultasSectionProps {
+    searchQuery?: string;
+}
+
+export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionProps): React.JSX.Element {
     const [consultas, setConsultas] = useState<Consulta[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -24,6 +28,16 @@ export default function ConsultasSection(): React.JSX.Element {
     useEffect(() => {
         fetchConsultas();
     }, []);
+
+    const filteredConsultas = consultas.filter(c => {
+        const q = searchQuery.toLowerCase();
+        return (
+            (c.nombre || '').toLowerCase().includes(q) ||
+            (c.correo || '').toLowerCase().includes(q) ||
+            (c.asunto || '').toLowerCase().includes(q) ||
+            (c.mensaje || '').toLowerCase().includes(q)
+        );
+    });
 
     const handleDelete = (id: string | number) => {
         Swal.fire({
@@ -99,50 +113,52 @@ export default function ConsultasSection(): React.JSX.Element {
             </div>
 
             <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '20px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                {consultas.length === 0 ? (
+                {filteredConsultas.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94a3b8' }}>
                         <i className="fa-solid fa-inbox" style={{ fontSize: '40px', marginBottom: '15px' }}></i>
-                        <h4>Bandeja vacía</h4>
-                        <p>No tienes mensajes o consultas pendientes.</p>
+                        <h4>{searchQuery ? 'No hay resultados' : 'Bandeja vacía'}</h4>
+                        <p>{searchQuery ? `No se encontraron mensajes para "${searchQuery}".` : 'No tienes mensajes o consultas pendientes.'}</p>
                     </div>
                 ) : (
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead style={{ background: 'var(--admin-bg)' }}>
-                            <tr style={{ textAlign: 'left', fontSize: '12px', color: 'var(--admin-text-muted)' }}>
-                                <th style={{ padding: '12px', borderRadius: '8px 0 0 8px' }}>Remitente</th>
-                                <th style={{ padding: '12px' }}>Email</th>
-                                <th style={{ padding: '12px' }}>Asunto</th>
-                                <th style={{ padding: '12px' }}>Fecha</th>
-                                <th style={{ padding: '12px', borderRadius: '0 8px 8px 0', textAlign: 'center' }}>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {consultas.map(consulta => (
-                                <tr key={consulta.id} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '13px' }}>
-                                    <td style={{ padding: '12px', fontWeight: '500' }}>{consulta.nombre}</td>
-                                    <td style={{ padding: '12px', color: '#64748b' }}>{consulta.correo}</td>
-                                    <td style={{ padding: '12px', color: '#1d1d1f' }}>{consulta.asunto}</td>
-                                    <td style={{ padding: '12px', color: '#64748b' }}>{new Date(consulta.fecha).toLocaleDateString()}</td>
-                                    <td style={{ padding: '12px', textAlign: 'center' }}>
-                                        <button 
-                                            onClick={() => handleView(consulta)} 
-                                            style={{ background: '#eff6ff', border: 'none', color: '#2563eb', padding: '6px 10px', borderRadius: '6px', marginRight: '5px', cursor: 'pointer' }}
-                                            title="Ver o Responder"
-                                        >
-                                            <i className="fa-solid fa-eye"></i>
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDelete(consulta.id)} 
-                                            style={{ background: '#fef2f2', border: 'none', color: '#ef4444', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer' }}
-                                            title="Eliminar"
-                                        >
-                                            <i className="fa-solid fa-trash"></i>
-                                        </button>
-                                    </td>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead style={{ background: 'var(--admin-bg)' }}>
+                                <tr style={{ textAlign: 'left', fontSize: '12px', color: 'var(--admin-text-muted)' }}>
+                                    <th style={{ padding: '12px', borderRadius: '8px 0 0 8px' }}>Remitente</th>
+                                    <th style={{ padding: '12px' }}>Email</th>
+                                    <th style={{ padding: '12px' }}>Asunto</th>
+                                    <th style={{ padding: '12px' }}>Fecha</th>
+                                    <th style={{ padding: '12px', borderRadius: '0 8px 8px 0', textAlign: 'center' }}>Acciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filteredConsultas.map(consulta => (
+                                    <tr key={consulta.id} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '13px' }}>
+                                        <td style={{ padding: '12px', fontWeight: '500' }}>{consulta.nombre}</td>
+                                        <td style={{ padding: '12px', color: '#64748b' }}>{consulta.correo}</td>
+                                        <td style={{ padding: '12px', color: '#1d1d1f' }}>{consulta.asunto}</td>
+                                        <td style={{ padding: '12px', color: '#64748b' }}>{new Date(consulta.fecha).toLocaleDateString()}</td>
+                                        <td style={{ padding: '12px', textAlign: 'center' }}>
+                                            <button 
+                                                onClick={() => handleView(consulta)} 
+                                                style={{ background: '#eff6ff', border: 'none', color: '#2563eb', padding: '6px 10px', borderRadius: '6px', marginRight: '5px', cursor: 'pointer' }}
+                                                title="Ver o Responder"
+                                            >
+                                                <i className="fa-solid fa-eye"></i>
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(consulta.id)} 
+                                                style={{ background: '#fef2f2', border: 'none', color: '#ef4444', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer' }}
+                                                title="Eliminar"
+                                            >
+                                                <i className="fa-solid fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
         </div>
