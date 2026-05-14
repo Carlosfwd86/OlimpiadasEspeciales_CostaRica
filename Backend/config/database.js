@@ -22,8 +22,6 @@ module.exports.sequelize = sequelize;
 const models = {
   Usuario: require('../models/Usuario'),
   Rol: require('../models/Rol'),
-  Permiso: require('../models/Permiso'),
-  RolPermiso: require('../models/RolPermiso'),
   Atleta: require('../models/Atleta'),
   Programa: require('../models/Programa')(sequelize),
   Disciplina: require('../models/Disciplina')(sequelize),
@@ -49,7 +47,7 @@ const models = {
 
 // Definición de Asociaciones
 const { 
-  Usuario, Rol, Permiso, RolPermiso, Atleta, Programa, Inscripcion, 
+  Usuario, Rol, Atleta, Programa, Inscripcion, 
   Competicion, Sesion, Entrenador, Voluntario, VoluntarioArea,
   AtletaAlergia, AtletaCondicion, AtletaDispositivo, AtletaDocumento, AtletaMedicamento 
 } = models;
@@ -59,10 +57,7 @@ if (Usuario && Rol) {
   Rol.hasMany(Usuario, { foreignKey: 'rol_id' });
 }
 
-if (Rol && Permiso && RolPermiso) {
-  Rol.belongsToMany(Permiso, { through: RolPermiso, foreignKey: 'rol_id', as: 'permisos' });
-  Permiso.belongsToMany(Rol, { through: RolPermiso, foreignKey: 'permiso_id', as: 'roles' });
-}
+
 
 if (Atleta && Programa) {
   Atleta.belongsTo(Programa, { foreignKey: 'programa_id', as: 'programa' });
