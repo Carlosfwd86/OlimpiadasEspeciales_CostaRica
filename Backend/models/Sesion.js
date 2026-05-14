@@ -26,7 +26,7 @@ const Sesion = sequelize.define('Sesion', {
     allowNull: true,
     validate: {
       // Puede ser IPv4 o IPv6
-      isIP: true
+      // isIP: true 
     }
   },
   user_agent: {

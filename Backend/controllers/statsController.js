@@ -12,11 +12,7 @@ const getStats = async (req, res) => {
       Voluntario.count(),
       Inscripcion.count({ where: { estado: 'PENDIENTE' } }),
       Consulta ? Consulta.count() : Promise.resolve(0),
-<<<<<<< HEAD
       Usuario.count({ where: { rol_id: 5 } }) // 5 = tutor según el seeder
-=======
-      Usuario.count({ where: { rol_id: 5 } }) // 5 = tutor
->>>>>>> fee5eac2d797c178cd8547ee18f585e0aa154dd0
     ]);
 
     // Shape compatible con ServicesAdmin.ts -> getStats
