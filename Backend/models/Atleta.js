@@ -65,9 +65,85 @@ const Atleta = sequelize.define('Atleta', {
       isEmail: { msg: 'Debe ser un correo electrónico válido' }
     }
   },
+  cedula: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  pais: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  direccion: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  emergencia_nombre: {
+    type: DataTypes.STRING(150),
+    allowNull: true
+  },
+  emergencia_telefono: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
+  tutor_nombre: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  tutor_apellido: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  tutor_relacion: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  tutor_telefono: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
+  tutor_correo: {
+    type: DataTypes.STRING(150),
+    allowNull: true
+  },
+  tutor_pais: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  tutor_cedula: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  equipo: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  experiencia: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  proximos_retos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   fecha_registro: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  programa_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'programas',
+      key: 'id'
+    }
+  },
+  nivel_habilidad_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'niveles_habilidad',
+      key: 'id'
+    }
   }
 }, {
   tableName: 'atletas',

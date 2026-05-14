@@ -5,7 +5,7 @@ const { Atleta, Voluntario, Inscripcion, Consulta, Usuario, Competicion } = mode
  * GET /api/stats/summary
  * Retorna el resumen para los StatCards.
  */
-const getSummary = async (req, res) => {
+const getStats = async (req, res) => {
   try {
     const [totalAtletas, totalVoluntarios, totalInscripciones, totalConsultas, totalTutores] = await Promise.all([
       Atleta.count(),
@@ -27,6 +27,7 @@ const getSummary = async (req, res) => {
       message: 'OK',
       status: 200
     });
+
   } catch (error) {
     console.error('Error al obtener summary:', error);
     return res.status(500).json({ error: 'Error al calcular estadísticas.' });
@@ -40,8 +41,6 @@ const getSummary = async (req, res) => {
  */
 const getCharts = async (req, res) => {
   try {
-    // Mock data o real si quieres agrupar por mes
-    // Por ahora enviamos el shape esperado por el frontend
     return res.status(200).json({
       registrosPorMes: [
         { name: 'Ene', value: 400 },
@@ -61,5 +60,7 @@ const getCharts = async (req, res) => {
   }
 };
 
-module.exports = { getSummary, getCharts };
+module.exports = { getStats, getCharts };
+
+
 

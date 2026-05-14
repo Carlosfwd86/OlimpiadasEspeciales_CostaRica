@@ -37,11 +37,22 @@ const models = {
   Entrenador: require('../models/entrenador.model'),
   Voluntario: require('../models/voluntario.model'),
   SystemSetting: require('../models/SystemSetting'),
-  ActividadSistema: require('../models/ActividadSistema')
+  ActividadSistema: require('../models/ActividadSistema'),
+  RegistroPendiente: require('../models/RegistroPendiente')(sequelize),
+  AtletaAlergia: require('../models/AtletaAlergia'),
+  AtletaCondicion: require('../models/AtletaCondicion'),
+  AtletaDispositivo: require('../models/AtletaDispositivo'),
+  AtletaDocumento: require('../models/AtletaDocumento'),
+  AtletaMedicamento: require('../models/AtletaMedicamento'),
+  VoluntarioArea: require('../models/voluntario_area.model')
 };
 
 // Definición de Asociaciones
-const { Usuario, Rol, Permiso, RolPermiso, Atleta, Programa, Inscripcion, Competicion, Sesion, Entrenador } = models;
+const { 
+  Usuario, Rol, Permiso, RolPermiso, Atleta, Programa, Inscripcion, 
+  Competicion, Sesion, Entrenador, Voluntario, VoluntarioArea,
+  AtletaAlergia, AtletaCondicion, AtletaDispositivo, AtletaDocumento, AtletaMedicamento 
+} = models;
 
 if (Usuario && Rol) {
   Usuario.belongsTo(Rol, { foreignKey: 'rol_id', as: 'rol' });
@@ -58,6 +69,36 @@ if (Atleta && Programa) {
   Programa.hasMany(Atleta, { foreignKey: 'programa_id' });
 }
 
+// Asociaciones de Atleta con Salud y Documentos
+if (Atleta) {
+  if (AtletaAlergia) {
+    Atleta.hasMany(AtletaAlergia, { foreignKey: 'atleta_id', as: 'alergias' });
+    AtletaAlergia.belongsTo(Atleta, { foreignKey: 'atleta_id' });
+  }
+  if (AtletaCondicion) {
+    Atleta.hasMany(AtletaCondicion, { foreignKey: 'atleta_id', as: 'condiciones' });
+    AtletaCondicion.belongsTo(Atleta, { foreignKey: 'atleta_id' });
+  }
+  if (AtletaDispositivo) {
+    Atleta.hasMany(AtletaDispositivo, { foreignKey: 'atleta_id', as: 'dispositivos' });
+    AtletaDispositivo.belongsTo(Atleta, { foreignKey: 'atleta_id' });
+  }
+  if (AtletaDocumento) {
+    Atleta.hasMany(AtletaDocumento, { foreignKey: 'atleta_id', as: 'documentos' });
+    AtletaDocumento.belongsTo(Atleta, { foreignKey: 'atleta_id' });
+  }
+  if (AtletaMedicamento) {
+    Atleta.hasMany(AtletaMedicamento, { foreignKey: 'atleta_id', as: 'medicamentos' });
+    AtletaMedicamento.belongsTo(Atleta, { foreignKey: 'atleta_id' });
+  }
+}
+
+// Asociaciones de Voluntario
+if (Voluntario && VoluntarioArea) {
+  Voluntario.hasMany(VoluntarioArea, { foreignKey: 'voluntario_id' });
+  VoluntarioArea.belongsTo(Voluntario, { foreignKey: 'voluntario_id' });
+}
+
 if (Inscripcion && Atleta && Competicion) {
   Inscripcion.belongsTo(Atleta, { foreignKey: 'atleta_id', as: 'atleta' });
   Inscripcion.belongsTo(Competicion, { foreignKey: 'competicion_id', as: 'competicion' });
@@ -65,6 +106,11 @@ if (Inscripcion && Atleta && Competicion) {
 
 if (Sesion && Usuario) {
   Sesion.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
+}
+
+if (Atleta && models.NivelHabilidad) {
+  Atleta.belongsTo(models.NivelHabilidad, { foreignKey: 'nivel_habilidad_id', as: 'nivel_habilidad' });
+  models.NivelHabilidad.hasMany(Atleta, { foreignKey: 'nivel_habilidad_id' });
 }
 
 module.exports.models = models;

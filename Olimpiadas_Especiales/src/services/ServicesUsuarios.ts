@@ -15,29 +15,51 @@ export const ServicesUsuarios = {
     },
 
     createUsuario: async (usuario: any): Promise<Usuario> => {
-        // Mapeo de campos para coincidir con el validador del backend
-        const nombres = (usuario.nombre || '').trim().split(' ');
+        // Mapeo inteligente de campos para coincidir con el backend
+        const fullNombre = (usuario.nombre || '').trim();
+        const nombres = fullNombre.split(' ');
         const nombre = nombres[0] || 'Usuario';
-        const apellido = nombres.slice(1).join(' ') || '.';
+        const apellido = nombres.slice(1).join(' ') || 'General'; // Evitamos el "."
 
-        const payload = {
+        const payload: any = {
             nombre: nombre,
             apellido: apellido,
-            cedula: usuario.cedula,
-            correo_electronico: usuario.correoElectronico || usuario.correo_electronico,
-            telefono: usuario.telefono,
+            cedula: usuario.cedula || null,
+            correo_electronico: (usuario.correoElectronico || usuario.correo_electronico || '').toLowerCase(),
             password: usuario.password,
             fecha_nacimiento: usuario.fechaNacimiento,
             genero: usuario.genero === 'NoDecir' ? 'Otro' : usuario.genero,
+            pais: usuario.pais,
             rol_id: usuario.rol_id || 6, // 6 = Usuario General por defecto
         };
+
+        // Solo enviamos campos opcionales si tienen contenido para evitar fallos de validación (isNumeric, etc)
+        if (usuario.telefono && usuario.telefono.trim() !== '') {
+            payload.telefono = usuario.telefono;
+        }
+        if (usuario.pais && usuario.pais.trim() !== '') {
+            payload.pais = usuario.pais;
+        }
+        if (usuario.fechaNacimiento) {
+            payload.fecha_nacimiento = usuario.fechaNacimiento;
+        }
+        if (usuario.genero && usuario.genero !== '') {
+            payload.genero = usuario.genero === 'NoDecir' ? 'Otro' : usuario.genero;
+        }
 
         const response = await apiClient.post<{ usuario: Usuario }>('/auth/register', payload);
         return response.data.usuario;
     },
 
-    updateUsuario: async (id: string | number, usuario: Partial<Usuario>): Promise<Usuario> => {
-        const response = await apiClient.patch<Usuario>(`/usuarios/${id}`, usuario);
+
+    updateUsuario: async (id: string | number, usuario: any): Promise<Usuario> => {
+        const payload: any = { ...usuario };
+        
+        if (usuario.correoElectronico) payload.correo_electronico = usuario.correoElectronico;
+        if (usuario.fechaNacimiento) payload.fecha_nacimiento = usuario.fechaNacimiento;
+        if (usuario.avatarUrl) payload.avatar_url = usuario.avatarUrl;
+        
+        const response = await apiClient.patch<Usuario>(`/usuarios/${id}`, payload);
         return response.data;
     },
 
