@@ -17,8 +17,9 @@ async function crearAdmin() {
       VALUES (1, 'Administrador', 'Acceso total al sistema', NOW())
     `);
 
-    const password = 'Admin@2024!';
+    const password = 'Admin123';
     const password_hash = await bcrypt.hash(password, 10);
+
 
     // Insertar admin o actualizar si ya existe
     await sequelize.query(`
@@ -33,7 +34,8 @@ async function crearAdmin() {
 
     console.log('\n🎉 Usuario administrador listo.');
     console.log('   Email:      admin@olimpiadas.cr');
-    console.log('   Contraseña: Admin@2024!\n');
+    console.log('   Contraseña: Admin123\n');
+
 
     await sequelize.close();
   } catch (error) {
