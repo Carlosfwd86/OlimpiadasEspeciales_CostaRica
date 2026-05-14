@@ -1,27 +1,43 @@
 /**
  * Controlador de Configuración del Sistema
- * GET /api/settings  — obtiene preferencias del sistema
- * PUT /api/settings  — actualiza preferencias del sistema
+ * GET /api/settings  — obtiene todas las preferencias desde la BD
+ * PUT /api/settings  — actualiza una o varias preferencias en la BD
  *
- * En esta primera versión las preferencias se almacenan en memoria/fallback.
- * Para persistencia real, crear una tabla `system_settings` con Sequelize.
+ * Persistencia: tabla `system_settings` (clave/valor) gestionada por Sequelize.
+ * Los valores se almacenan como strings JSON para soportar booleanos y números
+ * sin perder tipo. Se usan JSON.parse / JSON.stringify en cada operación.
  */
 
-// Configuración por defecto del sistema
-let systemConfig = {
-  tema: 'light',
-  idioma: 'es',
-  notificaciones: true,
-  registro_automatico: false
-};
+const { models } = require('../config/database');
+const { SystemSetting } = models;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 /**
- * GET /api/settings
+ * Convierte el array de registros [{clave, valor}] al objeto plano
+ * que espera el frontend: { tema: 'light', notificaciones: true, ... }
  */
+function rowsToObject(rows) {
+  return rows.reduce((acc, row) => {
+    try {
+      acc[row.clave] = JSON.parse(row.valor);
+    } catch {
+      acc[row.clave] = row.valor; // fallback: string crudo
+    }
+    return acc;
+  }, {});
+}
+
+// ── GET /api/settings ─────────────────────────────────────────────────────────
 const getSettings = async (req, res) => {
   try {
+    const rows = await SystemSetting.findAll({
+      attributes: ['clave', 'valor'],
+      order: [['clave', 'ASC']]
+    });
+
     return res.status(200).json({
-      data: systemConfig,
+      data: rowsToObject(rows),
       message: 'OK',
       status: 200
     });
@@ -31,21 +47,38 @@ const getSettings = async (req, res) => {
   }
 };
 
-/**
- * PUT /api/settings
- */
+// ── PUT /api/settings ─────────────────────────────────────────────────────────
 const updateSettings = async (req, res) => {
   try {
-    const { tema, idioma, notificaciones, registro_automatico } = req.body;
+    const camposPermitidos = ['tema', 'idioma', 'notificaciones', 'registro_automatico'];
+    const updates = [];
 
-    // Actualizar solo los campos enviados
-    if (tema !== undefined)               systemConfig.tema = tema;
-    if (idioma !== undefined)             systemConfig.idioma = idioma;
-    if (notificaciones !== undefined)     systemConfig.notificaciones = notificaciones;
-    if (registro_automatico !== undefined) systemConfig.registro_automatico = registro_automatico;
+    for (const campo of camposPermitidos) {
+      if (req.body[campo] !== undefined) {
+        // Persistir como JSON para preservar el tipo (boolean, string, number)
+        updates.push(
+          SystemSetting.update(
+            { valor: JSON.stringify(req.body[campo]) },
+            { where: { clave: campo } }
+          )
+        );
+      }
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No se enviaron campos válidos para actualizar.' });
+    }
+
+    await Promise.all(updates);
+
+    // Devolver el estado actualizado completo
+    const rows = await SystemSetting.findAll({
+      attributes: ['clave', 'valor'],
+      order: [['clave', 'ASC']]
+    });
 
     return res.status(200).json({
-      data: systemConfig,
+      data: rowsToObject(rows),
       message: 'Configuración actualizada correctamente',
       status: 200
     });
