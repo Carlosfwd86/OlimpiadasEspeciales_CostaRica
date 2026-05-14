@@ -110,9 +110,16 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
     const [loadingRoleData, setLoadingRoleData] = useState<boolean>(false);
 
     useEffect(() => { 
-        setEditData({ ...user });
+        const mappedUser = {
+            ...user,
+            correoElectronico: user?.correo_electronico || user?.correoElectronico,
+            fechaNacimiento: user?.fecha_nacimiento || user?.fechaNacimiento,
+            avatarUrl: user?.avatar_url || user?.avatarUrl,
+            rol_id: user?.rol_id || user?.rolId
+        };
+        setEditData(mappedUser);
         const savedAvatar = localStorage.getItem(`avatar_${user?.id}`);
-        setAvatarPreview(user?.avatarUrl || savedAvatar || null);
+        setAvatarPreview(mappedUser.avatarUrl || savedAvatar || null);
     }, [user]);
 
     useEffect(() => {
@@ -130,7 +137,15 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                 else if (user.rol === 'tutor') data = await getTutorById(roleId);
 
                 if (data) {
-                    setEditData((prev: any) => ({ ...prev, ...data }));
+                    const mappedData = {
+                        ...data,
+                        correoElectronico: data.correo_electronico || data.correoElectronico,
+                        fechaNacimiento: data.fecha_nacimiento || data.fechaNacimiento,
+                        aniosExperiencia: data.anios_experiencia || data.aniosExperiencia,
+                        emergenciaNombre: data.emergencia_nombre || data.emergenciaNombre,
+                        emergenciaTelefono: data.emergencia_telefono || data.emergenciaTelefono
+                    };
+                    setEditData((prev: any) => ({ ...prev, ...mappedData }));
                     
                     // Manejar vinculación si existe
                     if (user.rol === 'atleta' && data.tutorVinculado) {

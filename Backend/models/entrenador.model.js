@@ -58,6 +58,22 @@ const Entrenador = sequelize.define('Entrenador', {
     allowNull: true,
     validate: { isEmail: true }
   },
+  direccion: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  pais: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  emergencia_nombre: {
+    type: DataTypes.STRING(150),
+    allowNull: true
+  },
+  emergencia_telefono: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
   anios_experiencia: {
     type: DataTypes.TINYINT.UNSIGNED,
     allowNull: true,
