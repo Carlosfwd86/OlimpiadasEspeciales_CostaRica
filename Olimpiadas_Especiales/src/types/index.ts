@@ -183,6 +183,9 @@ export interface AdminProfile {
   nombre: string;
   email: string;
   rol: string;
+  cargo?: string;
+  bio?: string;
+  telefono?: string;
   avatar?: string;
   lastLogin?: string;
 }
@@ -221,3 +224,9 @@ export interface ConfigData {
 
 // ------ Tipos de rol ------
 export type RolType = 'atleta' | 'entrenador' | 'tutor' | 'voluntario';
+
+// ------ Geografía ------
+export interface ProvincePath {
+  name: string;
+  path: string;
+}

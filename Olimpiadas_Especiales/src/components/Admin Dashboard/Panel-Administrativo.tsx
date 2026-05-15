@@ -174,7 +174,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
                       onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
                       onDelete={(id) => {
                         if (window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
-                          ServicesAdmin.deleteCompeticion(id)
+                          ServicesAdmin.deleteCompeticion(String(id))
                             .then(() => handleSaveSuccess())
                             .catch(err => alert((err as Error).message));
                         }
