@@ -1,0 +1,124 @@
+/* DatePickerInput.css — Roblox-style three-dropdown date picker */
+
+.dpi-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Each select wrapper */
+.dpi-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+/* Día is narrower, Mes is wider, Año is medium */
+.dpi-select-wrapper:nth-child(1) { flex: 0.7; }
+.dpi-select-wrapper:nth-child(2) { flex: 1.3; }
+.dpi-select-wrapper:nth-child(3) { flex: 1; }
+
+/* The select itself */
+.dpi-select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    padding: 11px 36px 11px 14px;
+    background: #f8fafc;
+    border: 1.5px solid #FF0000;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: #1e293b;
+    cursor: pointer;
+    box-sizing: border-box;
+    line-height: 1.5;
+    height: 45px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    outline: none;
+}
+
+.dpi-select:hover:not(:disabled) {
+    background: #fffafa;
+    border-color: #cc0000;
+}
+
+.dpi-select:focus {
+    background: #ffffff;
+    border-color: #E00000;
+    box-shadow: 0 0 0 4px rgba(224, 0, 0, 0.1);
+}
+
+.dpi-select:disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Placeholder option style */
+.dpi-select option[value=""] {
+    color: #94a3b8;
+}
+
+/* Custom chevron icon */
+.dpi-chevron {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #FF0000;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.dpi-select:disabled ~ .dpi-chevron {
+    color: #cbd5e1;
+}
+
+/* Error state */
+.dpi-error .dpi-select {
+    border-color: #E00000 !important;
+    background: #fff5f5;
+    box-shadow: 0 0 0 3px rgba(224, 0, 0, 0.15);
+    animation: dpi-shake 0.35s ease;
+}
+
+@keyframes dpi-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* Disabled container */
+.dpi-disabled .dpi-select {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    cursor: not-allowed !important;
+}
+
+.dpi-disabled .dpi-chevron {
+    color: #cbd5e1;
+}
+
+/* Readonly */
+.dpi-readonly .dpi-select {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #64748b !important;
+    cursor: default !important;
+    pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .dpi-container { gap: 6px; }
+    .dpi-select { padding: 10px 28px 10px 10px; font-size: 13px; height: 42px; }
+    .dpi-chevron { right: 8px; }
+}

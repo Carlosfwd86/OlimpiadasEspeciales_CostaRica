@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../../style/Sidebar.css';
 import logoUrl from '../../img/Logo Olimpiadas.png';
 import { useAuth } from '../../context/AuthContext';
@@ -107,6 +108,18 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
             <i className="fa-solid fa-gear nav-icon"></i>
             Configuración
           </li>
+        </ul>
+      </div>
+
+      <div className="sidebar-menu-section" style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <h4 className="sidebar-heading">NAVEGACIÓN</h4>
+        <ul className="sidebar-nav">
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <li className="nav-item" style={{ color: '#3b82f6' }}>
+              <i className="fa-solid fa-house nav-icon"></i>
+              Volver al Sitio
+            </li>
+          </Link>
           <li
             className="nav-item"
             onClick={() => {

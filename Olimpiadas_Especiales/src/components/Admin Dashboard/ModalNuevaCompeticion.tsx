@@ -5,27 +5,27 @@ import type { Competicion } from '../../types';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 
 interface CompeticionFormData {
-    nombre: string;
-    deporte: string;
-    fecha: string;
-    fechaFin: string;
-    ubicacion: string;
-    descripcion: string;
-    imagen: string;
-    enlace: string;
-    [key: string]: unknown;
+  nombre: string;
+  deporte: string;
+  fecha: string;
+  fecha_fin: string;
+  ubicacion: string;
+  descripcion: string;
+  imagen: string;
+  enlace: string;
+  [key: string]: unknown;
 }
 
 interface ModalNuevaCompeticionProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSaveSuccess: () => void;
-    editData?: Competicion | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSaveSuccess: () => void;
+  editData?: Competicion | null;
 }
 
 export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, editData = null }: ModalNuevaCompeticionProps): React.JSX.Element | null {
     const [formData, setFormData] = useState<CompeticionFormData>({
-        nombre: '', deporte: 'Fútbol', fecha: '', fechaFin: '',
+        nombre: '', deporte: 'Fútbol', fecha: '', fecha_fin: '',
         ubicacion: '', descripcion: '', imagen: '', enlace: ''
     });
 
@@ -38,14 +38,14 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
                 nombre: editData.nombre || '',
                 deporte: editData.deporte || 'Fútbol',
                 fecha: String(editData.fecha ?? ''),
-                fechaFin: String(editData.fechaFin ?? ''),
+                fecha_fin: String(editData.fecha_fin ?? ''),
                 ubicacion: String(editData.ubicacion ?? ''),
                 descripcion: String(editData.descripcion ?? ''),
                 imagen: String(editData.imagen ?? ''),
                 enlace: String(editData.enlace ?? '')
             });
         } else {
-            setFormData({ nombre: '', deporte: 'Fútbol', fecha: '', fechaFin: '', ubicacion: '', descripcion: '', imagen: '', enlace: '' });
+            setFormData({ nombre: '', deporte: 'Fútbol', fecha: '', fecha_fin: '', ubicacion: '', descripcion: '', imagen: '', enlace: '' });
         }
         setApiError(null);
     }, [editData, isOpen]);
@@ -65,7 +65,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
             setApiError('La fecha de inicio es obligatoria.');
             return;
         }
-        if (formData.fechaFin && formData.fechaFin < formData.fecha) {
+        if (formData.fecha_fin && formData.fecha_fin < formData.fecha) {
             setApiError('La fecha de fin debe ser posterior o igual a la fecha de inicio.');
             return;
         }
@@ -163,8 +163,8 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
                         </div>
                         <div>
                             <label style={labelStyle}>Fecha fin</label>
-                            <input type="date" style={fieldStyle} value={formData.fechaFin}
-                                onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })} />
+                            <input type="date" style={fieldStyle} value={formData.fecha_fin}
+                                onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })} />
                         </div>
                     </div>
 

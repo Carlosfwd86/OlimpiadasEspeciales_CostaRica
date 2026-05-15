@@ -47,7 +47,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Registro manual de rutas (Sin index.js)
+// Registro manual de rutas
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/usuarios', require('./routes/usuario.routes'));
 app.use('/api/Admin', require('./routes/admin.routes'));
@@ -59,21 +59,19 @@ app.use('/api/disciplinas', require('./routes/disciplinas.routes'));
 app.use('/api/entrenadores', require('./routes/entrenador.routes'));
 app.use('/api/inscripciones', require('./routes/inscripciones.routes'));
 app.use('/api/niveles-habilidad', require('./routes/nivelesHabilidad.routes'));
-app.use('/api/permisos', require('./routes/permisosRoutes'));
 app.use('/api/programas', require('./routes/programas.routes'));
 app.use('/api/roles', require('./routes/rolesRoutes'));
 app.use('/api/tutores', require('./routes/tutores.routes'));
 app.use('/api/voluntarios', require('./routes/voluntario.routes'));
 app.use('/api/voluntario-area', require('./routes/voluntario_area.routes'));
 
-
-// Nuevos endpoints requeridos por el frontend
+// Nuevos endpoints
 app.use('/api/stats', require('./routes/stats.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
 app.use('/api/registros-pendientes', require('./routes/registrosPendientes.routes'));
 app.use('/api/actividad-sistema', require('./routes/actividadSistema.routes'));
+app.use('/api/chat', require('./routes/chat.routes'));
 
-// Middleware para manejar errores
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
@@ -84,7 +82,6 @@ const startServer = async () => {
     await sequelize.authenticate();
     logger.info('✅ Conexión a la base de datos establecida exitosamente.');
     
-    // Recomendación: Usar migraciones en lugar de alter: true en producción
     await sequelize.sync({ alter: false }); 
     logger.info('✅ Modelos sincronizados.');
 
@@ -98,5 +95,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// Forzar reinicio de nodemon - Sincronización de validadores

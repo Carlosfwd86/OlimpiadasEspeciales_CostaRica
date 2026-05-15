@@ -7,15 +7,17 @@ import ModalNuevoUsuario from './ModalNuevoUsuario';
 interface SettingsSectionProps {
   onThemeChange?: (theme: string) => void;
   initialSubTab?: string;
+  searchQuery?: string;
 }
 
-export default function SettingsSection({ onThemeChange, initialSubTab = 'usuarios' }: SettingsSectionProps): React.JSX.Element {
+export default function SettingsSection({ onThemeChange, initialSubTab = 'usuarios', searchQuery = '' }: SettingsSectionProps): React.JSX.Element {
     const [settings, setSettings] = useState<SystemSettings | null>(null);
     const [usuarios, setUsuarios] = useState<any[]>([]);
     const [subTab, setSubTab] = useState<string>(initialSubTab);
     const [loading, setLoading] = useState<boolean>(true);
     const [saving, setSaving] = useState<boolean>(false);
     const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
+    const [localSearch, setLocalSearch] = useState<string>('');
 
     const loadUsers = async () => {
         try {
@@ -26,11 +28,11 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
         }
     };
 
-    // Estado para el sub-tab de perfil de administrador
     const [perfil, setPerfil] = useState<{ nombre: string; correoElectronico: string; passwordActual: string; passwordNuevo: string }>({
         nombre: '', correoElectronico: '', passwordActual: '', passwordNuevo: ''
     });
     const [savingPerfil, setSavingPerfil] = useState<boolean>(false);
+    const [adminId, setAdminId] = useState<string | number | null>(null);
 
     useEffect(() => { setSubTab(initialSubTab); }, [initialSubTab]);
 
@@ -39,13 +41,13 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             try {
                 const s = await ServicesAdmin.getSettings();
                 await loadUsers();
-                // Cargar perfil del admin para el sub-tab 'perfil'
                 const p = await ServicesAdmin.getProfile();
                 setSettings(s);
+                setAdminId(p.id);
                 setPerfil(prev => ({
                     ...prev,
-                    nombre: (p as any).nombre ?? '',
-                    correoElectronico: (p as any).correoElectronico ?? ''
+                    nombre: p.nombre ?? '',
+                    correoElectronico: p.email ?? (p as any).correoElectronico ?? ''
                 }));
             } catch (err) {
                 console.error("Error al cargar datos en Configuración:", err);
@@ -58,7 +60,8 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
 
     const handleToggle = (key: string): void => {
         if (!settings) return;
-        setSettings({ ...settings, [key]: !settings[key] });
+        const k = key as keyof SystemSettings;
+        setSettings({ ...settings, [k]: !settings[k] });
     };
 
     const handleSave = (): void => {
@@ -76,22 +79,21 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             });
     };
 
-    // Guardar perfil de administrador
     const handleSavePerfil = (): void => {
+        if (!adminId) return;
         setSavingPerfil(true);
-        const payload: Record<string, string> = {
+        const payload: any = {
             nombre: perfil.nombre,
-            correoElectronico: perfil.correoElectronico
+            email: perfil.correoElectronico
         };
         if (perfil.passwordActual) payload.passwordActual = perfil.passwordActual;
         if (perfil.passwordNuevo) payload.passwordNuevo = perfil.passwordNuevo;
 
-        ServicesAdmin.updateProfile(payload)
+        ServicesAdmin.updateProfile(adminId, payload)
             .then(() => {
                 setSavingPerfil(false);
-                // Reutilizando el patrón de feedback existente en el componente
+                ServicesAdmin.logActivity("Perfil", "Se actualizaron los datos del perfil administrador", "fa-solid fa-user-pen", "blue");
                 alert("Perfil actualizado correctamente");
-                // Limpiar campos de contraseña tras guardar
                 setPerfil(prev => ({ ...prev, passwordActual: '', passwordNuevo: '' }));
             })
             .catch(err => {
@@ -122,6 +124,13 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
         return roles[rolId] || 'Usuario';
     };
 
+    const filteredUsers = usuarios.filter(u => {
+        const q = (localSearch || searchQuery).toLowerCase();
+        const name = `${u.nombre ?? ''} ${u.apellido ?? ''}`.toLowerCase();
+        const email = (u.correo_electronico || u.email || '').toLowerCase();
+        return name.includes(q) || email.includes(q);
+    });
+
     return (
         <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -135,7 +144,19 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                     <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '30px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h3 style={{ margin: 0, color: 'var(--admin-text-main)' }}>Gestión de Usuarios</h3>
-                            <button className="btn-new-entry" onClick={() => setIsUserModalOpen(true)}>+ Nuevo Usuario</button>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <div style={{ position: 'relative' }}>
+                                    <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '14px' }}></i>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Buscar usuarios..." 
+                                        value={localSearch}
+                                        onChange={(e) => setLocalSearch(e.target.value)}
+                                        style={{ padding: '10px 15px 10px 35px', borderRadius: '8px', border: '1px solid var(--admin-border)', fontSize: '14px', width: '250px', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+                                    />
+                                </div>
+                                <button className="btn-new-entry" onClick={() => setIsUserModalOpen(true)}>+ Nuevo Usuario</button>
+                            </div>
                         </div>
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -149,7 +170,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {usuarios.map(u => (
+                                    {filteredUsers.length > 0 ? filteredUsers.map(u => (
                                         <tr key={String(u.id)} style={{ borderBottom: '1px solid var(--admin-border)', fontSize: '14px', color: 'var(--admin-text-main)' }}>
                                             <td style={{ padding: '15px' }}>{String(u.nombre ?? '')} {String(u.apellido ?? '')}</td>
                                             <td style={{ padding: '15px' }}>{String(u.correo_electronico || u.email || '')}</td>
@@ -178,7 +199,13 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                                 </button>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )) : (
+                                        <tr>
+                                            <td colSpan={5} style={{ padding: '30px', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+                                                No se encontraron usuarios que coincidan con la búsqueda.
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -189,7 +216,6 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                         />
                     </div>
                 ) : subTab === 'perfil' ? (
-                    // Sub-tab: Mi Perfil (edición de datos del administrador)
                     <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '40px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
                         <h2 style={{ fontSize: '24px', color: 'var(--admin-text-main)', marginBottom: '10px' }}>Mi Perfil</h2>
                         <p style={{ color: 'var(--admin-text-muted)', marginBottom: '30px', fontSize: '14px' }}>Actualiza tus datos de acceso al panel administrativo.</p>
@@ -241,9 +267,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                     <div style={{ background: 'var(--admin-white)', borderRadius: '15px', padding: '40px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
                         <h2 style={{ fontSize: '24px', color: 'var(--admin-text-main)', marginBottom: '10px' }}>Configuración del Sistema</h2>
                         <p style={{ color: 'var(--admin-text-muted)', marginBottom: '30px', fontSize: '14px' }}>Personaliza el comportamiento y la apariencia del panel administrativo.</p>
-
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-                            {/* Apariencia */}
                             <div style={{ paddingBottom: '20px', borderBottom: '1px solid var(--admin-border)' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '15px', color: 'var(--admin-text-main)' }}>Apariencia</h3>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -254,7 +278,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                     <select value={String(settings.tema ?? 'light')}
                                         onChange={(e) => {
                                             const newTheme = e.target.value;
-                                            setSettings({ ...settings, tema: newTheme });
+                                            setSettings({ ...settings, tema: newTheme as 'light' | 'dark' });
                                             if (onThemeChange) onThemeChange(newTheme);
                                         }}
                                         style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}>
@@ -263,28 +287,27 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                     </select>
                                 </div>
                             </div>
-
-                            {/* Notificaciones */}
-                            {['notificaciones', 'registro_automatico'].map(key => (
-                                <div key={key} style={{ paddingBottom: '20px', borderBottom: '1px solid var(--admin-border)' }}>
-                                    <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '15px', color: 'var(--admin-text-main)' }}>
-                                        {key === 'notificaciones' ? 'Notificaciones' : 'Automatización'}
-                                    </h3>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <div>
-                                            <p style={{ fontWeight: '500', fontSize: '14px', margin: 0, color: 'var(--admin-text-main)' }}>
-                                                {key === 'notificaciones' ? 'Notificaciones de Sistema' : 'Auto-aprobación de Registros'}
-                                            </p>
+                            {['notificaciones', 'registro_automatico'].map(key => {
+                                const k = key as keyof SystemSettings;
+                                return (
+                                    <div key={key} style={{ paddingBottom: '20px', borderBottom: '1px solid var(--admin-border)' }}>
+                                        <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '15px', color: 'var(--admin-text-main)' }}>
+                                            {key === 'notificaciones' ? 'Notificaciones' : 'Automatización'}
+                                        </h3>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div>
+                                                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0, color: 'var(--admin-text-main)' }}>
+                                                    {key === 'notificaciones' ? 'Notificaciones de Sistema' : 'Auto-aprobación de Registros'}
+                                                </p>
+                                            </div>
+                                            <button onClick={() => handleToggle(key)}
+                                                style={{ width: '50px', height: '26px', borderRadius: '13px', backgroundColor: settings[k] ? '#22c55e' : '#cbd5e1', border: 'none', position: 'relative', cursor: 'pointer', transition: 'background 0.3s' }}>
+                                                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: 'white', position: 'absolute', top: '3px', left: settings[k] ? '27px' : '3px', transition: 'left 0.3s' }}></div>
+                                            </button>
                                         </div>
-                                        <button onClick={() => handleToggle(key)}
-                                            style={{ width: '50px', height: '26px', borderRadius: '13px', backgroundColor: settings[key] ? '#22c55e' : '#cbd5e1', border: 'none', position: 'relative', cursor: 'pointer', transition: 'background 0.3s' }}>
-                                            <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: 'white', position: 'absolute', top: '3px', left: settings[key] ? '27px' : '3px', transition: 'left 0.3s' }}></div>
-                                        </button>
                                     </div>
-                                </div>
-                            ))}
-
-                            {/* Regional */}
+                                );
+                            })}
                             <div>
                                 <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '15px', color: 'var(--admin-text-main)' }}>Regional</h3>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -292,7 +315,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                         <p style={{ fontWeight: '500', fontSize: '14px', margin: 0, color: 'var(--admin-text-main)' }}>Idioma Predeterminado</p>
                                     </div>
                                     <select value={String(settings.idioma ?? 'es')}
-                                        onChange={(e) => setSettings({ ...settings, idioma: e.target.value })}
+                                        onChange={(e) => setSettings({ ...settings, idioma: e.target.value as 'es' | 'en' })}
                                         style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}>
                                         <option value="es">Español (CR)</option>
                                         <option value="en">Inglés (US)</option>
@@ -300,7 +323,6 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                 </div>
                             </div>
                         </div>
-
                         <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'flex-end' }}>
                             <button onClick={handleSave} disabled={saving} className="btn-new-entry"
                                 style={{ backgroundColor: '#e62334', border: 'none', color: 'white', padding: '12px 30px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>
