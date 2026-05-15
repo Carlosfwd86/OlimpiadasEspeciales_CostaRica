@@ -26,7 +26,7 @@ const Footer = (): React.JSX.Element => {
           <h4 className="footer_h4">Explorar</h4>
           <ul className="footer_lista">
             <li className="footer_item" onClick={() => irASeccion('/nosotros')}>Nosotros</li>
-            <li className="footer_item" onClick={() => irASeccion('/eventos')}>Eventos</li>
+            <li className="footer_item" onClick={() => irASeccion('/programas')}>Programas</li>
           </ul>
         </div>
 
