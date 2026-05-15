@@ -33,18 +33,6 @@ const Navbar = (): React.JSX.Element => {
       <div className="navbar_logotipo" onClick={() => navegar("/")}>
         <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
       </div>
-<<<<<<< HEAD
-      <div className="navbar_menu_derecha">
-        <ul className="lista_navegacion">
-          <li className="enlace_nav" onClick={() => navegar("/")}>INICIO</li>
-          <li className="enlace_nav" onClick={() => navegar("/nosotros")}>NOSOTROS</li>
-          <li className="enlace_nav" onClick={() => navegar("/programas")}>PROGRAMAS</li>
-          <li className="enlace_nav" onClick={() => navegar("/contacto")}>CONTÁCTANOS</li>
-          <li className="enlace_nav" onClick={() => navegar("/plataforma-registro")}
-            style={{ background: '#FF0000', color: '#ffffff', padding: '8px 18px', borderRadius: '50px', fontWeight: '900', letterSpacing: '0.05em' }}>
-            INSCRIBIRSE
-=======
-
       {/* Menú central */}
       <ul className="lista_navegacion">
         {itemsNav.map((item) => (
@@ -60,7 +48,6 @@ const Navbar = (): React.JSX.Element => {
                 <li className="dropdown_item">Próximamente...</li>
               </ul>
             )}
->>>>>>> 11ce7f927957ab3566b2dc4772a23092da0d0484
           </li>
         ))}
       </ul>

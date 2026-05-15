@@ -1,8 +1,17 @@
 const { OpenAI } = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai = null;
+try {
+  if (process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  } else {
+    console.warn('[chatController] Advertencia: OPENAI_API_KEY no definida. El chat no funcionará.');
+  }
+} catch (error) {
+  console.error('[chatController] Error al inicializar OpenAI:', error.message);
+}
 
 const systemPrompt = `
 Eres el asistente virtual experto de Olimpiadas Especiales Costa Rica. Tu objetivo es ayudar a los visitantes del sitio web de manera amable, inclusiva y profesional.
@@ -28,6 +37,9 @@ const processChat = async (req, res) => {
   }
 
   try {
+    if (!openai) {
+      return res.status(503).json({ error: 'El servicio de IA no está configurado actualmente.' });
+    }
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
