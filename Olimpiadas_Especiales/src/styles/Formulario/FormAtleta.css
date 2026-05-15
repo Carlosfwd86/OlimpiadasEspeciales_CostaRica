@@ -18,7 +18,9 @@
   --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
   --shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.02);
   --radius-xl: 24px;
+  --transition: all 0.2s ease;
 }
+
 
 /* Base Layout */
 .form-atleta-layout {
@@ -264,7 +266,7 @@
 .input-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .input-container label {
@@ -273,23 +275,44 @@
   color: var(--dark-text);
 }
 
-.input-field {
-  padding: 14px 20px;
+.input-field,
+select.input-field {
+  padding: 11px 16px;
   background: var(--bg-main);
-  border: 1px solid #FF0000;
-  border-radius: 12px;
-  font-size: 15px;
+  border: 1.5px solid #FF0000;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--dark-text);
+  font-family: 'Outfit', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.5;
+  height: 45px;
   transition: var(--transition);
+  display: block;
+}
+
+.input-field:hover:not(:disabled):not([readonly]) {
+  background: #fffafa;
+  border-color: #cc0000;
 }
 
 .input-field:focus {
   background: white;
   border-color: var(--primary-red);
   outline: none;
-  box-shadow: 0 0 0 4px var(--primary-red-soft);
+  box-shadow: 0 0 0 4px rgba(224, 0, 0, 0.1);
 }
+
+.input-field:disabled,
+.input-field[readonly] {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
 
 /* Buttons Reference */
 .btn-cancelar-ref {
@@ -426,4 +449,134 @@
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* (Old date overrides removed) */
+
+/* ── DatePickerInput (Roblox-style selects) ── */
+.form-atleta-layout .dpi-container {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+/* ── Missing layout classes ── */
+.form-sections-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.question-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.zona-drop {
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.zona-drop:hover {
+  border-color: #E00000;
+  background: #fff5f5;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+.checkbox-label:hover {
+  background: #fff1f2;
+}
+
+.pills-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.medicamentos-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.medicamentos-table th,
+.medicamentos-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.medicamentos-table thead tr {
+  background: #f1f5f9;
+}
+
+.medicamentos-table thead th {
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.medicamentos-table tbody tr {
+  border-top: 1px solid #f1f5f9;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .form-body { padding: 24px; gap: 24px; }
+  .form-sidebar { width: 260px; }
+  .content-body { padding: 24px 36px 32px; }
+  .content-header { padding: 36px 36px 16px; }
+  .form-footer { padding: 20px 36px; }
+}
+
+@media (max-width: 860px) {
+  .form-body {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+  }
+  .form-sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .sidebar-card { flex: 1; min-width: 200px; }
+  .sidebar-footer { display: none; }
+  .sidebar-nav { flex-direction: row; flex-wrap: wrap; margin-top: 0; }
+  .nav-item { padding: 10px 14px; font-size: 12px; }
+  .content-body { padding: 20px; }
+  .content-header { padding: 24px 20px 12px; }
+  .form-footer { padding: 16px 20px; }
+}
+
+@media (max-width: 600px) {
+  .form-grid-ref { grid-template-columns: 1fr; }
+  .form-grid-ref > div[style*="span 2"] { grid-column: 1 !important; }
+  .medical-status-grid { grid-template-columns: 1fr; }
+  .content-header h2 { font-size: 22px; }
+  .btn-cancelar-ref, .btn-siguiente-ref { padding: 10px 20px; font-size: 13px; }
+  .dpi-container { font-size: 14px; }
 }

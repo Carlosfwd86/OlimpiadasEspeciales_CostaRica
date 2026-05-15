@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import DatePickerInput from './DatePickerInput';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { updateAtleta, getAtletaById } from '../services/ServicesAtletas';
@@ -82,6 +83,12 @@ const Field = ({ label, name, value, editing, onChange, type = 'text', options }
                     style={{ width: '100%', padding: '8px 10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.95rem', fontFamily: 'inherit', background: '#fff' }}>
                     {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
+            ) : type === 'date' ? (
+                <DatePickerInput
+                    name={name}
+                    value={value || ''}
+                    onChange={onChange as any}
+                />
             ) : (
                 <input name={name} type={type} value={value || ''} onChange={onChange}
                     style={{ width: '100%', padding: '8px 10px', border: '1px solid #FF000055', borderRadius: '8px', fontSize: '0.95rem', fontFamily: 'inherit', background: '#fff', boxSizing: 'border-box' }} />

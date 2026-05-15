@@ -1,20 +1,20 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import Eventos from '../components/Eventos';
+import Programas from '../components/Programas';
 import Footer from '../components/Footer';
 
-const EventosPages: React.FC = () => {
+const ProgramasPages: React.FC = () => {
     return (
         <div className="pagina-inicio-completa">
             <header>
                 <Navbar />
             </header>
             <main>
-                <Eventos />
+                <Programas />
             </main>
             <Footer />
         </div>
     );
 };
 
-export default EventosPages;
+export default ProgramasPages;
