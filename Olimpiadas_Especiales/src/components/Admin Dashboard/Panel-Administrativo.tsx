@@ -60,9 +60,8 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    apiClient.get('/registros-pendientes')
-      .then(res => {
-        const data = res.data.data || [];
+    ServicesAdmin.getRegistrations()
+      .then(data => {
         if (data.length === 0) { alert("No hay datos para exportar."); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
         const csvContent = data.map((r: any) =>
