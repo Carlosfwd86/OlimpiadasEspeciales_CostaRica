@@ -29,18 +29,30 @@ if (import.meta.env.DEV) {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    const status = error.response?.status;
+    const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message;
+
+    if (status === 401) {
       const excludeUrls = ['/auth/me', '/auth/login'];
       const isExcluded = excludeUrls.some(url => error.config.url?.includes(url));
 
       if (!isExcluded) {
         console.warn('Sesión expirada o no autorizada. Redirigiendo al login...');
-        // Solo limpiamos datos de UI — el token httpOnly lo borra el backend en /auth/logout
         localStorage.removeItem('usuarioSesion');
         window.location.href = '/login';
       }
+    } else if (status === 403) {
+      console.error('Acceso prohibido: No tienes permisos suficientes para esta acción.');
+    } else if (status === 500) {
+      console.error('Error interno del servidor. Por favor, contacta al soporte.');
     }
-    return Promise.reject(error);
+
+    // Retornamos un error más descriptivo
+    return Promise.reject({
+      ...error,
+      message: errorMsg,
+      status: status
+    });
   }
 );
 
