@@ -59,7 +59,6 @@ app.use('/api/disciplinas', require('./routes/disciplinas.routes'));
 app.use('/api/entrenadores', require('./routes/entrenador.routes'));
 app.use('/api/inscripciones', require('./routes/inscripciones.routes'));
 app.use('/api/niveles-habilidad', require('./routes/nivelesHabilidad.routes'));
-app.use('/api/permisos', require('./routes/permisosRoutes'));
 app.use('/api/programas', require('./routes/programas.routes'));
 app.use('/api/roles', require('./routes/rolesRoutes'));
 app.use('/api/tutores', require('./routes/tutores.routes'));
