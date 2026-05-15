@@ -96,10 +96,13 @@ export default function PanelAdministrativo(): React.JSX.Element {
         <div className="admin-dashboard-body">
           <div className="dashboard-header">
             <div>
-              <h1 style={{ textTransform: 'capitalize' }}>{activeTab === 'resumen' ? 'Panel Administrativo' : activeTab}</h1>
-              <p>{activeTab === 'resumen' ? 'Resumen en tiempo real de las actividades de Olimpiadas Especiales Costa Rica.' : `Gestión de la sección de ${activeTab}.`}</p>
+              <h1 style={{ textTransform: 'capitalize' }}>{activeTab === 'resumen' ? 'Panel Administrativo' : activeTab.replace('_', ' ')}</h1>
+              <p>{activeTab === 'resumen' ? 'Resumen en tiempo real de las actividades de Olimpiadas Especiales Costa Rica.' : `Gestión de la sección de ${activeTab.replace('_', ' ')}.`}</p>
             </div>
             <div className="header-actions">
+              <button className="btn-export" onClick={() => setRefreshTrigger(prev => prev + 1)} title="Actualizar datos">
+                <i className="fa-solid fa-rotate"></i>
+              </button>
               <button className="btn-export" onClick={handleExport}>
                 <i className="fa-solid fa-download"></i> Exportar
               </button>
