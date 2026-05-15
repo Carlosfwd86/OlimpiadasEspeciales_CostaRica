@@ -113,6 +113,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
   const [archivos, setArchivos] = useState<ArchivosAtleta>({ identificacion: null, certificado: null, foto: null, identificacionTutor: null });
   const [catalogos, setCatalogos] = useState<ConfigData>({ disciplinas: [], programas: [], niveles_habilidad: [], roles: [], areas_voluntariado: [], tipos_recursos: [], categorias_eventos: [] });
 
+
   useEffect(() => {
     const cargarCatalogos = async (): Promise<void> => {
       const data = await getFullConfig();
@@ -386,7 +387,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
           ...archivosNombres, 
           usuarioId: sesion.id || null,
           password: pass, 
-          rol: 'atleta', 
+          rol: 'atleta' as const, 
           fechaRegistro: new Date().toISOString(),
           status: 'PENDIENTE',
           statusColor: 'yellow',

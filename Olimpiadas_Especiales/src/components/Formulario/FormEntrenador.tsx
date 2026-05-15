@@ -135,7 +135,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
         };
         const entry = {
           ...datos, ...archivosNombres,
-          usuarioId: sesion.id || null, rol: 'entrenador',
+          usuarioId: sesion.id || null, rol: 'entrenador' as const,
           fechaRegistro: new Date().toISOString(), status: 'PENDIENTE',
           statusColor: 'yellow', bgColor: 'bg-light-blue',
           name: datos.nombre,

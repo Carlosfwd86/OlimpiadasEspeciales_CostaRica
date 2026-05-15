@@ -15,6 +15,7 @@ import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrat
 import PrivateRoute from './PrivateRoute';
 import ScrollToTop from '../components/ScrollToTop';
 
+
 const Routing: React.FC = () => {
     return (
         <>
