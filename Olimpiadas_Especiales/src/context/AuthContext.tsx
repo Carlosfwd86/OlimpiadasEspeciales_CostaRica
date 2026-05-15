@@ -25,9 +25,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Verificar si hay una sesión activa al cargar la app
     const checkAuth = async () => {
       try {
-        const res = await apiClient.get('/auth/me'); // Necesitaremos este endpoint en el backend
+        console.log('[AuthContext] Verificando sesión...');
+        const res = await apiClient.get('/auth/me');
+        console.log('[AuthContext] Resultado /me:', res.data.usuario);
         setUser(res.data.usuario);
       } catch (error) {
+        console.error('[AuthContext] Error en checkAuth:', error);
         setUser(null);
       } finally {
         setIsLoading(false);

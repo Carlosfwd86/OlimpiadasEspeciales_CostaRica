@@ -18,13 +18,6 @@ if (import.meta.env.DEV) {
   });
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// AUTENTICACIÓN POR COOKIE HTTPONLY (apta para producción)
-// El token JWT NO se almacena en localStorage (protección contra XSS).
-// El backend setea la cookie en login y la limpia en logout.
-// withCredentials: true se encarga de enviarla automáticamente.
-// ──────────────────────────────────────────────────────────────────────────────
-
 // Interceptor para manejar errores globales (ej: 401 Unauthorized)
 apiClient.interceptors.response.use(
   (response) => response,
@@ -33,6 +26,7 @@ apiClient.interceptors.response.use(
     const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message;
 
     if (status === 401) {
+      console.warn(`[apiClient] 401 Unauthorized en ${error.config.url}`);
       const excludeUrls = ['/auth/me', '/auth/login'];
       const isExcluded = excludeUrls.some(url => error.config.url?.includes(url));
 

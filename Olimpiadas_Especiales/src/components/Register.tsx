@@ -72,8 +72,8 @@ const Register = (): React.JSX.Element => {
       
       // Extraer mensaje de error del backend si existe
       let errorMessage = 'No se pudo completar el registro. Inténtalo de nuevo.';
-      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
-        errorMessage = err.response.data.errors.map((e: any) => e.msg).join('\n');
+      if (err.response?.data?.details && Array.isArray(err.response.data.details)) {
+        errorMessage = err.response.data.details.map((d: any) => Object.values(d)[0]).join('\n');
       } else if (err.response?.data?.error) {
         errorMessage = err.response.data.error;
       }
@@ -159,6 +159,12 @@ const Register = (): React.JSX.Element => {
                    style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0' }} />
           </div>
 
+          <div className="form-group" style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#334155' }}>Correo Electrónico</label>
+            <input type="email" name="correoElectronico" placeholder="ejemplo@correo.com" value={formData.correoElectronico} onChange={handleChange} required 
+                   style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0' }} />
+          </div>
+
           <div className="form-grid">
             <div className="form-group">
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#334155' }}>Identificación</label>
@@ -167,7 +173,7 @@ const Register = (): React.JSX.Element => {
             </div>
             <div className="form-group">
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#334155' }}>Teléfono</label>
-              <input type="text" name="telefono" placeholder="88887777" value={formData.telefono} onChange={handleChange}
+              <input type="text" name="telefono" placeholder="88887777" value={formData.telefono} onChange={handleChange} required
                      style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0' }} />
             </div>
           </div>
@@ -175,7 +181,7 @@ const Register = (): React.JSX.Element => {
           <div className="form-grid" style={{ marginTop: '20px' }}>
             <div className="form-group">
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#334155' }}>País</label>
-              <input type="text" name="pais" placeholder="Costa Rica" value={formData.pais} onChange={handleChange}
+              <input type="text" name="pais" placeholder="Costa Rica" value={formData.pais} onChange={handleChange} required
                      style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0' }} />
             </div>
             <div className="form-group">
@@ -190,20 +196,8 @@ const Register = (): React.JSX.Element => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="telefono">Teléfono</label>
-            <input
-              type="tel"
-              id="telefono"
-              name="telefono"
-              placeholder="+506 8888-8888"
-              value={formData.telefono}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
+          <div className="form-group" style={{ marginTop: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#334155' }}>Fecha de Nacimiento</label>
             <DatePickerInput
               id="fechaNacimiento"
               name="fechaNacimiento"
