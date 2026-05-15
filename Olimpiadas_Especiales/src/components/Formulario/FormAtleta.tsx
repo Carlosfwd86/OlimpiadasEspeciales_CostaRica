@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getFullConfig } from '../../services/ServicesConfig';
+import DatePickerInput from '../DatePickerInput';
 import '../../styles/Formulario/FormAtleta.css';
 import type { ConfigData } from '../../types';
 
@@ -459,7 +460,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                 </div>
                 <div className="input-container"><label>Nombre Completo</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error-border' : ''}`} value={datos.nombre} onChange={manejarCambio} style={errores.nombre ? { borderColor: '#E00000' } : {}} /></div>
                 <div className="input-container"><label>Cédula / Identificación</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error-border' : ''}`} value={datos.cedula} onChange={manejarCambio} style={errores.cedula ? { borderColor: '#E00000' } : {}} readOnly={!!datos.cedula} /></div>
-                <div className="input-container"><label>Fecha de Nacimiento</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error-border' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} style={errores.fechaNacimiento ? { borderColor: '#E00000' } : {}} readOnly={!!datos.fechaNacimiento} /></div>
+                <div className="input-container"><label>Fecha de Nacimiento</label><DatePickerInput id='fechaNacimiento' name='fechaNacimiento' value={datos.fechaNacimiento} onChange={manejarCambio as any} hasError={!!errores.fechaNacimiento} readOnly={!!datos.fechaNacimiento} /></div>
                 <div className="input-container"><label>Género</label><select id="genero" className={`input-field ${errores.genero ? 'error-border' : ''}`} value={datos.genero} onChange={manejarCambio} style={errores.genero ? { borderColor: '#E00000' } : {}}><option value="">Seleccione...</option><option value="NoDefinido">Prefiero no responder</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option></select></div>
                 <div className="input-container"><label>Teléfono de Contacto</label><input type="text" id='telefono' className={`input-field ${errores.telefono ? 'error-border' : ''}`} value={datos.telefono} onChange={manejarCambio} style={errores.telefono ? { borderColor: '#E00000' } : {}} /></div>
                 <div className="input-container"><label>País</label><input type="text" id='pais' className={`input-field ${errores.pais ? 'error-border' : ''}`} value={datos.pais} onChange={manejarCambio} style={errores.pais ? { borderColor: '#E00000' } : {}} readOnly={!!datos.pais} /></div>
@@ -709,7 +710,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                       <p style={{fontSize: '14px', color: '#334155', marginBottom: '20px', padding: '15px', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #3b82f6'}}>He leído y entiendo este formulario. Si tengo preguntas, las haré. Al firmar, acepto este formulario.</p>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
                         <div className="input-container" style={{ margin: 0 }}><label style={{fontWeight: 600, color: '#0f172a'}}>Firma del atleta:</label><input type="text" name="firmaAtleta" className={`input-field ${errores.firmaAtleta ? 'error-border' : ''}`} placeholder="Digitar firma digital..." value={datos.firmaAtleta} onChange={manejarCambio} style={errores.firmaAtleta ? { borderColor: '#E00000', background: '#fff1f2' } : {}} /></div>
-                        <div className="input-container" style={{ margin: 0 }}><label style={{fontWeight: 600, color: '#0f172a'}}>Fecha (dd/mm/aaaa):</label><input type="date" className="input-field" disabled={true} value={datos.fechaFirmaAtleta} style={{ background: '#f8fafc', color: '#475569', cursor: 'not-allowed' }} /></div>
+                        <div className="input-container" style={{ margin: 0 }}><label style={{fontWeight: 600, color: '#0f172a'}}>Fecha (dd/mm/aaaa):</label><DatePickerInput name='fechaFirmaAtleta' value={datos.fechaFirmaAtleta} disabled={true} /></div>
                       </div>
                     </div>
 
@@ -720,7 +721,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                         <p style={{fontSize: '14px', color: '#334155', marginBottom: '20px', padding: '15px', background: '#fff', borderRadius: '8px', borderLeft: '4px solid #E00000'}}>Soy padre o tutor del atleta. He leído y entiendo este formulario y he explicado el contenido al atleta según corresponda. Al firmar, acepto este formulario en mi propio nombre y en nombre del atleta.</p>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '15px' }}>
                           <div className="input-container" style={{ margin: 0 }}><label style={{fontWeight: 600, color: '#0f172a'}}>Firma del Padre/Tutor:</label><input type="text" name="firmaTutor" className={`input-field ${(errores.firmaTutor && esMenorDeEdad()) ? 'error-border' : ''}`} placeholder="Digitar firma..." value={datos.firmaTutor} onChange={manejarCambio} style={(errores.firmaTutor && esMenorDeEdad()) ? { borderColor: '#E00000', background: '#fff' } : { background: '#fff' }} /></div>
-                          <div className="input-container" style={{ margin: 0 }}><label style={{fontWeight: 600, color: '#0f172a'}}>Fecha (dd/mm/aaaa):</label><input type="date" className="input-field" disabled={true} value={datos.fechaFirmaTutor} style={{ background: '#f8fafc', color: '#475569', cursor: 'not-allowed' }} /></div>
+                          <div className="input-container" style={{ margin: 0 }}><label style={{fontWeight: 600, color: '#0f172a'}}>Fecha (dd/mm/aaaa):</label><DatePickerInput name='fechaFirmaTutor' value={datos.fechaFirmaTutor} disabled={true} /></div>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                           <div className="input-container" style={{ margin: 0 }}><label style={{fontWeight: 600, color: '#0f172a'}}>Nombre en letra de imprenta:</label><input type="text" className="input-field" disabled={true} value={`${datos.tutorNombre || ''} ${datos.tutorApellido || ''}`.trim() || ''} style={{ background: '#f8fafc', fontWeight: 600, color: '#475569', cursor: 'not-allowed' }} placeholder="Autocompletado del Paso 1" /></div>

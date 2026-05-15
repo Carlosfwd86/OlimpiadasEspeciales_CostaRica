@@ -64,10 +64,10 @@
 .register-form input, 
 .register-form select {
   width: 100%;
-  padding: 16px;
+  padding: 11px 14px;
   border: 1px solid #FF0000;
-  border-radius: 12px;
-  font-size: 1rem;
+  border-radius: 10px;
+  font-size: 14px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
   background-color: #ffffff;
@@ -137,4 +137,37 @@
 
 .login-link span:hover {
   color: #D00000;
+}
+
+/* ── DatePickerInput integration in Register ── */
+.register-form .dpi-container {
+  padding: 11px 14px;
+  border: 1px solid #FF0000;
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.register-form .dpi-container:hover:not(.dpi-disabled) {
+  background: #fffafb;
+  border-color: #FF0000;
+}
+
+.register-form .dpi-focused {
+  border-color: #D00000;
+  box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.15);
+}
+
+.register-form .dpi-segment {
+  font-size: 1rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .register-card { padding: 30px 20px; }
+  .register-form input,
+  .register-form select { padding: 13px 14px; }
+  .btn-register { padding: 15px; font-size: 1rem; }
+  .register-card h1 { font-size: 1.8rem; }
 }

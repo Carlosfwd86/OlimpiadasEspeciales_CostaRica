@@ -3,7 +3,7 @@
 .nosotros_container {
     font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
     background: #ffffff;
-    height: fit-content;
+    overflow-x: hidden;
 }
 
 /* HERO SECTION */
@@ -152,20 +152,18 @@
 
 /* MISION & VISION */
 .section_mision {
-    padding: 20px 24px 0px; /* Reducido drásticamente el padding bottom */
+    padding: 20px 24px 60px;
 }
 
-/* Aplicando la corrección solicitada al contenedor exacto */
 .clase-culpable {
-  min-height: unset;       /* elimina min-height heredado */
-  height: auto;            /* se adapta al contenido */
-  padding-bottom: 0;       /* sin padding fantasma */
+  min-height: unset;
+  height: auto;
 }
 
 @media (max-width: 768px) {
   .clase-culpable {
     height: auto;
-    padding: 1rem;         /* padding cómodo en móvil */
+    padding: 1rem;
   }
 }
 
@@ -228,9 +226,64 @@
     margin: 0;
 }
 
+/* NUESTROS VALORES */
+.section_valores {
+    padding: 60px 24px;
+}
+
+.valores_grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.valor_card {
+    background: #fff;
+    border-radius: 24px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.valor_card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+.valor_icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.valor_title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #000;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.valor_text {
+    font-size: 1rem;
+    color: #64748b;
+    line-height: 1.7;
+    margin: 0;
+}
+
 /* PLATAFORMA DIGITAL */
 .section_plataforma {
-    padding: 0 24px 100px;
+    padding: 60px 24px 80px;
 }
 
 .platform_card {

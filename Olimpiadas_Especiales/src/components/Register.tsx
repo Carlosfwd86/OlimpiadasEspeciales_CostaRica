@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DatePickerInput from './DatePickerInput';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { createUsuario } from '../services/ServicesUsuarios';
@@ -203,23 +204,14 @@ const Register = (): React.JSX.Element => {
           </div>
           <div className="form-group">
             <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
-            <input
-              type="date"
+            <DatePickerInput
               id="fechaNacimiento"
               name="fechaNacimiento"
-              placeholder="Tu fecha de nacimiento"
               value={formData.fechaNacimiento}
-              onChange={handleChange}
+              onChange={handleChange as any}
               required
             />
           </div>
-
-          <div className="form-group" style={{ marginTop: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#334155' }}>Fecha de Nacimiento</label>
-            <input type="date" name="fechaNacimiento" value={formData.fechaNacimiento} onChange={handleChange} required
-                   style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0' }} />
-          </div>
-
 
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
