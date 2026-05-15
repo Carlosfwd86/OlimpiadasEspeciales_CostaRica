@@ -212,6 +212,21 @@ export const ServicesAdmin = {
     deleteConsulta: async (id: string | number): Promise<boolean> => {
         await apiClient.delete(`/consultas/${id}`);
         return true;
+    },
+
+    // Auditoría y Registro de Actividad
+    logActivity: async (title: string, details: string, icon: string, iconColor: string): Promise<void> => {
+        try {
+            await apiClient.post('/actividad-sistema', {
+                title,
+                details,
+                icon,
+                iconColor,
+                time: "Ahora"
+            });
+        } catch (e) {
+            console.error("Error registrando actividad:", e);
+        }
     }
 };
 
