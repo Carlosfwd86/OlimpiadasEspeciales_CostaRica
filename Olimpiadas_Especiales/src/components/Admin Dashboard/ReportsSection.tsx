@@ -13,7 +13,11 @@ interface ReportFilters {
 
 type DataRow = Record<string, unknown>;
 
-export default function ReportsSection(): React.JSX.Element {
+interface ReportsSectionProps {
+    searchQuery?: string;
+}
+
+export default function ReportsSection({ searchQuery = '' }: ReportsSectionProps): React.JSX.Element {
     const [source, setSource] = useState<DataSource>('atletas');
     const [data, setData] = useState<DataRow[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -51,8 +55,19 @@ export default function ReportsSection(): React.JSX.Element {
     };
 
     const filteredData = data.filter(item => {
+        // Filtros de categoría
         if (filters.region !== 'Todas' && item.region !== filters.region) return false;
         if (filters.deporte !== 'Todos' && (item.sport || item.deporte) !== filters.deporte) return false;
+        
+        // Filtro de búsqueda global
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            const name = String(item.name || item.nombre || '').toLowerCase();
+            const email = String(item.email || item.correo_electronico || item.correo || '').toLowerCase();
+            const id = String(item.id || '').toLowerCase();
+            return name.includes(q) || email.includes(q) || id.includes(q);
+        }
+        
         return true;
     });
 

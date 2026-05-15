@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import '../../style/ModalNuevoRegistro.css';
 import type { Competicion } from '../../types';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 
 interface CompeticionFormData {
   nombre: string;
   deporte: string;
   fecha: string;
-  fechaFin: string;
+  fecha_fin: string;
   ubicacion: string;
   descripcion: string;
   imagen: string;
@@ -17,15 +19,18 @@ interface CompeticionFormData {
 interface ModalNuevaCompeticionProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: CompeticionFormData, id?: string) => void;
+  onSaveSuccess: () => void;
   editData?: Competicion | null;
 }
 
-export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editData = null }: ModalNuevaCompeticionProps): React.JSX.Element | null {
+export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, editData = null }: ModalNuevaCompeticionProps): React.JSX.Element | null {
     const [formData, setFormData] = useState<CompeticionFormData>({
-        nombre: '', deporte: 'Fútbol', fecha: '', fechaFin: '',
+        nombre: '', deporte: 'Fútbol', fecha: '', fecha_fin: '',
         ubicacion: '', descripcion: '', imagen: '', enlace: ''
     });
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
 
     useEffect(() => {
         if (editData) {
@@ -33,27 +38,75 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                 nombre: editData.nombre || '',
                 deporte: editData.deporte || 'Fútbol',
                 fecha: String(editData.fecha ?? ''),
-                fechaFin: String(editData.fechaFin ?? ''),
+                fecha_fin: String(editData.fecha_fin ?? ''),
                 ubicacion: String(editData.ubicacion ?? ''),
                 descripcion: String(editData.descripcion ?? ''),
                 imagen: String(editData.imagen ?? ''),
                 enlace: String(editData.enlace ?? '')
             });
         } else {
-            setFormData({ nombre: '', deporte: 'Fútbol', fecha: '', fechaFin: '', ubicacion: '', descripcion: '', imagen: '', enlace: '' });
+            setFormData({ nombre: '', deporte: 'Fútbol', fecha: '', fecha_fin: '', ubicacion: '', descripcion: '', imagen: '', enlace: '' });
         }
+        setApiError(null);
     }, [editData, isOpen]);
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        if (!formData.nombre || !formData.fecha) {
-            alert("Nombre y fecha son requeridos");
+        setApiError(null);
+
+        // Validación simple de campos obligatorios
+        if (!formData.nombre || formData.nombre.trim() === '') {
+            setApiError('El nombre del evento es obligatorio.');
             return;
         }
-        onSave(formData, editData?.id);
-        onClose();
+        if (!formData.fecha) {
+            setApiError('La fecha de inicio es obligatoria.');
+            return;
+        }
+        if (formData.fecha_fin && formData.fecha_fin < formData.fecha) {
+            setApiError('La fecha de fin debe ser posterior o igual a la fecha de inicio.');
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            await ServicesAdmin.saveCompeticion(formData, editData?.id ?? null);
+            await ServicesAdmin.logActivity("Competición", `${editData?.id ? 'Edición' : 'Nueva'} competición: ${formData.nombre}`, "fa-solid fa-trophy", "yellow");
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Competición guardada con éxito',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+
+            onSaveSuccess();
+            onClose();
+        } catch (error: unknown) {
+            console.error("Error al guardar:", error);
+            let errorMessage = 'Error desconocido al guardar la competición.';
+
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+
+            // Check for axios-like response errors safely
+            if (typeof error === 'object' && error !== null && 'response' in error) {
+                const responseObj = (error as Record<string, any>).response;
+                if (responseObj && responseObj.data && typeof responseObj.data.message === 'string') {
+                    errorMessage = responseObj.data.message;
+                }
+            }
+
+            setApiError(`Error del servidor: ${errorMessage}`);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const fieldStyle: React.CSSProperties = {
@@ -78,6 +131,13 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                 </div>
 
                 <form onSubmit={handleSubmit} style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {apiError && (
+                        <div style={{ padding: '12px', background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', fontSize: '13px' }}>
+                            <i className="fa-solid fa-circle-exclamation" style={{ marginRight: '8px' }}></i>
+                            {apiError}
+                        </div>
+                    )}
+
                     <div>
                         <label style={labelStyle}>Nombre del Evento *</label>
                         <input type="text" style={fieldStyle} value={formData.nombre}
@@ -103,8 +163,8 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                         </div>
                         <div>
                             <label style={labelStyle}>Fecha fin</label>
-                            <input type="date" style={fieldStyle} value={formData.fechaFin}
-                                onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })} />
+                            <input type="date" style={fieldStyle} value={formData.fecha_fin}
+                                onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })} />
                         </div>
                     </div>
 
@@ -142,12 +202,13 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSave, editDat
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
-                        <button type="button" onClick={onClose}
-                            style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: '600', color: '#64748b' }}>
+                        <button type="button" onClick={onClose} disabled={isSubmitting}
+                            style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: isSubmitting ? 'not-allowed' : 'pointer', fontWeight: '600', color: '#64748b', opacity: isSubmitting ? 0.6 : 1 }}>
                             Cancelar
                         </button>
-                        <button type="submit"
-                            style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#e62334', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px' }}>
+                        <button type="submit" disabled={isSubmitting}
+                            style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#e62334', color: 'white', cursor: isSubmitting ? 'not-allowed' : 'pointer', fontWeight: '700', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px', opacity: isSubmitting ? 0.6 : 1 }}>
+                            {isSubmitting && <i className="fa-solid fa-circle-notch fa-spin"></i>}
                             {editData ? 'Guardar Cambios' : 'Crear Evento'}
                         </button>
                     </div>

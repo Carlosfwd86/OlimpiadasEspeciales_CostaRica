@@ -36,13 +36,13 @@ interface CompeticionFormData {
 
 export default function PanelAdministrativo(): React.JSX.Element {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [competiciones, setCompeticiones] = useState<Competicion[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isCompModalOpen, setIsCompModalOpen] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const [editData, setEditData] = useState<Registro | Competicion | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('resumen');
+  const [competiciones, setCompeticiones] = useState<Competicion[]>([]);
   const [theme, setTheme] = useState<string>('light');
 
   useEffect(() => {
@@ -50,13 +50,13 @@ export default function PanelAdministrativo(): React.JSX.Element {
       .then(data => setStats(data))
       .catch(error => console.error("Error al cargar estadísticas:", error));
 
-    ServicesAdmin.getCompeticiones()
-      .then(data => setCompeticiones(data))
-      .catch(err => console.error("Error al cargar competiciones:", err));
-
     ServicesAdmin.getSettings()
       .then(data => { if (data.tema) setTheme(String(data.tema)); })
       .catch(err => console.error("Error al cargar tema:", err));
+
+    ServicesAdmin.getCompeticiones()
+      .then(data => setCompeticiones(data))
+      .catch(err => console.error("Error al cargar competiciones:", err));
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
@@ -127,7 +127,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
               )}
               <ChartSection onTabChange={setActiveTab} />
               <PendingTable refreshTrigger={refreshTrigger} onEdit={handleEditEntry} searchQuery={searchQuery} onActionSuccess={handleSaveSuccess} />
-              <ActivityFeed />
+              <ActivityFeed searchQuery={searchQuery} />
             </>
           )}
 
@@ -145,7 +145,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
                 <h3 style={{ color: 'var(--admin-text-main)' }}><i className="fa-solid fa-users" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Base de Datos Oficial de Atletas</h3>
                 <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>Listado completo de atletas verificados en el sistema.</p>
               </div>
-              <AthleteTable refreshTrigger={refreshTrigger} />
+              <AthleteTable refreshTrigger={refreshTrigger} searchQuery={searchQuery} />
             </div>
           )}
 
@@ -164,7 +164,10 @@ export default function PanelAdministrativo(): React.JSX.Element {
 
               {competiciones.length > 0 ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                  {competiciones.map(comp => (
+                  {competiciones.filter(comp => {
+                    const q = searchQuery.toLowerCase();
+                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
+                  }).map(comp => (
                     <CompetitionCard key={comp.id} competition={comp}
                       onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
                       onDelete={(id) => {
@@ -176,6 +179,15 @@ export default function PanelAdministrativo(): React.JSX.Element {
                       }}
                     />
                   ))}
+                  {competiciones.filter(comp => {
+                    const q = searchQuery.toLowerCase();
+                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
+                  }).length === 0 && (
+                    <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', background: 'var(--admin-white)', borderRadius: '15px', color: 'var(--admin-text-muted)' }}>
+                      <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '30px', marginBottom: '10px', display: 'block' }}></i>
+                      No se encontraron competiciones que coincidan con "{searchQuery}"
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div style={{ padding: '60px', background: 'white', borderRadius: '15px', textAlign: 'center', border: '2px dashed #e2e8f0' }}>
@@ -196,7 +208,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
           {activeTab === 'rendimiento' && (
             <div className="tab-container">
               <ChartSection onTabChange={setActiveTab} />
-              <ActivityFeed />
+              <ActivityFeed searchQuery={searchQuery} />
             </div>
           )}
 
@@ -207,12 +219,12 @@ export default function PanelAdministrativo(): React.JSX.Element {
             </div>
           )}
           
-          {activeTab === 'consultas' && <ConsultasSection />}
+          {activeTab === 'consultas' && <ConsultasSection searchQuery={searchQuery} />}
 
-          {activeTab === 'reportes' && <ReportsSection />}
+          {activeTab === 'reportes' && <ReportsSection searchQuery={searchQuery} />}
           {activeTab === 'perfil' && <ProfileSection />}
-          {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" />}
-          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" />}
+          {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" searchQuery={searchQuery} />}
+          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" searchQuery={searchQuery} />}
         </div>
       </main>
 
@@ -227,14 +239,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
         isOpen={isCompModalOpen}
         onClose={() => setIsCompModalOpen(false)}
         editData={editData as Competicion | null}
-        onSave={(data, id) => {
-          ServicesAdmin.saveCompeticion(data, id ?? null)
-            .then(() => {
-              ServicesAdmin.logActivity("Competición", `${id ? 'Edición' : 'Nueva'} competición: ${data.nombre}`, "fa-solid fa-trophy", "yellow");
-              handleSaveSuccess();
-            })
-            .catch(err => alert("Error al guardar: " + (err as Error).message));
-        }}
+        onSaveSuccess={handleSaveSuccess}
       />
     </div>
   );

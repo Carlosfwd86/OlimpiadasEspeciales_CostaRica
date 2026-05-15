@@ -5,64 +5,137 @@
   align-items: center;
   padding: 0 5%;
   background-color: #ffffff;
-  height: 110px;
-  /* Incrementado para acomodar el logo más grande */
+  height: 80px;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  border-bottom: 3px solid #FF0000;
 }
 
+/* --- LOGO --- */
 .navbar_logotipo {
   display: flex;
   align-items: center;
   cursor: pointer;
-  min-width: fit-content;
+  flex-shrink: 0;
   transition: transform 0.3s ease;
 }
 
 .navbar_logotipo:hover {
-  transform: scale(1.05);
-  /* Escala más sutil */
+  transform: scale(1.04);
 }
 
 .icono_rojo_so {
-  height: 78px;
-  /* Incrementado un 20% (65px * 1.2) */
+  height: 60px;
   width: auto;
-  max-width: 300px;
-  /* Ajustado proporcionalmente */
+  max-width: 220px;
   object-fit: contain;
 }
 
-.navbar_menu_derecha {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
+/* --- MENÚ CENTRAL --- */
 .lista_navegacion {
   display: flex;
   list-style: none;
-  gap: 15px;
+  gap: 6px;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
 
 .enlace_nav {
-  font-size: 0.85rem;
+  position: relative;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #333;
   cursor: pointer;
-  transition: color 0.3s;
+  padding: 6px 10px;
+  border-radius: 4px;
   white-space: nowrap;
+  transition: color 0.2s;
+  letter-spacing: 0.02em;
+  user-select: none;
 }
 
 .enlace_nav:hover {
   color: #FF0000;
 }
 
+.enlace_nav--dropdown {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Flecha dropdown */
+.dropdown_flecha {
+  font-size: 1rem;
+  line-height: 1;
+  color: #FF0000;
+  transition: transform 0.2s;
+}
+
+/* --- DROPDOWN MENU --- */
+.dropdown_menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid #eee;
+  border-top: 3px solid #FF0000;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  min-width: 180px;
+  z-index: 100;
+}
+
+.dropdown_item {
+  padding: 10px 18px;
+  font-size: 0.80rem;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.dropdown_item:hover {
+  background: #FFF0F0;
+  color: #FF0000;
+}
+
+/* --- SECCIÓN DERECHA (auth + botón) --- */
+.navbar_acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Botón REGÍSTRATE */
+.boton_registrate {
+  background-color: #FF0000;
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 4px;
+  font-weight: 900;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s, transform 0.15s;
+}
+
+.boton_registrate:hover {
+  background-color: #CC0000;
+  transform: translateY(-1px);
+}
+
+/* Botones de acción genéricos */
 .boton_accion_rojo {
   background-color: #FF0000;
   color: #fff;
@@ -73,7 +146,7 @@
   font-size: 0.8rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s;
 }
 
 .boton_accion_rojo:hover {
@@ -91,7 +164,7 @@
   font-size: 0.8rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .boton_accion_blanco:hover {
@@ -99,56 +172,7 @@
   color: #ffffff;
 }
 
-/* --- RESPONSIVIDAD (Celulares y Tablets) --- */
-
-/* Para pantallas medianas (Laptops pequeñas / Tablets) */
-@media (max-width: 1100px) {
-  .lista_navegacion {
-    gap: 10px;
-  }
-
-  .enlace_nav {
-    font-size: 0.75rem;
-  }
-}
-
-/* Para Celulares (Menos de 768px) */
-@media (max-width: 768px) {
-  .navbar_principal {
-    height: auto;
-    padding: 15px 5%;
-    flex-direction: column;
-    /* Apilamos logo y menú */
-    gap: 15px;
-  }
-
-  .navbar_menu_derecha {
-    width: 100%;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .lista_navegacion {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    /* Si son muchos, se pasan a la siguiente línea */
-    gap: 12px;
-  }
-
-  .boton_accion_rojo {
-    width: 100%;
-    /* El botón ocupa todo el ancho en móvil para que sea fácil tocarlo */
-    padding: 15px;
-  }
-
-  .boton_cerrar_sesion {
-    width: 100%;
-    padding: 15px;
-  }
-}
-
-/* --- BOTÓN CERRAR SESIÓN --- */
+/* Botón cerrar sesión */
 .boton_cerrar_sesion {
   display: inline-flex;
   align-items: center;
@@ -178,7 +202,7 @@
   box-shadow: none;
 }
 
-/* --- SALUDO USUARIO EN NAVBAR --- */
+/* --- SALUDO USUARIO --- */
 .saludo_usuario {
   font-size: 0.82rem;
   color: #555;
@@ -188,4 +212,45 @@
 .saludo_usuario strong {
   color: #FF0000;
   font-weight: 800;
+}
+
+/* --- RESPONSIVIDAD --- */
+@media (max-width: 1100px) {
+  .lista_navegacion {
+    gap: 2px;
+  }
+
+  .enlace_nav {
+    font-size: 0.75rem;
+    padding: 6px 7px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar_principal {
+    height: auto;
+    padding: 12px 5%;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .lista_navegacion {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .navbar_acciones {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .boton_registrate,
+  .boton_accion_rojo,
+  .boton_cerrar_sesion {
+    width: 100%;
+    padding: 14px;
+  }
 }
