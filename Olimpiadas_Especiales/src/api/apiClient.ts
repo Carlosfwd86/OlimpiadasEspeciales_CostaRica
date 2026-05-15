@@ -4,11 +4,19 @@ const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const apiClient = axios.create({
   baseURL,
-  withCredentials: true, // Envía la cookie httpOnly automáticamente en cada petición
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Interceptor de solicitud para depuración en desarrollo
+if (import.meta.env.DEV) {
+  apiClient.interceptors.request.use((config) => {
+    console.log(`[apiClient] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    return config;
+  });
+}
 
 // ──────────────────────────────────────────────────────────────────────────────
 // AUTENTICACIÓN POR COOKIE HTTPONLY (apta para producción)
