@@ -19,7 +19,7 @@ interface CompeticionFormData {
 interface ModalNuevaCompeticionProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: CompeticionFormData, id?: string | number) => void;
+  onSaveSuccess: () => void;
   editData?: Competicion | null;
 }
 
@@ -65,7 +65,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
             setApiError('La fecha de inicio es obligatoria.');
             return;
         }
-        if (formData.fechaFin && formData.fechaFin < formData.fecha) {
+        if (formData.fecha_fin && formData.fecha_fin < formData.fecha) {
             setApiError('La fecha de fin debe ser posterior o igual a la fecha de inicio.');
             return;
         }

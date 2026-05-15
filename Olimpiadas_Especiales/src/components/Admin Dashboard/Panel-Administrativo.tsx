@@ -42,6 +42,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
   const [editData, setEditData] = useState<Registro | Competicion | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('resumen');
+  const [competiciones, setCompeticiones] = useState<Competicion[]>([]);
   const [theme, setTheme] = useState<string>('light');
 
   useEffect(() => {
@@ -52,6 +53,10 @@ export default function PanelAdministrativo(): React.JSX.Element {
     ServicesAdmin.getSettings()
       .then(data => { if (data.tema) setTheme(String(data.tema)); })
       .catch(err => console.error("Error al cargar tema:", err));
+
+    ServicesAdmin.getCompeticiones()
+      .then(data => setCompeticiones(data))
+      .catch(err => console.error("Error al cargar competiciones:", err));
   }, [refreshTrigger]);
 
   const handleExport = (): void => {

@@ -82,9 +82,9 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
     const handleSavePerfil = (): void => {
         if (!adminId) return;
         setSavingPerfil(true);
-        const payload: Partial<any> = {
+        const payload: any = {
             nombre: perfil.nombre,
-            correoElectronico: perfil.correoElectronico
+            email: perfil.correoElectronico
         };
         if (perfil.passwordActual) payload.passwordActual = perfil.passwordActual;
         if (perfil.passwordNuevo) payload.passwordNuevo = perfil.passwordNuevo;
@@ -92,6 +92,7 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
         ServicesAdmin.updateProfile(adminId, payload)
             .then(() => {
                 setSavingPerfil(false);
+                ServicesAdmin.logActivity("Perfil", "Se actualizaron los datos del perfil administrador", "fa-solid fa-user-pen", "blue");
                 alert("Perfil actualizado correctamente");
                 setPerfil(prev => ({ ...prev, passwordActual: '', passwordNuevo: '' }));
             })
