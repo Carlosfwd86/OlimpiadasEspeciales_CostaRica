@@ -1,0 +1,51 @@
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem; /* Al lado izquierdo para evitar superposición con el chat */
+  z-index: 999;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #0f172a; /* Color oscuro profesional */
+  color: #ffffff;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  animation: fadeInScroll 0.4s ease-out;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scroll-to-top-btn:hover {
+  background-color: #ffffff;
+  color: #FF0000;
+  border-color: #FF0000;
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(255, 0, 0, 0.25);
+}
+
+@keyframes fadeInScroll {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .scroll-to-top-btn {
+    bottom: 1.5rem;
+    left: 1.5rem;
+    width: 44px;
+    height: 44px;
+  }
+  .scroll-to-top-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
