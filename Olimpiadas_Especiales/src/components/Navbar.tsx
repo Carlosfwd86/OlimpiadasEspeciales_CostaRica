@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Swal from 'sweetalert2';
 import '../styles/Navbar.css';
 
 const Navbar = (): React.JSX.Element => {
@@ -97,6 +98,23 @@ const Navbar = (): React.JSX.Element => {
                       e.stopPropagation();
                       if (sub.ruta.startsWith('http')) {
                         window.open(sub.ruta, '_blank');
+                      } else if (sub.ruta.includes('/formulario') && !isAuthenticated) {
+                        setMenuAbierto(null);
+                        Swal.fire({
+                          title: 'No has iniciado sesión',
+                          text: 'Debes de iniciar sesión o crear una cuenta para poder acceder a los formularios',
+                          icon: 'warning',
+                          showCancelButton: true,
+                          confirmButtonColor: '#FF0000',
+                          cancelButtonColor: '#6c757d',
+                          confirmButtonText: 'Iniciar sesión',
+                          cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            navegar('/login');
+                          }
+                        });
+                        return;
                       } else {
                         navegar(sub.ruta);
                       }
