@@ -22,13 +22,6 @@ const Footer = (): React.JSX.Element => {
         <button className="boton_donar_footer" onClick={() => irASeccion('/contacto')}>Donar Ahora</button>
       </div>
 
-<<<<<<< HEAD
-        <div className="footer_enlaces">
-          <h4 className="footer_h4">Explorar</h4>
-          <ul className="footer_lista">
-            <li className="footer_item" onClick={() => irASeccion('/nosotros')}>Nosotros</li>
-            <li className="footer_item" onClick={() => irASeccion('/programas')}>Programas</li>
-=======
       <div className="footer_grid">
         <div>
           <h4 className="footer_titulo">Explorar</h4>
@@ -45,7 +38,6 @@ const Footer = (): React.JSX.Element => {
             <li onClick={() => irASeccion('/plataforma-registro')}>Plataforma Registro</li>
             <li onClick={() => irASeccion('/registro')}>Inscribirse</li>
             <li onClick={() => irASeccion('/login')}>Iniciar Sesión</li>
->>>>>>> 11ce7f927957ab3566b2dc4772a23092da0d0484
           </ul>
         </div>
 

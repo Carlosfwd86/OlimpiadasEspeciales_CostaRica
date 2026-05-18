@@ -254,3 +254,179 @@
     padding: 14px;
   }
 }
+
+/* --- DROPDOWN PREMIUM 'INVOLÚCRATE' --- */
+.premium_dropdown {
+  min-width: 320px !important;
+  padding: 12px 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+  animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownFade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown_item_premium {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.dropdown_icon_box {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  background: #f8f9fa;
+  color: #555;
+  transition: transform 0.3s ease;
+}
+
+.dropdown_text_box {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown_titulo_item {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.dropdown_desc_item {
+  font-size: 0.72rem;
+  color: #777;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+/* Colores específicos de Hover */
+.item--azul:hover { background-color: #f0f7ff; }
+.item--azul:hover .dropdown_icon_box { background-color: #e3f2fd; color: #1976d2; transform: scale(1.1); }
+
+.item--rojo:hover { background-color: #fff5f5; }
+.item--rojo:hover .dropdown_icon_box { background-color: #ffebee; color: #d32f2f; transform: scale(1.1); }
+
+.item--verde:hover { background-color: #f0fff4; }
+.item--verde:hover .dropdown_icon_box { background-color: #e8f5e9; color: #388e3c; transform: scale(1.1); }
+
+.item--rosa:hover { background-color: #fff0f6; }
+.item--rosa:hover .dropdown_icon_box { background-color: #fce4ec; color: #c2185b; transform: scale(1.1); }
+
+.item--gris:hover { background-color: #f8f9fa; }
+.item--gris:hover .dropdown_icon_box { background-color: #eee; color: #333; transform: scale(1.1); }
+
+/* --- MODAL DONACIONES --- */
+.modal_donar_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal_donar_content {
+  background: #fff;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.modal_cerrar {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.icono_donar_principal {
+  font-size: 4rem;
+  color: #FF0000;
+  margin-bottom: 20px;
+}
+
+.modal_header h2 {
+  font-weight: 900;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.modal_body p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.info_transferencia {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: left;
+  border-left: 4px solid #FF0000;
+}
+
+.info_transferencia h3 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.info_transferencia ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info_transferencia li {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.boton_entendido {
+  margin-top: 30px;
+  background: #FF0000;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.boton_entendido:hover {
+  background: #D00000;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
