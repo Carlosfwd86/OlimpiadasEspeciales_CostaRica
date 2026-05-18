@@ -63,7 +63,7 @@ function FormVoluntario({ onVolver }: FormVoluntarioProps): React.JSX.Element {
         Swal.fire({ title: 'Guardando registro...', didOpen: () => Swal.showLoading() });
         const sesion = JSON.parse(localStorage.getItem('usuarioSesion') || '{}') as Record<string, string>;
         const archivosNombres = { cedula_nombre: archivos.cedula?.name || 'No adjuntado', delincuencia_nombre: archivos.delincuencia?.name || 'No adjuntado', foto_nombre: archivos.foto?.name || 'No adjuntado' };
-        const entry = { ...datos, ...archivosNombres, usuarioId: sesion.id || null, rol: 'voluntario', fechaRegistro: new Date().toISOString(), status: 'PENDIENTE', statusColor: 'yellow', bgColor: 'bg-light-blue', name: datos.nombre, initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''), time: 'Registrado ahora' };
+        const entry = { ...datos, ...archivosNombres, usuarioId: sesion.id || null, rol: 'voluntario' as const, fechaRegistro: new Date().toISOString(), status: 'PENDIENTE', statusColor: 'yellow', bgColor: 'bg-light-blue', name: datos.nombre, initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''), time: 'Registrado ahora' };
         try {
           await ServicesAdmin.saveRegistro(entry);
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', { to_email: datos.correoElectronico, to_name: datos.nombre, message: 'Tu registro como Voluntario fue enviado correctamente.' }, '4zWvRC7Yn7lUDqd1q');

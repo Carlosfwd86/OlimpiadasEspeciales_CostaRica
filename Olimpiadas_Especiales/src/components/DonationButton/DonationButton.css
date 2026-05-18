@@ -1,0 +1,147 @@
+/* ============================================================
+   DonationButton — Botón flotante de donación
+   Posición: bottom: 7.5rem, right: 2rem
+   Convive sin solapamiento con ChatWidget (bottom: 2rem)
+   ============================================================ */
+
+/* ---- Animación de entrada ---- */
+@keyframes donationEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* ---- Pulso sutil continuo (llamada de atención) ---- */
+@keyframes donationPulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(255, 112, 67, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 112, 67, 0);
+  }
+}
+
+/* ---- Contenedor principal ---- */
+.donation-btn {
+  position: fixed;
+  bottom: 7.5rem;
+  right: 2rem;
+  z-index: 999; /* Un nivel bajo el chat (z:1000) */
+
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+
+  /* Color cálido naranja/coral — diferenciado del rojo SO del chat */
+  background: linear-gradient(135deg, #FF7043 0%, #E64A19 100%);
+  box-shadow: 0 4px 15px rgba(255, 112, 67, 0.45);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+
+  /* Animación de entrada: aparece 1.5s después de cargada la página */
+  animation:
+    donationEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.5s both,
+    donationPulseRing 2.5s ease-out 2.5s 3; /* 3 pulsos al aparecer */
+
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              box-shadow 0.3s ease;
+
+  /* Focus visible para navegación por teclado */
+  outline: none;
+}
+
+.donation-btn:focus-visible {
+  outline: 3px solid #FF7043;
+  outline-offset: 4px;
+}
+
+/* ---- Hover ---- */
+.donation-btn:hover {
+  transform: scale(1.13) rotate(-5deg);
+  box-shadow: 0 6px 22px rgba(255, 112, 67, 0.6);
+}
+
+/* ---- Ícono SVG ---- */
+.donation-btn svg {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.donation-btn:hover svg {
+  transform: scale(1.1);
+}
+
+/* ---- Tooltip ---- */
+.donation-tooltip {
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+
+  background: rgba(30, 30, 30, 0.92);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 0.42rem 0.8rem;
+  border-radius: 8px;
+  letter-spacing: 0.01em;
+
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Flechita del tooltip apuntando a la derecha (hacia el botón) */
+.donation-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left-color: rgba(30, 30, 30, 0.92);
+}
+
+/* Mostrar tooltip al hacer hover sobre el botón */
+.donation-btn:hover .donation-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ============================================================
+   Responsive — móvil (< 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  .donation-btn {
+    width: 44px;
+    height: 44px;
+    bottom: 6.5rem; /* Ajuste al tamaño reducido del chatbot en móvil */
+    right: 1rem;
+  }
+
+  .donation-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Ocultar tooltip en touch: no hay hover real */
+  .donation-tooltip {
+    display: none;
+  }
+}

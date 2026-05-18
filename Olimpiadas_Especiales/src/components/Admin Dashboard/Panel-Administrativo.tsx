@@ -60,9 +60,8 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    apiClient.get('/registros-pendientes')
-      .then(res => {
-        const data = res.data.data || [];
+    ServicesAdmin.getRegistrations()
+      .then(data => {
         if (data.length === 0) { alert("No hay datos para exportar."); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
         const csvContent = data.map((r: any) =>
@@ -97,10 +96,13 @@ export default function PanelAdministrativo(): React.JSX.Element {
         <div className="admin-dashboard-body">
           <div className="dashboard-header">
             <div>
-              <h1 style={{ textTransform: 'capitalize' }}>{activeTab === 'resumen' ? 'Panel Administrativo' : activeTab}</h1>
-              <p>{activeTab === 'resumen' ? 'Resumen en tiempo real de las actividades de Olimpiadas Especiales Costa Rica.' : `Gestión de la sección de ${activeTab}.`}</p>
+              <h1 style={{ textTransform: 'capitalize' }}>{activeTab === 'resumen' ? 'Panel Administrativo' : activeTab.replace('_', ' ')}</h1>
+              <p>{activeTab === 'resumen' ? 'Resumen en tiempo real de las actividades de Olimpiadas Especiales Costa Rica.' : `Gestión de la sección de ${activeTab.replace('_', ' ')}.`}</p>
             </div>
             <div className="header-actions">
+              <button className="btn-export" onClick={() => setRefreshTrigger(prev => prev + 1)} title="Actualizar datos">
+                <i className="fa-solid fa-rotate"></i>
+              </button>
               <button className="btn-export" onClick={handleExport}>
                 <i className="fa-solid fa-download"></i> Exportar
               </button>
@@ -172,7 +174,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
                       onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
                       onDelete={(id) => {
                         if (window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
-                          ServicesAdmin.deleteCompeticion(id)
+                          ServicesAdmin.deleteCompeticion(String(id))
                             .then(() => handleSaveSuccess())
                             .catch(err => alert((err as Error).message));
                         }
