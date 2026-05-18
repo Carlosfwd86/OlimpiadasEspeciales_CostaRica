@@ -22,6 +22,7 @@ const Footer = (): React.JSX.Element => {
         <button className="boton_donar_footer" onClick={() => irASeccion('/contacto')}>Donar Ahora</button>
       </div>
 
+
       <div className="footer_grid">
         <div>
           <h4 className="footer_titulo">Explorar</h4>
@@ -38,7 +39,7 @@ const Footer = (): React.JSX.Element => {
           <ul className="footer_links">
             <li onClick={() => irASeccion('/plataforma-registro')}>Plataforma Registro</li>
             <li onClick={() => irASeccion('/registro')}>Inscribirse</li>
-            <li onClick={() => irASeccion('/login')}>Iniciar Sesión</li>
+
           </ul>
         </div>
 
