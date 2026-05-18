@@ -124,9 +124,22 @@
   height: 18px;
 }
 
-.social_icon:hover {
-  background-color: #ff0000;
+.social_icon.facebook:hover {
+  background-color: #1877F2;
   transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+}
+
+.social_icon.instagram:hover {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.4);
+}
+
+.social_icon.x:hover {
+  background-color: #0f1419;
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .footer_bottom {

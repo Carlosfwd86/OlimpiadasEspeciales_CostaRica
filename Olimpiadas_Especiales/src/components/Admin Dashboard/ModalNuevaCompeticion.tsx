@@ -72,7 +72,7 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
 
         setIsSubmitting(true);
         try {
-            await ServicesAdmin.saveCompeticion(formData, editData?.id ?? null);
+            await ServicesAdmin.saveCompeticion(formData as any, editData?.id ? String(editData.id) : null);
             await ServicesAdmin.logActivity("Competición", `${editData?.id ? 'Edición' : 'Nueva'} competición: ${formData.nombre}`, "fa-solid fa-trophy", "yellow");
 
             Swal.fire({

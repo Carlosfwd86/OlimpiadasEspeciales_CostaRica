@@ -62,7 +62,7 @@ function FormTutor({ onVolver }: FormTutorProps): React.JSX.Element {
         Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
         const sesion = JSON.parse(localStorage.getItem('usuarioSesion') || '{}') as Record<string, string>;
         const archivosNombres = { cedula_nombre: archivos.cedula?.name || 'No adjuntado', foto_nombre: archivos.foto?.name || 'No adjuntado' };
-        const entry = { ...datos, ...archivosNombres, usuarioId: sesion.id || null, rol: 'tutor', fechaRegistro: new Date().toISOString(), status: 'PENDIENTE', statusColor: 'yellow', bgColor: 'bg-light-blue', name: datos.nombre, initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''), time: 'Registrado ahora' };
+        const entry = { ...datos, ...archivosNombres, usuarioId: sesion.id || null, rol: 'tutor' as const, fechaRegistro: new Date().toISOString(), status: 'PENDIENTE', statusColor: 'yellow', bgColor: 'bg-light-blue', name: datos.nombre, initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''), time: 'Registrado ahora' };
         try {
           await ServicesAdmin.saveRegistro(entry);
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', { to_email: datos.correoElectronico, to_name: datos.nombre, message: 'Tu registro como Tutor fue enviado correctamente.' }, '4zWvRC7Yn7lUDqd1q');

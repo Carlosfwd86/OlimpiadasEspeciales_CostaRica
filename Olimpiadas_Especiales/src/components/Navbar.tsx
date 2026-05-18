@@ -75,7 +75,6 @@ const Navbar = (): React.JSX.Element => {
       <div className="navbar_logotipo" onClick={() => navegar("/")}>
         <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
       </div>
-
       {/* Menú central */}
       <ul className="lista_navegacion">
         {itemsNav.map((item) => (

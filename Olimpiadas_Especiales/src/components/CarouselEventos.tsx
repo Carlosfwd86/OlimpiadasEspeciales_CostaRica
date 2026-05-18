@@ -60,7 +60,7 @@ const CarouselEventos = (): React.JSX.Element => {
                         key={evento.id} 
                         className="evento-card" 
                         onClick={() => {
-                            if (evento.enlace) {
+                            if (typeof evento.enlace === 'string' && evento.enlace) {
                                 window.open(evento.enlace, '_blank');
                             } else {
                                 handleVerEventos();

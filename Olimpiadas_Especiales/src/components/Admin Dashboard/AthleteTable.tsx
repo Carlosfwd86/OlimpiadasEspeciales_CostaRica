@@ -3,6 +3,7 @@ import '../../style/PendingTable.css';
 import { ServicesAtletas } from '../../services/ServicesAtletas';
 import type { Atleta } from '../../types';
 
+
 /* [verde] Interfaz para las propiedades del componente */
 interface AthleteTableProps {
   refreshTrigger?: number;
@@ -14,6 +15,7 @@ export default function AthleteTable({ refreshTrigger = 0, searchQuery = '' }: A
   const [atletas, setAtletas] = useState<Atleta[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [localSearch, setLocalSearch] = useState<string>('');
+
 
   /* [verde] Efecto para cargar los datos reales al montar el componente o refrescar */
   useEffect(() => {
