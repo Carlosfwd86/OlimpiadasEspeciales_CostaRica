@@ -135,6 +135,11 @@ const Navbar = (): React.JSX.Element => {
 
             {item.label !== 'Involúcrate' && item.ruta === null && menuAbierto === item.label && (
               <ul className="dropdown_menu">
+                {item.label === 'Programas' && (
+                  <li className="dropdown_item" onClick={(e) => { e.stopPropagation(); navegar('/programas'); setMenuAbierto(null); }}>
+                    Ver Programas
+                  </li>
+                )}
                 <li className="dropdown_item">Próximamente...</li>
               </ul>
             )}
