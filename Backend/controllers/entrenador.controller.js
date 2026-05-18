@@ -1,10 +1,16 @@
 const { models } = require('../config/database');
 const { Entrenador } = models;
 
-// Controlador para la gestión de Entrenadores
+/**
+ * @module entrenadorController
+ * @description Controlador para administrar la información y el ciclo de vida de los entrenadores en el sistema.
+ */
 const entrenadorController = {
 
-  // Obtener todos los entrenadores registrados
+  /**
+   * @function obtenerTodos
+   * @description Recupera la lista completa de entrenadores registrados en la plataforma.
+   */
   obtenerTodos: async (req, res) => {
     try {
       // Búsqueda de todos los registros en la base de datos
@@ -23,7 +29,10 @@ const entrenadorController = {
     }
   },
 
-  // Obtener un entrenador por su ID único
+  /**
+   * @function obtenerPorId
+   * @description Busca y devuelve el detalle completo de un entrenador utilizando su ID.
+   */
   obtenerPorId: async (req, res) => {
     try {
       let { id } = req.params;
@@ -52,7 +61,10 @@ const entrenadorController = {
     }
   },
 
-  // Registrar un nuevo entrenador
+  /**
+   * @function crear
+   * @description Registra un nuevo entrenador, mapeando los datos de la solicitud (camelCase) a los campos del modelo (snake_case) y asociando la disciplina principal.
+   */
   crear: async (req, res) => {
     try {
       const data = req.body.datos || req.body;
@@ -120,7 +132,10 @@ const entrenadorController = {
     }
   },
 
-  // Actualizar datos de un entrenador existente
+  /**
+   * @function actualizar
+   * @description Actualiza la información de un entrenador existente, soportando tanto campos en camelCase como en snake_case enviados desde el frontend.
+   */
   actualizar: async (req, res) => {
     try {
       let { id } = req.params;
@@ -183,7 +198,10 @@ const entrenadorController = {
     }
   },
 
-  // Eliminar un entrenador del sistema
+  /**
+   * @function eliminar
+   * @description Borra el registro de un entrenador de la base de datos usando su identificador único.
+   */
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;

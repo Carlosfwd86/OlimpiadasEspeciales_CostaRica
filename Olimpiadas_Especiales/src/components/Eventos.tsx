@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Eventos.css';
+import { s3Url } from '../utils/s3';
 
 interface Evento {
     id: string;
@@ -49,7 +50,7 @@ const Eventos = (): React.JSX.Element => {
                     playsInline 
                     className="video-presentacion-berlin"
                 >
-                    <source src="/img/berlin-film-2025-for-website.mp4" type="video/mp4" />
+                    <source src={s3Url('img/berlin-film-2025-for-website.mp4')} type="video/mp4" />
                     Tu navegador no soporta el tag de video.
                 </video>
             </div>

@@ -10,7 +10,9 @@ const AtletaMedicamento = require('../models/AtletaMedicamento');
 
 const IAController = {
     /**
-     * Maneja el chat del Asistente de Inclusión
+     * @function obtenerRespuestaIA
+     * @description Maneja las interacciones del chat del Asistente de Inclusión. 
+     * Limpia el prompt del usuario mediante IAHelper y solicita una respuesta a IAService.
      */
     obtenerRespuestaIA: async (req, res) => {
         try {
@@ -29,7 +31,9 @@ const IAController = {
     },
 
     /**
-     * Genera análisis de salud preventivo para un atleta específico
+     * @function analizarSaludAtleta
+     * @description Genera un análisis de salud preventivo para un atleta específico usando IA.
+     * Consolida datos de condiciones y medicamentos, los formatea y solicita alertas de salud a IAService.
      */
     analizarSaludAtleta: async (req, res) => {
         try {
@@ -53,7 +57,8 @@ const IAController = {
     },
 
     /**
-     * Procesa la imagen de un certificado médico
+     * @function procesarCertificadoOCR
+     * @description Procesa una imagen de certificado médico (Base64) extrayendo sus datos mediante OCR vía IA.
      */
     procesarCertificadoOCR: async (req, res) => {
         try {

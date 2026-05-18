@@ -6,6 +6,7 @@ import { getTutores } from '../services/ServicesTutores';
 import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
 import BannerVoluntarios from './BannerVoluntarios';
+import { s3Url } from '../utils/s3';
 import type { Atleta, Tutor, Entrenador, Voluntario, Competicion } from '../types';
 
 interface CountsState {
@@ -118,10 +119,10 @@ const Home = (): React.JSX.Element => {
     const [heroImageIndex, setHeroImageIndex] = useState(0);
     const [usuarioSesion, setUsuarioSesion] = useState<Record<string, unknown> | null>(null);
     const heroImages = [
-        '/img/Hero_contenedor_01.jpeg',
-        '/img/Hero_contenedor_02.jpeg',
-        '/img/Hero_contenedor_03.jpeg',
-        '/img/Hero_contenedor_04.jpeg'
+        s3Url('img/Hero_contenedor_01.jpeg'),
+        s3Url('img/Hero_contenedor_02.jpeg'),
+        s3Url('img/Hero_contenedor_03.jpeg'),
+        s3Url('img/Hero_contenedor_04.jpeg')
     ];
 
     useEffect(() => {
@@ -197,7 +198,7 @@ const Home = (): React.JSX.Element => {
                         zIndex: 0
                     }}
                 >
-                    <source src="/img/videoHome.mp4" type="video/mp4" />
+                    <source src={s3Url('img/videoHome.mp4')} type="video/mp4" />
                 </video>
 
                 {/* Overlay oscuro sutil para todo el video */}
@@ -246,7 +247,7 @@ const Home = (): React.JSX.Element => {
                             </h2>
                             {/* Imagen de Puntero (Cargada desde public/img/hand-pointer.png) */}
                             <img 
-                                src="/img/hand-pointer.png" 
+                                src={s3Url('img/hand-pointer.png')} 
                                 alt="Click indicator" 
                                 className="icono-click-titilante"
                                 style={{

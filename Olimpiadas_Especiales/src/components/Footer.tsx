@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import "../styles/Footer.css";
+import { s3Url } from '../utils/s3';
 
 const Footer = (): React.JSX.Element => {
   const navegar = useNavigate();
@@ -16,7 +17,7 @@ const Footer = (): React.JSX.Element => {
     <footer className="footer_principal">
       <div className="footer_top">
         <div className="footer_logo_section" onClick={() => irASeccion('/')} style={{ cursor: 'pointer' }}>
-          <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="footer_logo_img" />
+          <img src={s3Url('img/Logo Olimpiadas.png')} alt="Logo Olimpiadas Especiales" className="footer_logo_img" />
           <p className="footer_tagline">Transformando vidas a través del deporte y la inclusión. Únete a nuestra comunidad.</p>
         </div>
         <button className="boton_donar_footer" onClick={() => irASeccion('/contacto')}>Donar Ahora</button>

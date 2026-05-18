@@ -7,9 +7,16 @@ const AtletaAlergia = require('../models/AtletaAlergia');
 
 
 // [verde] Controlador para gestionar la lógica de negocio de los Atletas
+/**
+ * @module atletaController
+ * @description Controlador para gestionar operaciones CRUD de atletas, incluyendo su información médica y documentos.
+ */
 const atletaController = {
 
-  // [verde] Obtener todos los atletas con su información relacionada
+  /**
+   * @function obtenerTodosLosAtletas
+   * @description Recupera la lista completa de atletas con sus relaciones (documentos, medicamentos, condiciones, etc.).
+   */
   obtenerTodosLosAtletas: async (req, res) => {
     try {
       const atletas = await Atleta.findAll({
@@ -27,7 +34,10 @@ const atletaController = {
     }
   },
 
-  // [verde] Obtener un atleta específico por su ID
+  /**
+   * @function obtenerAtletaPorId
+   * @description Recupera un atleta específico y todas sus relaciones a partir de su ID.
+   */
   obtenerAtletaPorId: async (req, res) => {
     try {
       let { id } = req.params;
@@ -57,7 +67,10 @@ const atletaController = {
     }
   },
 
-  // [verde] Crear un nuevo atleta
+  /**
+   * @function crearAtleta
+   * @description Registra un nuevo atleta manejando una transacción SQL para insertar datos, condiciones médicas, alergias, dispositivos y medicamentos simultáneamente.
+   */
   crearAtleta: async (req, res) => {
     const t = await require('../config/database').sequelize.transaction();
     try {
@@ -155,7 +168,10 @@ const atletaController = {
     }
   },
 
-  // [verde] Actualizar la información de un atleta
+  /**
+   * @function actualizarAtleta
+   * @description Actualiza los datos de un atleta existente, normalizando el payload recibido (camelCase a snake_case).
+   */
   actualizarAtleta: async (req, res) => {
     try {
       let { id } = req.params;
@@ -214,7 +230,10 @@ const atletaController = {
     }
   },
 
-  // [verde] Eliminar un atleta del sistema
+  /**
+   * @function eliminarAtleta
+   * @description Borra permanentemente el registro de un atleta de la base de datos por su ID.
+   */
   eliminarAtleta: async (req, res) => {
     try {
       const { id } = req.params;
@@ -229,7 +248,10 @@ const atletaController = {
       res.status(500).json({ mensaje: 'Error al eliminar el atleta', error: error.message });
     }
   },
-  // [verde] Obtener documentos de un atleta
+  /**
+   * @function obtenerDocumentosAtleta
+   * @description Lista todos los documentos o certificaciones asociadas a un atleta específico.
+   */
   obtenerDocumentosAtleta: async (req, res) => {
     try {
       const { id } = req.params;
@@ -240,9 +262,11 @@ const atletaController = {
     }
   },
 
-  // [verde] Agregar un documento a un atleta
-  // Body esperado: { nombre_documento, tipo_documento, ruta_archivo }
-  // ruta_archivo debe ser una URL (CDN, S3, etc.) o ruta relativa del servidor
+  /**
+   * @function agregarDocumento
+   * @description Vincula un nuevo documento (ej. certificado médico) a un atleta específico.
+   * Espera en el body: { nombre_documento, tipo_documento, ruta_archivo }
+   */
   agregarDocumento: async (req, res) => {
     try {
       const { id } = req.params;
@@ -268,7 +292,10 @@ const atletaController = {
     }
   },
 
-  // [verde] Eliminar un documento de un atleta
+  /**
+   * @function eliminarDocumento
+   * @description Borra un documento específico asociado a un atleta por su ID y el ID del documento.
+   */
   eliminarDocumento: async (req, res) => {
     try {
       const { id, docId } = req.params;

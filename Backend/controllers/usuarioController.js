@@ -1,8 +1,15 @@
 const { models } = require('../config/database');
 const { Usuario, Rol } = models;
 
+/**
+ * @module usuarioController
+ * @description Controlador general para gestionar usuarios de la plataforma (excluyendo lógicas de autenticación).
+ */
 const usuarioController = {
-  // Obtener todos los usuarios (para gestión administrativa)
+  /**
+   * @function getAll
+   * @description Recupera todos los usuarios y sus roles asociados, excluyendo las contraseñas, para paneles administrativos.
+   */
   getAll: async (req, res) => {
     try {
       const usuarios = await Usuario.findAll({
@@ -15,7 +22,10 @@ const usuarioController = {
     }
   },
 
-  // Buscar por filtros (ej: correo_electronico)
+  /**
+   * @function getByFilter
+   * @description Filtra usuarios de forma dinámica (ej. por correo_electronico) y devuelve campos básicos.
+   */
   getByFilter: async (req, res) => {
     try {
       const { correo_electronico } = req.query;
@@ -29,7 +39,10 @@ const usuarioController = {
     }
   },
 
-  // Obtener por ID
+  /**
+   * @function getById
+   * @description Obtiene el detalle de un usuario específico sin incluir el hash de su contraseña.
+   */
   getById: async (req, res) => {
     try {
       const usuario = await Usuario.findByPk(req.params.id, {
@@ -42,7 +55,10 @@ const usuarioController = {
     }
   },
 
-  // Actualizar usuario
+  /**
+   * @function update
+   * @description Actualiza campos específicos de un usuario (como avatar, teléfono, etc.) mapeando el payload.
+   */
   update: async (req, res) => {
     try {
       const usuario = await Usuario.findByPk(req.params.id);
@@ -73,7 +89,10 @@ const usuarioController = {
     }
   },
 
-  // Eliminar usuario
+  /**
+   * @function delete
+   * @description Elimina físicamente a un usuario del sistema por su ID.
+   */
   delete: async (req, res) => {
     try {
       const deleted = await Usuario.destroy({ where: { id: req.params.id } });

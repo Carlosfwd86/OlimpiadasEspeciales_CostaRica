@@ -20,6 +20,15 @@ Reglas de respuesta:
 - Usa un lenguaje inclusivo y respetuoso.
 `;
 
+/**
+ * @module chatController
+ * @description Controlador para gestionar las interacciones con el chatbot impulsado por OpenAI.
+ */
+
+/**
+ * @function processChat
+ * @description Procesa los mensajes recibidos del frontend, los envía a la API de OpenAI y devuelve la respuesta del asistente virtual.
+ */
 const processChat = async (req, res) => {
   const { messages } = req.body;
 

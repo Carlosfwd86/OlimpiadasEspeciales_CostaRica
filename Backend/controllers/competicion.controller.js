@@ -1,10 +1,16 @@
 const { models } = require('../config/database');
 const { Competicion, CompeticionAtleta } = models;
 
-// Controlador para la gestión de Competiciones
+/**
+ * @module competicionController
+ * @description Controlador para el manejo del ciclo de vida de competiciones y la asignación de atletas.
+ */
 const competicionController = {
 
-  // Obtener todas las competiciones programadas o finalizadas
+  /**
+   * @function obtenerTodas
+   * @description Recupera la lista completa de competiciones, ya sea programadas o finalizadas.
+   */
   obtenerTodas: async (req, res) => {
     try {
       const competiciones = await Competicion.findAll();
@@ -21,7 +27,10 @@ const competicionController = {
     }
   },
 
-  // Obtener detalle de una competición por su ID
+  /**
+   * @function obtenerPorId
+   * @description Busca y devuelve los datos detallados de una competición específica usando su ID.
+   */
   obtenerPorId: async (req, res) => {
     try {
       const { id } = req.params;
@@ -47,7 +56,10 @@ const competicionController = {
     }
   },
 
-  // Crear una nueva competición
+  /**
+   * @function crear
+   * @description Registra una nueva competición en el sistema.
+   */
   crear: async (req, res) => {
     try {
       const nuevaCompeticion = await Competicion.create(req.body);
@@ -65,7 +77,10 @@ const competicionController = {
     }
   },
 
-  // Actualizar datos de una competición
+  /**
+   * @function actualizar
+   * @description Modifica los atributos de una competición existente identificada por su ID.
+   */
   actualizar: async (req, res) => {
     try {
       const { id } = req.params;
@@ -92,7 +107,10 @@ const competicionController = {
     }
   },
 
-  // Eliminar una competición
+  /**
+   * @function eliminar
+   * @description Elimina permanentemente una competición de la base de datos.
+   */
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;
@@ -118,7 +136,10 @@ const competicionController = {
     }
   },
 
-  // Método especial para inscribir un atleta en una competición
+  /**
+   * @function inscribirAtleta
+   * @description Crea un vínculo en la tabla pivote para inscribir a un atleta en una competición, permitiendo registrar posición y resultado.
+   */
   inscribirAtleta: async (req, res) => {
     try {
       const { competicion_id, atleta_id, posicion, resultado } = req.body;

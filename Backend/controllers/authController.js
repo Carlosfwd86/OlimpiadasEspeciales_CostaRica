@@ -15,7 +15,15 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET;
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Función para registrar un nuevo usuario
+/**
+ * @module authController
+ * @description Controlador para autenticación y autorización (login, registro, sesiones, perfil de usuario).
+ */
+
+/**
+ * @function registrarUsuario
+ * @description Registra un nuevo usuario en la plataforma. Valida correos y cédulas duplicados y encripta la contraseña.
+ */
 const registrarUsuario = async (req, res) => {
   try {
     const { rol_id, nombre, apellido, cedula, correo_electronico, password, telefono, direccion, pais, fecha_nacimiento, genero, avatar_url } = req.body;
@@ -87,7 +95,10 @@ const registrarUsuario = async (req, res) => {
   }
 };
 
-// Función para iniciar sesión
+/**
+ * @function iniciarSesion
+ * @description Autentica a un usuario, genera un token JWT y configura una cookie HttpOnly segura para el manejo de la sesión.
+ */
 const iniciarSesion = async (req, res) => {
   try {
     const { correo_electronico, password } = req.body;
@@ -158,7 +169,10 @@ const iniciarSesion = async (req, res) => {
   }
 };
 
-// Función para cerrar sesión
+/**
+ * @function cerrarSesion
+ * @description Finaliza la sesión del usuario invalidando el token JWT (blacklist) y borrando la cookie.
+ */
 const cerrarSesion = async (req, res) => {
   try {
     const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
@@ -189,7 +203,10 @@ const cerrarSesion = async (req, res) => {
   }
 };
 
-// Función para obtener el perfil del usuario autenticado
+/**
+ * @function getProfile
+ * @description Devuelve los datos básicos del perfil del usuario actualmente autenticado basado en su token JWT.
+ */
 const getProfile = async (req, res) => {
   try {
     const usuario = await Usuario.findByPk(req.user.id, {
@@ -216,7 +233,10 @@ const getProfile = async (req, res) => {
   }
 };
 
-// Función para actualizar el perfil del usuario autenticado
+/**
+ * @function updateProfile
+ * @description Permite al usuario actualizar sus propios datos y cambiar su contraseña (requiere la contraseña actual).
+ */
 const updateProfile = async (req, res) => {
   try {
     const { nombre, correoElectronico, passwordActual, passwordNuevo } = req.body;

@@ -2,10 +2,16 @@ const { models } = require('../config/database');
 const { CompeticionAtleta } = models;
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 
-// Controlador para gestionar la participación de atletas en competiciones (Tabla Pivote)
+/**
+ * @module competicionAtletaController
+ * @description Controlador para gestionar la relación muchos a muchos entre competiciones y atletas (inscripciones, posiciones, resultados).
+ */
 const competicionAtletaController = {
 
-  // Listar todas las inscripciones y resultados
+  /**
+   * @function obtenerTodas
+   * @description Recupera todos los registros de inscripción de atletas en competiciones.
+   */
   obtenerTodas: async (req, res) => {
     try {
       const registros = await CompeticionAtleta.findAll();
@@ -15,7 +21,10 @@ const competicionAtletaController = {
     }
   },
 
-  // Registrar un atleta en una competición con su resultado/posición
+  /**
+   * @function crear
+   * @description Registra la inscripción de un atleta en una competición específica, junto con su posición o resultado.
+   */
   crear: async (req, res) => {
     try {
       const registro = await CompeticionAtleta.create(req.body);
@@ -25,7 +34,10 @@ const competicionAtletaController = {
     }
   },
 
-  // Actualizar el resultado o posición de un atleta
+  /**
+   * @function actualizar
+   * @description Modifica el resultado o posición de una inscripción existente.
+   */
   actualizar: async (req, res) => {
     try {
       const { id } = req.params;
@@ -39,7 +51,10 @@ const competicionAtletaController = {
     }
   },
 
-  // Eliminar una inscripción por su ID
+  /**
+   * @function eliminar
+   * @description Borra el registro de una inscripción (desvincula a un atleta de una competición).
+   */
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;

@@ -1,7 +1,15 @@
 const { models } = require('../config/database');
 const { Rol } = models;
 
-// Función para obtener todos los roles
+/**
+ * @module rolesController
+ * @description Controlador para gestionar el CRUD y las validaciones de roles de usuario.
+ */
+
+/**
+ * @function obtenerRoles
+ * @description Recupera la lista completa de roles del sistema.
+ */
 const obtenerRoles = async (req, res) => {
   try {
     // Obtiene todos los roles de la base de datos
@@ -14,7 +22,10 @@ const obtenerRoles = async (req, res) => {
   }
 };
 
-// Función para crear un nuevo rol
+/**
+ * @function crearRol
+ * @description Registra un nuevo rol. Valida que el nombre del rol no exista previamente.
+ */
 const crearRol = async (req, res) => {
   try {
     const { nombre, descripcion } = req.body;
@@ -38,7 +49,10 @@ const crearRol = async (req, res) => {
   }
 };
 
-// Función para actualizar un rol existente
+/**
+ * @function actualizarRol
+ * @description Modifica el nombre y descripción de un rol existente mediante su ID.
+ */
 const actualizarRol = async (req, res) => {
   try {
     const { id } = req.params;
@@ -62,7 +76,10 @@ const actualizarRol = async (req, res) => {
   }
 };
 
-// Función para eliminar un rol
+/**
+ * @function eliminarRol
+ * @description Elimina permanentemente un rol de la base de datos por su ID.
+ */
 const eliminarRol = async (req, res) => {
   try {
     const { id } = req.params;

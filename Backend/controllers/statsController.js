@@ -2,8 +2,13 @@ const { models } = require('../config/database');
 const { Atleta, Voluntario, Inscripcion, Consulta, Usuario, Competicion } = models;
 
 /**
- * GET /api/stats/summary
- * Retorna el resumen para los StatCards.
+ * @module statsController
+ * @description Controlador para proveer estadísticas y datos agregados para los dashboards y reportes.
+ */
+
+/**
+ * @function getStats
+ * @description Recupera conteos clave (atletas, voluntarios, inscripciones, tutores) y calcula métricas resumidas para mostrar en tarjetas estadísticas (StatCards).
  */
 const getStats = async (req, res) => {
   try {
@@ -35,9 +40,8 @@ const getStats = async (req, res) => {
 };
 
 /**
-
- * GET /api/stats/charts
- * Datos para los gráficos del dashboard.
+ * @function getCharts
+ * @description Devuelve los datos estructurados (meses, género, etc.) necesarios para renderizar gráficos visuales en el frontend.
  */
 const getCharts = async (req, res) => {
   try {

@@ -1,7 +1,15 @@
 const { models } = require('../config/database');
 const { Voluntario, Atleta, Consulta } = models;
 
+/**
+ * @module adminController
+ * @description Controlador para el panel de administración. Provee métricas y registros de estado.
+ */
 const adminController = {
+  /**
+   * @function getRegistrosPendientes
+   * @description Obtiene los registros de voluntarios en estado "PENDIENTE" y los adapta al formato visual requerido por el frontend.
+   */
   getRegistrosPendientes: async (req, res) => {
     try {
       // Por ahora, obtenemos voluntarios pendientes como ejemplo de registros pendientes
@@ -29,6 +37,10 @@ const adminController = {
     }
   },
 
+  /**
+   * @function getStats
+   * @description Calcula métricas clave (total de atletas, voluntarios, registros pendientes) para el dashboard del administrador.
+   */
   getStats: async (req, res) => {
     try {
       const totalAtletas = await Atleta.count();
@@ -46,6 +58,10 @@ const adminController = {
     }
   },
 
+  /**
+   * @function getGraficos
+   * @description Devuelve datos estáticos estructurados (crecimiento, distribución) para renderizar gráficos en el frontend del admin.
+   */
   getGraficos: async (req, res) => {
     // Datos dummy para que el frontend no rompa, pero servidos desde el backend
     return res.status(200).json({

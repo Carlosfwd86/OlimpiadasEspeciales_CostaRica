@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../style/Sidebar.css';
-import logoUrl from '../../img/Logo Olimpiadas.png';
+import { s3Url } from '../../utils/s3';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
@@ -16,7 +16,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
     <aside className="admin-sidebar">
       <div className="sidebar-logo">
         <img
-          src={logoUrl}
+          src={s3Url('img/Logo Olimpiadas.png')}
           alt="Special Olympics Logo"
           className="logo-img"
         />

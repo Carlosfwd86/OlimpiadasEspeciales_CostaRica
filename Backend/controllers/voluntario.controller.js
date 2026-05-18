@@ -1,10 +1,16 @@
 const { models } = require('../config/database');
 const { Voluntario, VoluntarioArea } = models;
 
-// Controlador para la gestión de Voluntarios
+/**
+ * @module voluntarioController
+ * @description Controlador para gestionar el ciclo de vida de los voluntarios, sus datos personales y estados de aprobación.
+ */
 const voluntarioController = {
 
-  // Obtener todos los voluntarios con sus áreas de interés
+  /**
+   * @function obtenerTodos
+   * @description Recupera la lista completa de voluntarios, incluyendo las áreas de interés en las que desean participar.
+   */
   obtenerTodos: async (req, res) => {
     try {
       // Se incluyen las áreas relacionadas mediante el modelo VoluntarioArea
@@ -21,7 +27,10 @@ const voluntarioController = {
     }
   },
 
-  // Obtener un voluntario por ID
+  /**
+   * @function obtenerPorId
+   * @description Obtiene los detalles de un voluntario específico por su ID y carga sus áreas de interés vinculadas.
+   */
   obtenerPorId: async (req, res) => {
     try {
       let { id } = req.params;
@@ -50,7 +59,10 @@ const voluntarioController = {
     }
   },
 
-  // Crear un voluntario y sus áreas asociadas
+  /**
+   * @function crear
+   * @description Registra un nuevo voluntario, normaliza los datos (camelCase a snake_case) e inserta simultáneamente sus áreas de interés.
+   */
   crear: async (req, res) => {
     try {
       const data = req.body.datos || req.body;
@@ -109,7 +121,10 @@ const voluntarioController = {
     }
   },
 
-  // Actualizar datos del voluntario
+  /**
+   * @function actualizar
+   * @description Modifica la información personal de un voluntario existente mapeando correctamente los nombres de atributos.
+   */
   actualizar: async (req, res) => {
     try {
       let { id } = req.params;
@@ -164,7 +179,10 @@ const voluntarioController = {
     }
   },
 
-  // Eliminar un voluntario (las áreas se borran por CASCADE en BD)
+  /**
+   * @function eliminar
+   * @description Borra el registro principal de un voluntario. Las áreas asociadas se eliminan en cascada desde la base de datos.
+   */
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;
@@ -190,7 +208,10 @@ const voluntarioController = {
     }
   },
 
-  // Métodos de Aprobación y Rechazo (Tarea 4)
+  /**
+   * @function aprobar
+   * @description Cambia el estado de un voluntario a 'ACTIVO' y registra la fecha en que fue aprobado por el administrador.
+   */
   aprobar: async (req, res) => {
     try {
       const { id } = req.params;
@@ -208,6 +229,10 @@ const voluntarioController = {
     }
   },
 
+  /**
+   * @function rechazar
+   * @description Cambia el estado de un voluntario a 'INACTIVO' (rechazado).
+   */
   rechazar: async (req, res) => {
     try {
       const { id } = req.params;

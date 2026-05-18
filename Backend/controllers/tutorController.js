@@ -1,6 +1,15 @@
 const { models } = require('../config/database');
 const { Tutor } = models;
 
+/**
+ * @module tutorController
+ * @description Controlador para gestionar el CRUD de los tutores o encargados de los atletas.
+ */
+
+/**
+ * @function getAll
+ * @description Obtiene el listado completo de todos los tutores registrados.
+ */
 exports.getAll = async (req, res, next) => {
   try {
     const data = await Tutor.findAll();
@@ -8,6 +17,10 @@ exports.getAll = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
+/**
+ * @function getById
+ * @description Busca y devuelve los datos de un tutor por su ID, manejando formatos compuestos como "tutor_1".
+ */
 exports.getById = async (req, res, next) => {
   try {
     let { id } = req.params;
@@ -20,6 +33,10 @@ exports.getById = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
+/**
+ * @function create
+ * @description Registra un nuevo tutor, adaptando los nombres (separando nombre y apellido si es necesario) y transformando campos booleanos.
+ */
 exports.create = async (req, res, next) => {
   try {
     const data = req.body.datos || req.body;
@@ -59,6 +76,10 @@ exports.create = async (req, res, next) => {
   }
 };
 
+/**
+ * @function update
+ * @description Actualiza los datos de un tutor, normalizando el formato del payload (camelCase a snake_case).
+ */
 exports.update = async (req, res, next) => {
   try {
     let { id } = req.params;
@@ -100,6 +121,10 @@ exports.update = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
+/**
+ * @function delete
+ * @description Elimina permanentemente un tutor de la base de datos por su ID.
+ */
 exports.delete = async (req, res, next) => {
   try {
     const data = await Tutor.findByPk(req.params.id);

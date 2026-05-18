@@ -28,7 +28,10 @@ function rowsToObject(rows) {
   }, {});
 }
 
-// ── GET /api/settings ─────────────────────────────────────────────────────────
+/**
+ * @function getSettings
+ * @description Obtiene todas las configuraciones globales, las parsea y las devuelve como un objeto plano.
+ */
 const getSettings = async (req, res) => {
   try {
     const rows = await SystemSetting.findAll({
@@ -47,7 +50,10 @@ const getSettings = async (req, res) => {
   }
 };
 
-// ── PUT /api/settings ─────────────────────────────────────────────────────────
+/**
+ * @function updateSettings
+ * @description Modifica uno o varios parámetros de configuración globales serializándolos en JSON.
+ */
 const updateSettings = async (req, res) => {
   try {
     const camposPermitidos = ['tema', 'idioma', 'notificaciones', 'registro_automatico'];
