@@ -9,7 +9,7 @@ const NosotrosPages: React.FC = () => {
             <header>
                 <Navbar />
             </header>
-            <main>
+            <main style={{ display: 'block' }}>
                 <Nosotros />
             </main>
             <Footer />

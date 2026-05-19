@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
+import DatePickerInput from '../DatePickerInput';
 import '../../styles/Formulario/FormEntrenador.css';
 import type { ConfigItem } from '../../types';
 
@@ -135,7 +136,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
         };
         const entry = {
           ...datos, ...archivosNombres,
-          usuarioId: sesion.id || null, rol: 'entrenador',
+          usuarioId: sesion.id || null, rol: 'entrenador' as const,
           fechaRegistro: new Date().toISOString(), status: 'PENDIENTE',
           statusColor: 'yellow', bgColor: 'bg-light-blue',
           name: datos.nombre,
@@ -201,7 +202,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
               <div className="form-grid-ref">
                 <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
                 <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Fecha de Nacimiento *</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} /></div>
+                <div className="input-container"><label>Fecha de Nacimiento *</label><DatePickerInput id='fechaNacimiento' name='fechaNacimiento' value={datos.fechaNacimiento} onChange={manejarCambio as any} hasError={!!errores.fechaNacimiento} /></div>
                 <div className="input-container"><label>Género *</label>
                   <select id="genero" className={`input-field ${errores.genero ? 'error' : ''}`} value={datos.genero} onChange={manejarCambio}>
                     <option value="">Seleccione...</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option>

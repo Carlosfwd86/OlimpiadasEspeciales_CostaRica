@@ -6,7 +6,7 @@ import type { AdminProfile } from '../../types';
 export default function ProfileSection(): React.JSX.Element {
     const [profile, setProfile] = useState<AdminProfile | null>(null);
     const [editMode, setEditMode] = useState<boolean>(false);
-    const [formData, setFormData] = useState<AdminProfile>({ id: '' });
+    const [formData, setFormData] = useState<AdminProfile>({ id: '', nombre: '', email: '', rol: '' });
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -56,15 +56,12 @@ export default function ProfileSection(): React.JSX.Element {
 
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                        {[
-                            { key: 'nombre', label: 'NOMBRE COMPLETO', type: 'text' },
-                            { key: 'email', label: 'CORREO ELECTRÓNICO', type: 'email' },
-                            { key: 'telefono', label: 'TELÉFONO', type: 'text' },
-                            { key: 'cargo', label: 'CARGO / ROL', type: 'text' },
-                        ].map(({ key, label, type }) => (
+                        {(['nombre', 'email', 'telefono', 'cargo'] as const).map((key) => (
                             <div key={key} className="form-group">
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: 'var(--admin-text-muted)' }}>{label}</label>
-                                <input type={type} className="form-control"
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: 'var(--admin-text-muted)' }}>
+                                    {key === 'nombre' ? 'NOMBRE COMPLETO' : key === 'email' ? 'CORREO ELECTRÓNICO' : key === 'telefono' ? 'TELÉFONO' : 'CARGO / ROL'}
+                                </label>
+                                <input type={key === 'email' ? 'email' : 'text'} className="form-control"
                                     value={String(formData[key] ?? '')}
                                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                                     disabled={!editMode}

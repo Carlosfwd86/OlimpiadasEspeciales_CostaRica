@@ -136,9 +136,61 @@ const Nosotros = (): React.JSX.Element => {
         </div>
       </section>
 
+      {/* NUESTROS VALORES */}
+      <section className="section_valores">
+        <div className="section_header">
+          <span className="section_badge animate-fade-in-up">Lo que nos define</span>
+          <h2 className="section_title animate-fade-in-up delay-100">Nuestros Valores</h2>
+        </div>
+        <div className="valores_grid">
+
+          <div className="valor_card animate-fade-in-up delay-100">
+            <div className="valor_icon" style={{ background: '#fff0f0', color: '#FF0000' }}>
+              <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </div>
+            <h4 className="valor_title">Inclusión</h4>
+            <p className="valor_text">Creemos que cada persona merece la oportunidad de participar, sin importar sus capacidades. La inclusión no es un privilegio, es un derecho.</p>
+          </div>
+
+          <div className="valor_card animate-fade-in-up delay-200">
+            <div className="valor_icon" style={{ background: '#f0f9ff', color: '#0ea5e9' }}>
+              <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+              </svg>
+            </div>
+            <h4 className="valor_title">Excelencia</h4>
+            <p className="valor_text">Fomentamos el esfuerzo constante y la superación personal. Cada atleta es un campeón que da lo mejor de sí mismo cada día.</p>
+          </div>
+
+          <div className="valor_card animate-fade-in-up delay-300">
+            <div className="valor_icon" style={{ background: '#f0fdf4', color: '#22c55e' }}>
+              <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h4 className="valor_title">Comunidad</h4>
+            <p className="valor_text">El deporte une. Construimos redes de apoyo entre atletas, familias, voluntarios y entrenadores que comparten el mismo sueño.</p>
+          </div>
+
+          <div className="valor_card animate-fade-in-up delay-400">
+            <div className="valor_icon" style={{ background: '#fdf4ff', color: '#a855f7' }}>
+              <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h4 className="valor_title">Respeto</h4>
+            <p className="valor_text">Valoramos la dignidad de cada persona. Promovemos un ambiente de respeto mutuo donde todos se sientan bienvenidos y valorados.</p>
+          </div>
+
+        </div>
+      </section>
+
       {/* DIGITAL PLATFORM */}
       <section className="section_plataforma">
-        <div className="pulse-rojo platform_card animate-scale-in delay-400">
+        <div className="pulse-rojo platform_card">
           <svg className="platform_svg_bg" style={{ top: '-10%', left: '-5%', width: '400px', height: '400px' }} viewBox="0 0 24 24">
              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
           </svg>
@@ -153,7 +205,7 @@ const Nosotros = (): React.JSX.Element => {
             garantizando que cada evento sea un éxito de inclusión y oportunidad para todos.
           </p>
         </div>
-      </section>
+        </section>
     </div>
   );
 };

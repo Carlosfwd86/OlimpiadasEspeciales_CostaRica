@@ -119,7 +119,12 @@ const iniciarSesion = async (req, res) => {
 
     // GENERACIÓN REAL DE JWT
     const token = jwt.sign(
-      { id: usuario.id, rol_id: usuario.rol_id, email: usuario.correo_electronico },
+      { 
+        id: usuario.id, 
+        rol_id: usuario.rol_id, 
+        email: usuario.correo_electronico,
+        nombre: usuario.nombre 
+      },
       JWT_SECRET,
       { expiresIn: '2h' }
     );

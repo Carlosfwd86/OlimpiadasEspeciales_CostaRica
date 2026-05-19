@@ -114,26 +114,68 @@
 .tarjeta_contacto:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-  border-top-color: #C8102E;
+}
+
+.tarjeta_contacto.tarjeta_telefono:hover {
+  border-top-color: #10B981;
+}
+
+.tarjeta_contacto.tarjeta_email:hover {
+  border-top-color: #3B82F6;
+}
+
+.tarjeta_contacto.tarjeta_redes:hover {
+  border-top-color: #8B5CF6;
 }
 
 .circulo_icono {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: rgba(200,16,46,0.06);
-  color: #C8102E;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 25px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tarjeta_contacto:hover .circulo_icono {
-  background-color: #C8102E;
+/* Teléfono (Emerald) */
+.circulo_icono.circulo_telefono {
+  background-color: rgba(16, 185, 129, 0.08);
+  color: #10B981;
+}
+
+.tarjeta_contacto.tarjeta_telefono:hover .circulo_telefono {
+  background-color: #10B981;
   color: #fff;
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.15) rotate(-8deg);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+
+/* Email (Royal Blue) */
+.circulo_icono.circulo_email {
+  background-color: rgba(59, 130, 246, 0.08);
+  color: #3B82F6;
+}
+
+.tarjeta_contacto.tarjeta_email:hover .circulo_email {
+  background-color: #3B82F6;
+  color: #fff;
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+}
+
+/* Redes Sociales (Creative Gradient / Violet) */
+.circulo_icono.circulo_redes {
+  background-color: rgba(139, 92, 246, 0.08);
+  color: #8B5CF6;
+}
+
+.tarjeta_contacto.tarjeta_redes:hover .circulo_redes {
+  background: linear-gradient(135deg, #6366F1 0%, #D946EF 50%, #EC4899 100%);
+  color: #fff;
+  transform: scale(1.15) rotate(-5deg);
+  box-shadow: 0 6px 20px rgba(217, 70, 239, 0.35);
 }
 
 .tarjeta_contacto h3 {
@@ -170,10 +212,12 @@
   font-size: 1.05rem;
   color: #555;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.lista_redes li:hover { color: #C8102E; transform: translateX(5px); }
+.lista_redes li:hover {
+  transform: translateX(8px);
+}
 
 .icono_mini_red {
   width: 28px;
@@ -181,9 +225,53 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(200,16,46,0.10);
-  color: #C8102E;
-  border-radius: 5px;
+  border-radius: 6px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Facebook brand colors */
+.icono_mini_red.icono_facebook {
+  background-color: rgba(24, 119, 242, 0.12);
+  color: #1877F2;
+}
+.lista_redes li.red_facebook:hover {
+  color: #1877F2;
+}
+.lista_redes li.red_facebook:hover .icono_facebook {
+  background-color: #1877F2;
+  color: #ffffff;
+  transform: scale(1.15) rotate(-8deg);
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+}
+
+/* Instagram brand colors */
+.icono_mini_red.icono_instagram {
+  background-color: rgba(225, 48, 108, 0.12);
+  color: #E1306C;
+}
+.lista_redes li.red_instagram:hover {
+  color: #E1306C;
+}
+.lista_redes li.red_instagram:hover .icono_instagram {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: #ffffff;
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.3);
+}
+
+/* X (formerly Twitter) brand colors */
+.icono_mini_red.icono_x {
+  background-color: rgba(15, 20, 25, 0.1);
+  color: #0F1419;
+}
+.lista_redes li.red_x:hover {
+  color: #0F1419;
+}
+.lista_redes li.red_x:hover .icono_x {
+  background-color: #0F1419;
+  color: #ffffff;
+  transform: scale(1.15) rotate(-8deg);
+  box-shadow: 0 4px 12px rgba(15, 20, 25, 0.3);
 }
 
 /* ══════════════════════════════════════════════════════════════

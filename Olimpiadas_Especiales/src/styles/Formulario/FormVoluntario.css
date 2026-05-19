@@ -235,7 +235,7 @@
 .form-voluntario-layout .input-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .form-voluntario-layout .input-container label {
@@ -244,27 +244,78 @@
   color: var(--dark-text);
 }
 
-.form-voluntario-layout .input-field {
-  padding: 14px 20px;
+.form-voluntario-layout .input-field,
+.form-voluntario-layout select.input-field {
+  padding: 11px 16px;
   background: var(--bg-main);
-  border: 1px solid #FF0000;
-  border-radius: 12px;
-  font-size: 15px;
+  border: 1.5px solid #FF0000;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--dark-text);
   font-family: 'Outfit', sans-serif;
   width: 100%;
   box-sizing: border-box;
+  line-height: 1.5;
+  height: 45px;
   transition: var(--transition);
   resize: vertical;
+}
+
+.form-voluntario-layout .input-field:hover:not(:disabled) {
+  background: #fffafa;
+  border-color: #cc0000;
 }
 
 .form-voluntario-layout .input-field:focus {
   background: white;
   border-color: var(--primary-red);
   outline: none;
-  box-shadow: 0 0 0 4px var(--primary-red-soft);
+  box-shadow: 0 0 0 4px rgba(224, 0, 0, 0.1);
 }
+
+.form-voluntario-layout .input-field:disabled {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* ── DatePickerInput (Roblox-style selects) ── */
+.form-voluntario-layout .dpi-container {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .form-voluntario-layout .form-body { padding: 24px; gap: 24px; }
+  .form-voluntario-layout .form-sidebar { width: 260px; }
+  .form-voluntario-layout .content-body { padding: 24px 36px 32px; }
+  .form-voluntario-layout .content-header { padding: 36px 36px 16px; }
+  .form-voluntario-layout .content-footer { padding: 20px 36px; }
+}
+
+@media (max-width: 860px) {
+  .form-voluntario-layout .form-body { flex-direction: column; padding: 16px; gap: 16px; }
+  .form-voluntario-layout .form-sidebar { width: 100%; }
+  .form-voluntario-layout .sidebar-footer { display: none; }
+  .form-voluntario-layout .sidebar-nav { flex-direction: row; flex-wrap: wrap; margin-top: 0; }
+  .form-voluntario-layout .nav-item { padding: 10px 14px; font-size: 12px; }
+  .form-voluntario-layout .content-body { padding: 20px; }
+  .form-voluntario-layout .content-header { padding: 24px 20px 12px; }
+  .form-voluntario-layout .content-footer { padding: 16px 20px; }
+}
+
+@media (max-width: 600px) {
+  .form-voluntario-layout .form-grid-ref { grid-template-columns: 1fr; }
+  .form-voluntario-layout .interests-grid { grid-template-columns: 1fr; }
+  .form-voluntario-layout .content-header h2 { font-size: 22px; }
+  .form-voluntario-layout .btn-primary,
+  .form-voluntario-layout .btn-secondary { padding: 12px 20px; font-size: 13px; }
+}
+
 
 .form-voluntario-layout .btn-primary {
   background: var(--primary-red);
@@ -375,3 +426,29 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+
+/* ── DATE INPUT OVERRIDES (FormVoluntario) ── */
+.form-voluntario-layout input[type="date"] {
+  padding: 13px 46px 13px 18px !important;
+  background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23E00000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") no-repeat right 14px center !important;
+  border: 1.5px solid #FF0000 !important;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease, transform 0.15s ease;
+}
+
+.form-voluntario-layout input[type="date"]:hover {
+  background-color: #fffafa !important;
+  border-color: #cc0000 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.08);
+}
+
+.form-voluntario-layout input[type="date"]:focus {
+  background-color: #ffffff !important;
+  border-color: #E00000 !important;
+  box-shadow: 0 0 0 4px rgba(224, 0, 0, 0.12) !important;
+  outline: none;
+  transform: translateY(-1px);
+}
+
