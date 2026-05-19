@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
 import type { SystemSettings } from '../../types';
@@ -71,10 +72,10 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             .then(() => {
                 setSaving(false);
                 ServicesAdmin.logActivity("Configuración", "Se actualizaron las preferencias del sistema", "fa-solid fa-gears", "purple");
-                alert("Configuración guardada correctamente");
+                Swal.fire({ title: '¡Guardado!', text: 'Configuración guardada correctamente.', icon: 'success', confirmButtonColor: '#e62334' });
             })
             .catch(err => {
-                alert("Error al guardar: " + (err as Error).message);
+                Swal.fire({ title: 'Error', text: 'Error al guardar: ' + (err as Error).message, icon: 'error', confirmButtonColor: '#e62334' });
                 setSaving(false);
             });
     };
@@ -93,12 +94,12 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
             .then(() => {
                 setSavingPerfil(false);
                 ServicesAdmin.logActivity("Perfil", "Se actualizaron los datos del perfil administrador", "fa-solid fa-user-pen", "blue");
-                alert("Perfil actualizado correctamente");
+                Swal.fire({ title: '¡Actualizado!', text: 'Perfil actualizado correctamente.', icon: 'success', confirmButtonColor: '#e62334' });
                 setPerfil(prev => ({ ...prev, passwordActual: '', passwordNuevo: '' }));
             })
             .catch(err => {
                 setSavingPerfil(false);
-                alert("Error al actualizar perfil: " + (err as Error).message);
+                Swal.fire({ title: 'Error', text: 'Error al actualizar perfil: ' + (err as Error).message, icon: 'error', confirmButtonColor: '#e62334' });
             });
     };
 
@@ -191,9 +192,25 @@ export default function SettingsSection({ onThemeChange, initialSubTab = 'usuari
                                                 <button style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '10px' }}><i className="fa-solid fa-pen"></i></button>
                                                 <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
                                                     onClick={() => {
-                                                        if (window.confirm(`¿Seguro que deseas eliminar a ${String(u.nombre ?? '')}?`)) {
-                                                            ServicesAdmin.deleteUser(String(u.id)).then(() => loadUsers());
-                                                        }
+                                                        Swal.fire({
+                                                            title: `¿Seguro que deseas eliminar a ${String(u.nombre ?? '')}?`,
+                                                            text: "Esta acción no se puede deshacer.",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#e62334',
+                                                            cancelButtonColor: '#64748b',
+                                                            confirmButtonText: 'Sí, eliminar',
+                                                            cancelButtonText: 'Cancelar'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                ServicesAdmin.deleteUser(String(u.id)).then(() => {
+                                                                    loadUsers();
+                                                                    Swal.fire({ title: '¡Eliminado!', text: 'El usuario ha sido eliminado.', icon: 'success', confirmButtonColor: '#e62334' });
+                                                                }).catch(err => {
+                                                                    Swal.fire({ title: 'Error', text: 'Error al eliminar: ' + (err as Error).message, icon: 'error', confirmButtonColor: '#e62334' });
+                                                                });
+                                                            }
+                                                        });
                                                     }}>
                                                     <i className="fa-solid fa-trash"></i>
                                                 </button>

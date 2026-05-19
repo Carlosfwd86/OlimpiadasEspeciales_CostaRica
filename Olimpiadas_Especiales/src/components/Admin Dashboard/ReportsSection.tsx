@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
 import { jsPDF } from 'jspdf';
@@ -87,7 +88,7 @@ export default function ReportsSection({ searchQuery = '' }: ReportsSectionProps
 
     const handleExportCSV = (): void => {
         const dataToExport = selectedRows.size > 0 ? data.filter(r => selectedRows.has(r.id)) : filteredData;
-        if (dataToExport.length === 0) { alert("No hay datos cargados para exportar."); return; }
+        if (dataToExport.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos cargados para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
 
         const headers = Object.keys(dataToExport[0]).join(",") + "\n";
         const csvContent = dataToExport.map(row => Object.values(row).map(v => `"${String(v ?? '')}"`).join(",")).join("\n");
@@ -106,7 +107,7 @@ export default function ReportsSection({ searchQuery = '' }: ReportsSectionProps
 
     const handleExportPDF = (): void => {
         const dataToExport = selectedRows.size > 0 ? data.filter(r => selectedRows.has(r.id)) : filteredData;
-        if (dataToExport.length === 0) { alert("No hay datos para generar el PDF."); return; }
+        if (dataToExport.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para generar el PDF.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
 
         const doc = new jsPDF();
         doc.setFillColor(230, 35, 52);

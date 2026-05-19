@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import '../../style/ModalNuevoRegistro.css';
 import { ServicesUsuarios } from '../../services/ServicesUsuarios';
 
@@ -30,19 +31,19 @@ export default function ModalNuevoUsuario({ isOpen, onClose, onSaveSuccess }: Mo
 
   const handleSave = async () => {
     if (!formData.nombre || !formData.correoElectronico || !formData.password) {
-      alert("Por favor complete los campos obligatorios (Nombre, Email, Contraseña).");
+      Swal.fire({ title: 'Campos requeridos', text: 'Por favor complete los campos obligatorios (Nombre, Email, Contraseña).', icon: 'warning', confirmButtonColor: '#e62334' });
       return;
     }
 
     try {
       setIsSubmitting(true);
       await ServicesUsuarios.createUsuario(formData);
-      alert("Usuario creado exitosamente.");
+      Swal.fire({ title: '¡Creado!', text: 'Usuario creado exitosamente.', icon: 'success', confirmButtonColor: '#e62334' });
       onSaveSuccess();
       onClose();
     } catch (error: any) {
       console.error("Error al crear usuario:", error);
-      alert(error.response?.data?.error || "Error al crear el usuario.");
+      Swal.fire({ title: 'Error', text: error.response?.data?.error || "Error al crear el usuario.", icon: 'error', confirmButtonColor: '#e62334' });
     } finally {
       setIsSubmitting(false);
     }
