@@ -4,6 +4,7 @@ const AtletaMedicamento = require('../models/AtletaMedicamento');
 const AtletaCondicion = require('../models/AtletaCondicion');
 const AtletaDispositivo = require('../models/AtletaDispositivo');
 const AtletaAlergia = require('../models/AtletaAlergia');
+const { Op } = require('sequelize');
 const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
 
@@ -21,7 +22,20 @@ const atletaController = {
   obtenerTodosLosAtletas: async (req, res) => {
     try {
       const { limit, offset, page } = getPagination(req.query);
+      const { search } = req.query;
+
+      const whereClause = {};
+      if (search) {
+        whereClause[Op.or] = [
+          { nombre: { [Op.like]: `%${search}%` } },
+          { primer_apellido: { [Op.like]: `%${search}%` } },
+          { segundo_apellido: { [Op.like]: `%${search}%` } },
+          { correo_electronico: { [Op.like]: `%${search}%` } }
+        ];
+      }
+
       const { count, rows: atletas } = await Atleta.findAndCountAll({
+        where: whereClause,
         include: [
           { model: AtletaDocumento, as: 'documentos' },
           { model: AtletaMedicamento, as: 'medicamentos' },

@@ -1,5 +1,4 @@
-
-import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta } from '../types';
+import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta, PaginatedResponse } from '../types';
 import apiClient from '../api/apiClient';
 
 // Helper: retorna headers con JWT desde localStorage
@@ -13,10 +12,10 @@ const authHeaders = (): HeadersInit => ({
 export const ServicesAdmin = {
     
     // Registros Pendientes (Inscripciones)
-    getRegistrations: async (): Promise<Registro[]> => {
-        // El backend devuelve { data: [...] }
-        const res = await apiClient.get<{ data: Registro[] }>('/registros-pendientes');
-        return res.data.data;
+    getRegistrations: async (page = 1, limit = 10, search = ''): Promise<PaginatedResponse<Registro>> => {
+        // El backend devuelve { data: [...], meta: {...} }
+        const res = await apiClient.get<PaginatedResponse<Registro>>(`/registros-pendientes?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
+        return res.data;
     },
 
     saveRegistro: async (data: Partial<Registro>, id: string | null = null): Promise<Registro> => {

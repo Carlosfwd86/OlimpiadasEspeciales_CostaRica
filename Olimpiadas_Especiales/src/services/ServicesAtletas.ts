@@ -1,15 +1,15 @@
 import apiClient from '../api/apiClient';
-import type { Atleta } from '../types';
+import type { Atleta, PaginatedResponse } from '../types';
 
 /* [verde] Servicio encargado de centralizar todas las peticiones relacionadas con Atletas */
 export const ServicesAtletas = {
 
   /* [verde] Obtener lista de todos los atletas con su información de salud */
   /* Endpoint: GET /api/atletas */
-  obtenerAtletas: async (): Promise<Atleta[]> => {
+  obtenerAtletas: async (page = 1, limit = 10, search = ''): Promise<PaginatedResponse<Atleta>> => {
     try {
-      const response = await apiClient.get<{ data: Atleta[] }>('/atletas');
-      return response.data.data;
+      const response = await apiClient.get<PaginatedResponse<Atleta>>(`/atletas?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
+      return response.data;
     } catch (error) {
       console.error("Error en obtenerAtletas:", error);
       throw error;
