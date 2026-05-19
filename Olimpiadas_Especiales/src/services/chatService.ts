@@ -9,7 +9,7 @@ export interface Message {
 
 export const sendMessage = async (messages: Message[]): Promise<string> => {
   try {
-    const response = await axios.post(`${API_URL}/chat`, { messages });
+    const response = await axios.post(`${API_URL}/chats`, { messages });
     return response.data.message;
   } catch (error) {
     console.error('Error in chat service:', error);

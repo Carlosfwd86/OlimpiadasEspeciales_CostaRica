@@ -1,4 +1,4 @@
-
+﻿
 /* --- VARIABLES OFICIALES (BASADO EN PALETA Y MOCKUP) --- */
 :root {
   --so-red: #FF0000;
@@ -18,7 +18,7 @@
   flex-direction: column;
   overflow: hidden;
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  margin-top: 2rem; /* Separación del navbar */
+  margin-top: 2rem; /* SeparaciÃ³n del navbar */
 }
 
 /* --- FORMA CURVA ROJA DE FONDO (WAVE) --- */
@@ -149,7 +149,7 @@
   background-size: cover;
   background-position: center;
   border-radius: 20px 100px 20px 20px; 
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15); /* Mantenemos la sombra mejorada por ahora o la revertimos? Lo dejaré como estaba originalmente si insiste. */
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15); /* Mantenemos la sombra mejorada por ahora o la revertimos? Lo dejarÃ© como estaba originalmente si insiste. */
   position: relative;
   z-index: 3;
 }
@@ -308,7 +308,7 @@
   opacity: 1;
 }
 
-/* --- RESPONSIVIDAD (MÓVIL / TABLET) --- */
+/* --- RESPONSIVIDAD (MÃ“VIL / TABLET) --- */
 @media (max-width: 1024px) {
   .hero_contenido_superior {
     flex-direction: column;
@@ -386,7 +386,7 @@
   animation: titilarSinuoso 2.5s infinite ease-in-out;
 }
 
-/* --- ANIMACI�N ICONO CLICK --- */
+/* --- ANIMACIÓN ICONO CLICK --- */
 @keyframes titilarIcono {
   0%, 100% { opacity: 1; transform: scale(1) translateY(0); }
   50% { opacity: 0.3; transform: scale(1.2) translateY(-2px); }

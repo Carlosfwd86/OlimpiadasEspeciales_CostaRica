@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { models } = require('../config/database');
 const { Usuario, Sesion, TokenBlacklist } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
 // ── Seguridad: JWT_SECRET es OBLIGATORIO ──────────────────────────────────────
 // Si la variable no está definida el proceso se detiene inmediatamente.
@@ -15,22 +16,35 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET;
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Función para registrar un nuevo usuario
+/**
+ * @module authController
+ * @description Controlador para autenticación y autorización (login, registro, sesiones, perfil de usuario).
+ */
+
+/**
+ * @function registrarUsuario
+ * @description Registra un nuevo usuario en la plataforma. Valida correos y cédulas duplicados y encripta la contraseña.
+ */
 const registrarUsuario = async (req, res) => {
   try {
     const { rol_id, nombre, apellido, cedula, correo_electronico, password, telefono, direccion, pais, fecha_nacimiento, genero, avatar_url } = req.body;
 
+    // Validación de campos obligatorios
+    if (!rol_id || !nombre || !correo_electronico || !password) {
+      return res.status(400).json(errorResponse('Faltan campos obligatorios: rol_id, nombre, correo_electronico, password.', 400));
+    }
+
     // Verifica si el correo ya está registrado
     const correoExistente = await Usuario.findOne({ where: { correo_electronico } });
     if (correoExistente) {
-      return res.status(400).json({ error: 'El correo electrónico ya está en uso.' });
+      return res.status(400).json(errorResponse('El correo electrónico ya está en uso.', 400));
     }
 
     // Verifica si la cédula ya está registrada
     if (cedula) {
       const cedulaExistente = await Usuario.findOne({ where: { cedula } });
       if (cedulaExistente) {
-        return res.status(400).json({ error: 'La identificación (cédula) ya está registrada.' });
+        return res.status(400).json(errorResponse('La identificación (cédula) ya está registrada.', 400));
       }
     }
 
@@ -54,56 +68,62 @@ const registrarUsuario = async (req, res) => {
       avatar_url
     });
 
-    return res.status(201).json({
-      mensaje: 'Usuario registrado exitosamente',
-      usuario: {
-        id: nuevoUsuario.id,
-        nombre: nuevoUsuario.nombre,
-        apellido: nuevoUsuario.apellido,
-        cedula: nuevoUsuario.cedula,
-        correo_electronico: nuevoUsuario.correo_electronico,
-        telefono: nuevoUsuario.telefono,
-        direccion: nuevoUsuario.direccion,
-        pais: nuevoUsuario.pais,
-        fecha_nacimiento: nuevoUsuario.fecha_nacimiento,
-        genero: nuevoUsuario.genero,
-        avatar_url: nuevoUsuario.avatar_url,
-        rol_id: nuevoUsuario.rol_id
-      }
-    });
+    const datosRespuesta = {
+      id: nuevoUsuario.id,
+      nombre: nuevoUsuario.nombre,
+      apellido: nuevoUsuario.apellido,
+      cedula: nuevoUsuario.cedula,
+      correo_electronico: nuevoUsuario.correo_electronico,
+      telefono: nuevoUsuario.telefono,
+      direccion: nuevoUsuario.direccion,
+      pais: nuevoUsuario.pais,
+      fecha_nacimiento: nuevoUsuario.fecha_nacimiento,
+      genero: nuevoUsuario.genero,
+      avatar_url: nuevoUsuario.avatar_url,
+      rol_id: nuevoUsuario.rol_id
+    };
+
+    return res.status(201).json(successResponse(datosRespuesta, 'Usuario registrado exitosamente'));
 
   } catch (error) {
     console.error('Error al registrar usuario:', error);
     
     if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(400).json({ error: 'El correo o la identificación ya están registrados.' });
+      return res.status(400).json(errorResponse('El correo o la identificación ya están registrados.', 400));
     }
     
     if (error.name === 'SequelizeValidationError') {
-      return res.status(400).json({ error: error.errors[0].message });
+      return res.status(400).json(errorResponse(error.errors[0].message, 400));
     }
 
-    return res.status(500).json({ error: 'Ocurrió un error al registrar el usuario.' });
+    return res.status(500).json(errorResponse('Ocurrió un error al registrar el usuario.', 500, error.message));
   }
 };
 
-// Función para iniciar sesión
+/**
+ * @function iniciarSesion
+ * @description Autentica a un usuario, genera un token JWT y configura una cookie HttpOnly segura para el manejo de la sesión.
+ */
 const iniciarSesion = async (req, res) => {
   try {
     const { correo_electronico, password } = req.body;
 
+    if (!correo_electronico || !password) {
+      return res.status(400).json(errorResponse('Correo electrónico y contraseña son requeridos.', 400));
+    }
+
     const usuario = await Usuario.findOne({ where: { correo_electronico } });
     if (!usuario) {
-      return res.status(401).json({ error: 'Correo o contraseña incorrectos.' });
+      return res.status(401).json(errorResponse('Correo o contraseña incorrectos.', 401));
     }
 
     if (usuario.status !== 'ACTIVO') {
-      return res.status(403).json({ error: 'La cuenta no está activa.' });
+      return res.status(403).json(errorResponse('La cuenta no está activa.', 403));
     }
 
     const passwordValido = await bcrypt.compare(password, usuario.password_hash);
     if (!passwordValido) {
-      return res.status(401).json({ error: 'Contraseña incorrecta.' });
+      return res.status(401).json(errorResponse('Contraseña incorrecta.', 401));
     }
 
     // GENERACIÓN REAL DE JWT
@@ -115,19 +135,21 @@ const iniciarSesion = async (req, res) => {
         nombre: usuario.nombre 
       },
       JWT_SECRET,
-      { expiresIn: '2h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '2h' }
     );
+
+    const expiresInHours = parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '2', 10);
 
     // CONFIGURACIÓN DE COOKIE SEGURA
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 2 * 60 * 60 * 1000 // 2 horas
+      maxAge: expiresInHours * 60 * 60 * 1000 // dinámico en milisegundos
     });
 
     const expira_en = new Date();
-    expira_en.setHours(expira_en.getHours() + 2);
+    expira_en.setHours(expira_en.getHours() + expiresInHours);
 
     await Sesion.create({
       usuario_id: usuario.id,
@@ -138,9 +160,8 @@ const iniciarSesion = async (req, res) => {
       activa: true
     });
 
-    return res.status(200).json({
-      mensaje: 'Inicio de sesión exitoso',
-      token, // Se mantiene por compatibilidad
+    const payloadRespuesta = {
+      token, // Frontend uses res.data.data.token
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
@@ -155,21 +176,26 @@ const iniciarSesion = async (req, res) => {
         avatar_url: usuario.avatar_url,
         rol_id: usuario.rol_id
       }
-    });
+    };
+
+    return res.status(200).json(successResponse(payloadRespuesta, 'Inicio de sesión exitoso'));
 
   } catch (error) {
     console.error('Error al iniciar sesión:', error);
-    return res.status(500).json({ error: 'Error en el servidor al iniciar sesión.' });
+    return res.status(500).json(errorResponse('Error en el servidor al iniciar sesión.', 500, error.message));
   }
 };
 
-// Función para cerrar sesión
+/**
+ * @function cerrarSesion
+ * @description Finaliza la sesión del usuario invalidando el token JWT (blacklist) y borrando la cookie.
+ */
 const cerrarSesion = async (req, res) => {
   try {
     const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
     
     if (!token) {
-      return res.status(400).json({ error: 'Token no proporcionado.' });
+      return res.status(400).json(errorResponse('Token no proporcionado.', 400));
     }
 
     const sesion = await Sesion.findOne({ where: { token, activa: true } });
@@ -186,48 +212,52 @@ const cerrarSesion = async (req, res) => {
     // LIMPIAR COOKIE
     res.clearCookie('token');
 
-    return res.status(200).json({ mensaje: 'Sesión cerrada exitosamente.' });
+    return res.status(200).json(successResponse(null, 'Sesión cerrada exitosamente.'));
 
   } catch (error) {
     console.error('Error al cerrar sesión:', error);
-    return res.status(500).json({ error: 'Ocurrió un error al cerrar la sesión.' });
+    return res.status(500).json(errorResponse('Ocurrió un error al cerrar la sesión.', 500, error.message));
   }
 };
 
-// Función para obtener el perfil del usuario autenticado
+/**
+ * @function getProfile
+ * @description Devuelve los datos básicos del perfil del usuario actualmente autenticado basado en su token JWT.
+ */
 const getProfile = async (req, res) => {
   try {
     const usuario = await Usuario.findByPk(req.user.id, {
       attributes: ['id', 'nombre', 'apellido', 'correo_electronico', 'rol_id', 'avatar_url', 'telefono']
     });
-    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado.' });
+    if (!usuario) return res.status(404).json(errorResponse('Usuario no encontrado.', 404));
 
-    return res.status(200).json({
-      data: {
-        id: usuario.id,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        correoElectronico: usuario.correo_electronico,
-        rol: usuario.rol_id,
-        fotoPerfil: usuario.avatar_url || null,
-        telefono: usuario.telefono || null
-      },
-      message: 'OK',
-      status: 200
-    });
+    const payload = {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      correoElectronico: usuario.correo_electronico,
+      rol: usuario.rol_id,
+      fotoPerfil: usuario.avatar_url || null,
+      telefono: usuario.telefono || null
+    };
+
+    return res.status(200).json(successResponse(payload, 'OK'));
   } catch (error) {
     console.error('Error al obtener perfil:', error);
-    return res.status(500).json({ error: 'Error al obtener el perfil.' });
+    return res.status(500).json(errorResponse('Error al obtener el perfil.', 500, error.message));
   }
 };
 
-// Función para actualizar el perfil del usuario autenticado
+/**
+ * @function updateProfile
+ * @description Permite al usuario actualizar sus propios datos y cambiar su contraseña (requiere la contraseña actual).
+ */
 const updateProfile = async (req, res) => {
   try {
     const { nombre, correoElectronico, passwordActual, passwordNuevo } = req.body;
 
     const usuario = await Usuario.findByPk(req.user.id);
-    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado.' });
+    if (!usuario) return res.status(404).json(errorResponse('Usuario no encontrado.', 404));
 
     const updates = {};
     if (nombre)             updates.nombre = nombre;
@@ -236,11 +266,11 @@ const updateProfile = async (req, res) => {
     // Cambio de contraseña — requiere validar la contraseña actual
     if (passwordNuevo) {
       if (!passwordActual) {
-        return res.status(400).json({ message: 'Debes proporcionar tu contraseña actual para cambiarla.' });
+        return res.status(400).json(errorResponse('Debes proporcionar tu contraseña actual para cambiarla.', 400));
       }
       const passwordValido = await bcrypt.compare(passwordActual, usuario.password_hash);
       if (!passwordValido) {
-        return res.status(401).json({ message: 'La contraseña actual es incorrecta.' });
+        return res.status(401).json(errorResponse('La contraseña actual es incorrecta.', 401));
       }
       const salt = await bcrypt.genSalt(10);
       updates.password_hash = await bcrypt.hash(passwordNuevo, salt);
@@ -248,19 +278,17 @@ const updateProfile = async (req, res) => {
 
     await usuario.update(updates);
 
-    return res.status(200).json({
-      data: {
-        id: usuario.id,
-        nombre: usuario.nombre,
-        correoElectronico: usuario.correo_electronico,
-        rol: usuario.rol_id
-      },
-      message: 'Perfil actualizado correctamente',
-      status: 200
-    });
+    const payload = {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      correoElectronico: usuario.correo_electronico,
+      rol: usuario.rol_id
+    };
+
+    return res.status(200).json(successResponse(payload, 'Perfil actualizado correctamente'));
   } catch (error) {
     console.error('Error al actualizar perfil:', error);
-    return res.status(500).json({ error: 'Error al actualizar el perfil.' });
+    return res.status(500).json(errorResponse('Error al actualizar el perfil.', 500, error.message));
   }
 };
 

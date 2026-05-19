@@ -2,10 +2,16 @@ const { models } = require('../config/database');
 const { VoluntarioArea } = models;
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 
-// Controlador para la gestión de áreas de interés de los voluntarios
+/**
+ * @module voluntarioAreaController
+ * @description Controlador para gestionar la relación (áreas de interés) asociadas a los voluntarios.
+ */
 const voluntarioAreaController = {
 
-  // Obtener todas las áreas registradas
+  /**
+   * @function obtenerTodas
+   * @description Recupera todos los registros de áreas de interés vinculadas a voluntarios.
+   */
   obtenerTodas: async (req, res) => {
     try {
       const areas = await VoluntarioArea.findAll();
@@ -15,7 +21,10 @@ const voluntarioAreaController = {
     }
   },
 
-  // Registrar una nueva área para un voluntario
+  /**
+   * @function crear
+   * @description Registra una nueva área de interés para un voluntario específico.
+   */
   crear: async (req, res) => {
     try {
       const nuevaArea = await VoluntarioArea.create(req.body);
@@ -25,7 +34,10 @@ const voluntarioAreaController = {
     }
   },
 
-  // Eliminar un área específica por ID
+  /**
+   * @function eliminar
+   * @description Borra el registro de un área de interés específica mediante su ID.
+   */
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;

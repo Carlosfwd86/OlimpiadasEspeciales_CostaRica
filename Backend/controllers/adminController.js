@@ -1,7 +1,16 @@
 const { models } = require('../config/database');
 const { Voluntario, Atleta, Consulta } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
+/**
+ * @module adminController
+ * @description Controlador para el panel de administración. Provee métricas y registros de estado.
+ */
 const adminController = {
+  /**
+   * @function getRegistrosPendientes
+   * @description Obtiene los registros de voluntarios en estado "PENDIENTE" y los adapta al formato visual requerido por el frontend.
+   */
   getRegistrosPendientes: async (req, res) => {
     try {
       // Por ahora, obtenemos voluntarios pendientes como ejemplo de registros pendientes
@@ -23,32 +32,40 @@ const adminController = {
         time: 'Reciente'
       }));
 
-      return res.status(200).json(registros);
+      return res.status(200).json(successResponse(registros, 'Registros pendientes obtenidos'));
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json(errorResponse(error.message));
     }
   },
 
+  /**
+   * @function getStats
+   * @description Calcula métricas clave (total de atletas, voluntarios, registros pendientes) para el dashboard del administrador.
+   */
   getStats: async (req, res) => {
     try {
       const totalAtletas = await Atleta.count();
       const totalVoluntarios = await Voluntario.count();
       const pendientes = await Voluntario.count({ where: { status: 'PENDIENTE' } });
 
-      return res.status(200).json({
+      return res.status(200).json(successResponse({
         totalRegistros: { valor: totalAtletas + totalVoluntarios, porcentaje: "+10%", tendencia: "up" },
         atletasActivos: { valor: totalAtletas, porcentaje: "+5%", tendencia: "up" },
         revisionesPendientes: { valor: pendientes, textoExtra: "Pendientes de revisión" },
         voluntarios: { valor: totalVoluntarios, porcentaje: "+2%", tendencia: "up" }
-      });
+      }, 'Estadísticas obtenidas'));
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json(errorResponse(error.message));
     }
   },
 
+  /**
+   * @function getGraficos
+   * @description Devuelve datos estáticos estructurados (crecimiento, distribución) para renderizar gráficos en el frontend del admin.
+   */
   getGraficos: async (req, res) => {
     // Datos dummy para que el frontend no rompa, pero servidos desde el backend
-    return res.status(200).json({
+    return res.status(200).json(successResponse({
       crecimiento: [
         { mes: 'Ene', valor: 400 },
         { mes: 'Feb', valor: 600 },
@@ -60,7 +77,7 @@ const adminController = {
         { label: 'Voluntarios', valor: 30 },
         { label: 'Tutores', valor: 10 }
       ]
-    });
+    }, 'Gráficos obtenidos'));
   }
 };
 

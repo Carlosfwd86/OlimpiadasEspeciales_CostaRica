@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
 import '../styles/Navbar.css';
+import { s3Url } from '../utils/s3';
 
 const Navbar = (): React.JSX.Element => {
   const navegar = useNavigate();
@@ -84,7 +85,7 @@ const Navbar = (): React.JSX.Element => {
     <nav className="navbar_principal">
       {/* Logo */}
       <div className="navbar_logotipo" onClick={() => navegar("/")}>
-        <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
+        <img src={s3Url('img/Logo Olimpiadas.png')} alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
       </div>
 
       {/* Menú central */}

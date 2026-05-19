@@ -1,14 +1,14 @@
 import apiClient from '../api/apiClient';
-import type { Atleta } from '../types';
+import type { Atleta, PaginatedResponse } from '../types';
 
 /* [verde] Servicio encargado de centralizar todas las peticiones relacionadas con Atletas */
 export const ServicesAtletas = {
 
   /* [verde] Obtener lista de todos los atletas con su información de salud */
   /* Endpoint: GET /api/atletas */
-  obtenerAtletas: async (): Promise<Atleta[]> => {
+  obtenerAtletas: async (page = 1, limit = 10, search = ''): Promise<PaginatedResponse<Atleta>> => {
     try {
-      const response = await apiClient.get<Atleta[]>('/atletas');
+      const response = await apiClient.get<PaginatedResponse<Atleta>>(`/atletas?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
       return response.data;
     } catch (error) {
       console.error("Error en obtenerAtletas:", error);
@@ -20,8 +20,8 @@ export const ServicesAtletas = {
   /* Endpoint: POST /api/atletas */
   registrarAtleta: async (atleta: Partial<Atleta>): Promise<Atleta> => {
     try {
-      const response = await apiClient.post<Atleta>('/atletas', atleta);
-      return response.data;
+      const response = await apiClient.post<{ data: Atleta }>('/atletas', atleta);
+      return response.data.data;
     } catch (error) {
       console.error("Error en registrarAtleta:", error);
       throw error;
@@ -32,8 +32,8 @@ export const ServicesAtletas = {
   /* Endpoint: PUT /api/atletas/:id */
   actualizarEstadoSalud: async (id: number, datosSalud: Partial<Atleta>): Promise<Atleta> => {
     try {
-      const response = await apiClient.put<Atleta>(`/atletas/${id}`, datosSalud);
-      return response.data;
+      const response = await apiClient.put<{ data: Atleta }>(`/atletas/${id}`, datosSalud);
+      return response.data.data;
     } catch (error) {
       console.error("Error en actualizarEstadoSalud:", error);
       throw error;
@@ -57,8 +57,8 @@ export const ServicesAtletas = {
 // Funciones individuales para compatibilidad con componentes antiguos
 export const getAtletaById = async (id: string | number): Promise<Atleta> => {
   try {
-    const response = await apiClient.get<Atleta>(`/atletas/${id}`);
-    return response.data;
+    const response = await apiClient.get<{ data: Atleta }>(`/atletas/${id}`);
+    return response.data.data;
   } catch (error) {
     console.error("Error en getAtletaById:", error);
     throw error;
@@ -67,8 +67,8 @@ export const getAtletaById = async (id: string | number): Promise<Atleta> => {
 
 export const updateAtleta = async (id: string | number, atleta: Partial<Atleta>): Promise<Atleta> => {
   try {
-    const response = await apiClient.put<Atleta>(`/atletas/${id}`, atleta);
-    return response.data;
+    const response = await apiClient.put<{ data: Atleta }>(`/atletas/${id}`, atleta);
+    return response.data.data;
   } catch (error) {
     console.error("Error en updateAtleta:", error);
     throw error;

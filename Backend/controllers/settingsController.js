@@ -10,6 +10,7 @@
 
 const { models } = require('../config/database');
 const { SystemSetting } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -28,7 +29,10 @@ function rowsToObject(rows) {
   }, {});
 }
 
-// ── GET /api/settings ─────────────────────────────────────────────────────────
+/**
+ * @function getSettings
+ * @description Obtiene todas las configuraciones globales, las parsea y las devuelve como un objeto plano.
+ */
 const getSettings = async (req, res) => {
   try {
     const rows = await SystemSetting.findAll({
@@ -36,18 +40,17 @@ const getSettings = async (req, res) => {
       order: [['clave', 'ASC']]
     });
 
-    return res.status(200).json({
-      data: rowsToObject(rows),
-      message: 'OK',
-      status: 200
-    });
+    return res.status(200).json(successResponse(rowsToObject(rows), 'OK'));
   } catch (error) {
     console.error('Error al obtener configuración:', error);
-    return res.status(500).json({ error: 'Error al obtener la configuración del sistema.' });
+    return res.status(500).json(errorResponse('Error al obtener la configuración del sistema.', 500, error.message));
   }
 };
 
-// ── PUT /api/settings ─────────────────────────────────────────────────────────
+/**
+ * @function updateSettings
+ * @description Modifica uno o varios parámetros de configuración globales serializándolos en JSON.
+ */
 const updateSettings = async (req, res) => {
   try {
     const camposPermitidos = ['tema', 'idioma', 'notificaciones', 'registro_automatico'];
@@ -66,7 +69,7 @@ const updateSettings = async (req, res) => {
     }
 
     if (updates.length === 0) {
-      return res.status(400).json({ error: 'No se enviaron campos válidos para actualizar.' });
+      return res.status(400).json(errorResponse('No se enviaron campos válidos para actualizar.', 400));
     }
 
     await Promise.all(updates);
@@ -77,14 +80,10 @@ const updateSettings = async (req, res) => {
       order: [['clave', 'ASC']]
     });
 
-    return res.status(200).json({
-      data: rowsToObject(rows),
-      message: 'Configuración actualizada correctamente',
-      status: 200
-    });
+    return res.status(200).json(successResponse(rowsToObject(rows), 'Configuración actualizada correctamente'));
   } catch (error) {
     console.error('Error al actualizar configuración:', error);
-    return res.status(500).json({ error: 'Error al actualizar la configuración del sistema.' });
+    return res.status(500).json(errorResponse('Error al actualizar la configuración del sistema.', 500, error.message));
   }
 };
 

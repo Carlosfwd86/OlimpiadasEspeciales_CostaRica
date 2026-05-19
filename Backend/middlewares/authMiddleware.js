@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { errorResponse } = require('../utils/apiResponse');
 
 // ── Seguridad: JWT_SECRET es OBLIGATORIO ──────────────────────────────────────
 if (!process.env.JWT_SECRET) {
@@ -15,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
     const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
 
     if (!token) {
-      return res.status(401).json({ error: 'Acceso denegado. No se proporcionó un token.' });
+      return res.status(401).json(errorResponse('Acceso denegado. No se proporcionó un token.', 401));
     }
 
     // Verificar el token
@@ -26,9 +27,9 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'El token ha expirado. Por favor, inicie sesión de nuevo.' });
+      return res.status(401).json(errorResponse('El token ha expirado. Por favor, inicie sesión de nuevo.', 401));
     }
-    return res.status(401).json({ error: 'Token inválido o malformado.' });
+    return res.status(401).json(errorResponse('Token inválido o malformado.', 401));
   }
 };
 
