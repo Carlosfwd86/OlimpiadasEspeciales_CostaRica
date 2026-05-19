@@ -38,8 +38,18 @@ const Register = (): React.JSX.Element => {
       return;
     }
 
-    if (formData.password.length < 6) {
-        Swal.fire({ icon: 'warning', title: 'Seguridad', text: 'La contraseña debe tener al menos 6 caracteres.' });
+    if (formData.password.length < 8) {
+        Swal.fire({ icon: 'warning', title: 'Seguridad', text: 'La contraseña debe tener al menos 8 caracteres.' });
+        return;
+    }
+
+    if (!/[A-Z]/.test(formData.password)) {
+        Swal.fire({ icon: 'warning', title: 'Seguridad', text: 'La contraseña debe contener al menos una letra mayúscula.' });
+        return;
+    }
+
+    if (!/[0-9]/.test(formData.password)) {
+        Swal.fire({ icon: 'warning', title: 'Seguridad', text: 'La contraseña debe contener al menos un número.' });
         return;
     }
 

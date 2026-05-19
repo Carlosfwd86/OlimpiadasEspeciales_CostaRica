@@ -9,6 +9,8 @@ import ContactoPages from '../pages/ContactoPages';
 import EntrenadoresPage from '../pages/EntrenadoresPage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 import PerfilPage from '../pages/PerfilPage';
 import PlataformaRegistroPage from '../pages/PlataformaRegistroPage';
 import PanelAdministrativo from '../components/Admin Dashboard/Panel-Administrativo';
@@ -25,6 +27,8 @@ const Routing: React.FC = () => {
             <Route path="/" element={<HomePages />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/registro" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/nosotros" element={<NosotrosPages />} />
             <Route path="/contacto" element={<ContactoPages />} />
             <Route path="/formulario" element={<FormularioPages />} />

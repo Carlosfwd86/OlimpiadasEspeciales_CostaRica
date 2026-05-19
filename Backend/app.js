@@ -9,7 +9,7 @@ const winston = require('winston');
 const { sequelize } = require('./config/database');
 const errorHandler = require('./middlewares/errorHandler');
 
-// Logger profesional
+// Logger profesional - validation reload
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
