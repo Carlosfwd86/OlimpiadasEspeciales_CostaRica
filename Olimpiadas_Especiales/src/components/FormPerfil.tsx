@@ -210,20 +210,74 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
 
     const handlePasswordChange = async () => {
         if (!newPassword || newPassword.length < 5) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Mínimo 5 caracteres.' }); return;
+            Swal.fire({
+                icon: 'error',
+                title: 'Contraseña muy corta',
+                text: 'La nueva contraseña debe tener al menos 5 caracteres.',
+                confirmButtonColor: '#e62334'
+            });
+            return;
         }
+
+        // Primera Confirmación
+        const confirm1 = await Swal.fire({
+            title: '¿Confirmar cambio de contraseña?',
+            text: 'Estás a punto de establecer una nueva contraseña de acceso.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#e62334',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, cambiar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!confirm1.isConfirmed) return;
+
+        // Segunda Confirmación (Advertencia de Seguridad)
+        const confirm2 = await Swal.fire({
+            title: '⚠️ ¿Estás completamente seguro?',
+            text: 'Tu contraseña cambiará de inmediato. Recuerda memorizarla o anotarla en un lugar seguro para tu próximo inicio de sesión.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e62334',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, estoy seguro',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!confirm2.isConfirmed) return;
+
         try {
-            Swal.fire({ title: 'Actualizando...', didOpen: () => Swal.showLoading() });
+            Swal.fire({ 
+                title: 'Actualizando contraseña...', 
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading() 
+            });
+            
             const updated = { ...user, password: newPassword };
-            if (user.rol === 'atleta') await updateAtleta(user.id, updated);
-            else if (user.rol === 'tutor') await updateTutor(user.id, updated);
-            else if (user.rol === 'entrenador') await updateEntrenador(user.id, updated);
-            else if (user.rol === 'voluntario') await updateVoluntario(user.id, updated);
-            else await updateUsuario(user.id, updated);
+            await updateUsuario(user.id, updated);
+
             localStorage.setItem('usuarioSesion', JSON.stringify(updated));
-            setModalOpen(false); setNewPassword('');
-            Swal.fire({ icon: 'success', title: '¡Contraseña actualizada!', timer: 1800, showConfirmButton: false });
-        } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar.' }); }
+            setModalOpen(false); 
+            setNewPassword('');
+
+            // Alerta de éxito premium
+            Swal.fire({ 
+                icon: 'success', 
+                title: '¡Contraseña actualizada!', 
+                text: 'Tu nueva contraseña ha sido guardada y aplicada exitosamente.',
+                timer: 2500, 
+                showConfirmButton: true,
+                confirmButtonColor: '#e62334'
+            });
+        } catch (e) { 
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'Error de servidor', 
+                text: 'No se pudo actualizar la contraseña en la base de datos. Por favor inténtalo de nuevo.',
+                confirmButtonColor: '#e62334'
+            }); 
+        }
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
