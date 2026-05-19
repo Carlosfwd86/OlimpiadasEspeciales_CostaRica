@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { NivelHabilidad } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
 /**
  * @module nivelHabilidadController
@@ -13,8 +14,10 @@ const { NivelHabilidad } = models;
 exports.getAll = async (req, res, next) => {
   try {
     const data = await NivelHabilidad.findAll();
-    res.json(data);
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(data, 'Niveles de habilidad obtenidos'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al obtener niveles de habilidad', 500, error.message));
+  }
 };
 
 /**
@@ -24,9 +27,11 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const data = await NivelHabilidad.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'NivelHabilidad no encontrado' });
-    res.json(data);
-  } catch (error) { next(error); }
+    if (!data) return res.status(404).json(errorResponse('NivelHabilidad no encontrado', 404));
+    return res.status(200).json(successResponse(data, 'Nivel de habilidad obtenido'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al obtener nivel de habilidad', 500, error.message));
+  }
 };
 
 /**
@@ -36,8 +41,10 @@ exports.getById = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const data = await NivelHabilidad.create(req.body);
-    res.status(201).json(data);
-  } catch (error) { next(error); }
+    return res.status(201).json(successResponse(data, 'Nivel de habilidad creado'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al crear nivel de habilidad', 500, error.message));
+  }
 };
 
 /**
@@ -47,10 +54,12 @@ exports.create = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const data = await NivelHabilidad.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'NivelHabilidad no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('NivelHabilidad no encontrado', 404));
     await data.update(req.body);
-    res.json(data);
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(data, 'Nivel de habilidad actualizado'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al actualizar nivel de habilidad', 500, error.message));
+  }
 };
 
 /**
@@ -60,8 +69,10 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     const data = await NivelHabilidad.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'NivelHabilidad no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('NivelHabilidad no encontrado', 404));
     await data.destroy();
-    res.json({ message: 'NivelHabilidad eliminado' });
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(null, 'Nivel de habilidad eliminado'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al eliminar nivel de habilidad', 500, error.message));
+  }
 };

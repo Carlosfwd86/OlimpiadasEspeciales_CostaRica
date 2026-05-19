@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { Tutor } = models;
+const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
 /**
  * @module tutorController
@@ -12,9 +13,13 @@ const { Tutor } = models;
  */
 exports.getAll = async (req, res, next) => {
   try {
-    const data = await Tutor.findAll();
-    res.json(data);
-  } catch (error) { next(error); }
+    const { limit, offset, page } = getPagination(req.query);
+    const { count, rows: tutores } = await Tutor.findAndCountAll({ limit, offset });
+    const meta = getPagingData(count, limit, page);
+    res.json(successResponse(tutores, 'Tutores obtenidos correctamente', meta));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };
 
 /**
@@ -28,9 +33,11 @@ exports.getById = async (req, res, next) => {
       id = id.split('_')[1];
     }
     const data = await Tutor.findByPk(id);
-    if (!data) return res.status(404).json({ message: 'Tutor no encontrado' });
-    res.json(data);
-  } catch (error) { next(error); }
+    if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
+    res.json(successResponse(data, 'Tutor obtenido correctamente'));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };
 
 /**
@@ -69,10 +76,10 @@ exports.create = async (req, res, next) => {
     };
 
     const nuevoTutor = await Tutor.create(datosTutor);
-    res.status(201).json(nuevoTutor);
+    res.status(201).json(successResponse(nuevoTutor, 'Tutor creado exitosamente'));
   } catch (error) { 
     console.error('Error al crear tutor:', error);
-    next(error); 
+    res.status(500).json(errorResponse(error.message));
   }
 };
 
@@ -88,7 +95,7 @@ exports.update = async (req, res, next) => {
     }
 
     const data = await Tutor.findByPk(id);
-    if (!data) return res.status(404).json({ message: 'Tutor no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
 
     const body = req.body;
     const updates = {};
@@ -117,8 +124,10 @@ exports.update = async (req, res, next) => {
     if (body.experienciaNecesidadesEspeciales !== undefined) updates.experiencia_necesidades_especiales = body.experienciaNecesidadesEspeciales === 'Si' || body.experienciaNecesidadesEspeciales === true;
 
     await data.update(updates);
-    res.json(data);
-  } catch (error) { next(error); }
+    res.json(successResponse(data, 'Tutor actualizado exitosamente'));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };
 
 /**
@@ -128,8 +137,10 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     const data = await Tutor.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Tutor no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
     await data.destroy();
-    res.json({ message: 'Tutor eliminado' });
-  } catch (error) { next(error); }
+    res.json(successResponse(null, 'Tutor eliminado'));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };

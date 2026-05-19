@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { Atleta, Voluntario, Inscripcion, Consulta, Usuario, Competicion } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
 /**
  * @module statsController
@@ -21,21 +22,17 @@ const getStats = async (req, res) => {
     ]);
 
     // Shape compatible con ServicesAdmin.ts -> getStats
-    return res.status(200).json({
-      data: {
-        totalRegistros:       { valor: totalAtletas + totalInscripciones, porcentaje: '+12%', tendencia: 'up' },
-        atletasActivos:       { valor: totalAtletas,      porcentaje: '+5%', tendencia: 'up' },
-        revisionesPendientes: { valor: totalInscripciones, textoExtra: 'Inscripciones pendientes' },
-        voluntarios:          { valor: totalVoluntarios,  porcentaje: '0%',  tendencia: 'none' },
-        tutores:              { valor: totalTutores }
-      },
-      message: 'OK',
-      status: 200
-    });
+    return res.status(200).json(successResponse({
+      totalRegistros:       { valor: totalAtletas + totalInscripciones, porcentaje: '+12%', tendencia: 'up' },
+      atletasActivos:       { valor: totalAtletas,      porcentaje: '+5%', tendencia: 'up' },
+      revisionesPendientes: { valor: totalInscripciones, textoExtra: 'Inscripciones pendientes' },
+      voluntarios:          { valor: totalVoluntarios,  porcentaje: '0%',  tendencia: 'none' },
+      tutores:              { valor: totalTutores }
+    }, 'Estadísticas obtenidas'));
 
   } catch (error) {
     console.error('Error al obtener summary:', error);
-    return res.status(500).json({ error: 'Error al calcular estadísticas.' });
+    return res.status(500).json(errorResponse('Error al calcular estadísticas', 500, error.message));
   }
 };
 
@@ -43,9 +40,9 @@ const getStats = async (req, res) => {
  * @function getCharts
  * @description Devuelve los datos estructurados (meses, género, etc.) necesarios para renderizar gráficos visuales en el frontend.
  */
-const getCharts = async (req, res) => {
+  const getCharts = async (req, res) => {
   try {
-    return res.status(200).json({
+    return res.status(200).json(successResponse({
       registrosPorMes: [
         { name: 'Ene', value: 400 },
         { name: 'Feb', value: 300 },
@@ -58,9 +55,9 @@ const getCharts = async (req, res) => {
         { name: 'Femenino', value: 40 },
         { name: 'Otro', value: 15 }
       ]
-    });
+    }, 'Gráficos obtenidos'));
   } catch (error) {
-    return res.status(500).json({ error: 'Error al obtener datos de gráficos.' });
+    return res.status(500).json(errorResponse('Error al obtener datos de gráficos', 500, error.message));
   }
 };
 

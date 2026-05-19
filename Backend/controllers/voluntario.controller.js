@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { Voluntario, VoluntarioArea } = models;
+const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
 /**
  * @module voluntarioController
@@ -13,17 +14,17 @@ const voluntarioController = {
    */
   obtenerTodos: async (req, res) => {
     try {
-      // Se incluyen las áreas relacionadas mediante el modelo VoluntarioArea
-      const voluntarios = await Voluntario.findAll({
-        include: [{ model: VoluntarioArea }]
+      const { limit, offset, page } = getPagination(req.query);
+      const { count, rows: voluntarios } = await Voluntario.findAndCountAll({
+        include: [{ model: VoluntarioArea }],
+        distinct: true,
+        limit,
+        offset
       });
-      return res.status(200).json(voluntarios);
+      const meta = getPagingData(count, limit, page);
+      return res.status(200).json(successResponse(voluntarios, 'Voluntarios obtenidos correctamente', meta));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al obtener los voluntarios',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al obtener los voluntarios', 500, error.message));
     }
   },
 
@@ -43,19 +44,12 @@ const voluntarioController = {
       });
 
       if (!voluntario) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'Voluntario no encontrado'
-        });
+        return res.status(404).json(errorResponse('Voluntario no encontrado', 404));
       }
 
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario obtenido'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al buscar el voluntario',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al buscar el voluntario', 500, error.message));
     }
   },
 
@@ -107,17 +101,9 @@ const voluntarioController = {
         await Promise.all(areasPromesas);
       }
 
-      return res.status(201).json({
-        ok: true,
-        msg: 'Voluntario registrado con éxito',
-        data: nuevoVoluntario
-      });
+      return res.status(201).json(successResponse(nuevoVoluntario, 'Voluntario registrado con éxito'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al registrar el voluntario',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al registrar el voluntario', 500, error.message));
     }
   },
 
@@ -135,10 +121,7 @@ const voluntarioController = {
       const voluntario = await Voluntario.findByPk(id);
 
       if (!voluntario) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'Voluntario no encontrado para actualizar'
-        });
+        return res.status(404).json(errorResponse('Voluntario no encontrado para actualizar', 404));
       }
 
       const data = req.body;
@@ -169,13 +152,9 @@ const voluntarioController = {
       if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
 
       await voluntario.update(updates);
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario actualizado correctamente'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al actualizar voluntario',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al actualizar voluntario', 500, error.message));
     }
   },
 
@@ -189,22 +168,12 @@ const voluntarioController = {
       const borrado = await Voluntario.destroy({ where: { id } });
 
       if (borrado === 0) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'El registro no existe'
-        });
+        return res.status(404).json(errorResponse('El registro no existe', 404));
       }
 
-      return res.status(200).json({
-        ok: true,
-        msg: 'Voluntario eliminado'
-      });
+      return res.status(200).json(successResponse(null, 'Voluntario eliminado'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al eliminar registro',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al eliminar registro', 500, error.message));
     }
   },
 
@@ -216,16 +185,16 @@ const voluntarioController = {
     try {
       const { id } = req.params;
       const voluntario = await Voluntario.findByPk(id);
-      if (!voluntario) return res.status(404).json({ msg: 'No encontrado' });
+      if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 
       await voluntario.update({ 
         status: 'ACTIVO', 
         fecha_aprobacion: new Date() 
       });
       
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario aprobado'));
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json(errorResponse(error.message));
     }
   },
 
@@ -237,12 +206,12 @@ const voluntarioController = {
     try {
       const { id } = req.params;
       const voluntario = await Voluntario.findByPk(id);
-      if (!voluntario) return res.status(404).json({ msg: 'No encontrado' });
+      if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 
       await voluntario.update({ status: 'INACTIVO' });
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario rechazado'));
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json(errorResponse(error.message));
     }
   }
 };

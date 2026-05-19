@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { Rol } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
 /**
  * @module rolesController
@@ -14,11 +15,11 @@ const obtenerRoles = async (req, res) => {
   try {
     // Obtiene todos los roles de la base de datos
     const roles = await Rol.findAll();
-    return res.status(200).json(roles);
+    return res.status(200).json(successResponse(roles, 'Roles obtenidos correctamente'));
   } catch (error) {
     // Maneja cualquier error inesperado
     console.error('Error al obtener los roles:', error);
-    return res.status(500).json({ error: 'Ocurrió un error al obtener los roles.' });
+    return res.status(500).json(errorResponse('Ocurrió un error al obtener los roles.', 500, error.message));
   }
 };
 
@@ -33,19 +34,16 @@ const crearRol = async (req, res) => {
     // Verifica si el rol ya existe
     const rolExistente = await Rol.findOne({ where: { nombre } });
     if (rolExistente) {
-      return res.status(400).json({ error: 'El rol ya existe.' });
+      return res.status(400).json(errorResponse('El rol ya existe.', 400));
     }
 
     // Crea el rol en la base de datos
     const nuevoRol = await Rol.create({ nombre, descripcion });
-    return res.status(201).json({
-      mensaje: 'Rol creado exitosamente',
-      rol: nuevoRol
-    });
+    return res.status(201).json(successResponse(nuevoRol, 'Rol creado exitosamente'));
   } catch (error) {
     // Maneja errores de validación y de servidor
     console.error('Error al crear el rol:', error);
-    return res.status(500).json({ error: 'Ocurrió un error al crear el rol.' });
+    return res.status(500).json(errorResponse('Ocurrió un error al crear el rol.', 500, error.message));
   }
 };
 
@@ -61,18 +59,15 @@ const actualizarRol = async (req, res) => {
     // Busca el rol por su id
     const rol = await Rol.findByPk(id);
     if (!rol) {
-      return res.status(404).json({ error: 'Rol no encontrado.' });
+      return res.status(404).json(errorResponse('Rol no encontrado.', 404));
     }
 
     // Actualiza los datos
     await rol.update({ nombre, descripcion });
-    return res.status(200).json({
-      mensaje: 'Rol actualizado exitosamente',
-      rol
-    });
+    return res.status(200).json(successResponse(rol, 'Rol actualizado exitosamente'));
   } catch (error) {
     console.error('Error al actualizar el rol:', error);
-    return res.status(500).json({ error: 'Ocurrió un error al actualizar el rol.' });
+    return res.status(500).json(errorResponse('Ocurrió un error al actualizar el rol.', 500, error.message));
   }
 };
 
@@ -87,15 +82,15 @@ const eliminarRol = async (req, res) => {
     // Busca el rol a eliminar
     const rol = await Rol.findByPk(id);
     if (!rol) {
-      return res.status(404).json({ error: 'Rol no encontrado.' });
+      return res.status(404).json(errorResponse('Rol no encontrado.', 404));
     }
 
     // Elimina el rol de la base de datos
     await rol.destroy();
-    return res.status(200).json({ mensaje: 'Rol eliminado exitosamente.' });
+    return res.status(200).json(successResponse(null, 'Rol eliminado exitosamente.'));
   } catch (error) {
     console.error('Error al eliminar el rol:', error);
-    return res.status(500).json({ error: 'Ocurrió un error al eliminar el rol.' });
+    return res.status(500).json(errorResponse('Ocurrió un error al eliminar el rol.', 500, error.message));
   }
 };
 

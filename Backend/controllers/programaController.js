@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { Programa } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
 /**
  * @module programaController
@@ -13,8 +14,10 @@ const { Programa } = models;
 exports.getAll = async (req, res, next) => {
   try {
     const data = await Programa.findAll();
-    res.json(data);
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(data, 'Programas obtenidos'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al obtener programas', 500, error.message));
+  }
 };
 
 /**
@@ -24,9 +27,11 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const data = await Programa.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Programa no encontrado' });
-    res.json(data);
-  } catch (error) { next(error); }
+    if (!data) return res.status(404).json(errorResponse('Programa no encontrado', 404));
+    return res.status(200).json(successResponse(data, 'Programa obtenido'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al obtener programa', 500, error.message));
+  }
 };
 
 /**
@@ -36,8 +41,10 @@ exports.getById = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const data = await Programa.create(req.body);
-    res.status(201).json(data);
-  } catch (error) { next(error); }
+    return res.status(201).json(successResponse(data, 'Programa creado'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al crear programa', 500, error.message));
+  }
 };
 
 /**
@@ -47,10 +54,12 @@ exports.create = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const data = await Programa.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Programa no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Programa no encontrado', 404));
     await data.update(req.body);
-    res.json(data);
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(data, 'Programa actualizado'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al actualizar programa', 500, error.message));
+  }
 };
 
 /**
@@ -60,8 +69,10 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     const data = await Programa.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Programa no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Programa no encontrado', 404));
     await data.destroy();
-    res.json({ message: 'Programa eliminado' });
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(null, 'Programa eliminado'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al eliminar programa', 500, error.message));
+  }
 };

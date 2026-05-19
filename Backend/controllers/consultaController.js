@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { Consulta } = models;
+const { successResponse, errorResponse } = require('../utils/apiResponse');
 
 /**
  * @module consultaController
@@ -13,8 +14,10 @@ const { Consulta } = models;
 exports.getAll = async (req, res, next) => {
   try {
     const data = await Consulta.findAll();
-    res.json(data);
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(data, 'Consultas obtenidas'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al obtener consultas', 500, error.message));
+  }
 };
 
 /**
@@ -24,9 +27,11 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const data = await Consulta.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Consulta no encontrado' });
-    res.json(data);
-  } catch (error) { next(error); }
+    if (!data) return res.status(404).json(errorResponse('Consulta no encontrada', 404));
+    return res.status(200).json(successResponse(data, 'Consulta obtenida'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al obtener consulta', 500, error.message));
+  }
 };
 
 /**
@@ -36,8 +41,10 @@ exports.getById = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const data = await Consulta.create(req.body);
-    res.status(201).json(data);
-  } catch (error) { next(error); }
+    return res.status(201).json(successResponse(data, 'Consulta creada'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al crear consulta', 500, error.message));
+  }
 };
 
 /**
@@ -47,10 +54,12 @@ exports.create = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const data = await Consulta.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Consulta no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Consulta no encontrada', 404));
     await data.update(req.body);
-    res.json(data);
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(data, 'Consulta actualizada'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al actualizar consulta', 500, error.message));
+  }
 };
 
 /**
@@ -60,8 +69,10 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     const data = await Consulta.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Consulta no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Consulta no encontrada', 404));
     await data.destroy();
-    res.json({ message: 'Consulta eliminado' });
-  } catch (error) { next(error); }
+    return res.status(200).json(successResponse(null, 'Consulta eliminada'));
+  } catch (error) { 
+    return res.status(500).json(errorResponse('Error al eliminar consulta', 500, error.message));
+  }
 };

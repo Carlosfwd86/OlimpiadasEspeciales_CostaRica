@@ -1,5 +1,6 @@
 const { models } = require('../config/database');
 const { Entrenador } = models;
+const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
 /**
  * @module entrenadorController
@@ -13,19 +14,15 @@ const entrenadorController = {
    */
   obtenerTodos: async (req, res) => {
     try {
-      // Búsqueda de todos los registros en la base de datos
-      const entrenadores = await Entrenador.findAll();
-      return res.status(200).json({
-        ok: true,
-        data: entrenadores
+      const { limit, offset, page } = getPagination(req.query);
+      const { count, rows: entrenadores } = await Entrenador.findAndCountAll({
+        limit,
+        offset
       });
+      const meta = getPagingData(count, limit, page);
+      return res.status(200).json(successResponse(entrenadores, 'Entrenadores obtenidos correctamente', meta));
     } catch (error) {
-      // Captura de errores en la consulta
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al obtener la lista de entrenadores',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al obtener la lista de entrenadores', 500, error.message));
     }
   },
 
@@ -42,22 +39,12 @@ const entrenadorController = {
       const entrenador = await Entrenador.findByPk(id);
 
       if (!entrenador) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'Entrenador no encontrado en el sistema'
-        });
+        return res.status(404).json(errorResponse('Entrenador no encontrado en el sistema', 404));
       }
 
-      return res.status(200).json({
-        ok: true,
-        data: entrenador
-      });
+      return res.status(200).json(successResponse(entrenador, 'Entrenador obtenido correctamente'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al buscar el entrenador',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al buscar el entrenador', 500, error.message));
     }
   },
 
@@ -110,25 +97,13 @@ const entrenadorController = {
       };
 
       const nuevoEntrenador = await Entrenador.create(datosEntrenador);
-      return res.status(201).json({
-        ok: true,
-        msg: 'Entrenador registrado exitosamente',
-        data: nuevoEntrenador
-      });
+      return res.status(201).json(successResponse(nuevoEntrenador, 'Entrenador registrado exitosamente'));
     } catch (error) {
       // Manejo de errores de validación de Sequelize
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-        return res.status(400).json({
-          ok: false,
-          msg: 'Error en los datos proporcionados',
-          errors: error.errors.map(err => err.message)
-        });
+        return res.status(400).json(errorResponse('Error en los datos proporcionados', 400, error.errors.map(err => err.message)));
       }
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error interno al registrar el entrenador',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error interno al registrar el entrenador', 500, error.message));
     }
   },
 
@@ -146,10 +121,7 @@ const entrenadorController = {
       const entrenador = await Entrenador.findByPk(id);
 
       if (!entrenador) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'No se encontró el entrenador para actualizar'
-        });
+        return res.status(404).json(errorResponse('No se encontró el entrenador para actualizar', 404));
       }
 
       const data = req.body;
@@ -184,17 +156,9 @@ const entrenadorController = {
 
       // Actualización de los campos enviados
       await entrenador.update(updates);
-      return res.status(200).json({
-        ok: true,
-        msg: 'Datos del entrenador actualizados correctamente',
-        data: entrenador
-      });
+      return res.status(200).json(successResponse(entrenador, 'Datos del entrenador actualizados correctamente'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al actualizar el registro',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al actualizar el registro', 500, error.message));
     }
   },
 
@@ -208,22 +172,12 @@ const entrenadorController = {
       const resultado = await Entrenador.destroy({ where: { id } });
 
       if (resultado === 0) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'El entrenador no existe o ya fue eliminado'
-        });
+        return res.status(404).json(errorResponse('El entrenador no existe o ya fue eliminado', 404));
       }
 
-      return res.status(200).json({
-        ok: true,
-        msg: 'Entrenador removido exitosamente'
-      });
+      return res.status(200).json(successResponse(null, 'Entrenador removido exitosamente'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al intentar eliminar el entrenador',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al intentar eliminar el entrenador', 500, error.message));
     }
   }
 };

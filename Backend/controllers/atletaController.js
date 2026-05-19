@@ -4,6 +4,7 @@ const AtletaMedicamento = require('../models/AtletaMedicamento');
 const AtletaCondicion = require('../models/AtletaCondicion');
 const AtletaDispositivo = require('../models/AtletaDispositivo');
 const AtletaAlergia = require('../models/AtletaAlergia');
+const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
 
 // [verde] Controlador para gestionar la lógica de negocio de los Atletas
@@ -19,18 +20,23 @@ const atletaController = {
    */
   obtenerTodosLosAtletas: async (req, res) => {
     try {
-      const atletas = await Atleta.findAll({
+      const { limit, offset, page } = getPagination(req.query);
+      const { count, rows: atletas } = await Atleta.findAndCountAll({
         include: [
           { model: AtletaDocumento, as: 'documentos' },
           { model: AtletaMedicamento, as: 'medicamentos' },
           { model: AtletaCondicion, as: 'condiciones' },
           { model: AtletaDispositivo, as: 'dispositivos' },
           { model: AtletaAlergia, as: 'alergias' }
-        ]
+        ],
+        distinct: true,
+        limit,
+        offset
       });
-      res.status(200).json(atletas);
+      const meta = getPagingData(count, limit, page);
+      res.status(200).json(successResponse(atletas, 'Atletas obtenidos correctamente', meta));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al obtener los atletas', error: error.message });
+      res.status(500).json(errorResponse('Error al obtener los atletas', 500, error.message));
     }
   },
 
@@ -58,12 +64,12 @@ const atletaController = {
       });
 
       if (!atleta) {
-        return res.status(404).json({ mensaje: 'Atleta no encontrado' });
+        return res.status(404).json(errorResponse('Atleta no encontrado', 404));
       }
 
-      res.status(200).json(atleta);
+      res.status(200).json(successResponse(atleta, 'Atleta obtenido correctamente'));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al obtener el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al obtener el atleta', 500, error.message));
     }
   },
 
@@ -157,14 +163,14 @@ const atletaController = {
       }
 
       await t.commit();
-      res.status(201).json({ mensaje: 'Atleta creado exitosamente', data: nuevoAtleta });
+      res.status(201).json(successResponse(nuevoAtleta, 'Atleta creado exitosamente'));
     } catch (error) {
       await t.rollback();
       console.error('Error al crear atleta:', error);
       if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors.map(e => e.message) });
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
-      res.status(500).json({ mensaje: 'Error al crear el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al crear el atleta', 500, error.message));
     }
   },
 
@@ -217,16 +223,16 @@ const atletaController = {
 
       if (actualizado || Object.keys(updates).length > 0) {
         const atletaActualizado = await Atleta.findByPk(id);
-        return res.status(200).json({ mensaje: 'Atleta actualizado correctamente', data: atletaActualizado });
+        return res.status(200).json(successResponse(atletaActualizado, 'Atleta actualizado correctamente'));
       }
       
-      res.status(404).json({ mensaje: 'Atleta no encontrado para actualizar' });
+      res.status(404).json(errorResponse('Atleta no encontrado para actualizar', 404));
     } catch (error) {
       console.error('Error al actualizar atleta:', error);
       if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors.map(e => e.message) });
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
-      res.status(500).json({ mensaje: 'Error al actualizar el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al actualizar el atleta', 500, error.message));
     }
   },
 
@@ -240,12 +246,12 @@ const atletaController = {
       const eliminado = await Atleta.destroy({ where: { id } });
 
       if (eliminado) {
-        return res.status(200).json({ mensaje: 'Atleta eliminado correctamente' });
+        return res.status(200).json(successResponse(null, 'Atleta eliminado correctamente'));
       }
 
-      res.status(404).json({ mensaje: 'Atleta no encontrado' });
+      res.status(404).json(errorResponse('Atleta no encontrado', 404));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al eliminar el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al eliminar el atleta', 500, error.message));
     }
   },
   /**
@@ -256,9 +262,9 @@ const atletaController = {
     try {
       const { id } = req.params;
       const documentos = await AtletaDocumento.findAll({ where: { atleta_id: id } });
-      res.status(200).json(documentos);
+      res.status(200).json(successResponse(documentos, 'Documentos obtenidos correctamente'));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al obtener documentos', error: error.message });
+      res.status(500).json(errorResponse('Error al obtener documentos', 500, error.message));
     }
   },
 
@@ -273,7 +279,7 @@ const atletaController = {
       const { nombre_documento, tipo_documento, ruta_archivo } = req.body;
 
       if (!nombre_documento || !tipo_documento || !ruta_archivo) {
-        return res.status(400).json({ mensaje: 'Faltan campos obligatorios: nombre_documento, tipo_documento, ruta_archivo' });
+        return res.status(400).json(errorResponse('Faltan campos obligatorios: nombre_documento, tipo_documento, ruta_archivo', 400));
       }
 
       const doc = await AtletaDocumento.create({
@@ -283,12 +289,12 @@ const atletaController = {
         ruta_archivo
       });
 
-      res.status(201).json({ mensaje: 'Documento agregado exitosamente', data: doc });
+      res.status(201).json(successResponse(doc, 'Documento agregado exitosamente'));
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors.map(e => e.message) });
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
-      res.status(500).json({ mensaje: 'Error al agregar documento', error: error.message });
+      res.status(500).json(errorResponse('Error al agregar documento', 500, error.message));
     }
   },
 
@@ -302,11 +308,11 @@ const atletaController = {
       const eliminado = await AtletaDocumento.destroy({ where: { id: docId, atleta_id: id } });
 
       if (eliminado) {
-        return res.status(200).json({ mensaje: 'Documento eliminado correctamente' });
+        return res.status(200).json(successResponse(null, 'Documento eliminado correctamente'));
       }
-      res.status(404).json({ mensaje: 'Documento no encontrado' });
+      res.status(404).json(errorResponse('Documento no encontrado', 404));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al eliminar el documento', error: error.message });
+      res.status(500).json(errorResponse('Error al eliminar el documento', 500, error.message));
     }
   }
 };

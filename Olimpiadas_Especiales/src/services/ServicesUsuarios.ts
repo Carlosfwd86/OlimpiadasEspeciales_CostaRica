@@ -5,13 +5,13 @@ import type { Usuario } from '../types';
 export const ServicesUsuarios = {
     
     getUsuarios: async (): Promise<Usuario[]> => {
-        const response = await apiClient.get<Usuario[]>('/usuarios');
-        return response.data;
+        const response = await apiClient.get<{ data: Usuario[] }>('/usuarios');
+        return response.data.data;
     },
 
     getUsuarioById: async (id: string | number): Promise<Usuario> => {
-        const response = await apiClient.get<Usuario>(`/usuarios/${id}`);
-        return response.data;
+        const response = await apiClient.get<{ data: Usuario }>(`/usuarios/${id}`);
+        return response.data.data;
     },
 
     createUsuario: async (usuario: any): Promise<Usuario> => {
@@ -47,8 +47,8 @@ export const ServicesUsuarios = {
             payload.genero = usuario.genero === 'NoDecir' ? 'Otro' : usuario.genero;
         }
 
-        const response = await apiClient.post<{ usuario: Usuario }>('/auth/register', payload);
-        return response.data.usuario;
+        const response = await apiClient.post<{ data: Usuario }>('/auth/register', payload);
+        return response.data.data;
     },
 
 
@@ -59,8 +59,8 @@ export const ServicesUsuarios = {
         if (usuario.fechaNacimiento) payload.fecha_nacimiento = usuario.fechaNacimiento;
         if (usuario.avatarUrl) payload.avatar_url = usuario.avatarUrl;
         
-        const response = await apiClient.patch<Usuario>(`/usuarios/${id}`, payload);
-        return response.data;
+        const response = await apiClient.patch<{ data: Usuario }>(`/usuarios/${id}`, payload);
+        return response.data.data;
     },
 
     deleteUsuario: async (id: string | number): Promise<void> => {
