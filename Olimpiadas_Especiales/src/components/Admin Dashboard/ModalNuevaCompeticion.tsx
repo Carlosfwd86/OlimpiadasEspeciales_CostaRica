@@ -61,6 +61,10 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
             setApiError('El nombre del evento es obligatorio.');
             return;
         }
+        if (formData.nombre.length > 100) {
+            setApiError('El nombre del evento no puede superar los 100 caracteres.');
+            return;
+        }
         if (!formData.fecha) {
             setApiError('La fecha de inicio es obligatoria.');
             return;
@@ -68,6 +72,22 @@ export default function ModalNuevaCompeticion({ isOpen, onClose, onSaveSuccess, 
         if (formData.fecha_fin && formData.fecha_fin < formData.fecha) {
             setApiError('La fecha de fin debe ser posterior o igual a la fecha de inicio.');
             return;
+        }
+
+        if (formData.enlace) {
+            const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            if (!urlRegex.test(formData.enlace)) {
+                setApiError('El formato del enlace externo es inválido.');
+                return;
+            }
+        }
+
+        if (formData.imagen) {
+            const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            if (!urlRegex.test(formData.imagen)) {
+                setApiError('El formato de la URL de la imagen es inválido.');
+                return;
+            }
         }
 
         setIsSubmitting(true);
