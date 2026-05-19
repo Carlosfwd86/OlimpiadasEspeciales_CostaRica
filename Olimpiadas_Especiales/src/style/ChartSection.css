@@ -115,6 +115,15 @@
   margin-right: 12px;
 }
 
+.region-dot.color-san-jose { background-color: #e62334; }
+.region-dot.color-alajuela { background-color: #f97316; }
+.region-dot.color-cartago { background-color: #2563eb; }
+.region-dot.color-heredia { background-color: #eab308; }
+.region-dot.color-guanacaste { background-color: #10b981; }
+.region-dot.color-puntarenas { background-color: #06b6d4; }
+.region-dot.color-limon { background-color: #8b5cf6; }
+.region-dot.color-desconocido { background-color: #64748b; }
+
 .dot-red { background-color: var(--admin-red, #e62334); }
 .dot-pink { background-color: #f06292; }
 .dot-light-pink { background-color: #f8bbd0; }

@@ -35,9 +35,14 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
         processedCharts.distribucionRegional = Object.entries(counts).map(([name, val]) => ({
           region: name,
           valor: val,
-          colorClase: `color-${name.toLowerCase().replace(/\s/g, '-')}`
+          colorClase: `color-${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-')}`
         }));
         processedCharts.totalGeneral = atletas.length;
+      } else if (processedCharts.distribucionRegional) {
+        processedCharts.distribucionRegional = processedCharts.distribucionRegional.map(item => ({
+          ...item,
+          colorClase: `color-${item.region.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-')}`
+        }));
       }
 
       setGraficos(processedCharts);
@@ -45,6 +50,43 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
   }, []);
 
   if (!graficos) return <div className="chart-section-container">Cargando gráficos...</div>;
+
+  const getDonutGradient = () => {
+    const list = graficos.distribucionRegional || [];
+    if (list.length === 0) return 'conic-gradient(#e2e8f0 0% 100%)';
+    
+    const colorMap: Record<string, string> = {
+      'san-jose': '#e62334',
+      'alajuela': '#f97316',
+      'cartago': '#2563eb',
+      'heredia': '#eab308',
+      'guanacaste': '#10b981',
+      'puntarenas': '#06b6d4',
+      'limon': '#8b5cf6',
+      'desconocido': '#64748b'
+    };
+    
+    const total = list.reduce((sum, item) => sum + item.valor, 0);
+    if (total === 0) return 'conic-gradient(#e2e8f0 0% 100%)';
+    
+    let currentPercent = 0;
+    const gradientParts: string[] = [];
+    
+    list.forEach(item => {
+      const normalizedName = item.region
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s/g, '-');
+      const color = colorMap[normalizedName] || '#64748b';
+      const percent = (item.valor / total) * 100;
+      
+      gradientParts.push(`${color} ${currentPercent}% ${currentPercent + percent}%`);
+      currentPercent += percent;
+    });
+    
+    return `conic-gradient(${gradientParts.join(', ')})`;
+  };
 
   return (
     <div className="chart-section-container">
@@ -89,7 +131,7 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
             ))}
           </div>
 
-          <div className="donut-chart-placeholder">
+          <div className="donut-chart-placeholder" style={{ background: getDonutGradient() }}>
             <div className="donut-inner">
               <span className="donut-total-label">Total</span>
               <span className="donut-total-value">{graficos.totalGeneral}</span>
