@@ -87,7 +87,6 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
     const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl || localStorage.getItem(`avatar_${user?.id}`) || null);
     const [editData, setEditData] = useState<any>({ ...user });
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [expandedSection, setExpandedSection] = useState<string>('personal');
     const [newPassword, setNewPassword] = useState<string>('');
     const [linkedUser, setLinkedUser] = useState<any>(null);
 
@@ -164,7 +163,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
         if (!newPassword || newPassword.length < 5) {
             Swal.fire({ icon: 'error', title: 'Contraseña muy corta', text: 'Mínimo 5 caracteres.' }); return;
         }
-        const confirm = await Swal.fire({ title: '⚠️ ¿Cambiar contraseña?', text: '¿Estás seguro?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, cambiar', cancelButtonText: 'Cancelar' });
+        const confirm = await Swal.fire({ title: '¿Cambiar contraseña?', text: '¿Estás seguro?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, cambiar', cancelButtonText: 'Cancelar' });
         if (!confirm.isConfirmed) return;
 
         try {
@@ -194,228 +193,150 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
         }
     };
 
-    const toggleSection = (section: string) => {
-        setExpandedSection(expandedSection === section ? '' : section);
-    };
-
     const iniciales = user?.nombre ? user.nombre.slice(0, 2).toUpperCase() : '?';
     const badge = rolLabel(user?.rol, user?.rolUsuario);
 
     const documentosList = [
-        { key: 'cedula_nombre', label: 'Cédula Identidad', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M7 12h.01"/><path d="M11 12h6"/><path d="M11 16h6"/></svg> },
+        { key: 'cedula_nombre', label: 'Cédula Identidad', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M7 12h.01"/><path d="M11 12h6"/><path d="M11 16h6"/></svg> },
     ];
-
-    const chevronIcon = <svg className="accordion-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>;
 
     return (
         <div className="profile-layout-container">
-            
-            {/* ── ACTION BAR ── */}
-            <div className="id-actions-bar">
-                <button className="btn-id-action btn-id-back" onClick={() => navigate(-1)}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
-                    Volver
-                </button>
-
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    {!isEditing ? (
-                        <button className="btn-id-action btn-id-edit" onClick={() => setIsEditing(true)}>✎ Modo Edición</button>
-                    ) : (
-                        <>
-                            <button className="btn-id-action btn-id-cancel" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar</button>
-                            <button className="btn-id-action btn-id-save" onClick={handleSave}>Guardar Cambios</button>
-                        </>
-                    )}
-                </div>
-            </div>
-
-            {/* ── DIGITAL ID CARD (CREDENTIAL) ── */}
-            <div className="digital-id-wrapper">
-                <div className="digital-id-card">
-                    <div className="id-lanyard-hole"></div>
-                    
-                    <div className="id-card-header">
-                        <h2 className="id-org-title">Olimpiadas Especiales Costa Rica</h2>
-                        
-                        <div className="id-avatar-container" onClick={() => fileInputRef.current?.click()}>
-                            <div className="id-avatar-inner">
-                                {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : iniciales}
-                            </div>
-                            <div className="avatar-overlay">Cambiar</div>
-                            <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
-                        </div>
-                    </div>
-
-                    <div className="id-card-body">
-                        {isEditing ? (
-                            <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ textAlign: 'center', fontSize: '1.4rem', fontWeight: 900, marginBottom: '10px' }} />
-                        ) : (
-                            <h1 className="id-name">{user?.nombre || ''} {user?.apellido || ''}</h1>
-                        )}
-                        <div className="id-role">{badge}</div>
-
-                        <div className="id-details-grid">
-                            <div className="id-detail-item">
-                                <span className="id-detail-label">Cédula</span>
-                                <span className="id-detail-val">{user?.cedula || 'N/A'}</span>
-                            </div>
-                            <div className="id-detail-item">
-                                <span className="id-detail-label">Nacimiento</span>
-                                <span className="id-detail-val">{user?.fechaNacimiento || 'N/A'}</span>
-                            </div>
-                            <div className="id-detail-item">
-                                <span className="id-detail-label">País</span>
-                                <span className="id-detail-val">{user?.pais || 'N/A'}</span>
-                            </div>
-                            <div className="id-detail-item">
-                                <span className="id-detail-label">Afiliación</span>
-                                <span className="id-detail-val" style={{ color: '#10b981' }}>Activo</span>
-                            </div>
-                        </div>
-
-                        <div className="id-barcode">*{user?.id}*</div>
-                        <div className="id-system-number">ID: OECR-{user?.id}</div>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── ACCORDION DETAILS ── */}
-            <div className="accordion-wrapper">
+            <div className="profile-wrapper">
                 
-                {/* Datos Personales */}
-                <div className={`accordion-item ${expandedSection === 'personal' ? 'expanded' : ''}`}>
-                    <div className="accordion-header" onClick={() => toggleSection('personal')}>
-                        <h3 className="accordion-title">
-                            <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-                            Datos Personales & Contacto
-                        </h3>
-                        {chevronIcon}
+                {/* ── HEADER CARD ── */}
+                <div className="profile-header-card">
+                    <div className="header-actions">
+                        <button className="btn-simple btn-simple-back" onClick={() => navigate(-1)}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
+                            Volver
+                        </button>
+                        
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            {!isEditing ? (
+                                <button className="btn-simple btn-simple-edit" onClick={() => setIsEditing(true)}>Editar</button>
+                            ) : (
+                                <>
+                                    <button className="btn-simple btn-simple-cancel" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar</button>
+                                    <button className="btn-simple btn-simple-save" onClick={handleSave}>Guardar</button>
+                                </>
+                            )}
+                        </div>
                     </div>
-                    <div className="accordion-content">
-                        <div className="acc-form-grid">
-                            <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
-                            <Field label="Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
-                            <Field label="Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
-                            <Field label="Teléfono" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <Field label="Correo Electrónico" name="correoElectronico" value={editData.correoElectronico} editing={isEditing} onChange={handleChange} />
-                            </div>
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
-                            </div>
+
+                    <div className="profile-avatar" onClick={() => fileInputRef.current?.click()}>
+                        {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : iniciales}
+                        <div className="overlay">Cambiar</div>
+                        <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
+                    </div>
+
+                    {isEditing ? (
+                        <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ maxWidth: '250px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 700, marginBottom: '10px' }} />
+                    ) : (
+                        <h1 className="profile-name">{user?.nombre || ''} {user?.apellido || ''}</h1>
+                    )}
+                    <span className="profile-role">{badge}</span>
+                    <p className="profile-meta">{user?.correoElectronico}</p>
+                </div>
+
+                {/* ── INFO CARD: DATOS PERSONALES ── */}
+                <div className="info-card">
+                    <div className="info-card-header">
+                        <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                        <h2 className="info-card-title">Datos Personales</h2>
+                    </div>
+                    <div className="simple-form-grid">
+                        <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
+                        <Field label="Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
+                        <Field label="Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
+                        <Field label="Teléfono" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
+                        <div style={{ gridColumn: '1 / -1' }}>
+                            <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
                         </div>
                     </div>
                 </div>
 
-                {/* Historial Médico */}
+                {/* ── INFO CARD: HISTORIAL MÉDICO ── */}
                 {user?.rol !== 'usuario' && (
-                    <div className={`accordion-item ${expandedSection === 'medico' ? 'expanded' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSection('medico')}>
-                            <h3 className="accordion-title">
-                                <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-                                Historial Médico de Emergencia
-                            </h3>
-                            {chevronIcon}
+                    <div className="info-card">
+                        <div className="info-card-header">
+                            <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                            <h2 className="info-card-title">Historial Médico</h2>
                         </div>
-                        <div className="accordion-content">
-                            <div className="acc-form-grid">
-                                <Field label="Tipo de Discapacidad" name="tipoDiscapacidad" value={editData.tipoDiscapacidad} editing={isEditing} onChange={handleChange} />
-                                <Field label="Alergias Conocidas" name="alergias" value={editData.alergias || (Array.isArray(editData.tiposAlergia) ? editData.tiposAlergia.join(', ') : '')} editing={isEditing} onChange={handleChange} />
-                            </div>
-                            <div className="acc-form-grid single" style={{ marginTop: '20px' }}>
+                        <div className="simple-form-grid">
+                            <Field label="Tipo de Discapacidad" name="tipoDiscapacidad" value={editData.tipoDiscapacidad} editing={isEditing} onChange={handleChange} />
+                            <Field label="Alergias Conocidas" name="alergias" value={editData.alergias || (Array.isArray(editData.tiposAlergia) ? editData.tiposAlergia.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                            <div style={{ gridColumn: '1 / -1' }}>
                                 <Field label="Condiciones Adicionales" name="condicionesMedicasText" value={editData.condicionesMedicasText || (Array.isArray(editData.condicionesMedicas) ? editData.condicionesMedicas.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                            </div>
+                            <div style={{ gridColumn: '1 / -1' }}>
                                 <Field label="Medicamentos Recetados" name="medicamentos" value={typeof editData.medicamentos === 'string' ? editData.medicamentos : (Array.isArray(editData.medicamentos) ? editData.medicamentos.join(', ') : '')} editing={isEditing} onChange={handleChange} />
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Ficha Deportiva */}
+                {/* ── INFO CARD: FICHA DEPORTIVA ── */}
                 {user?.rol !== 'usuario' && (
-                    <div className={`accordion-item ${expandedSection === 'deporte' ? 'expanded' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSection('deporte')}>
-                            <h3 className="accordion-title">
-                                <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
-                                Ficha Deportiva & Oficial
-                            </h3>
-                            {chevronIcon}
+                    <div className="info-card">
+                        <div className="info-card-header">
+                            <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
+                            <h2 className="info-card-title">Ficha Deportiva</h2>
                         </div>
-                        <div className="accordion-content">
-                            <div className="acc-form-grid">
-                                <Field label="Disciplina / Equipo" name="equipo" value={editData.equipo || editData.disciplina} editing={isEditing} onChange={handleChange} />
-                                <Field label="Años de Experiencia" name="experiencia" value={editData.experiencia || editData.aniosExperiencia || editData.disciplina} editing={isEditing} onChange={handleChange} />
-                                <div style={{ gridColumn: '1 / -1' }}>
-                                    <Field label="Próximos Retos" name="proximosRetos" value={editData.proximosRetos} editing={isEditing} onChange={handleChange} />
-                                </div>
-                            </div>
-                            {linkedUser && (
-                                <div style={{ marginTop: '20px', padding: '15px', background: 'white', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                                    <p style={{ margin: '0 0 5px 0', fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 800 }}>
-                                        {user?.rol === 'atleta' ? 'Tutor asignado' : 'Atleta vinculado'}
-                                    </p>
-                                    <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-                                        {linkedUser.nombre} {linkedUser.apellido || ''}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Documentos */}
-                {user?.rol !== 'usuario' && (
-                    <div className={`accordion-item ${expandedSection === 'docs' ? 'expanded' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSection('docs')}>
-                            <h3 className="accordion-title">
-                                <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-                                Documentos Adjuntos
-                            </h3>
-                            {chevronIcon}
-                        </div>
-                        <div className="accordion-content">
-                            <div className="doc-grid">
-                                {documentosList.map(doc => {
-                                    const docValue = editData[doc.key];
-                                    if (user?.rol === 'tutor' && (doc.key === 'exoneracion_nombre' || doc.key === 'titulo_nombre' || doc.key === 'delincuencia_nombre')) return null;
-                                    if (!docValue && !isEditing) return null;
-
-                                    return (
-                                        <div key={doc.key} className="doc-card" onClick={() => {
-                                            const base64Key = doc.key.replace('_nombre', '_base64');
-                                            const base64Data = editData[base64Key];
-                                            if (base64Data && base64Data.startsWith('data:image/')) {
-                                                Swal.fire({ title: doc.label, imageUrl: base64Data, width: '600px' });
-                                            } else if (docValue && docValue !== 'No adjuntado') {
-                                                Swal.fire({ icon: 'info', title: doc.label, text: `Archivo: ${docValue}` });
-                                            }
-                                        }}>
-                                            <div style={{ color: '#e60000' }}>{doc.icon}</div>
-                                            <p style={{ fontWeight: 800, margin: '5px 0' }}>{doc.label}</p>
-                                            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>{docValue || 'Pendiente'}</p>
-                                        </div>
-                                    );
-                                })}
+                        <div className="simple-form-grid">
+                            <Field label="Disciplina / Equipo" name="equipo" value={editData.equipo || editData.disciplina} editing={isEditing} onChange={handleChange} />
+                            <Field label="Años de Experiencia" name="experiencia" value={editData.experiencia || editData.aniosExperiencia || editData.disciplina} editing={isEditing} onChange={handleChange} />
+                            <div style={{ gridColumn: '1 / -1' }}>
+                                <Field label="Próximos Retos" name="proximosRetos" value={editData.proximosRetos} editing={isEditing} onChange={handleChange} />
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Seguridad */}
-                <div className={`accordion-item ${expandedSection === 'seguridad' ? 'expanded' : ''}`}>
-                    <div className="accordion-header" onClick={() => toggleSection('seguridad')}>
-                        <h3 className="accordion-title">
-                            <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-                            Seguridad
-                        </h3>
-                        {chevronIcon}
-                    </div>
-                    <div className="accordion-content">
-                        <div className="form-group" style={{ marginBottom: '20px', maxWidth: '400px' }}>
-                            <label className="form-label">Nueva Contraseña</label>
-                            <input type="password" className="form-input" placeholder="Escribe tu nueva contraseña..." value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                {/* ── INFO CARD: DOCUMENTOS ── */}
+                {user?.rol !== 'usuario' && (
+                    <div className="info-card">
+                        <div className="info-card-header">
+                            <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+                            <h2 className="info-card-title">Documentos</h2>
                         </div>
-                        <button className="btn-id-action btn-id-edit" onClick={handlePasswordChange}>Actualizar Contraseña</button>
+                        <div className="simple-docs-grid">
+                            {documentosList.map(doc => {
+                                const docValue = editData[doc.key];
+                                if (user?.rol === 'tutor' && (doc.key === 'exoneracion_nombre' || doc.key === 'titulo_nombre' || doc.key === 'delincuencia_nombre')) return null;
+                                if (!docValue && !isEditing) return null;
+
+                                return (
+                                    <div key={doc.key} className="simple-doc-card" onClick={() => {
+                                        const base64Key = doc.key.replace('_nombre', '_base64');
+                                        const base64Data = editData[base64Key];
+                                        if (base64Data && base64Data.startsWith('data:image/')) {
+                                            Swal.fire({ title: doc.label, imageUrl: base64Data, width: '600px' });
+                                        } else if (docValue && docValue !== 'No adjuntado') {
+                                            Swal.fire({ icon: 'info', title: doc.label, text: `Archivo: ${docValue}` });
+                                        }
+                                    }}>
+                                        <div className="doc-icon">{doc.icon}</div>
+                                        <p className="doc-label">{doc.label}</p>
+                                        <p className="doc-status">{docValue || 'Pendiente'}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
+                )}
+
+                {/* ── INFO CARD: SEGURIDAD ── */}
+                <div className="info-card">
+                    <div className="info-card-header">
+                        <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                        <h2 className="info-card-title">Seguridad</h2>
+                    </div>
+                    <div className="form-group" style={{ maxWidth: '300px', marginBottom: '16px' }}>
+                        <label className="form-label">Nueva Contraseña</label>
+                        <input type="password" className="form-input" placeholder="Ingresa nueva contraseña..." value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                    </div>
+                    <button className="btn-simple btn-simple-edit" onClick={handlePasswordChange}>Actualizar Contraseña</button>
                 </div>
 
             </div>
