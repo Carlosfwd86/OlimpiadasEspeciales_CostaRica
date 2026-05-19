@@ -184,7 +184,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
 
     const handlePasswordChange = async () => {
         if (!newPassword || newPassword.length < 5) {
-            Swal.fire({ icon: 'error', title: 'Contraseña muy corta', text: 'La nueva contraseña debe tener al menos 5 caracteres.', confirmButtonColor: '#ff2a40' });
+            Swal.fire({ icon: 'error', title: 'Contraseña muy corta', text: 'La nueva contraseña debe tener al menos 5 caracteres.', confirmButtonColor: '#ff1e38' });
             return;
         }
 
@@ -193,7 +193,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             text: 'Tu contraseña cambiará de inmediato. ¿Estás seguro?',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ff2a40',
+            confirmButtonColor: '#ff1e38',
             cancelButtonColor: '#64748b',
             confirmButtonText: 'Sí, cambiar',
             cancelButtonText: 'Cancelar'
@@ -209,7 +209,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             setNewPassword('');
             Swal.fire({ icon: 'success', title: '¡Contraseña actualizada!', timer: 2500, showConfirmButton: false });
         } catch (e) { 
-            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar la contraseña.', confirmButtonColor: '#ff2a40' }); 
+            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar la contraseña.', confirmButtonColor: '#ff1e38' }); 
         }
     };
 
@@ -237,9 +237,9 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
         { id: 'resumen', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: 'Vista General' },
         { id: 'personal', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>, label: 'Datos Personales' },
         ...(user?.rol !== 'usuario' ? [
-            { id: 'medico', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>, label: 'Historial Médico' },
-            { id: 'deportivo', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>, label: `Ficha ${badge}` },
-            { id: 'documentos', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>, label: 'Documentos' }
+            { id: 'medico', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>, label: 'Médico' },
+            { id: 'deportivo', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>, label: 'Ficha' },
+            { id: 'documentos', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>, label: 'Docs' }
         ] : []),
         { id: 'seguridad', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>, label: 'Seguridad' }
     ];
@@ -250,263 +250,260 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
 
     return (
         <div className="profile-layout-container">
-            <div className="profile-max-width">
-                
-                {/* ── ACTION BAR ── */}
-                <div className="profile-top-actions">
-                    <button className="btn-profile-back" onClick={() => navigate(-1)}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
-                        Volver al Dashboard
-                    </button>
+            {/* ── ACTION BAR (ABOVE HERO) ── */}
+            <div className="profile-top-bar">
+                <button className="btn-profile-back" onClick={() => navigate(-1)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
+                    Volver
+                </button>
 
-                    <div className="profile-edit-actions">
-                        {!isEditing ? (
-                            <button className="btn-edit-mode" onClick={() => setIsEditing(true)}>✎ Modificar Perfil</button>
-                        ) : (
-                            <>
-                                <button className="btn-cancel-mode" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar</button>
-                                <button className="btn-save-mode" onClick={handleSave}>Guardar Cambios</button>
-                            </>
-                        )}
-                    </div>
+                <div className="profile-edit-actions">
+                    {!isEditing ? (
+                        <button className="btn-edit-mode" onClick={() => setIsEditing(true)}>✎ Editar Perfil</button>
+                    ) : (
+                        <>
+                            <button className="btn-cancel-mode" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar</button>
+                            <button className="btn-save-mode" onClick={handleSave}>Guardar Cambios</button>
+                        </>
+                    )}
                 </div>
+            </div>
 
-                {/* ── HEADER SUMMARY CARD ── */}
-                <div className="profile-compact-header">
+            {/* ── HERO BANNER & HEADER ── */}
+            <div className="profile-hero-section">
+                <div className="profile-banner"></div>
+                
+                <div className="profile-header-content">
                     <div className="profile-header-avatar" onClick={() => fileInputRef.current?.click()} title="Cambiar foto">
                         {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : iniciales}
                         <div className="avatar-edit-overlay">Editar</div>
                         <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
                     </div>
                     
-                    <div className="profile-header-info">
-                        <h1 className="profile-header-name">
-                            {isEditing ? (
-                                <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ width: '250px' }} />
-                            ) : (
-                                `${user?.nombre || ''} ${user?.apellido || ''}`
-                            )}
-                            <span className="profile-header-role" style={{ background: '#fff1f2', color: '#ff2a40' }}>{badge}</span>
-                        </h1>
-                        <p style={{ color: '#64748b', margin: 0, fontWeight: 500 }}>ID del Sistema: #{user?.id} &nbsp;|&nbsp; {user?.correoElectronico}</p>
-                    </div>
+                    <h1 className="profile-header-name">
+                        {isEditing ? (
+                            <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ width: '280px', textAlign: 'center', fontSize: '1.8rem', fontWeight: 900 }} />
+                        ) : (
+                            `${user?.nombre || ''} ${user?.apellido || ''}`
+                        )}
+                    </h1>
+                    <span className="profile-header-role">{badge}</span>
+                    <p className="profile-header-meta">ID: #{user?.id} &nbsp;|&nbsp; {user?.correoElectronico}</p>
                 </div>
 
-                {/* ── MAIN GRID (SIDEBAR + TABS CONTENT) ── */}
-                <div className="profile-body-grid">
+                {/* ── HORIZONTAL NAVIGATION TABS ── */}
+                <div className="profile-horizontal-tabs">
+                    {tabs.map(tab => (
+                        <button 
+                            key={tab.id}
+                            className={`profile-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            <span className="tab-icon">{tab.icon}</span>
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── DYNAMIC CONTENT AREA ── */}
+            <div className="profile-content-area">
+                <div className="content-card">
                     
-                    {/* SIDEBAR NAVIGATION */}
-                    <div className="profile-sidebar-nav">
-                        {tabs.map(tab => (
-                            <button 
-                                key={tab.id}
-                                className={`profile-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-                                onClick={() => setActiveTab(tab.id)}
-                            >
-                                <span className="tab-icon">{tab.icon}</span>
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* DYNAMIC CONTENT AREA */}
-                    <div className="profile-content-area">
-                        
-                        {/* TAB: VISTA GENERAL (RESUMEN) */}
-                        {activeTab === 'resumen' && (
-                            <div className="tab-pane-content">
-                                <div className="content-section-header">
-                                    <h2 className="content-section-title">Vista General</h2>
-                                    <p className="content-section-desc">Un resumen rápido de tu cuenta y estado en la plataforma.</p>
+                    {/* TAB: VISTA GENERAL (RESUMEN) */}
+                    {activeTab === 'resumen' && (
+                        <div className="tab-pane-content">
+                            <div className="content-section-header">
+                                <h2 className="content-section-title">Vista General</h2>
+                                <p className="content-section-desc">Un resumen rápido de tu cuenta en la plataforma.</p>
+                            </div>
+                            
+                            <div className="profile-form-grid">
+                                <div className="form-group">
+                                    <label className="form-label">Estado de la cuenta</label>
+                                    <div className="form-control-static" style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }}></span>
+                                        Cuenta Activa
+                                    </div>
                                 </div>
-                                
-                                <div className="profile-form-grid">
-                                    <div className="form-group">
-                                        <label className="form-label">Estado de la cuenta</label>
-                                        <div className="form-control-static" style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></span>
-                                            Cuenta Activa
+                                <div className="form-group">
+                                    <label className="form-label">Rol principal</label>
+                                    <div className="form-control-static">{badge}</div>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Miembro desde</label>
+                                    <div className="form-control-static">{user?.fecha_registro ? new Date(user.fecha_registro).toLocaleDateString() : 'Desconocido'}</div>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Última actualización</label>
+                                    <div className="form-control-static">{user?.updated_at ? new Date(user.updated_at).toLocaleDateString() : 'Reciente'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB: DATOS PERSONALES */}
+                    {activeTab === 'personal' && (
+                        <div className="tab-pane-content">
+                            <div className="content-section-header">
+                                <h2 className="content-section-title">Datos Personales</h2>
+                                <p className="content-section-desc">Información básica de identificación y contacto.</p>
+                            </div>
+                            
+                            <div className="profile-form-grid">
+                                <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
+                                <Field label="Número de Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
+                                <Field label="Fecha de Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
+                                <Field label="Sexo" name="genero" value={editData.genero} editing={isEditing} onChange={handleChange}
+                                    options={[{value:'',label:'— Seleccionar —'},{value:'Masculino',label:'Masculino'},{value:'Femenino',label:'Femenino'},{value:'Prefiero no indicar',label:'Prefiero no indicar'}]} />
+                                <Field label="País de Residencia" name="pais" value={editData.pais} editing={isEditing} onChange={handleChange} />
+                                <Field label="Teléfono" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
+                            </div>
+                            <div className="profile-form-grid single-col" style={{ marginTop: '24px' }}>
+                                <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
+                                <Field label="Correo Electrónico" name="correoElectronico" value={editData.correoElectronico} editing={isEditing} onChange={handleChange} />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB: HISTORIAL MÉDICO */}
+                    {activeTab === 'medico' && user?.rol !== 'usuario' && (
+                        <div className="tab-pane-content">
+                            <div className="content-section-header">
+                                <h2 className="content-section-title">Historial Médico</h2>
+                                <p className="content-section-desc">Información confidencial para emergencias y organización deportiva.</p>
+                            </div>
+
+                            <div className="medical-alert-box">
+                                <strong style={{ display: 'block', marginBottom: '8px' }}>⚠️ Importante:</strong>
+                                Por favor mantén actualizada tu información de medicamentos y alergias para garantizar tu seguridad.
+                            </div>
+
+                            <div className="profile-form-grid">
+                                <Field label="Tipo de Discapacidad" name="tipoDiscapacidad" value={editData.tipoDiscapacidad} editing={isEditing} onChange={handleChange} />
+                                <Field label="Alergias Conocidas" name="alergias" value={editData.alergias || (Array.isArray(editData.tiposAlergia) ? editData.tiposAlergia.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                            </div>
+                            <div className="profile-form-grid single-col" style={{ marginTop: '24px' }}>
+                                <Field label="Condiciones Adicionales" name="condicionesMedicasText" value={editData.condicionesMedicasText || (Array.isArray(editData.condicionesMedicas) ? editData.condicionesMedicas.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                                <Field label="Medicamentos Recetados" name="medicamentos" value={typeof editData.medicamentos === 'string' ? editData.medicamentos : (Array.isArray(editData.medicamentos) ? editData.medicamentos.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB: FICHA DEPORTIVA */}
+                    {activeTab === 'deportivo' && user?.rol !== 'usuario' && (
+                        <div className="tab-pane-content">
+                            <div className="content-section-header">
+                                <h2 className="content-section-title">Ficha Deportiva</h2>
+                                <p className="content-section-desc">Registro de actividades y disciplina.</p>
+                            </div>
+
+                            <div className="profile-form-grid">
+                                <Field label="Disciplina Principal" name="equipo" value={editData.equipo || editData.disciplina} editing={isEditing} onChange={handleChange} />
+                                <Field label="Años de Experiencia" name="experiencia" value={editData.experiencia || editData.aniosExperiencia || editData.disciplina} editing={isEditing} onChange={handleChange} />
+                            </div>
+                            <div className="profile-form-grid single-col" style={{ marginTop: '24px' }}>
+                                <Field label="Próximos Retos Oficiales" name="proximosRetos" value={editData.proximosRetos} editing={isEditing} onChange={handleChange} />
+                            </div>
+
+                            {linkedUser && (
+                                <div style={{ marginTop: '30px', padding: '24px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                                    <h3 style={{ fontSize: '1rem', margin: '0 0 16px 0', color: '#0f172a' }}>Vinculación Oficial</h3>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                        <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#ff1e38', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: 'bold' }}>
+                                            {linkedUser.nombre?.charAt(0) || '?'}
+                                        </div>
+                                        <div>
+                                            <p style={{ margin: '0 0 4px 0', fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 800 }}>
+                                                {user?.rol === 'atleta' ? 'Tutor asignado' : 'Atleta vinculado'}
+                                            </p>
+                                            <p style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                                                {linkedUser.nombre} {linkedUser.apellido || ''}
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Rol principal asignado</label>
-                                        <div className="form-control-static">{badge}</div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Miembro desde</label>
-                                        <div className="form-control-static">{user?.fecha_registro ? new Date(user.fecha_registro).toLocaleDateString() : 'Desconocido'}</div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Última actualización</label>
-                                        <div className="form-control-static">{user?.updated_at ? new Date(user.updated_at).toLocaleDateString() : 'Reciente'}</div>
-                                    </div>
                                 </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* TAB: DOCUMENTOS */}
+                    {activeTab === 'documentos' && user?.rol !== 'usuario' && (
+                        <div className="tab-pane-content">
+                            <div className="content-section-header">
+                                <h2 className="content-section-title">Documentos</h2>
+                                <p className="content-section-desc">Gestiona tus documentos de identidad y certificaciones.</p>
                             </div>
-                        )}
 
-                        {/* TAB: DATOS PERSONALES */}
-                        {activeTab === 'personal' && (
-                            <div className="tab-pane-content">
-                                <div className="content-section-header">
-                                    <h2 className="content-section-title">Datos Personales</h2>
-                                    <p className="content-section-desc">Información básica de identificación y contacto.</p>
-                                </div>
-                                
-                                <div className="profile-form-grid">
-                                    <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Número de Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Fecha de Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Sexo" name="genero" value={editData.genero} editing={isEditing} onChange={handleChange}
-                                        options={[{value:'',label:'— Seleccionar —'},{value:'Masculino',label:'Masculino'},{value:'Femenino',label:'Femenino'},{value:'Prefiero no indicar',label:'Prefiero no indicar'}]} />
-                                    <Field label="País de Residencia" name="pais" value={editData.pais} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Teléfono" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
-                                </div>
-                                <div className="profile-form-grid single-col" style={{ marginTop: '24px' }}>
-                                    <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Correo Electrónico Principal" name="correoElectronico" value={editData.correoElectronico} editing={isEditing} onChange={handleChange} />
-                                </div>
-                            </div>
-                        )}
+                            <div className="docs-layout-grid">
+                                {documentosList.map(doc => {
+                                    const docValue = editData[doc.key];
+                                    if (user?.rol === 'tutor' && (doc.key === 'exoneracion_nombre' || doc.key === 'titulo_nombre' || doc.key === 'delincuencia_nombre')) return null;
+                                    if (!docValue && !isEditing) return null;
 
-                        {/* TAB: HISTORIAL MÉDICO */}
-                        {activeTab === 'medico' && user?.rol !== 'usuario' && (
-                            <div className="tab-pane-content">
-                                <div className="content-section-header">
-                                    <h2 className="content-section-title">Historial Médico</h2>
-                                    <p className="content-section-desc">Esta información es confidencial y solo accesible para emergencias y organización deportiva.</p>
-                                </div>
-
-                                <div className="medical-alert-box">
-                                    <strong style={{ display: 'block', marginBottom: '8px' }}>Importante:</strong>
-                                    Por favor mantén actualizada tu información de medicamentos y alergias para garantizar tu seguridad durante los eventos.
-                                </div>
-
-                                <div className="profile-form-grid">
-                                    <Field label="Tipo de Discapacidad Principal" name="tipoDiscapacidad" value={editData.tipoDiscapacidad} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Alergias Conocidas" name="alergias" value={editData.alergias || (Array.isArray(editData.tiposAlergia) ? editData.tiposAlergia.join(', ') : '')} editing={isEditing} onChange={handleChange} />
-                                </div>
-                                <div className="profile-form-grid single-col" style={{ marginTop: '24px' }}>
-                                    <Field label="Condiciones Médicas Adicionales" name="condicionesMedicasText" value={editData.condicionesMedicasText || (Array.isArray(editData.condicionesMedicas) ? editData.condicionesMedicas.join(', ') : '')} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Medicamentos Recetados (Dosis y Frecuencia)" name="medicamentos" value={typeof editData.medicamentos === 'string' ? editData.medicamentos : (Array.isArray(editData.medicamentos) ? editData.medicamentos.join(', ') : '')} editing={isEditing} onChange={handleChange} />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* TAB: FICHA DEPORTIVA */}
-                        {activeTab === 'deportivo' && user?.rol !== 'usuario' && (
-                            <div className="tab-pane-content">
-                                <div className="content-section-header">
-                                    <h2 className="content-section-title">Ficha Deportiva</h2>
-                                    <p className="content-section-desc">Registro de actividades, disciplinas y vinculación oficial.</p>
-                                </div>
-
-                                <div className="profile-form-grid">
-                                    <Field label="Disciplina o Programa Principal" name="equipo" value={editData.equipo || editData.disciplina} editing={isEditing} onChange={handleChange} />
-                                    <Field label="Años de Experiencia" name="experiencia" value={editData.experiencia || editData.aniosExperiencia || editData.disciplina} editing={isEditing} onChange={handleChange} />
-                                </div>
-                                <div className="profile-form-grid single-col" style={{ marginTop: '24px' }}>
-                                    <Field label="Próximos Retos Oficiales Registrados" name="proximosRetos" value={editData.proximosRetos} editing={isEditing} onChange={handleChange} />
-                                </div>
-
-                                {linkedUser && (
-                                    <div style={{ marginTop: '30px', padding: '24px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                                        <h3 style={{ fontSize: '1rem', margin: '0 0 16px 0', color: '#1e293b' }}>Vinculación Oficial</h3>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#ff2a40', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                                {linkedUser.nombre?.charAt(0) || '?'}
-                                            </div>
-                                            <div>
-                                                <p style={{ margin: '0 0 4px 0', fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>
-                                                    {user?.rol === 'atleta' ? 'Tutor asignado / Familiar' : 'Atleta bajo tu tutela'}
-                                                </p>
-                                                <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>
-                                                    {linkedUser.nombre} {linkedUser.apellido || ''}
-                                                </p>
-                                            </div>
+                                    return (
+                                        <div key={doc.key} className="doc-upload-card" onClick={() => {
+                                            const base64Key = doc.key.replace('_nombre', '_base64');
+                                            const base64Data = editData[base64Key];
+                                            
+                                            if (base64Data) {
+                                                if (base64Data.startsWith('data:image/')) {
+                                                    Swal.fire({ title: doc.label, imageUrl: base64Data, imageAlt: doc.label, confirmButtonText: 'Cerrar', confirmButtonColor: '#ff1e38', width: '600px' });
+                                                } else if (base64Data.startsWith('data:application/pdf')) {
+                                                    Swal.fire({ title: doc.label, html: `<iframe src="${base64Data}" width="100%" height="500px" style="border:none; border-radius: 8px;"></iframe>`, confirmButtonText: 'Cerrar', confirmButtonColor: '#ff1e38', width: '80%' });
+                                                } else {
+                                                    Swal.fire({ icon: 'info', text: 'Documento adjuntado.', confirmButtonColor: '#ff1e38' });
+                                                }
+                                            } else if (docValue && docValue !== 'No adjuntado') {
+                                                Swal.fire({ icon: 'info', title: doc.label, text: `Archivo: ${docValue}`, confirmButtonColor: '#ff1e38' });
+                                            } else {
+                                                if (!isEditing) Swal.fire({ icon: 'info', title: doc.label, text: 'No adjuntado todavía.', confirmButtonColor: '#ff1e38' });
+                                            }
+                                        }}>
+                                            <div style={{ color: '#ff1e38', marginBottom: '16px' }}>{doc.icon}</div>
+                                            <p style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', margin: '0 0 8px 0' }}>{doc.label}</p>
+                                            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0, wordBreak: 'break-all' }}>{docValue || 'Pendiente'}</p>
                                         </div>
+                                    );
+                                })}
+                                
+                                {isEditing && (
+                                    <div className="doc-upload-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                        <div style={{ color: '#ff1e38', marginBottom: '12px' }}>
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        </div>
+                                        <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#64748b', margin: 0 }}>Cargar Nuevo</p>
                                     </div>
                                 )}
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        {/* TAB: DOCUMENTOS */}
-                        {activeTab === 'documentos' && user?.rol !== 'usuario' && (
-                            <div className="tab-pane-content">
-                                <div className="content-section-header">
-                                    <h2 className="content-section-title">Repositorio de Documentos</h2>
-                                    <p className="content-section-desc">Gestiona tu papelería y documentos de identidad oficiales requeridos.</p>
-                                </div>
-
-                                <div className="docs-layout-grid">
-                                    {documentosList.map(doc => {
-                                        const docValue = editData[doc.key];
-                                        if (user?.rol === 'tutor' && (doc.key === 'exoneracion_nombre' || doc.key === 'titulo_nombre' || doc.key === 'delincuencia_nombre')) return null;
-                                        if (!docValue && !isEditing) return null;
-
-                                        return (
-                                            <div key={doc.key} className="doc-upload-card" onClick={() => {
-                                                const base64Key = doc.key.replace('_nombre', '_base64');
-                                                const base64Data = editData[base64Key];
-                                                
-                                                if (base64Data) {
-                                                    if (base64Data.startsWith('data:image/')) {
-                                                        Swal.fire({ title: doc.label, imageUrl: base64Data, imageAlt: doc.label, confirmButtonText: 'Cerrar', confirmButtonColor: '#ff2a40', width: '600px' });
-                                                    } else if (base64Data.startsWith('data:application/pdf')) {
-                                                        Swal.fire({ title: doc.label, html: `<iframe src="${base64Data}" width="100%" height="500px" style="border:none; border-radius: 8px;"></iframe>`, confirmButtonText: 'Cerrar', confirmButtonColor: '#ff2a40', width: '80%' });
-                                                    } else {
-                                                        Swal.fire({ icon: 'info', text: 'Documento adjuntado (formato no previsualizable).', confirmButtonColor: '#ff2a40' });
-                                                    }
-                                                } else if (docValue && docValue !== 'No adjuntado') {
-                                                    Swal.fire({ icon: 'info', title: doc.label, text: `Nombre del archivo: ${docValue}`, confirmButtonColor: '#ff2a40' });
-                                                } else {
-                                                    if (!isEditing) Swal.fire({ icon: 'info', title: doc.label, text: 'No has adjuntado este archivo todavía.', confirmButtonColor: '#ff2a40' });
-                                                }
-                                            }}>
-                                                <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>{doc.icon}</div>
-                                                <p style={{ fontSize: '0.8rem', fontWeight: 800, color: '#ff2a40', textTransform: 'uppercase', margin: '0 0 8px 0' }}>{doc.label}</p>
-                                                <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0, wordBreak: 'break-all' }}>{docValue || 'Pendiente'}</p>
-                                            </div>
-                                        );
-                                    })}
-                                    
-                                    {isEditing && (
-                                        <div className="doc-upload-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                            <div style={{ color: '#ff2a40', marginBottom: '8px' }}>
-                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                            </div>
-                                            <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', margin: 0 }}>Cargar Nuevo Archivo</p>
-                                        </div>
-                                    )}
-                                </div>
+                    {/* TAB: SEGURIDAD */}
+                    {activeTab === 'seguridad' && (
+                        <div className="tab-pane-content" style={{ maxWidth: '500px' }}>
+                            <div className="content-section-header">
+                                <h2 className="content-section-title">Seguridad</h2>
+                                <p className="content-section-desc">Administra tu contraseña de acceso.</p>
                             </div>
-                        )}
 
-                        {/* TAB: SEGURIDAD */}
-                        {activeTab === 'seguridad' && (
-                            <div className="tab-pane-content security-content">
-                                <div className="content-section-header">
-                                    <h2 className="content-section-title">Ajustes de Seguridad</h2>
-                                    <p className="content-section-desc">Administra tus credenciales de acceso a la plataforma de Olimpiadas Especiales.</p>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: '24px' }}>
-                                    <label className="form-label">Nueva Contraseña</label>
-                                    <input 
-                                        type="password" 
-                                        className="form-input" 
-                                        placeholder="Ingresa la nueva contraseña..." 
-                                        value={newPassword}
-                                        onChange={e => setNewPassword(e.target.value)}
-                                    />
-                                    <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '8px 0 0 0' }}>Debe contener al menos 5 caracteres para mayor seguridad.</p>
-                                </div>
-                                
-                                <button className="btn-edit-mode" onClick={handlePasswordChange}>
-                                    Actualizar Contraseña
-                                </button>
+                            <div className="form-group" style={{ marginBottom: '24px' }}>
+                                <label className="form-label">Nueva Contraseña</label>
+                                <input 
+                                    type="password" 
+                                    className="form-input" 
+                                    placeholder="Escribe tu nueva contraseña..." 
+                                    value={newPassword}
+                                    onChange={e => setNewPassword(e.target.value)}
+                                />
                             </div>
-                        )}
-                    </div>
+                            
+                            <button className="btn-edit-mode" onClick={handlePasswordChange}>
+                                Actualizar Contraseña
+                            </button>
+                        </div>
+                    )}
+                    
                 </div>
             </div>
         </div>
