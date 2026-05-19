@@ -36,7 +36,8 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     } else if (status === 403) {
-      console.error('Acceso prohibido: No tienes permisos suficientes para esta acción.');
+      console.error('Acceso prohibido: No tienes permisos suficientes para esta acción. Redirigiendo al inicio...');
+      window.location.href = '/';
     } else if (status === 500) {
       console.error('Error interno del servidor. Por favor, contacta al soporte.');
     }

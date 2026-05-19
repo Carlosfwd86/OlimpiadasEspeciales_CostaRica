@@ -37,7 +37,7 @@ const Routing: React.FC = () => {
             <Route
                 path="/admin"
                 element={
-                    <PrivateRoute>
+                    <PrivateRoute allowedRoles={[1]}>
                         <PanelAdministrativo />
                     </PrivateRoute>
                 }
