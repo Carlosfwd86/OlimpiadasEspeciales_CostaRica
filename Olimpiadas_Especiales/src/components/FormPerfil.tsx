@@ -87,6 +87,8 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
     const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl || localStorage.getItem(`avatar_${user?.id}`) || null);
     const [editData, setEditData] = useState<any>({ ...user });
     const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [expandedSection, setExpandedSection] = useState<string>('personal');
+    const [newPassword, setNewPassword] = useState<string>('');
     const [linkedUser, setLinkedUser] = useState<any>(null);
 
     useEffect(() => { 
@@ -111,31 +113,17 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             try {
                 const roleId = `${user.rol}_${user.id}`;
                 let data: any = null;
-                
                 if (user.rol === 'atleta') data = await getAtletaById(roleId);
                 else if (user.rol === 'entrenador') data = await getEntrenadorById(roleId);
                 else if (user.rol === 'voluntario') data = await getVoluntarioById(roleId);
                 else if (user.rol === 'tutor') data = await getTutorById(roleId);
 
                 if (data) {
-                    const mappedData = {
-                        ...data,
-                        correoElectronico: data.correo_electronico || data.correoElectronico,
-                        fechaNacimiento: data.fecha_nacimiento || data.fechaNacimiento,
-                        aniosExperiencia: data.anios_experiencia || data.aniosExperiencia,
-                        experiencia: data.experiencia || data.experiencia_previa || data.experiencia,
-                        emergenciaNombre: data.emergencia_nombre || data.emergenciaNombre,
-                        emergenciaTelefono: data.emergencia_telefono || data.emergenciaTelefono,
-                        proximosRetos: data.proximos_retos || data.proximosRetos,
-                        equipo: data.equipo || data.disciplina || data.equipo
-                    };
+                    const mappedData = { ...data, correoElectronico: data.correo_electronico || data.correoElectronico, fechaNacimiento: data.fecha_nacimiento || data.fechaNacimiento, aniosExperiencia: data.anios_experiencia || data.aniosExperiencia, experiencia: data.experiencia || data.experiencia_previa || data.experiencia, emergenciaNombre: data.emergencia_nombre || data.emergenciaNombre, emergenciaTelefono: data.emergencia_telefono || data.emergenciaTelefono, proximosRetos: data.proximos_retos || data.proximosRetos, equipo: data.equipo || data.disciplina || data.equipo };
                     setEditData((prev: any) => ({ ...prev, ...mappedData }));
                     
-                    if (user.rol === 'atleta' && data.tutorVinculado) {
-                        setLinkedUser(await getTutorById(data.tutorVinculado));
-                    } else if (user.rol === 'tutor' && data.atletaVinculado) {
-                        setLinkedUser(await getAtletaById(data.atletaVinculado));
-                    }
+                    if (user.rol === 'atleta' && data.tutorVinculado) setLinkedUser(await getTutorById(data.tutorVinculado));
+                    else if (user.rol === 'tutor' && data.atletaVinculado) setLinkedUser(await getAtletaById(data.atletaVinculado));
                 }
             } catch (e) {
                 console.warn("No se encontró registro extendido");
@@ -163,15 +151,30 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             
             const finalData = { ...editData, ...(updatedRecord || {}) };
             localStorage.setItem('usuarioSesion', JSON.stringify(finalData));
-            if (finalData.avatarUrl) {
-                localStorage.setItem(`avatar_${user.id}`, finalData.avatarUrl);
-            }
+            if (finalData.avatarUrl) localStorage.setItem(`avatar_${user.id}`, finalData.avatarUrl);
             if (setRefreshUser) setRefreshUser(finalData);
             setIsEditing(false);
             Swal.fire({ icon: 'success', title: '¡Guardado!', timer: 1800, showConfirmButton: false });
         } catch (err) {
             Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar.' });
         }
+    };
+
+    const handlePasswordChange = async () => {
+        if (!newPassword || newPassword.length < 5) {
+            Swal.fire({ icon: 'error', title: 'Contraseña muy corta', text: 'Mínimo 5 caracteres.' }); return;
+        }
+        const confirm = await Swal.fire({ title: '⚠️ ¿Cambiar contraseña?', text: '¿Estás seguro?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, cambiar', cancelButtonText: 'Cancelar' });
+        if (!confirm.isConfirmed) return;
+
+        try {
+            Swal.fire({ title: 'Actualizando...', didOpen: () => Swal.showLoading() });
+            const updated = { ...user, password: newPassword };
+            await updateUsuario(user.id, updated);
+            localStorage.setItem('usuarioSesion', JSON.stringify(updated));
+            setNewPassword('');
+            Swal.fire({ icon: 'success', title: '¡Actualizada!', timer: 2500, showConfirmButton: false });
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: 'Fallo al actualizar.' }); }
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,6 +194,10 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
         }
     };
 
+    const toggleSection = (section: string) => {
+        setExpandedSection(expandedSection === section ? '' : section);
+    };
+
     const iniciales = user?.nombre ? user.nombre.slice(0, 2).toUpperCase() : '?';
     const badge = rolLabel(user?.rol, user?.rolUsuario);
 
@@ -198,158 +205,219 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
         { key: 'cedula_nombre', label: 'Cédula Identidad', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M7 12h.01"/><path d="M11 12h6"/><path d="M11 16h6"/></svg> },
     ];
 
+    const chevronIcon = <svg className="accordion-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>;
+
     return (
         <div className="profile-layout-container">
             
             {/* ── ACTION BAR ── */}
-            <div className="bento-actions-bar">
-                <button className="btn-bento-back" onClick={() => navigate(-1)}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
+            <div className="id-actions-bar">
+                <button className="btn-id-action btn-id-back" onClick={() => navigate(-1)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
                     Volver
                 </button>
 
-                <div className="bento-controls">
+                <div style={{ display: 'flex', gap: '10px' }}>
                     {!isEditing ? (
-                        <button className="btn-bento-action btn-primary" onClick={() => setIsEditing(true)}>✎ Modo Edición</button>
+                        <button className="btn-id-action btn-id-edit" onClick={() => setIsEditing(true)}>✎ Modo Edición</button>
                     ) : (
                         <>
-                            <button className="btn-bento-action btn-light" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar</button>
-                            <button className="btn-bento-action btn-success" onClick={handleSave}>Guardar Cambios</button>
+                            <button className="btn-id-action btn-id-cancel" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar</button>
+                            <button className="btn-id-action btn-id-save" onClick={handleSave}>Guardar Cambios</button>
                         </>
                     )}
                 </div>
             </div>
 
-            {/* ── BENTO GRID ── */}
-            <div className="bento-grid">
-                
-                {/* Identity Card */}
-                <div className="bento-card card-identity">
-                    <div className="bento-avatar-wrapper" onClick={() => fileInputRef.current?.click()}>
-                        {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : iniciales}
-                        <div className="avatar-overlay">Editar</div>
-                        <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
-                    </div>
-                    <h1 className="identity-name">
-                        {isEditing ? (
-                            <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ textAlign: 'center', fontSize: '1.5rem', background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
-                        ) : (
-                            `${user?.nombre || ''} ${user?.apellido || ''}`
-                        )}
-                    </h1>
-                    <span className="identity-role">{badge}</span>
-                </div>
-
-                {/* Quick Stats Mini Cards */}
-                <div className="card-quick-stats">
-                    <div className="stats-grid">
-                        <div className="stat-box">
-                            <span className="stat-label">ID Sistema</span>
-                            <span className="stat-val">#{user?.id}</span>
-                        </div>
-                        <div className="stat-box">
-                            <span className="stat-label">Estado</span>
-                            <span className="stat-val" style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></span> Activo
-                            </span>
-                        </div>
-                        <div className="stat-box" style={{ gridColumn: 'span 2' }}>
-                            <span className="stat-label">Correo Principal</span>
-                            <span className="stat-val" style={{ fontSize: '1rem' }}>{user?.correoElectronico}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Datos Personales */}
-                <div className="bento-card card-personal">
-                    <h2 className="card-title">
-                        <div className="card-title-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                        Datos Personales
-                    </h2>
-                    <div className="bento-form-grid">
-                        <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
-                        <Field label="Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
-                        <Field label="Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
-                        <Field label="Teléfono" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
-                        <div style={{ gridColumn: 'span 2' }}>
-                            <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Info Médica */}
-                {user?.rol !== 'usuario' && (
-                    <div className="bento-card card-medical">
-                        <h2 className="card-title" style={{ color: '#e11d48' }}>
-                            <div className="card-title-icon" style={{ background: '#ffe4e6', color: '#e11d48' }}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            {/* ── DIGITAL ID CARD (CREDENTIAL) ── */}
+            <div className="digital-id-wrapper">
+                <div className="digital-id-card">
+                    <div className="id-lanyard-hole"></div>
+                    
+                    <div className="id-card-header">
+                        <h2 className="id-org-title">Olimpiadas Especiales Costa Rica</h2>
+                        
+                        <div className="id-avatar-container" onClick={() => fileInputRef.current?.click()}>
+                            <div className="id-avatar-inner">
+                                {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : iniciales}
                             </div>
-                            Historial Médico
-                        </h2>
-                        <div className="bento-form-grid single">
-                            <Field label="Discapacidad" name="tipoDiscapacidad" value={editData.tipoDiscapacidad} editing={isEditing} onChange={handleChange} />
-                            <Field label="Alergias Conocidas" name="alergias" value={editData.alergias || (Array.isArray(editData.tiposAlergia) ? editData.tiposAlergia.join(', ') : '')} editing={isEditing} onChange={handleChange} />
-                            <Field label="Medicamentos Recetados" name="medicamentos" value={typeof editData.medicamentos === 'string' ? editData.medicamentos : (Array.isArray(editData.medicamentos) ? editData.medicamentos.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                            <div className="avatar-overlay">Cambiar</div>
+                            <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
+                        </div>
+                    </div>
+
+                    <div className="id-card-body">
+                        {isEditing ? (
+                            <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ textAlign: 'center', fontSize: '1.4rem', fontWeight: 900, marginBottom: '10px' }} />
+                        ) : (
+                            <h1 className="id-name">{user?.nombre || ''} {user?.apellido || ''}</h1>
+                        )}
+                        <div className="id-role">{badge}</div>
+
+                        <div className="id-details-grid">
+                            <div className="id-detail-item">
+                                <span className="id-detail-label">Cédula</span>
+                                <span className="id-detail-val">{user?.cedula || 'N/A'}</span>
+                            </div>
+                            <div className="id-detail-item">
+                                <span className="id-detail-label">Nacimiento</span>
+                                <span className="id-detail-val">{user?.fechaNacimiento || 'N/A'}</span>
+                            </div>
+                            <div className="id-detail-item">
+                                <span className="id-detail-label">País</span>
+                                <span className="id-detail-val">{user?.pais || 'N/A'}</span>
+                            </div>
+                            <div className="id-detail-item">
+                                <span className="id-detail-label">Afiliación</span>
+                                <span className="id-detail-val" style={{ color: '#10b981' }}>Activo</span>
+                            </div>
+                        </div>
+
+                        <div className="id-barcode">*{user?.id}*</div>
+                        <div className="id-system-number">ID: OECR-{user?.id}</div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── ACCORDION DETAILS ── */}
+            <div className="accordion-wrapper">
+                
+                {/* Datos Personales */}
+                <div className={`accordion-item ${expandedSection === 'personal' ? 'expanded' : ''}`}>
+                    <div className="accordion-header" onClick={() => toggleSection('personal')}>
+                        <h3 className="accordion-title">
+                            <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+                            Datos Personales & Contacto
+                        </h3>
+                        {chevronIcon}
+                    </div>
+                    <div className="accordion-content">
+                        <div className="acc-form-grid">
+                            <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
+                            <Field label="Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
+                            <Field label="Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
+                            <Field label="Teléfono" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
+                            <div style={{ gridColumn: '1 / -1' }}>
+                                <Field label="Correo Electrónico" name="correoElectronico" value={editData.correoElectronico} editing={isEditing} onChange={handleChange} />
+                            </div>
+                            <div style={{ gridColumn: '1 / -1' }}>
+                                <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Historial Médico */}
+                {user?.rol !== 'usuario' && (
+                    <div className={`accordion-item ${expandedSection === 'medico' ? 'expanded' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSection('medico')}>
+                            <h3 className="accordion-title">
+                                <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                                Historial Médico de Emergencia
+                            </h3>
+                            {chevronIcon}
+                        </div>
+                        <div className="accordion-content">
+                            <div className="acc-form-grid">
+                                <Field label="Tipo de Discapacidad" name="tipoDiscapacidad" value={editData.tipoDiscapacidad} editing={isEditing} onChange={handleChange} />
+                                <Field label="Alergias Conocidas" name="alergias" value={editData.alergias || (Array.isArray(editData.tiposAlergia) ? editData.tiposAlergia.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                            </div>
+                            <div className="acc-form-grid single" style={{ marginTop: '20px' }}>
+                                <Field label="Condiciones Adicionales" name="condicionesMedicasText" value={editData.condicionesMedicasText || (Array.isArray(editData.condicionesMedicas) ? editData.condicionesMedicas.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                                <Field label="Medicamentos Recetados" name="medicamentos" value={typeof editData.medicamentos === 'string' ? editData.medicamentos : (Array.isArray(editData.medicamentos) ? editData.medicamentos.join(', ') : '')} editing={isEditing} onChange={handleChange} />
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* Ficha Deportiva */}
                 {user?.rol !== 'usuario' && (
-                    <div className="bento-card card-sport">
-                        <h2 className="card-title">
-                            <div className="card-title-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
-                            Ficha Deportiva
-                        </h2>
-                        <div className="bento-form-grid">
-                            <Field label="Disciplina / Equipo" name="equipo" value={editData.equipo || editData.disciplina} editing={isEditing} onChange={handleChange} />
-                            <Field label="Experiencia" name="experiencia" value={editData.experiencia || editData.aniosExperiencia || editData.disciplina} editing={isEditing} onChange={handleChange} />
-                            <div style={{ gridColumn: 'span 2' }}>
-                                <Field label="Próximos Retos" name="proximosRetos" value={editData.proximosRetos} editing={isEditing} onChange={handleChange} />
+                    <div className={`accordion-item ${expandedSection === 'deporte' ? 'expanded' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSection('deporte')}>
+                            <h3 className="accordion-title">
+                                <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
+                                Ficha Deportiva & Oficial
+                            </h3>
+                            {chevronIcon}
+                        </div>
+                        <div className="accordion-content">
+                            <div className="acc-form-grid">
+                                <Field label="Disciplina / Equipo" name="equipo" value={editData.equipo || editData.disciplina} editing={isEditing} onChange={handleChange} />
+                                <Field label="Años de Experiencia" name="experiencia" value={editData.experiencia || editData.aniosExperiencia || editData.disciplina} editing={isEditing} onChange={handleChange} />
+                                <div style={{ gridColumn: '1 / -1' }}>
+                                    <Field label="Próximos Retos" name="proximosRetos" value={editData.proximosRetos} editing={isEditing} onChange={handleChange} />
+                                </div>
                             </div>
+                            {linkedUser && (
+                                <div style={{ marginTop: '20px', padding: '15px', background: 'white', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                                    <p style={{ margin: '0 0 5px 0', fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 800 }}>
+                                        {user?.rol === 'atleta' ? 'Tutor asignado' : 'Atleta vinculado'}
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                                        {linkedUser.nombre} {linkedUser.apellido || ''}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
 
                 {/* Documentos */}
                 {user?.rol !== 'usuario' && (
-                    <div className="bento-card card-documents">
-                        <h2 className="card-title">
-                            <div className="card-title-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-                            Documentos Adjuntos
-                        </h2>
-                        <div className="bento-docs-grid">
-                            {documentosList.map(doc => {
-                                const docValue = editData[doc.key];
-                                if (user?.rol === 'tutor' && (doc.key === 'exoneracion_nombre' || doc.key === 'titulo_nombre' || doc.key === 'delincuencia_nombre')) return null;
-                                if (!docValue && !isEditing) return null;
+                    <div className={`accordion-item ${expandedSection === 'docs' ? 'expanded' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSection('docs')}>
+                            <h3 className="accordion-title">
+                                <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+                                Documentos Adjuntos
+                            </h3>
+                            {chevronIcon}
+                        </div>
+                        <div className="accordion-content">
+                            <div className="doc-grid">
+                                {documentosList.map(doc => {
+                                    const docValue = editData[doc.key];
+                                    if (user?.rol === 'tutor' && (doc.key === 'exoneracion_nombre' || doc.key === 'titulo_nombre' || doc.key === 'delincuencia_nombre')) return null;
+                                    if (!docValue && !isEditing) return null;
 
-                                return (
-                                    <div key={doc.key} className="doc-card" onClick={() => {
-                                        const base64Key = doc.key.replace('_nombre', '_base64');
-                                        const base64Data = editData[base64Key];
-                                        if (base64Data && base64Data.startsWith('data:image/')) {
-                                            Swal.fire({ title: doc.label, imageUrl: base64Data, width: '600px' });
-                                        } else if (docValue && docValue !== 'No adjuntado') {
-                                            Swal.fire({ icon: 'info', title: doc.label, text: `Archivo: ${docValue}` });
-                                        }
-                                    }}>
-                                        <div style={{ color: '#ff1e38' }}>{doc.icon}</div>
-                                        <p style={{ fontWeight: 800, margin: '5px 0' }}>{doc.label}</p>
-                                        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>{docValue || 'Pendiente'}</p>
-                                    </div>
-                                );
-                            })}
-                            
-                            {isEditing && (
-                                <div className="doc-card" style={{ justifyContent: 'center' }}>
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff1e38" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                    <p style={{ fontWeight: 700, margin: 0, color: '#64748b' }}>Cargar Nuevo</p>
-                                </div>
-                            )}
+                                    return (
+                                        <div key={doc.key} className="doc-card" onClick={() => {
+                                            const base64Key = doc.key.replace('_nombre', '_base64');
+                                            const base64Data = editData[base64Key];
+                                            if (base64Data && base64Data.startsWith('data:image/')) {
+                                                Swal.fire({ title: doc.label, imageUrl: base64Data, width: '600px' });
+                                            } else if (docValue && docValue !== 'No adjuntado') {
+                                                Swal.fire({ icon: 'info', title: doc.label, text: `Archivo: ${docValue}` });
+                                            }
+                                        }}>
+                                            <div style={{ color: '#e60000' }}>{doc.icon}</div>
+                                            <p style={{ fontWeight: 800, margin: '5px 0' }}>{doc.label}</p>
+                                            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>{docValue || 'Pendiente'}</p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 )}
+
+                {/* Seguridad */}
+                <div className={`accordion-item ${expandedSection === 'seguridad' ? 'expanded' : ''}`}>
+                    <div className="accordion-header" onClick={() => toggleSection('seguridad')}>
+                        <h3 className="accordion-title">
+                            <div className="accordion-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                            Seguridad
+                        </h3>
+                        {chevronIcon}
+                    </div>
+                    <div className="accordion-content">
+                        <div className="form-group" style={{ marginBottom: '20px', maxWidth: '400px' }}>
+                            <label className="form-label">Nueva Contraseña</label>
+                            <input type="password" className="form-input" placeholder="Escribe tu nueva contraseña..." value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                        </div>
+                        <button className="btn-id-action btn-id-edit" onClick={handlePasswordChange}>Actualizar Contraseña</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
