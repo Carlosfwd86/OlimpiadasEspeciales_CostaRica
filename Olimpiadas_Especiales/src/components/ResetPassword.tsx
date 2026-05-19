@@ -23,8 +23,18 @@ const ResetPassword = (): React.JSX.Element => {
       return;
     }
 
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.');
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      setError('La contraseña debe contener al menos una letra mayúscula.');
+      return;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      setError('La contraseña debe contener al menos un número.');
       return;
     }
 
