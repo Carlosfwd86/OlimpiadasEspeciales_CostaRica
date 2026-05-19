@@ -126,19 +126,21 @@ const iniciarSesion = async (req, res) => {
         nombre: usuario.nombre 
       },
       JWT_SECRET,
-      { expiresIn: '2h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '2h' }
     );
+
+    const expiresInHours = parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '2', 10);
 
     // CONFIGURACIÓN DE COOKIE SEGURA
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 2 * 60 * 60 * 1000 // 2 horas
+      maxAge: expiresInHours * 60 * 60 * 1000 // dinámico en milisegundos
     });
 
     const expira_en = new Date();
-    expira_en.setHours(expira_en.getHours() + 2);
+    expira_en.setHours(expira_en.getHours() + expiresInHours);
 
     await Sesion.create({
       usuario_id: usuario.id,
