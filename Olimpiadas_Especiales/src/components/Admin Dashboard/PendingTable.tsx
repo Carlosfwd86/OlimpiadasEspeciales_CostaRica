@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import '../../style/PendingTable.css';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import ModalDetalleRegistro from './ModalDetalleRegistro';
@@ -50,53 +51,89 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   }, [refreshTrigger, localSearch, searchQuery, page]);
 
   const handleApprove = (reg: Registro): void => {
-    // ... existing logic
-    if (!window.confirm(`¿Seguro que deseas APROBAR a ${String(reg.name ?? '')}? Pasará a la base de datos oficial.`)) return;
-
-    setProcessingId(reg.id);
-    ServicesAdmin.aprobarRegistro(reg)
-      .then(() => {
-        alert("¡Registro aprobado y guardado en la base de datos oficial!");
-        ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${String(reg.name ?? '')}`, "fa-solid fa-check-circle", "green");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-      })
-      .catch(err => {
-        console.error("Error al aprobar:", err);
-        alert("Error al procesar la aprobación.");
-      })
-      .finally(() => setProcessingId(null));
+    Swal.fire({
+      title: `¿Seguro que deseas APROBAR a ${String(reg.name ?? '')}?`,
+      text: "Pasará a la base de datos oficial.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, aprobar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setProcessingId(reg.id);
+        ServicesAdmin.aprobarRegistro(reg)
+          .then(() => {
+            Swal.fire({ title: '¡Aprobado!', text: '¡Registro aprobado y guardado en la base de datos oficial!', icon: 'success', confirmButtonColor: '#28a745' });
+            ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${String(reg.name ?? '')}`, "fa-solid fa-check-circle", "green");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+          })
+          .catch(err => {
+            console.error("Error al aprobar:", err);
+            Swal.fire({ title: 'Error', text: 'Error al procesar la aprobación.', icon: 'error', confirmButtonColor: '#e62334' });
+          })
+          .finally(() => setProcessingId(null));
+      }
+    });
   };
 
   const handleReject = (reg: Registro): void => {
-    if (!window.confirm(`¿Seguro que deseas marcar el registro de ${reg.name} como RECHAZADO?`)) return;
-
-    setProcessingId(reg.id);
-    ServicesAdmin.rechazarRegistro(reg.id, reg.rol)
-      .then(() => {
-        ServicesAdmin.logActivity("Rechazo", `Se rechazó a ${reg.name}`, "fa-solid fa-circle-xmark", "red");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-      })
-      .catch(err => {
-        console.error("Error al rechazar:", err);
-        alert("Error al procesar el rechazo.");
-      })
-      .finally(() => setProcessingId(null));
+    Swal.fire({
+      title: `¿Seguro que deseas marcar el registro de ${reg.name} como RECHAZADO?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e62334',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, rechazar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setProcessingId(reg.id);
+        ServicesAdmin.rechazarRegistro(reg.id, reg.rol)
+          .then(() => {
+            Swal.fire({ title: '¡Rechazado!', text: 'El registro ha sido marcado como rechazado.', icon: 'success', confirmButtonColor: '#e62334' });
+            ServicesAdmin.logActivity("Rechazo", `Se rechazó a ${reg.name}`, "fa-solid fa-circle-xmark", "red");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+          })
+          .catch(err => {
+            console.error("Error al rechazar:", err);
+            Swal.fire({ title: 'Error', text: 'Error al procesar el rechazo.', icon: 'error', confirmButtonColor: '#e62334' });
+          })
+          .finally(() => setProcessingId(null));
+      }
+    });
   };
 
   const handleDelete = (id: string): void => {
-    if (!window.confirm("¿Estás seguro de que deseas ELIMINAR permanentemente este registro?")) return;
-
-    setProcessingId(id);
-    ServicesAdmin.deleteRegistro(id)
-      .then(() => {
-        ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-      })
-      .catch(err => console.error("Error al eliminar:", err))
-      .finally(() => setProcessingId(null));
+    Swal.fire({
+      title: '¿Estás seguro de que deseas ELIMINAR permanentemente este registro?',
+      text: "Esta acción no se puede deshacer.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e62334',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setProcessingId(id);
+        ServicesAdmin.deleteRegistro(id)
+          .then(() => {
+            Swal.fire({ title: '¡Eliminado!', text: 'Se ha eliminado el registro permanentemente.', icon: 'success', confirmButtonColor: '#e62334' });
+            ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+          })
+          .catch(err => {
+            console.error("Error al eliminar:", err);
+            Swal.fire({ title: 'Error', text: 'Error al eliminar el registro.', icon: 'error', confirmButtonColor: '#e62334' });
+          })
+          .finally(() => setProcessingId(null));
+      }
+    });
   };
 
   if (loading && registrations.length === 0) {

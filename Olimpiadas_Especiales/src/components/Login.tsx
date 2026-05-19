@@ -29,8 +29,12 @@ const Login = (): React.JSX.Element => {
     setLoading(true);
 
     try {
-      await auth.login({ correo_electronico: formData.email, password: formData.password });
-      navigate('/perfil');
+      const loggedInUser = await auth.login({ correo_electronico: formData.email, password: formData.password });
+      if (loggedInUser && loggedInUser.rol_id === 1) {
+        navigate('/admin');
+      } else {
+        navigate('/perfil');
+      }
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.error || 'Correo o contraseña incorrectos.');

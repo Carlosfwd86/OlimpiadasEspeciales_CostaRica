@@ -71,6 +71,60 @@ const programasMock: Programa[] = [
         status: 'PRÓXIMO',
         img: s3Url('img/Hero_contenedor_02.jpeg'),
     },
+    {
+        id: '7',
+        nombre: 'Bochas Unificadas',
+        categoria: 'Atletismo',
+        resumen: 'Desarrolla habilidades de precisión táctica e integración grupal en la disciplina de bochas. Práctica semanal abierta para todas las edades.',
+        fecha: 'Mayo – Diciembre 2025',
+        status: 'ACTIVO',
+        img: '/img/Hero_contenedor_03.jpeg',
+    },
+    {
+        id: '8',
+        nombre: 'Tenis de Mesa Inclusivo',
+        categoria: 'Internacional',
+        resumen: 'Desarrolla agilidad mental, reflejos rápidos y una gran concentración a través de competencias y entrenamientos constantes de tenis de mesa.',
+        fecha: 'Julio – Diciembre 2025',
+        status: 'PRÓXIMO',
+        img: '/img/Hero_contenedor_04.jpeg',
+    },
+    {
+        id: '9',
+        nombre: 'Ciclismo de Ruta Especial',
+        categoria: 'Fútbol',
+        resumen: 'Programa enfocado en ciclismo de ruta y entrenamientos al aire libre, fomentando la resistencia y la superación en pistas controladas.',
+        fecha: 'Enero – Diciembre 2025',
+        status: 'ACTIVO',
+        img: '/img/Hero_contenedor_01.jpeg',
+    },
+    {
+        id: '10',
+        nombre: 'Juegos Mundiales Abu Dabi 2019 – Legado',
+        categoria: 'Internacional',
+        resumen: 'Reconocimiento y actividades en honor a la delegación costarricense que triunfó en los Juegos Mundiales de Olimpiadas Especiales en Abu Dabi 2019.',
+        fecha: 'Continuo 2025',
+        status: 'LEGADO',
+        img: '/img/Hero_contenedor_02.jpeg',
+    },
+    {
+        id: '11',
+        nombre: 'Liderazgo de Atletas',
+        categoria: 'Gimnasia',
+        resumen: 'Talleres de capacitación para que nuestros atletas se conviertan en portavoces del cambio social y embajadores activos de Olimpiadas Especiales.',
+        fecha: 'Febrero – Noviembre 2025',
+        status: 'ACTIVO',
+        img: '/img/Hero_contenedor_03.jpeg',
+    },
+    {
+        id: '12',
+        nombre: 'Atletas Jóvenes (Young Athletes)',
+        categoria: 'Natación',
+        resumen: 'Programa de juego y actividades físicas tempranas enfocado en el desarrollo psicomotriz de niños de entre 2 y 7 años con discapacidad intelectual.',
+        fecha: 'Agosto – Diciembre 2025',
+        status: 'PRÓXIMO',
+        img: '/img/Hero_contenedor_04.jpeg',
+    },
 ];
 
 const categoryIcons: Record<string, string> = {
@@ -85,8 +139,12 @@ const categoryIcons: Record<string, string> = {
 const Programas = (): React.JSX.Element => {
     const [programas, setProgramas] = useState<Programa[]>([]);
     const [cargando, setCargando] = useState<boolean>(true);
-    const [filtroActivo, setFiltroActivo] = useState<string>('TODOS');
     const [animVisible, setAnimVisible] = useState<boolean>(false);
+
+    // Carrusel states
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [visibleCards, setVisibleCards] = useState<number>(3);
+    const [isPaused, setIsPaused] = useState<boolean>(false);
 
     useEffect(() => {
         const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
@@ -97,7 +155,22 @@ const Programas = (): React.JSX.Element => {
                     ? (json as { data: Programa[] }).data
                     : json as Programa[];
                 if (Array.isArray(raw) && raw.length > 0) {
-                    setProgramas(raw);
+                    // Normalizar estados (p. ej., PROGRAMADO -> PRÓXIMO)
+                    const normalized = raw.map(p => {
+                        let normalizedStatus = (p.status || 'ACTIVO').toUpperCase();
+                        if (normalizedStatus === 'PROGRAMADO') {
+                            normalizedStatus = 'PRÓXIMO';
+                        }
+                        return {
+                            ...p,
+                            status: normalizedStatus
+                        };
+                    });
+                    
+                    // Combinar elementos de la base de datos con los mocks para asegurar volumen y ver el carrusel en acción
+                    const dbNames = new Set(normalized.map(p => p.nombre.toLowerCase().trim()));
+                    const filteredMock = programasMock.filter(m => !dbNames.has(m.nombre.toLowerCase().trim()));
+                    setProgramas([...normalized, ...filteredMock]);
                 } else {
                     setProgramas(programasMock);
                 }
@@ -112,10 +185,52 @@ const Programas = (): React.JSX.Element => {
         return () => clearTimeout(timer);
     }, []);
 
-    const filtros = ['TODOS', 'ACTIVO', 'PRÓXIMO', 'LEGADO'];
-    const programasFiltrados = filtroActivo === 'TODOS'
-        ? programas
-        : programas.filter(p => (p.status || 'ACTIVO').toUpperCase() === filtroActivo);
+    // Resize listener to adjust visible cards dynamically
+    useEffect(() => {
+        const updateVisibleCards = () => {
+            if (window.innerWidth <= 768) {
+                setVisibleCards(1);
+            } else if (window.innerWidth <= 1024) {
+                setVisibleCards(2);
+            } else {
+                setVisibleCards(3);
+            }
+        };
+        updateVisibleCards();
+        window.addEventListener('resize', updateVisibleCards);
+        return () => window.removeEventListener('resize', updateVisibleCards);
+    }, []);
+
+    const showNavigation = programas.length > visibleCards;
+
+    const handlePrev = () => {
+        setCurrentIndex(prev => {
+            if (prev === 0) {
+                return Math.max(0, programas.length - visibleCards);
+            }
+            return prev - 1;
+        });
+    };
+
+    const handleNext = () => {
+        setCurrentIndex(prev => {
+            if (prev >= programas.length - visibleCards) {
+                return 0;
+            }
+            return prev + 1;
+        });
+    };
+
+    // Autoplay effect
+    useEffect(() => {
+        if (isPaused || !showNavigation) return;
+        
+        const interval = setInterval(() => {
+            handleNext();
+        }, 3500);
+        
+        return () => clearInterval(interval);
+    }, [isPaused, showNavigation, programas.length, visibleCards]);
 
     if (cargando) {
         return (
@@ -175,82 +290,90 @@ const Programas = (): React.JSX.Element => {
             {/* ── MAIN CONTENT ── */}
             <div className="programas-main-container">
 
-                {/* Header + Filtros */}
+                {/* Header */}
                 <header className="programas-section-header">
                     <div className="programas-section-label">Temporada 2025</div>
                     <h2>Programas Deportivos</h2>
                     <p>Cada programa está diseñado para desarrollar habilidades, fomentar la amistad y celebrar el potencial ilimitado de cada atleta.</p>
-
-                    <div className="programas-filtros" role="tablist" aria-label="Filtrar programas">
-                        {filtros.map(f => (
-                            <button
-                                key={f}
-                                role="tab"
-                                aria-selected={filtroActivo === f}
-                                className={`filtro-btn ${filtroActivo === f ? 'activo' : ''}`}
-                                onClick={() => setFiltroActivo(f)}
-                            >
-                                {f}
-                            </button>
-                        ))}
-                    </div>
                 </header>
 
-                {/* Grid de programas */}
-                <div className="programas-grid">
-                    {programasFiltrados.length === 0 ? (
-                        <div className="programas-empty">
-                            <span>🔍</span>
-                            <p>No hay programas en esta categoría por ahora.</p>
-                        </div>
-                    ) : (
-                        programasFiltrados.map((programa, idx) => (
-                            <article
-                                key={programa.id}
-                                className="programa-card"
-                                style={{ animationDelay: `${idx * 0.08}s` }}
+                {/* Carrusel de programas */}
+                {programas.length === 0 ? (
+                    <div className="programas-empty" style={{ margin: '0 auto', textAlign: 'center' }}>
+                        <span>🔍</span>
+                        <p>No hay programas por ahora.</p>
+                    </div>
+                ) : (
+                    <div className="programas-carousel-wrapper">
+                        {showNavigation && (
+                            <button className="carousel-nav-btn prev" onClick={handlePrev} aria-label="Anterior">
+                                <i className="fa-solid fa-chevron-left"></i>
+                            </button>
+                        )}
+                        
+                        <div 
+                            className="programas-carousel-viewport"
+                            onMouseEnter={() => setIsPaused(true)}
+                            onMouseLeave={() => setIsPaused(false)}
+                        >
+                            <div 
+                                className="programas-carousel-track"
+                                style={{ 
+                                    transform: `translateX(calc(-${currentIndex} * (100% + 24px) / ${visibleCards}))`
+                                }}
                             >
-                                <div className="programa-card-imagen">
-                                    {(programa.img || programa.imagen) ? (
-                                        <img
-                                            src={programa.img || programa.imagen}
-                                            alt={programa.nombre}
-                                            loading="lazy"
-                                        />
-                                    ) : (
-                                        <div className="programa-card-placeholder">
-                                            <span>{categoryIcons[programa.categoria || programa.deporte || ''] || '🏆'}</span>
+                                {programas.map((programa, idx) => (
+                                    <article
+                                        key={programa.id}
+                                        className="programa-card"
+                                        style={{ animationDelay: `${idx * 0.08}s` }}
+                                    >
+                                        <div className="programa-card-imagen">
+                                            {(programa.img || programa.imagen) ? (
+                                                <img
+                                                    src={programa.img || programa.imagen}
+                                                    alt={programa.nombre}
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <div className="programa-card-placeholder">
+                                                    <span>{categoryIcons[programa.categoria || programa.deporte || ''] || '🏆'}</span>
+                                                </div>
+                                            )}
+                                            <div className="programa-card-imagen-overlay"></div>
                                         </div>
-                                    )}
-                                    <div className="programa-card-imagen-overlay"></div>
-                                    <span className={`programa-status-badge status-${(programa.status || 'activo').toLowerCase().replace(/\s+/g, '-').replace(/ó/g, 'o').replace(/é/g, 'e')}`}>
-                                        {programa.status || 'ACTIVO'}
-                                    </span>
-                                </div>
 
-                                <div className="programa-card-body">
-                                    <span className="programa-categoria">
-                                        {categoryIcons[programa.categoria || programa.deporte || ''] || '🏆'} {programa.categoria || programa.deporte || 'Deporte'}
-                                    </span>
-                                    <h3>{programa.nombre}</h3>
-                                    <p>{programa.resumen || programa.descripcion}</p>
+                                        <div className="programa-card-body">
+                                            <span className="programa-categoria">
+                                                {categoryIcons[programa.categoria || programa.deporte || ''] || '🏆'} {programa.categoria || programa.deporte || 'Deporte'}
+                                            </span>
+                                            <h3>{programa.nombre}</h3>
+                                            <p>{programa.resumen || programa.descripcion}</p>
 
-                                    <div className="programa-card-footer">
-                                        <div className="programa-fecha">
-                                            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-                                                <path d="M19,4H17V3a1,1,0,0,0-2,0V4H9V3A1,1,0,0,0,7,3V4H5A3,3,0,0,0,2,7V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V7A3,3,0,0,0,19,4Zm1,15a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V10H20ZM20,8H4V7A1,1,0,0,1,5,6H7V7A1,1,0,0,0,9,7V6h6V7a1,1,0,0,0,2,0V6h2a1,1,0,0,1,1,1Z"/>
-                                            </svg>
-                                            {programa.fecha}
+                                            <div className="programa-card-footer">
+                                                <div className="programa-fecha">
+                                                    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                                                        <path d="M19,4H17V3a1,1,0,0,0-2,0V4H9V3A1,1,0,0,0,7,3V4H5A3,3,0,0,0,2,7V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V7A3,3,0,0,0,19,4Zm1,15a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V10H20ZM20,8H4V7A1,1,0,0,1,5,6H7V7A1,1,0,0,0,9,7V6h6V7a1,1,0,0,0,2,0V6h2a1,1,0,0,1,1,1Z"/>
+                                                    </svg>
+                                                    {programa.fecha}
+                                                </div>
+                                                <button className="programa-card-btn" aria-label={`Ver detalles de ${programa.nombre}`}>
+                                                    Saber más <span aria-hidden="true">→</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button className="programa-card-btn" aria-label={`Ver detalles de ${programa.nombre}`}>
-                                            Saber más <span aria-hidden="true">→</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-                        ))
-                    )}
-                </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        {showNavigation && (
+                            <button className="carousel-nav-btn next" onClick={handleNext} aria-label="Siguiente">
+                                <i className="fa-solid fa-chevron-right"></i>
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* ── CTA BOTTOM ── */}

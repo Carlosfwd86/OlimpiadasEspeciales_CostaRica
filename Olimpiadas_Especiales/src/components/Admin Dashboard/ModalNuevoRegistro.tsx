@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import '../../style/ModalNuevoRegistro.css';
 import { ServicesAtletas } from '../../services/ServicesAtletas';
 import type { Atleta, Registro } from '../../types';
@@ -93,7 +94,7 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
       /* [verde] Llamada al servicio que usa Axios (apiClient) */
       await ServicesAtletas.registrarAtleta(formData as Partial<Atleta>);
       
-      alert("¡Atleta registrado exitosamente!");
+      Swal.fire({ title: '¡Registrado!', text: '¡Atleta registrado exitosamente!', icon: 'success', confirmButtonColor: '#e62334' });
       onSaveSuccess();
       onClose();
     } catch (error: any) {

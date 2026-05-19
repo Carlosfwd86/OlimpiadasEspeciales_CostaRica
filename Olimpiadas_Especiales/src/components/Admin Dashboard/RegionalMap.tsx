@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { ProvincePath } from "../../types";
 
-const COLOR_ACTIVE = "#89a894"; // Verde Salvia Sólido
-const COLOR_EMPTY = "#f1f5f9";  // Gris Pálido
-const COLOR_HOVER = "#6b8e76";  // Verde Salvia Oscuro
-
 interface RegionalMapProps {
   mini?: boolean;
 }
@@ -97,7 +93,7 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
         <div className="map-card-header">
           <div className="header-text">
             <h3>Distribución Geográfica de Atletas</h3>
-            <p>Mapa interactivo (Basado en {Object.values(data).reduce((a, b) => a + b, 0)} atletas)</p>
+            <p>Mapa interactivo (Basado en {Object.values(data).reduce((a, b) => a + b, 0)} atletas con provincia registrada)</p>
           </div>
         </div>
       )}
@@ -112,12 +108,11 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
                 <path
                   key={prov.name}
                   d={prov.path}
-                  fill={isActive ? COLOR_ACTIVE : COLOR_EMPTY}
                   stroke="#fff"
                   strokeWidth="1.5"
                   onMouseEnter={() => setHoveredProvince({ name: prov.name, count })}
                   onMouseLeave={() => setHoveredProvince(null)}
-                  className="province-path-precise"
+                  className={`province-path-precise ${isActive ? 'active' : 'empty'}`}
                   style={{
                     transition: 'fill 0.3s ease, transform 0.2s ease',
                     cursor: 'pointer'
@@ -134,7 +129,7 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
             <ul className="legend-list">
               {provincesOrdered.map(([name, count]) => (
                 <li key={name} className={hoveredProvince?.name === name ? 'active' : ''}>
-                  <span className="dot" style={{ backgroundColor: count > 0 ? COLOR_ACTIVE : COLOR_EMPTY }}></span>
+                  <span className={`dot ${count > 0 ? 'active' : 'empty'}`}></span>
                   <span className="name">{name}</span>
                   <span className="count">({count} Atletas)</span>
                 </li>
@@ -148,7 +143,7 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
         <div className="map-card-footer">
           <div className="gradient-bar-container">
             <span>Menos Atletas</span>
-            <div className="gradient-bar" style={{ background: `linear-gradient(to right, ${COLOR_EMPTY}, ${COLOR_ACTIVE})` }}></div>
+            <div className="gradient-bar"></div>
             <span>Más Atletas</span>
           </div>
         </div>
@@ -163,6 +158,13 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
           position: relative;
           overflow: hidden;
           font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          transition: all 0.3s ease;
+        }
+        .regional-map-card.mini {
+          padding: 0;
+          box-shadow: none;
+          background: transparent;
+          border: none;
         }
         .map-card-header h3 {
           margin: 0;
@@ -183,15 +185,30 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
           margin-top: 20px;
           min-height: 400px;
         }
+        .regional-map-card.mini .map-content-wrapper {
+          min-height: auto;
+          margin-top: 0;
+        }
         .map-svg-container {
           flex: 1;
           display: flex;
           justify-content: center;
         }
-        .province-path-precise:hover {
-          fill: ${COLOR_HOVER} !important;
+        .province-path-precise {
+          fill: #e2e8f0;
+        }
+        .province-path-precise.active {
+          fill: #e62334;
+        }
+        .province-path-precise.active:hover {
+          fill: #c31b2b !important;
+          transform: scale(1.015);
+          filter: drop-shadow(0 4px 10px rgba(230,35,52,0.3));
+        }
+        .province-path-precise.empty:hover {
+          fill: #cbd5e1 !important;
           transform: scale(1.01);
-          filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+          filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
         }
         .map-floating-legend {
           position: absolute;
@@ -237,6 +254,10 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
           height: 8px;
           border-radius: 50%;
           flex-shrink: 0;
+          background-color: #e2e8f0;
+        }
+        .legend-list .dot.active {
+          background-color: #e62334;
         }
         .legend-list .count {
           color: #64748b;
@@ -261,6 +282,7 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
           height: 8px;
           width: 200px;
           border-radius: 4px;
+          background: linear-gradient(to right, #e2e8f0, #e62334);
         }
         .loading-map {
           height: 400px;
@@ -268,6 +290,62 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
           align-items: center;
           justify-content: center;
           color: #64748b;
+        }
+
+        /* Dark Mode Overrides */
+        .dark-mode .regional-map-card {
+          background: #1e1e24;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+          border: 1px solid #2e2e38;
+        }
+        .dark-mode .regional-map-card.mini {
+          background: transparent;
+          border: none;
+          box-shadow: none;
+        }
+        .dark-mode .map-card-header h3 {
+          color: #f3f4f6;
+        }
+        .dark-mode .map-card-header p {
+          color: #9ca3af;
+        }
+        .dark-mode .province-path-precise {
+          fill: #334155;
+        }
+        .dark-mode .province-path-precise.active {
+          fill: #e62334;
+        }
+        .dark-mode .province-path-precise.empty:hover {
+          fill: #475569 !important;
+        }
+        .dark-mode .map-floating-legend {
+          background: rgba(30, 30, 36, 0.95);
+          border-color: #2e2e38;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .dark-mode .legend-header {
+          color: #6b7280;
+        }
+        .dark-mode .legend-list li {
+          color: #e5e7eb;
+        }
+        .dark-mode .legend-list .dot {
+          background-color: #334155;
+        }
+        .dark-mode .legend-list .dot.active {
+          background-color: #e62334;
+        }
+        .dark-mode .legend-list .count {
+          color: #9ca3af;
+        }
+        .dark-mode .map-card-footer {
+          border-top-color: #2e2e38;
+        }
+        .dark-mode .gradient-bar-container {
+          color: #6b7280;
+        }
+        .dark-mode .gradient-bar {
+          background: linear-gradient(to right, #334155, #e62334);
         }
       `}} />
     </div>

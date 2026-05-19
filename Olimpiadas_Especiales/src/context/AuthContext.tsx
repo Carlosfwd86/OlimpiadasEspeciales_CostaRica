@@ -11,7 +11,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: any) => Promise<void>;
+  login: (credentials: any) => Promise<any>;
   logout: () => Promise<void>;
 }
 
@@ -46,6 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // por seguridad (XSS protection). El backend ya setea la cookie en login.
     if (usuario) localStorage.setItem('usuarioSesion', JSON.stringify(usuario));
     setUser(usuario);
+    return usuario;
   };
 
   const logout = async () => {
