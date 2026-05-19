@@ -1,29 +1,28 @@
 /* src/style/AdminDashboard.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
 :root {
-  --admin-bg: #f4f6f8;
+  --admin-bg: #f8fafc;
   --admin-bg-alt: #ffffff;
-  --admin-text-main: #1d1d1f;
-  --admin-text-muted: #6e6e73;
-  --admin-text-sub: #adb5bd;
-  --admin-red: #e62334;
+  --admin-text-main: #0f172a;
+  --admin-text-muted: #64748b;
+  --admin-text-sub: #94a3b8;
+  --admin-red: #e60000;
   --admin-white: #ffffff;
-  --admin-border: #e1e4e8;
-  --admin-border-alt: #f1f3f5;
-  --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --admin-border: #e2e8f0;
+  --admin-border-alt: #f1f5f9;
+  --font-family-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
 }
 
-.dark-mode {
-  --admin-bg: #121212;
-  --admin-bg-alt: #1c1c1e;
-  --admin-text-main: #f5f5f7;
-  --admin-text-muted: #a1a1a6;
-  --admin-text-sub: #86868b;
-  --admin-white: #1c1c1e;
-  --admin-border: #2c2c2e;
-  --admin-border-alt: #3a3a3c;
+/* Force light mode globally */
+body {
+  background-color: var(--admin-bg) !important;
 }
 
 .admin-dashboard-layout {
@@ -47,7 +46,7 @@
 }
 
 .admin-dashboard-body {
-  padding: 30px 40px 40px 40px; /* Padding ajustado para quitar el espacio en blanco extra */
+  padding: 30px 40px 40px 40px;
   overflow-y: auto;
   flex: 1;
   display: flex;
@@ -64,16 +63,18 @@
 }
 
 .dashboard-header h1 {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 800;
   margin: 0 0 8px 0;
-  color: #111;
+  color: var(--admin-text-main);
+  letter-spacing: -0.02em;
 }
 
 .dashboard-header p {
   font-size: 15px;
   color: var(--admin-text-muted);
   margin: 0;
+  font-weight: 500;
 }
 
 .header-actions {
@@ -85,120 +86,145 @@
   background-color: var(--admin-white);
   color: var(--admin-text-main);
   border: 1px solid var(--admin-border);
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-export:hover {
-  background-color: #f0f0f0;
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-new-entry {
   background-color: var(--admin-red);
   color: white;
   border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
+  padding: 10px 24px;
+  border-radius: 10px;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  box-shadow: 0 4px 12px rgba(230, 35, 52, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(230, 0, 0, 0.3);
 }
 
 .btn-new-entry:hover {
-  background-color: #cc1b2b;
+  background-color: #cc0000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(230, 0, 0, 0.4);
 }
 
 /* Grids */
 .stat-cards-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 24px;
 }
 
 /* Regional Map */
 .regional-map-container {
   background: var(--admin-white);
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--admin-border-alt);
 }
 
 .map-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .map-title h4 {
   margin: 0;
   color: var(--admin-text-main);
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .map-title p {
   margin: 4px 0 0 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--admin-text-muted);
 }
 
 .map-tooltip-fixed {
-  background: #1e293b;
+  background: #0f172a;
   color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 120px;
-  animation: fadeIn 0.2s ease-out;
+  min-width: 140px;
+  animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-lg);
 }
 
 .province-name {
-  font-weight: bold;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .province-count {
-  font-size: 11px;
-  opacity: 0.8;
+  font-size: 12px;
+  opacity: 0.9;
 }
 
 .map-wrapper {
   background: var(--admin-bg);
-  border-radius: 10px;
-  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  border: 1px solid var(--admin-border-alt);
+  padding: 10px;
 }
 
 .map-legend {
-  margin-top: 15px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-size: 11px;
+  gap: 12px;
+  font-size: 12px;
   color: var(--admin-text-muted);
+  font-weight: 500;
 }
 
 .legend-gradient {
-  width: 150px;
-  height: 8px;
-  background: linear-gradient(to right, #ffedea, #ef4444);
-  border-radius: 4px;
+  width: 180px;
+  height: 10px;
+  background: linear-gradient(to right, #f1f5f9, var(--admin-red));
+  border-radius: 5px;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
+  from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-dashboard-body > * {
+  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.admin-dashboard-body > *:nth-child(1) { animation-delay: 0.1s; }
+.admin-dashboard-body > *:nth-child(2) { animation-delay: 0.2s; }
+.admin-dashboard-body > *:nth-child(3) { animation-delay: 0.3s; }
