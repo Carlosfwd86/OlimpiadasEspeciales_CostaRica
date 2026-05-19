@@ -149,10 +149,10 @@ export default function PanelAdministrativo(): React.JSX.Element {
           
           {activeTab === 'consultas' && <ConsultasSection searchQuery={searchQuery} />}
 
-          {activeTab === 'reportes' && <ReportsSection searchQuery={searchQuery} />}
-          {activeTab === 'perfil' && <ProfileSection />}
-          {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" searchQuery={searchQuery} />}
-          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" searchQuery={searchQuery} />}
+          {activeTab === 'reportes'      && <ReportsSection searchQuery={searchQuery} />}
+          {activeTab === 'usuarios_tab'  && <SettingsSection onThemeChange={setTheme} view="usuarios"      searchQuery={searchQuery} />}
+          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} view="configuracion" searchQuery={searchQuery} />}
+          {activeTab === 'perfil'        && <SettingsSection onThemeChange={setTheme} view="perfil"        searchQuery={searchQuery} />}
         </div>
       </main>
 
