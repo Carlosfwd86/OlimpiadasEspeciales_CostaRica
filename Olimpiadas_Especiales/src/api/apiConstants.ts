@@ -12,5 +12,5 @@ export const ENDPOINT_MAP: Record<string, string> = {
     disciplinas:      'disciplinas',
     programas:        'programas',
     niveles_habilidad: 'niveles-habilidad',
-    areas_voluntariado: 'voluntario-area'
+    areas_voluntariado: 'voluntarios-areas'
 };

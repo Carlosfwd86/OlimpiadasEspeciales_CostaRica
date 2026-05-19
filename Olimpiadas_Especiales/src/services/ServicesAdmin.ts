@@ -120,7 +120,7 @@ export const ServicesAdmin = {
     },
 
     updateProfile: async (id: number | string, data: Partial<AdminProfile>): Promise<AdminProfile> => {
-        const res = await apiClient.put<AdminProfile>(`/Admin/${id}`, data);
+        const res = await apiClient.put<AdminProfile>(`/admin/${id}`, data);
         return res.data;
     },
 
@@ -212,7 +212,7 @@ export const ServicesAdmin = {
     // Auditoría y Registro de Actividad
     logActivity: async (title: string, details: string, icon: string, iconColor: string): Promise<void> => {
         try {
-            await apiClient.post('/actividad-sistema', {
+            await apiClient.post('/actividades-sistema', {
                 title,
                 details,
                 icon,
