@@ -3,15 +3,15 @@
 .chart-section-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 24px;
 }
 
 .chart-card {
   background-color: var(--admin-white, #ffffff);
-  border: 1px solid var(--admin-border, #e1e4e8);
-  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .chart-card-header {
@@ -23,43 +23,48 @@
 
 .chart-card h3 {
   margin: 0;
-  font-size: 16px;
-  color: var(--admin-text-main, #1d1d1f);
+  font-size: 18px;
+  color: var(--admin-text-main, #0f172a);
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .chart-badge {
-  background-color: var(--admin-border-alt, #f1f3f5);
-  color: var(--admin-text-muted, #6e6e73);
+  background-color: #f1f5f9;
+  color: #64748b;
   font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
 }
 
 /* Progress Bars */
 .progress-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
   max-height: 400px;
   overflow-y: auto;
   padding-right: 10px;
 }
+
+/* Scrollbar para listas internas */
+.progress-list::-webkit-scrollbar { width: 4px; }
+.progress-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
 .progress-info {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
   font-size: 14px;
-  color: var(--admin-text-main, #1d1d1f);
-  font-weight: 500;
+  color: var(--admin-text-main, #0f172a);
+  font-weight: 600;
 }
 
 .progress-bar-bg {
   width: 100%;
   height: 8px;
-  background-color: var(--admin-border-alt, #f1f3f5);
+  background-color: #f1f5f9;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -67,13 +72,13 @@
 .progress-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background-color: var(--admin-red, #e62334);
+  background-color: var(--admin-red, #e60000);
 }
 
-.fill-red { background-color: var(--admin-red, #e62334); }
-.fill-blue { background-color: #1a73e8; }
-.fill-green { background-color: #34a853; }
-.fill-yellow { background-color: #fbbc04; }
+.fill-red { background-color: var(--admin-red, #e60000); }
+.fill-blue { background-color: #3b82f6; }
+.fill-green { background-color: #22c55e; }
+.fill-yellow { background-color: #eab308; }
 
 /* Regional Distribution */
 .d-flex-between {
@@ -82,10 +87,19 @@
 }
 
 .link-red {
-  color: var(--admin-red, #e62334);
+  color: var(--admin-red, #e60000);
   text-decoration: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
+  padding: 8px 12px;
+  background: #fff1f2;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.link-red:hover {
+  background: #ffe4e6;
+  color: #cc0000;
 }
 
 .regional-content {
@@ -98,7 +112,7 @@
 .regional-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   flex: 1;
 }
 
@@ -109,115 +123,98 @@
 }
 
 .region-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  margin-right: 12px;
+  margin-right: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.region-dot.color-san-jose { background-color: #e62334; }
+.region-dot.color-san-jose { background-color: #e60000; }
 .region-dot.color-alajuela { background-color: #f97316; }
-.region-dot.color-cartago { background-color: #2563eb; }
+.region-dot.color-cartago { background-color: #3b82f6; }
 .region-dot.color-heredia { background-color: #eab308; }
-.region-dot.color-guanacaste { background-color: #10b981; }
+.region-dot.color-guanacaste { background-color: #22c55e; }
 .region-dot.color-puntarenas { background-color: #06b6d4; }
 .region-dot.color-limon { background-color: #8b5cf6; }
-.region-dot.color-desconocido { background-color: #64748b; }
-
-.dot-red { background-color: var(--admin-red, #e62334); }
-.dot-pink { background-color: #f06292; }
-.dot-light-pink { background-color: #f8bbd0; }
-.dot-gray { background-color: var(--admin-border-alt, #e0e0e0); }
+.region-dot.color-desconocido { background-color: #94a3b8; }
 
 .region-name {
-  color: var(--admin-text-muted, #6e6e73);
+  color: var(--admin-text-muted, #64748b);
   flex: 1;
+  font-weight: 500;
 }
 
 .region-value {
-  font-weight: 600;
-  color: var(--admin-text-main, #1d1d1f);
+  font-weight: 700;
+  color: var(--admin-text-main, #0f172a);
 }
 
 /* CSS Mock Donut Chart */
 .donut-chart-placeholder {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: conic-gradient(
-    #e0e0e0 0% 20%, 
-    var(--admin-red, #e62334) 20% 60%, 
-    #f06292 60% 85%, 
-    #f8bbd0 85% 100%
+    #f1f5f9 0% 20%, 
+    var(--admin-red, #e60000) 20% 60%, 
+    #fb7185 60% 85%, 
+    #fda4af 85% 100%
   );
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .donut-inner {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   background-color: var(--admin-white, #ffffff);
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .donut-total-label {
   font-size: 11px;
-  color: var(--admin-text-muted, #6e6e73);
+  color: var(--admin-text-muted, #64748b);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.05em;
 }
 
 .donut-total-value {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 800;
-  color: var(--admin-text-main, #1d1d1f);
+  color: var(--admin-text-main, #0f172a);
+  line-height: 1;
+  margin-top: 4px;
 }
 
 .map-placeholder {
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   margin-top: 10px;
 }
 
 .map-image-stub {
   width: 100%;
-  height: 140px;
-  background-color: #e3ebd6;
-  border-radius: 8px;
+  height: 160px;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #5c8052;
+  color: #16a34a;
   font-weight: 600;
-  gap: 10px;
+  gap: 12px;
 }
-
-/* Dark Mode Overrides */
-.dark-mode .map-image-stub {
-  background-color: #1a221a;
-  color: #8c9e82;
-}
-
-.dark-mode .donut-chart-placeholder {
-  background: conic-gradient(
-    #3a3a3c 0% 20%, 
-    var(--admin-red, #e62334) 20% 60%, 
-    #c2185b 60% 85%, 
-    #880e4f 85% 100%
-  );
-}
-
-.dark-mode .progress-bar-fill.fill-blue { background-color: #5c9eff; }
-.dark-mode .progress-bar-fill.fill-green { background-color: #51cf66; }
-.dark-mode .progress-bar-fill.fill-yellow { background-color: #ffd93d; }
 
 .map-icon {
-  font-size: 24px;
+  font-size: 28px;
 }
