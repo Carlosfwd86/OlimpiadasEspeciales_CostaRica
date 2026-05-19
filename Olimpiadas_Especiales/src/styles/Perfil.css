@@ -2,13 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --split-bg: #f8fafc;
-  --split-left-bg: #0f172a;
+  --split-bg: #f4f4f5;
+  --split-left-bg: #18181b; /* Dark Zinc */
   --split-left-text: #ffffff;
-  --split-primary: #f43f5e;
-  --split-text-main: #0f172a;
-  --split-text-muted: #64748b;
-  --split-border: #e2e8f0;
+  --split-primary: #e60000; /* True OE Red */
+  --split-text-main: #18181b;
+  --split-text-muted: #71717a;
+  --split-border: #e4e4e7;
 }
 
 body {
@@ -62,8 +62,8 @@ body {
 .split-avatar-container {
   width: 150px;
   height: 150px;
-  border-radius: 20px;
-  background: #1e293b;
+  border-radius: 24px;
+  background: #27272a;
   margin: 0 auto 20px auto;
   display: flex;
   align-items: center;
@@ -71,13 +71,13 @@ body {
   font-size: 3rem;
   font-weight: 800;
   color: var(--split-primary);
-  border: 2px solid #334155;
+  border: 3px solid #3f3f46;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
 }
-.split-avatar-container:hover { border-color: var(--split-primary); }
+.split-avatar-container:hover { border-color: var(--split-primary); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(230,0,0,0.2); }
 .split-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
 .split-avatar-overlay {
   position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; opacity: 0; transition: opacity 0.2s;
@@ -93,14 +93,14 @@ body {
 }
 
 .split-role {
-  background: rgba(244, 63, 94, 0.15);
-  color: var(--split-primary);
-  padding: 6px 16px;
+  background: rgba(230, 0, 0, 0.15);
+  color: #ff4d4d;
+  padding: 8px 20px;
   border-radius: 50px;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   align-self: center;
   margin-bottom: 30px;
 }
@@ -115,11 +115,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #1e293b;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #27272a;
 }
-.split-stat-label { font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
-.split-stat-val { font-size: 0.9rem; font-weight: 700; }
+.split-stat-label { font-size: 0.8rem; color: #a1a1aa; font-weight: 600; }
+.split-stat-val { font-size: 0.95rem; font-weight: 700; color: white; }
 
 .split-actions {
   display: flex;
@@ -138,11 +138,11 @@ body {
   transition: all 0.2s;
 }
 .btn-split-edit { background: var(--split-primary); color: white; }
-.btn-split-edit:hover { background: #e11d48; }
+.btn-split-edit:hover { background: #cc0000; }
 .btn-split-save { background: #10b981; color: white; }
 .btn-split-save:hover { background: #059669; }
-.btn-split-cancel { background: transparent; color: #cbd5e1; border: 1px solid #334155; }
-.btn-split-cancel:hover { background: #1e293b; color: white; }
+.btn-split-cancel { background: transparent; color: #a1a1aa; border: 2px solid #3f3f46; }
+.btn-split-cancel:hover { background: #27272a; color: white; border-color: #52525b; }
 
 /* --- RIGHT PANEL (SCROLLABLE CONTENT) --- */
 .split-right-panel {
@@ -167,11 +167,11 @@ body {
   margin-bottom: 30px;
 }
 .split-section-icon {
-  width: 45px;
-  height: 45px;
-  background: #f1f5f9;
+  width: 50px;
+  height: 50px;
+  background: rgba(230, 0, 0, 0.08);
   color: var(--split-primary);
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -194,19 +194,19 @@ body {
 .form-label { font-size: 0.8rem; font-weight: 700; color: var(--split-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .form-input { 
   width: 100%; 
-  padding: 12px 16px; 
-  border: 2px solid #e2e8f0; 
-  border-radius: 10px; 
+  padding: 14px 18px; 
+  border: 2px solid var(--split-border); 
+  border-radius: 12px; 
   font-family: inherit; 
   font-size: 1rem; 
-  font-weight: 500;
-  background: #f8fafc; 
+  font-weight: 600;
+  background: #fafafa; 
   color: var(--split-text-main);
   transition: all 0.2s;
   box-sizing: border-box;
 }
-.form-input:focus { border-color: var(--split-primary); background: white; outline: none; }
-.form-static { font-size: 1.1rem; font-weight: 600; color: var(--split-text-main); padding: 5px 0; border-bottom: 2px solid #f1f5f9; }
+.form-input:focus { border-color: var(--split-primary); background: white; outline: none; box-shadow: 0 0 0 4px rgba(230,0,0,0.1); }
+.form-static { font-size: 1.1rem; font-weight: 700; color: var(--split-text-main); padding: 8px 0; border-bottom: 2px solid #f4f4f5; }
 
 /* Documents */
 .split-docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
