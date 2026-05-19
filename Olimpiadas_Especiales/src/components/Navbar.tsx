@@ -153,7 +153,7 @@ const Navbar = (): React.JSX.Element => {
           <>
             <span
               className="saludo_usuario"
-              onClick={() => navegar("/perfil")}
+              onClick={() => user.rol_id === 1 ? navegar("/admin") : navegar("/perfil")}
               style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
             >
               <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }}></i>
@@ -164,9 +164,11 @@ const Navbar = (): React.JSX.Element => {
                 PANEL ADMIN
               </button>
             )}
-            <button className="boton_accion_rojo" onClick={() => navegar("/perfil")} style={{ padding: '8px 15px', fontSize: '12px' }}>
-              MI PERFIL
-            </button>
+            {user.rol_id !== 1 && (
+              <button className="boton_accion_rojo" onClick={() => navegar("/perfil")} style={{ padding: '8px 15px', fontSize: '12px' }}>
+                MI PERFIL
+              </button>
+            )}
             <button className="boton_cerrar_sesion" onClick={handleCerrarSesion}>CERRAR SESIÓN</button>
           </>
         ) : (
