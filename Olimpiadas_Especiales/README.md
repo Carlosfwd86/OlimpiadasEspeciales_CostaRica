@@ -185,4 +185,31 @@ La plataforma incorpora habilidades clave de Inteligencia Artificial en el backe
 - **Cómo puede verificarse/probarse:** Interactuando con el componente del Chatbot en la interfaz, enviando consultas relacionadas con la logística del torneo o salud preventiva.
 
 ---
+
+## ⚡ 10. RF-05 | Funcionalidades Avanzadas
+
+La plataforma cuenta con funcionalidades avanzadas implementadas a nivel de backend, integradas de forma transparente en los endpoints existentes sin alterar su comportamiento base:
+
+### 📁 1. Carga de Archivos (File Upload)
+- **Descripción:** Permite a la aplicación recibir archivos del mundo real (certificados médicos) y procesarlos en tiempo de ejecución.
+- **Cómo activarla desde la petición HTTP:**
+  - **Método:** `POST`
+  - **Endpoint:** `/api/certificados/analizar`
+  - **Headers:** `Content-Type: multipart/form-data`
+  - **Cuerpo (Body):** Archivo físico en formato JPG, JPEG, PNG o WEBP enviado bajo el campo de formulario `certificado`.
+
+### 🔍 2. Búsqueda por Texto, Filtros por Campo y Ordenamiento Dinámico
+- **Descripción:** El endpoint de obtención de atletas admite parámetros opcionales en la URL (*Query Parameters*) para realizar búsquedas inteligentes, filtros específicos y ordenamiento directo desde la base de datos.
+- **Cómo activarlos desde la petición HTTP (Parámetros Query):**
+  - **Endpoint:** `/api/atletas` (Requiere token de autenticación en cabeceras).
+  - **Búsqueda por texto (buscar):** Filtra coincidencias de texto parcial en nombre, primer apellido, segundo apellido y cédula.
+    - Ejemplo: `GET /api/atletas?buscar=Gerson`
+  - **Filtros por campo (genero / pais):** Filtra coincidencias exactas por género o país del atleta.
+    - Ejemplo: `GET /api/atletas?genero=Masculino&pais=Costa Rica`
+  - **Ordenamiento dinámico (ordenarPor / orden):** Permite ordenar por campos válidos (ej. `nombre`, `primer_apellido`, `fecha_nacimiento`, `createdAt`) en orden ascendente o descendente.
+    - Ejemplo: `GET /api/atletas?ordenarPor=fecha_nacimiento&orden=DESC`
+  - **Uso Combinado:** Los parámetros se pueden combinar libremente.
+    - Ejemplo: `GET /api/atletas?buscar=Gerson&genero=Masculino&ordenarPor=nombre&orden=ASC`
+
+---
 **Desarrollado y Orquestado para Olimpiadas Especiales Costa Rica.**
