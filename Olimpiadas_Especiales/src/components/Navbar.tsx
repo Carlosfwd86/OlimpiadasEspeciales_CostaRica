@@ -10,10 +10,20 @@ const Navbar = (): React.JSX.Element => {
   const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
 
   const handleCerrarSesion = async (): Promise<void> => {
-    if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-      await logout();
-      navegar("/");
-    }
+    Swal.fire({
+      title: '¿Estás seguro de que deseas cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e62334',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, cerrar sesión',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await logout();
+        navegar("/");
+      }
+    });
   };
 
   const toggleMenu = (nombre: string) => {
