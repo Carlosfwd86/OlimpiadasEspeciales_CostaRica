@@ -124,9 +124,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                     if (user.rol === 'atleta' && data.tutorVinculado) setLinkedUser(await getTutorById(data.tutorVinculado));
                     else if (user.rol === 'tutor' && data.atletaVinculado) setLinkedUser(await getAtletaById(data.atletaVinculado));
                 }
-            } catch (e) {
-                console.warn("No se encontró registro extendido");
-            }
+            } catch (e) { console.warn("No se encontró registro extendido"); }
         };
         fetchRoleData();
     }, [user]);
@@ -154,9 +152,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             if (setRefreshUser) setRefreshUser(finalData);
             setIsEditing(false);
             Swal.fire({ icon: 'success', title: '¡Guardado!', timer: 1800, showConfirmButton: false });
-        } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar.' });
-        }
+        } catch (err) { Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar.' }); }
     };
 
     const handlePasswordChange = async () => {
@@ -197,73 +193,88 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
     const badge = rolLabel(user?.rol, user?.rolUsuario);
 
     const documentosList = [
-        { key: 'cedula_nombre', label: 'Cédula Identidad', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M7 12h.01"/><path d="M11 12h6"/><path d="M11 16h6"/></svg> },
+        { key: 'cedula_nombre', label: 'Cédula Identidad', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M7 12h.01"/><path d="M11 12h6"/><path d="M11 16h6"/></svg> },
     ];
 
     return (
         <div className="profile-layout-container">
-            <div className="profile-wrapper">
-                
-                {/* ── HEADER CARD ── */}
-                <div className="profile-header-card">
-                    <div className="header-actions">
-                        <button className="btn-simple btn-simple-back" onClick={() => navigate(-1)}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
-                            Volver
-                        </button>
-                        
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            {!isEditing ? (
-                                <button className="btn-simple btn-simple-edit" onClick={() => setIsEditing(true)}>Editar</button>
-                            ) : (
-                                <>
-                                    <button className="btn-simple btn-simple-cancel" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar</button>
-                                    <button className="btn-simple btn-simple-save" onClick={handleSave}>Guardar</button>
-                                </>
-                            )}
-                        </div>
-                    </div>
+            
+            {/* ── LEFT FIXED PANEL ── */}
+            <div className="split-left-panel">
+                <button className="btn-split-back" onClick={() => navigate(-1)}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M5 12L12 19M5 12L12 5"/></svg>
+                    Volver
+                </button>
 
-                    <div className="profile-avatar" onClick={() => fileInputRef.current?.click()}>
-                        {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : iniciales}
-                        <div className="overlay">Cambiar</div>
-                        <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
-                    </div>
-
-                    {isEditing ? (
-                        <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ maxWidth: '250px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 700, marginBottom: '10px' }} />
-                    ) : (
-                        <h1 className="profile-name">{user?.nombre || ''} {user?.apellido || ''}</h1>
-                    )}
-                    <span className="profile-role">{badge}</span>
-                    <p className="profile-meta">{user?.correoElectronico}</p>
+                <div className="split-avatar-container" onClick={() => fileInputRef.current?.click()}>
+                    {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : iniciales}
+                    <div className="split-avatar-overlay">Cambiar Foto</div>
+                    <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
                 </div>
 
-                {/* ── INFO CARD: DATOS PERSONALES ── */}
-                <div className="info-card">
-                    <div className="info-card-header">
-                        <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                        <h2 className="info-card-title">Datos Personales</h2>
+                {isEditing ? (
+                    <input name="nombre" value={editData.nombre || ''} onChange={handleChange} className="form-input" style={{ textAlign: 'center', marginBottom: '10px' }} />
+                ) : (
+                    <h1 className="split-name">{user?.nombre || ''} {user?.apellido || ''}</h1>
+                )}
+                
+                <span className="split-role">{badge}</span>
+
+                <div className="split-quick-stats">
+                    <div className="split-stat-row">
+                        <span className="split-stat-label">ID Sistema</span>
+                        <span className="split-stat-val">#{user?.id}</span>
                     </div>
-                    <div className="simple-form-grid">
+                    <div className="split-stat-row">
+                        <span className="split-stat-label">Estado</span>
+                        <span className="split-stat-val" style={{ color: '#10b981' }}>Activo</span>
+                    </div>
+                    <div className="split-stat-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '5px' }}>
+                        <span className="split-stat-label">Correo Electrónico</span>
+                        <span className="split-stat-val" style={{ fontSize: '0.85rem' }}>{user?.correoElectronico}</span>
+                    </div>
+                </div>
+
+                <div className="split-actions">
+                    {!isEditing ? (
+                        <button className="btn-split btn-split-edit" onClick={() => setIsEditing(true)}>Editar Perfil</button>
+                    ) : (
+                        <>
+                            <button className="btn-split btn-split-save" onClick={handleSave}>Guardar Cambios</button>
+                            <button className="btn-split btn-split-cancel" onClick={() => { setIsEditing(false); setEditData({ ...user }); setAvatarPreview(user.avatarUrl); }}>Cancelar Edición</button>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* ── RIGHT SCROLLABLE PANEL ── */}
+            <div className="split-right-panel">
+                
+                {/* Datos Personales */}
+                <div className="split-section">
+                    <div className="split-section-header">
+                        <div className="split-section-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                        <h2 className="split-section-title">Datos Personales</h2>
+                    </div>
+                    <div className="split-form-grid">
                         <Field label="Nombre Completo" name="nombre" value={editData.nombre} editing={isEditing} onChange={handleChange} />
-                        <Field label="Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
-                        <Field label="Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
-                        <Field label="Teléfono" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
+                        <Field label="Número de Cédula" name="cedula" value={editData.cedula} editing={isEditing} onChange={handleChange} />
+                        <Field label="Fecha de Nacimiento" name="fechaNacimiento" type="date" value={editData.fechaNacimiento} editing={isEditing} onChange={handleChange} />
+                        <Field label="Teléfono de Contacto" name="telefono" value={editData.telefono} editing={isEditing} onChange={handleChange} />
                         <div style={{ gridColumn: '1 / -1' }}>
                             <Field label="Dirección Exacta" name="direccion" value={editData.direccion} editing={isEditing} onChange={handleChange} />
                         </div>
                     </div>
                 </div>
 
-                {/* ── INFO CARD: HISTORIAL MÉDICO ── */}
+                {/* Historial Médico */}
                 {user?.rol !== 'usuario' && (
-                    <div className="info-card">
-                        <div className="info-card-header">
-                            <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-                            <h2 className="info-card-title">Historial Médico</h2>
+                    <div className="split-section">
+                        <div className="split-section-header">
+                            <div className="split-section-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                            <h2 className="split-section-title">Historial Médico</h2>
                         </div>
-                        <div className="simple-form-grid">
+                        <div className="split-form-grid">
                             <Field label="Tipo de Discapacidad" name="tipoDiscapacidad" value={editData.tipoDiscapacidad} editing={isEditing} onChange={handleChange} />
                             <Field label="Alergias Conocidas" name="alergias" value={editData.alergias || (Array.isArray(editData.tiposAlergia) ? editData.tiposAlergia.join(', ') : '')} editing={isEditing} onChange={handleChange} />
                             <div style={{ gridColumn: '1 / -1' }}>
@@ -276,14 +287,14 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                     </div>
                 )}
 
-                {/* ── INFO CARD: FICHA DEPORTIVA ── */}
+                {/* Ficha Deportiva */}
                 {user?.rol !== 'usuario' && (
-                    <div className="info-card">
-                        <div className="info-card-header">
-                            <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
-                            <h2 className="info-card-title">Ficha Deportiva</h2>
+                    <div className="split-section">
+                        <div className="split-section-header">
+                            <div className="split-section-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
+                            <h2 className="split-section-title">Ficha Deportiva</h2>
                         </div>
-                        <div className="simple-form-grid">
+                        <div className="split-form-grid">
                             <Field label="Disciplina / Equipo" name="equipo" value={editData.equipo || editData.disciplina} editing={isEditing} onChange={handleChange} />
                             <Field label="Años de Experiencia" name="experiencia" value={editData.experiencia || editData.aniosExperiencia || editData.disciplina} editing={isEditing} onChange={handleChange} />
                             <div style={{ gridColumn: '1 / -1' }}>
@@ -293,21 +304,21 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                     </div>
                 )}
 
-                {/* ── INFO CARD: DOCUMENTOS ── */}
+                {/* Documentos */}
                 {user?.rol !== 'usuario' && (
-                    <div className="info-card">
-                        <div className="info-card-header">
-                            <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-                            <h2 className="info-card-title">Documentos</h2>
+                    <div className="split-section">
+                        <div className="split-section-header">
+                            <div className="split-section-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+                            <h2 className="split-section-title">Documentos</h2>
                         </div>
-                        <div className="simple-docs-grid">
+                        <div className="split-docs-grid">
                             {documentosList.map(doc => {
                                 const docValue = editData[doc.key];
                                 if (user?.rol === 'tutor' && (doc.key === 'exoneracion_nombre' || doc.key === 'titulo_nombre' || doc.key === 'delincuencia_nombre')) return null;
                                 if (!docValue && !isEditing) return null;
 
                                 return (
-                                    <div key={doc.key} className="simple-doc-card" onClick={() => {
+                                    <div key={doc.key} className="split-doc-card" onClick={() => {
                                         const base64Key = doc.key.replace('_nombre', '_base64');
                                         const base64Data = editData[base64Key];
                                         if (base64Data && base64Data.startsWith('data:image/')) {
@@ -316,9 +327,9 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                                             Swal.fire({ icon: 'info', title: doc.label, text: `Archivo: ${docValue}` });
                                         }
                                     }}>
-                                        <div className="doc-icon">{doc.icon}</div>
-                                        <p className="doc-label">{doc.label}</p>
-                                        <p className="doc-status">{docValue || 'Pendiente'}</p>
+                                        <div className="split-doc-icon">{doc.icon}</div>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: '0 0 5px 0' }}>{doc.label}</h3>
+                                        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0, wordBreak: 'break-all' }}>{docValue || 'Pendiente'}</p>
                                     </div>
                                 );
                             })}
@@ -326,17 +337,19 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                     </div>
                 )}
 
-                {/* ── INFO CARD: SEGURIDAD ── */}
-                <div className="info-card">
-                    <div className="info-card-header">
-                        <div className="info-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-                        <h2 className="info-card-title">Seguridad</h2>
+                {/* Seguridad */}
+                <div className="split-section">
+                    <div className="split-section-header">
+                        <div className="split-section-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                        <h2 className="split-section-title">Seguridad</h2>
                     </div>
-                    <div className="form-group" style={{ maxWidth: '300px', marginBottom: '16px' }}>
+                    <div className="form-group" style={{ maxWidth: '400px', marginBottom: '20px' }}>
                         <label className="form-label">Nueva Contraseña</label>
-                        <input type="password" className="form-input" placeholder="Ingresa nueva contraseña..." value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                        <input type="password" className="form-input" placeholder="Ingresa tu nueva contraseña..." value={newPassword} onChange={e => setNewPassword(e.target.value)} />
                     </div>
-                    <button className="btn-simple btn-simple-edit" onClick={handlePasswordChange}>Actualizar Contraseña</button>
+                    <button className="btn-split btn-split-edit" style={{ width: 'auto', padding: '10px 24px' }} onClick={handlePasswordChange}>
+                        Actualizar Contraseña
+                    </button>
                 </div>
 
             </div>
