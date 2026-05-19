@@ -165,4 +165,51 @@ Lo cual traducirá todo el inmenso conglomerado de `assets`, `JSX` y `Estados Re
 (*Notese que si esto fuese exportado, la emulación REST de json-server requerirá que el `db.json` se migre a un backend de la envergadura de Firebase, Postgresql/NestJS, o MongoDB/Express* para soportar la masividad requerida del verdadero entorno).
 
 ---
+
+## 🤖 9. RF-07 | Integración de Inteligencia Artificial al Proyecto
+
+La plataforma incorpora habilidades clave de Inteligencia Artificial en el backend para automatizar procesos administrativos y enriquecer la experiencia de usuario:
+
+### 📑 OCR con Visión e IA para Certificados Médicos (Automatización & Integración)
+- **Habilidad Seleccionada:** Conexión del backend con modelos de lenguaje multimodal (LLMs) y técnicas de Visión Artificial para la extracción estructurada de datos (Structured Outputs).
+- **Por qué se seleccionó:** En Olimpiadas Especiales Costa Rica, la validación de certificados médicos de atletas es un proceso crítico y manual que suele retrasar las inscripciones. Esta solución automatiza el registro de datos reduciendo la carga administrativa.
+- **Cómo se integra:** Se desarrolló un flujo en el backend (`Node.js`/`Express`) que intercepta la subida de un certificado. Utilizando el modelo de visión `gpt-4o-mini` de OpenAI y un esquema estricto de validación JSON, la IA extrae de forma autónoma el nombre completo del atleta y calcula o lee la fecha exacta de vencimiento del documento (sumando un año si solo detecta la fecha de emisión).
+- **Cómo puede verificarse/probarse:** 
+  1. Enviar una petición HTTP `POST` a `/api/certificados/analizar` adjuntando un certificado médico (imagen JPG, PNG o WEBP) bajo el parámetro `certificado` en formato `multipart/form-data`.
+  2. El sistema responderá automáticamente con un JSON estructurado que incluye `{ nombre_atleta, fecha_vencimiento }` detectados por la IA en segundos.
+
+### 💬 Asistente Conversacional Inteligente (Agentes & LLMs)
+- **Habilidad Seleccionada:** Agente conversacional integrado directamente con APIs de Inteligencia Artificial.
+- **Por qué se seleccionó:** Brinda a los usuarios y administradores un canal de soporte interactivo y dinámico para evacuar dudas relacionadas con salud, disciplinas y reglamentos de Olimpiadas Especiales de forma inmediata.
+- **Cómo se integra:** Expuesto en el endpoint `/api/chat`, procesa las consultas conversacionales interactuando de forma reactiva con el frontend para responder con coherencia al contexto del usuario.
+- **Cómo puede verificarse/probarse:** Interactuando con el componente del Chatbot en la interfaz, enviando consultas relacionadas con la logística del torneo o salud preventiva.
+
+---
+
+## ⚡ 10. RF-05 | Funcionalidades Avanzadas
+
+La plataforma cuenta con funcionalidades avanzadas implementadas a nivel de backend, integradas de forma transparente en los endpoints existentes sin alterar su comportamiento base:
+
+### 📁 1. Carga de Archivos (File Upload)
+- **Descripción:** Permite a la aplicación recibir archivos del mundo real (certificados médicos) y procesarlos en tiempo de ejecución.
+- **Cómo activarla desde la petición HTTP:**
+  - **Método:** `POST`
+  - **Endpoint:** `/api/certificados/analizar`
+  - **Headers:** `Content-Type: multipart/form-data`
+  - **Cuerpo (Body):** Archivo físico en formato JPG, JPEG, PNG o WEBP enviado bajo el campo de formulario `certificado`.
+
+### 🔍 2. Búsqueda por Texto, Filtros por Campo y Ordenamiento Dinámico
+- **Descripción:** El endpoint de obtención de atletas admite parámetros opcionales en la URL (*Query Parameters*) para realizar búsquedas inteligentes, filtros específicos y ordenamiento directo desde la base de datos.
+- **Cómo activarlos desde la petición HTTP (Parámetros Query):**
+  - **Endpoint:** `/api/atletas` (Requiere token de autenticación en cabeceras).
+  - **Búsqueda por texto (buscar):** Filtra coincidencias de texto parcial en nombre, primer apellido, segundo apellido y cédula.
+    - Ejemplo: `GET /api/atletas?buscar=Gerson`
+  - **Filtros por campo (genero / pais):** Filtra coincidencias exactas por género o país del atleta.
+    - Ejemplo: `GET /api/atletas?genero=Masculino&pais=Costa Rica`
+  - **Ordenamiento dinámico (ordenarPor / orden):** Permite ordenar por campos válidos (ej. `nombre`, `primer_apellido`, `fecha_nacimiento`, `createdAt`) en orden ascendente o descendente.
+    - Ejemplo: `GET /api/atletas?ordenarPor=fecha_nacimiento&orden=DESC`
+  - **Uso Combinado:** Los parámetros se pueden combinar libremente.
+    - Ejemplo: `GET /api/atletas?buscar=Gerson&genero=Masculino&ordenarPor=nombre&orden=ASC`
+
+---
 **Desarrollado y Orquestado para Olimpiadas Especiales Costa Rica.**

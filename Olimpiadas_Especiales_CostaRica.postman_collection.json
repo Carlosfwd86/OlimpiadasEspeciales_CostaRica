@@ -1,0 +1,534 @@
+{
+	"info": {
+		"_postman_id": "764fcf8c-8c10-449e-b91b-193498877bc9",
+		"name": "Olimpiadas Especiales Costa Rica",
+		"description": "Colección completa de endpoints para el proyecto de Olimpiadas Especiales Costa Rica. Incluye autenticación, gestión de atletas (con búsqueda, filtros y ordenamiento), OCR de certificados por IA y chatbot inteligente.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Autenticación",
+			"item": [
+				{
+					"name": "Registrar Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Gerson\",\n    \"primer_apellido\": \"Fuentes\",\n    \"segundo_apellido\": \"Arce\",\n    \"correo_electronico\": \"gerson.prueba@oe.cr\",\n    \"contrasena\": \"ClaveSegura123!\",\n    \"rol_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var respuesta = pm.response.json();",
+									"if (respuesta.token) {",
+									"    pm.environment.set(\"token\", respuesta.token);",
+									"    pm.globals.set(\"token\", respuesta.token);",
+									"    console.log(\"Token guardado automáticamente en variables de Postman.\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"correo_electronico\": \"gerson.prueba@oe.cr\",\n    \"contrasena\": \"ClaveSegura123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario Actual (Me)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Perfil Completo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cerrar Sesión",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Atletas",
+			"item": [
+				{
+					"name": "Listar todos los Atletas (Sin Filtros)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/atletas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Búsqueda por Texto (Nombre / Apellido / Cédula)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/atletas?buscar=Gerson",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas"
+							],
+							"query": [
+								{
+									"key": "buscar",
+									"value": "Gerson",
+									"description": "Texto a buscar en nombre, primer apellido, segundo apellido o cédula"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filtros por Campo (Género / País)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/atletas?genero=Masculino&pais=Costa Rica",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas"
+							],
+							"query": [
+								{
+									"key": "genero",
+									"value": "Masculino",
+									"description": "Filtrar por género del atleta"
+								},
+								{
+									"key": "pais",
+									"value": "Costa Rica",
+									"description": "Filtrar por país de procedencia"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ordenamiento Dinámico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/atletas?ordenarPor=fecha_nacimiento&orden=DESC",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas"
+							],
+							"query": [
+								{
+									"key": "ordenarPor",
+									"value": "fecha_nacimiento",
+									"description": "Columna por la cual ordenar (nombre, primer_apellido, fecha_nacimiento, etc.)"
+								},
+								{
+									"key": "orden",
+									"value": "DESC",
+									"description": "Dirección del ordenamiento (ASC o DESC)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Atleta por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/atletas/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Atleta (Solo Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Atleta\",\n    \"primer_apellido\": \"Prueba\",\n    \"segundo_apellido\": \"Olimpiadas\",\n    \"fecha_nacimiento\": \"2010-05-15\",\n    \"genero\": \"Masculino\",\n    \"cedula\": \"1-2345-6789\",\n    \"pais\": \"Costa Rica\",\n    \"telefono\": \"8888-8888\",\n    \"correo_electronico\": \"atleta@prueba.cr\",\n    \"direccion\": \"San José, Costa Rica\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/atletas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Atleta (Solo Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Atleta Modificado\",\n    \"telefono\": \"7777-7777\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/atletas/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Atleta (Solo Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/atletas/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"atletas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. OCR Certificados (IA)",
+			"item": [
+				{
+					"name": "Analizar Certificado Médico (Carga de Archivo)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "certificado",
+									"type": "file",
+									"src": [],
+									"description": "Adjuntar imagen (JPG, PNG o WEBP) del certificado médico para lectura automatizada por IA"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/certificados/analizar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"certificados",
+								"analizar"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Chatbot Inteligente",
+			"item": [
+				{
+					"name": "Enviar Consulta al Chatbot",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"¿Cuáles son los requisitos de salud preventiva para ingresar al torneo?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/chat",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

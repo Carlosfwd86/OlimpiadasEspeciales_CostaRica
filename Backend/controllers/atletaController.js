@@ -9,10 +9,14 @@ const AtletaAlergia = require('../models/AtletaAlergia');
 // [verde] Controlador para gestionar la lógica de negocio de los Atletas
 const atletaController = {
 
-  // [verde] Obtener todos los atletas con su información relacionada
+  // [verde] Obtener todos los atletas con su información relacionada (con soporte para búsqueda, filtros y ordenamiento)
   obtenerTodosLosAtletas: async (req, res) => {
     try {
-      const atletas = await Atleta.findAll({
+      const { buscar, genero, pais, ordenarPor, orden } = req.query;
+      const { Op } = require('sequelize');
+
+      const opcionesBuscar = {
+        where: {},
         include: [
           { model: AtletaDocumento, as: 'documentos' },
           { model: AtletaMedicamento, as: 'medicamentos' },
@@ -20,7 +24,38 @@ const atletaController = {
           { model: AtletaDispositivo, as: 'dispositivos' },
           { model: AtletaAlergia, as: 'alergias' }
         ]
-      });
+      };
+
+      // Búsqueda por texto (nombre, primer apellido, segundo apellido o cédula)
+      if (buscar) {
+        opcionesBuscar.where[Op.or] = [
+          { nombre: { [Op.like]: `%${buscar}%` } },
+          { primer_apellido: { [Op.like]: `%${buscar}%` } },
+          { segundo_apellido: { [Op.like]: `%${buscar}%` } },
+          { cedula: { [Op.like]: `%${buscar}%` } }
+        ];
+      }
+
+      // Filtro por campo específico: género
+      if (genero) {
+        opcionesBuscar.where.genero = genero;
+      }
+
+      // Filtro por campo específico: país
+      if (pais) {
+        opcionesBuscar.where.pais = pais;
+      }
+
+      // Ordenamiento dinámico
+      if (ordenarPor) {
+        const direccionOrden = (orden && orden.toUpperCase() === 'DESC') ? 'DESC' : 'ASC';
+        const camposValidos = ['nombre', 'primer_apellido', 'segundo_apellido', 'fecha_nacimiento', 'genero', 'cedula', 'pais', 'createdAt'];
+        if (camposValidos.includes(ordenarPor)) {
+          opcionesBuscar.order = [[ordenarPor, direccionOrden]];
+        }
+      }
+
+      const atletas = await Atleta.findAll(opcionesBuscar);
       res.status(200).json(atletas);
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al obtener los atletas', error: error.message });
