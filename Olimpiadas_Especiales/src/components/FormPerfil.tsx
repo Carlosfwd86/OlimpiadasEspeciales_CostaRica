@@ -234,18 +234,18 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
     const badge = rolLabel(user?.rol, user?.rolUsuario);
 
     const tabs = [
-        { id: 'resumen', icon: '👤', label: 'Vista General' },
-        { id: 'personal', icon: '📋', label: 'Datos Personales' },
+        { id: 'resumen', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: 'Vista General' },
+        { id: 'personal', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>, label: 'Datos Personales' },
         ...(user?.rol !== 'usuario' ? [
-            { id: 'medico', icon: '🏥', label: 'Historial Médico' },
-            { id: 'deportivo', icon: '🎽', label: `Ficha ${badge}` },
-            { id: 'documentos', icon: '📁', label: 'Documentos' }
+            { id: 'medico', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>, label: 'Historial Médico' },
+            { id: 'deportivo', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>, label: `Ficha ${badge}` },
+            { id: 'documentos', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>, label: 'Documentos' }
         ] : []),
-        { id: 'seguridad', icon: '🔒', label: 'Seguridad' }
+        { id: 'seguridad', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>, label: 'Seguridad' }
     ];
 
     const documentosList = [
-        { key: 'cedula_nombre', label: 'Cédula Identidad', icon: '🪪' },
+        { key: 'cedula_nombre', label: 'Cédula Identidad', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M7 12h.01"/><path d="M11 12h6"/><path d="M11 16h6"/></svg> },
     ];
 
     return (
@@ -471,7 +471,9 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                                     
                                     {isEditing && (
                                         <div className="doc-upload-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                            <div style={{ fontSize: '2rem', color: '#ff2a40', marginBottom: '8px' }}>➕</div>
+                                            <div style={{ color: '#ff2a40', marginBottom: '8px' }}>
+                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                            </div>
                                             <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', margin: 0 }}>Cargar Nuevo Archivo</p>
                                         </div>
                                     )}
