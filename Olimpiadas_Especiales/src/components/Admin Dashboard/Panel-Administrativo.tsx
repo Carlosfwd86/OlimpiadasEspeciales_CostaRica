@@ -71,7 +71,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
     <div className={`admin-dashboard-layout ${theme === 'dark' ? 'dark-mode' : ''}`}>
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <main className="admin-main-content">
-        <Topbar onSearch={(q) => setSearchQuery(q)} onTabChange={setActiveTab} />
+        <Topbar onSearch={(q) => setSearchQuery(q)} onTabChange={setActiveTab} activeTab={activeTab} />
 
         <div className="admin-dashboard-body">
           <div className="dashboard-header">

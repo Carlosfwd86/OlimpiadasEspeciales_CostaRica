@@ -16,42 +16,37 @@
   box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
 
-.topbar-nav {
+.topbar-breadcrumb {
   display: flex;
-  gap: 32px;
-  height: 100%;
+  align-items: center;
+  gap: 12px;
 }
 
-.topbar-link {
-  text-decoration: none;
+.breadcrumb-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-red, #e60000);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.breadcrumb-path {
   font-size: 15px;
   font-weight: 600;
   color: var(--admin-text-muted, #64748b);
-  position: relative;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  transition: color 0.3s;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
-.topbar-link:hover {
-  color: var(--admin-text-main, #0f172a);
-}
-
-.topbar-link.active {
-  color: var(--admin-red, #e60000);
-}
-
-.topbar-link.active::after {
+.breadcrumb-path::before {
+  /* Visually dim the section prefix, bold the page name */
   content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background-color: var(--admin-red, #e60000);
-  border-radius: 4px 4px 0 0;
-  box-shadow: 0 -2px 10px rgba(230,0,0,0.3);
 }
 
 .topbar-actions {
