@@ -35,6 +35,7 @@ const voluntarioController = {
   obtenerPorId: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       if (typeof id === 'string' && id.includes('_')) {
         id = id.split('_')[1];
       }
@@ -60,6 +61,9 @@ const voluntarioController = {
   crear: async (req, res) => {
     try {
       const data = req.body.datos || req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para crear el voluntario.', 400));
+      }
       
       let primerNombre = data.nombre || '';
       let apellido = data.apellido || '';
@@ -114,6 +118,7 @@ const voluntarioController = {
   actualizar: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       if (typeof id === 'string' && id.includes('_')) {
         id = id.split('_')[1];
       }
@@ -125,6 +130,9 @@ const voluntarioController = {
       }
 
       const data = req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar.', 400));
+      }
       const updates = {};
       
       if (data.nombre) {
@@ -165,6 +173,7 @@ const voluntarioController = {
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       const borrado = await Voluntario.destroy({ where: { id } });
 
       if (borrado === 0) {
@@ -184,6 +193,7 @@ const voluntarioController = {
   aprobar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       const voluntario = await Voluntario.findByPk(id);
       if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 
@@ -205,6 +215,7 @@ const voluntarioController = {
   rechazar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       const voluntario = await Voluntario.findByPk(id);
       if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 

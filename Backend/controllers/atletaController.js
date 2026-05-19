@@ -61,6 +61,7 @@ const atletaController = {
   obtenerAtletaPorId: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
       
       // Manejar el ID si viene como "atleta_4"
       if (typeof id === 'string' && id.includes('_')) {
@@ -95,6 +96,9 @@ const atletaController = {
     const t = await require('../config/database').sequelize.transaction();
     try {
       const data = req.body.datos || req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para crear el atleta.', 400));
+      }
       
       // Manejar el caso donde el frontend envía todo en 'nombre'
       let primerNombre = data.nombre || '';
@@ -195,6 +199,7 @@ const atletaController = {
   actualizarAtleta: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
       
       // Manejar el ID si viene como "atleta_4"
       if (typeof id === 'string' && id.includes('_')) {
@@ -202,6 +207,9 @@ const atletaController = {
       }
 
       const data = req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar.', 400));
+      }
       
       // Mapeo inteligente de campos camelCase a snake_case
       const updates = {};
@@ -257,6 +265,8 @@ const atletaController = {
   eliminarAtleta: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
+
       const eliminado = await Atleta.destroy({ where: { id } });
 
       if (eliminado) {
@@ -275,6 +285,8 @@ const atletaController = {
   obtenerDocumentosAtleta: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
+
       const documentos = await AtletaDocumento.findAll({ where: { atleta_id: id } });
       res.status(200).json(successResponse(documentos, 'Documentos obtenidos correctamente'));
     } catch (error) {
@@ -290,6 +302,8 @@ const atletaController = {
   agregarDocumento: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
+
       const { nombre_documento, tipo_documento, ruta_archivo } = req.body;
 
       if (!nombre_documento || !tipo_documento || !ruta_archivo) {
@@ -319,6 +333,8 @@ const atletaController = {
   eliminarDocumento: async (req, res) => {
     try {
       const { id, docId } = req.params;
+      if (!id || !docId) return res.status(400).json(errorResponse('El ID del atleta y del documento son requeridos.', 400));
+
       const eliminado = await AtletaDocumento.destroy({ where: { id: docId, atleta_id: id } });
 
       if (eliminado) {

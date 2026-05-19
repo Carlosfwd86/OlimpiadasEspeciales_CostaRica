@@ -30,6 +30,9 @@ const obtenerRoles = async (req, res) => {
 const crearRol = async (req, res) => {
   try {
     const { nombre, descripcion } = req.body;
+    if (!nombre) {
+      return res.status(400).json(errorResponse('El nombre del rol es requerido.', 400));
+    }
 
     // Verifica si el rol ya existe
     const rolExistente = await Rol.findOne({ where: { nombre } });
@@ -54,6 +57,12 @@ const crearRol = async (req, res) => {
 const actualizarRol = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!id) return res.status(400).json(errorResponse('El ID del rol es requerido.', 400));
+
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar el rol.', 400));
+    }
+
     const { nombre, descripcion } = req.body;
 
     // Busca el rol por su id
@@ -78,6 +87,7 @@ const actualizarRol = async (req, res) => {
 const eliminarRol = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!id) return res.status(400).json(errorResponse('El ID del rol es requerido.', 400));
 
     // Busca el rol a eliminar
     const rol = await Rol.findByPk(id);

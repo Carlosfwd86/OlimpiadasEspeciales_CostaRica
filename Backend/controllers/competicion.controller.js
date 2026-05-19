@@ -33,6 +33,7 @@ const competicionController = {
   obtenerPorId: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID de la competición es requerido.', 400));
       const competicion = await Competicion.findByPk(id);
 
       if (!competicion) {
@@ -51,6 +52,9 @@ const competicionController = {
    */
   crear: async (req, res) => {
     try {
+      if (Object.keys(req.body).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para crear la competición.', 400));
+      }
       const nuevaCompeticion = await Competicion.create(req.body);
       return res.status(201).json(successResponse(nuevaCompeticion, 'Competición creada correctamente'));
     } catch (error) {
@@ -65,6 +69,10 @@ const competicionController = {
   actualizar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID de la competición es requerido.', 400));
+      if (Object.keys(req.body).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar.', 400));
+      }
       const competicion = await Competicion.findByPk(id);
 
       if (!competicion) {
@@ -85,6 +93,7 @@ const competicionController = {
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID de la competición es requerido.', 400));
       const borrado = await Competicion.destroy({ where: { id } });
 
       if (borrado === 0) {
@@ -104,6 +113,9 @@ const competicionController = {
   inscribirAtleta: async (req, res) => {
     try {
       const { competicion_id, atleta_id, posicion, resultado } = req.body;
+      if (!competicion_id || !atleta_id) {
+        return res.status(400).json(errorResponse('El ID de la competición y del atleta son requeridos.', 400));
+      }
       
       // Registro en la tabla pivote
       const inscripcion = await CompeticionAtleta.create({

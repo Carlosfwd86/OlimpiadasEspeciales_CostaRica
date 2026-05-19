@@ -33,6 +33,7 @@ const entrenadorController = {
   obtenerPorId: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del entrenador es requerido.', 400));
       if (typeof id === 'string' && id.includes('_')) {
         id = id.split('_')[1];
       }
@@ -55,6 +56,9 @@ const entrenadorController = {
   crear: async (req, res) => {
     try {
       const data = req.body.datos || req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para crear el entrenador.', 400));
+      }
 
       let primerNombre = data.nombre || '';
       let apellido = data.apellido || '';
@@ -114,6 +118,7 @@ const entrenadorController = {
   actualizar: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del entrenador es requerido.', 400));
       if (typeof id === 'string' && id.includes('_')) {
         id = id.split('_')[1];
       }
@@ -125,6 +130,9 @@ const entrenadorController = {
       }
 
       const data = req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar.', 400));
+      }
       const updates = {};
       
       if (data.nombre) {
@@ -169,6 +177,7 @@ const entrenadorController = {
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del entrenador es requerido.', 400));
       const resultado = await Entrenador.destroy({ where: { id } });
 
       if (resultado === 0) {

@@ -29,6 +29,11 @@ const registrarUsuario = async (req, res) => {
   try {
     const { rol_id, nombre, apellido, cedula, correo_electronico, password, telefono, direccion, pais, fecha_nacimiento, genero, avatar_url } = req.body;
 
+    // Validación de campos obligatorios
+    if (!rol_id || !nombre || !correo_electronico || !password) {
+      return res.status(400).json(errorResponse('Faltan campos obligatorios: rol_id, nombre, correo_electronico, password.', 400));
+    }
+
     // Verifica si el correo ya está registrado
     const correoExistente = await Usuario.findOne({ where: { correo_electronico } });
     if (correoExistente) {
@@ -102,6 +107,10 @@ const registrarUsuario = async (req, res) => {
 const iniciarSesion = async (req, res) => {
   try {
     const { correo_electronico, password } = req.body;
+
+    if (!correo_electronico || !password) {
+      return res.status(400).json(errorResponse('Correo electrónico y contraseña son requeridos.', 400));
+    }
 
     const usuario = await Usuario.findOne({ where: { correo_electronico } });
     if (!usuario) {

@@ -59,7 +59,9 @@ const usuarioController = {
    */
   getById: async (req, res) => {
     try {
-      const usuario = await Usuario.findByPk(req.params.id, {
+      const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del usuario es requerido.', 400));
+      const usuario = await Usuario.findByPk(id, {
         attributes: { exclude: ['password_hash'] }
       });
       if (!usuario) return res.status(404).json(errorResponse('Usuario no encontrado', 404));
@@ -75,7 +77,14 @@ const usuarioController = {
    */
   update: async (req, res) => {
     try {
-      const usuario = await Usuario.findByPk(req.params.id);
+      const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del usuario es requerido.', 400));
+
+      if (Object.keys(req.body).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar.', 400));
+      }
+
+      const usuario = await Usuario.findByPk(id);
       if (!usuario) return res.status(404).json(errorResponse('Usuario no encontrado', 404));
       
       const data = req.body;
@@ -109,9 +118,12 @@ const usuarioController = {
    */
   delete: async (req, res) => {
     try {
-      const deleted = await Usuario.destroy({ where: { id: req.params.id } });
-      if (!deleted) return res.status(404).json(errorResponse('No se pudo eliminar', 404));
-      return res.status(200).json(successResponse(null, 'Eliminado correctamente'));
+      const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del usuario es requerido.', 400));
+
+      const deleted = await Usuario.destroy({ where: { id } });
+      if (!deleted) return res.status(404).json(errorResponse('Usuario no encontrado o ya eliminado.', 404));
+      return res.status(200).json(successResponse(null, 'Usuario eliminado correctamente'));
     } catch (error) {
       return res.status(500).json(errorResponse(error.message));
     }
