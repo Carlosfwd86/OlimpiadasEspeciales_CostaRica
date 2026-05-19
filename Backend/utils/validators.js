@@ -39,6 +39,15 @@ const validators = {
     body('correo').isEmail().withMessage('Email inválido'),
     body('asunto').trim().escape().notEmpty().withMessage('Asunto obligatorio'),
     body('mensaje').trim().escape().notEmpty().withMessage('El mensaje no puede estar vacío').isLength({ min: 10 }).withMessage('Mínimo 10 caracteres')
+  ],
+
+  forgotPassword: [
+    body('correo_electronico').isEmail().withMessage('Formato de email incorrecto').normalizeEmail()
+  ],
+
+  resetPassword: [
+    body('token').notEmpty().withMessage('El token es obligatorio'),
+    body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres')
   ]
 };
 
