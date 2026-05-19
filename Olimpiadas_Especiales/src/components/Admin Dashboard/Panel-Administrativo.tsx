@@ -10,40 +10,23 @@ import ChartSection from './ChartSection';
 import PendingTable from './PendingTable';
 import ActivityFeed from './ActivityFeed';
 import ModalNuevoRegistro from './ModalNuevoRegistro';
-import ModalNuevaCompeticion from './ModalNuevaCompeticion';
 import AthleteTable from './AthleteTable';
 import ProfileSection from './ProfileSection';
 import SettingsSection from './SettingsSection';
 import ReportsSection from './ReportsSection';
 import RegionalMap from './RegionalMap';
-import CompetitionCard from './CompetitionCard';
 import ConsultasSection from './ConsultasSection';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
-import type { Stats, Competicion, Registro } from '../../types';
+import type { Stats, Registro } from '../../types';
 import apiClient from '../../api/apiClient';
-
-interface CompeticionFormData {
-  nombre: string;
-  deporte: string;
-  fecha: string;
-  fechaFin: string;
-  ubicacion: string;
-  descripcion: string;
-  estado: string;
-  imagen: string;
-  enlace: string;
-  [key: string]: unknown;
-}
 
 export default function PanelAdministrativo(): React.JSX.Element {
   const [stats, setStats] = useState<Stats | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isCompModalOpen, setIsCompModalOpen] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
-  const [editData, setEditData] = useState<Registro | Competicion | null>(null);
+  const [editData, setEditData] = useState<Registro | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('resumen');
-  const [competiciones, setCompeticiones] = useState<Competicion[]>([]);
   const [theme, setTheme] = useState<string>('light');
 
   useEffect(() => {
@@ -54,10 +37,6 @@ export default function PanelAdministrativo(): React.JSX.Element {
     ServicesAdmin.getSettings()
       .then(data => { if (data.tema) setTheme(String(data.tema)); })
       .catch(err => console.error("Error al cargar tema:", err));
-
-    ServicesAdmin.getCompeticiones()
-      .then(data => setCompeticiones(data))
-      .catch(err => console.error("Error al cargar competiciones:", err));
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
@@ -152,74 +131,6 @@ export default function PanelAdministrativo(): React.JSX.Element {
             </div>
           )}
 
-          {/* TAB: COMPETICIONES */}
-          {activeTab === 'competiciones' && (
-            <div className="tab-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                <div>
-                  <h3 style={{ color: 'var(--admin-text-main)', margin: '0' }}>Gestión de Competiciones y Eventos</h3>
-                  <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px', margin: '5px 0 0' }}>Organiza y supervisa los próximos eventos deportivos.</p>
-                </div>
-                <button className="btn-new-entry" onClick={() => { setEditData(null); setIsCompModalOpen(true); }}>
-                  + Nuevo Evento / Competición
-                </button>
-              </div>
-
-              {competiciones.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                  {competiciones.filter(comp => {
-                    const q = searchQuery.toLowerCase();
-                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
-                  }).map(comp => (
-                    <CompetitionCard key={comp.id} competition={comp}
-                      onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
-                      onDelete={(id) => {
-                        Swal.fire({
-                          title: '¿Estás seguro de eliminar este evento o competición?',
-                          text: "Esta acción no se puede deshacer.",
-                          icon: 'warning',
-                          showCancelButton: true,
-                          confirmButtonColor: '#e62334',
-                          cancelButtonColor: '#64748b',
-                          confirmButtonText: 'Sí, eliminar',
-                          cancelButtonText: 'Cancelar'
-                        }).then((result) => {
-                          if (result.isConfirmed) {
-                            ServicesAdmin.deleteCompeticion(String(id))
-                              .then(() => {
-                                handleSaveSuccess();
-                                Swal.fire({ title: '¡Eliminado!', text: 'El evento ha sido eliminado.', icon: 'success', confirmButtonColor: '#e62334' });
-                              })
-                              .catch(err => Swal.fire({ title: 'Error', text: (err as Error).message, icon: 'error', confirmButtonColor: '#e62334' }));
-                          }
-                        });
-                      }}
-                    />
-                  ))}
-                  {competiciones.filter(comp => {
-                    const q = searchQuery.toLowerCase();
-                    return comp.nombre.toLowerCase().includes(q) || comp.deporte.toLowerCase().includes(q) || comp.ubicacion.toLowerCase().includes(q);
-                  }).length === 0 && (
-                    <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', background: 'var(--admin-white)', borderRadius: '15px', color: 'var(--admin-text-muted)' }}>
-                      <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '30px', marginBottom: '10px', display: 'block' }}></i>
-                      No se encontraron competiciones que coincidan con "{searchQuery}"
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div style={{ padding: '60px', background: 'white', borderRadius: '15px', textAlign: 'center', border: '2px dashed #e2e8f0' }}>
-                  <div style={{ fontSize: '60px', color: '#cbd5e1', marginBottom: '20px' }}>
-                    <i className="fa-solid fa-calendar-plus"></i>
-                  </div>
-                  <h3 style={{ color: '#64748b' }}>No hay competiciones o eventos programados</h3>
-                  <p style={{ color: '#94a3b8' }}>Comienza creando tu primer evento deportivo nacional.</p>
-                  <button className="btn-new-entry" style={{ marginTop: '20px' }} onClick={() => setIsCompModalOpen(true)}>
-                    + Crear Evento
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* TAB: RENDIMIENTO */}
           {activeTab === 'rendimiento' && (
@@ -252,12 +163,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
         editData={editData as Registro | null}
       />
 
-      <ModalNuevaCompeticion
-        isOpen={isCompModalOpen}
-        onClose={() => setIsCompModalOpen(false)}
-        editData={editData as Competicion | null}
-        onSaveSuccess={handleSaveSuccess}
-      />
+
     </div>
   );
 }
