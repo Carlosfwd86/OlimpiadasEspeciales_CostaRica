@@ -62,10 +62,6 @@ export default function Topbar({ onSearch, onTabChange }: TopbarProps): React.JS
             <span className="notification-badge"></span>
           </button>
 
-          <button className="notification-btn" title="Ver Sitio Público" onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>
-            <i className="fa-solid fa-globe"></i>
-          </button>
-
           {showNotif && (
             <div className="dropdown-menu">
               <div className="dropdown-header">
@@ -96,17 +92,9 @@ export default function Topbar({ onSearch, onTabChange }: TopbarProps): React.JS
               <div className="dropdown-header">
                 <h4 style={{ fontSize: '12px', color: '#86868b' }}>ADMINISTRADOR</h4>
               </div>
-              <button className="dropdown-item" onClick={() => onTabChange('perfil')}>
-                <i className="fa-solid fa-circle-user"></i> Mi Perfil
-              </button>
               <button className="dropdown-item" onClick={() => onTabChange('configuracion')}>
                 <i className="fa-solid fa-gear"></i> Configuración
               </button>
-              <div style={{ borderTop: '1px solid #f1f3f5', marginTop: '5px', paddingTop: '5px' }}>
-                <button className="dropdown-item" style={{ color: '#e62334' }} onClick={() => handleNav('/')}>
-                  <i className="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
-                </button>
-              </div>
             </div>
           )}
         </div>

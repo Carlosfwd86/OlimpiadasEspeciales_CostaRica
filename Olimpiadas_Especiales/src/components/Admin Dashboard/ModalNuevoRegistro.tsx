@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import '../../style/ModalNuevoRegistro.css';
 import { ServicesAtletas } from '../../services/ServicesAtletas';
 import type { Atleta, Registro } from '../../types';
@@ -63,7 +64,7 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
   const manejarGuardado = async () => {
     // [verde] Validación simple antes de enviar
     if (!formData.nombre || !formData.primer_apellido || !formData.fecha_nacimiento) {
-      alert("Por favor, complete los campos obligatorios.");
+      Swal.fire({ title: 'Campos requeridos', text: 'Por favor, complete los campos obligatorios.', icon: 'warning', confirmButtonColor: '#e62334' });
       return;
     }
 
@@ -73,12 +74,12 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
       /* [verde] Llamada al servicio que usa Axios (apiClient) */
       await ServicesAtletas.registrarAtleta(formData as Partial<Atleta>);
       
-      alert("¡Atleta registrado exitosamente!");
+      Swal.fire({ title: '¡Registrado!', text: '¡Atleta registrado exitosamente!', icon: 'success', confirmButtonColor: '#e62334' });
       onSaveSuccess();
       onClose();
     } catch (error) {
       console.error("Error al registrar:", error);
-      alert("Ocurrió un error al intentar conectar con el servidor.");
+      Swal.fire({ title: 'Error', text: 'Ocurrió un error al intentar conectar con el servidor.', icon: 'error', confirmButtonColor: '#e62334' });
     } finally {
       setIsSubmitting(false);
     }

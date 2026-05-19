@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
 import type { AdminProfile } from '../../types';
@@ -29,9 +30,9 @@ export default function ProfileSection(): React.JSX.Element {
                 setProfile(updated);
                 setEditMode(false);
                 ServicesAdmin.logActivity("Perfil", "Se actualizó la información del perfil administrador", "fa-solid fa-user-pen", "blue");
-                alert("Perfil actualizado correctamente");
+                Swal.fire({ title: '¡Actualizado!', text: 'Perfil actualizado correctamente.', icon: 'success', confirmButtonColor: '#e62334' });
             })
-            .catch(err => alert("Error al actualizar: " + (err as Error).message));
+            .catch(err => Swal.fire({ title: 'Error', text: 'Error al actualizar: ' + (err as Error).message, icon: 'error', confirmButtonColor: '#e62334' }));
     };
 
     if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Cargando perfil...</div>;

@@ -288,11 +288,64 @@
     box-shadow: 0 6px 20px rgba(255,0,0,0.3);
 }
 
-/* ── GRID ── */
-.programas-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 32px;
+/* ── CAROUSEL WRAPPER & VIEWPORT ── */
+.programas-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.programas-carousel-viewport {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 24px;
+    padding: 15px 0;
+}
+
+.programas-carousel-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    width: 100%;
+}
+
+/* ── CAROUSEL NAV BUTTONS ── */
+.carousel-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 10;
+    transition: all 0.25s ease;
+}
+
+.carousel-nav-btn:hover {
+    background: #FF0000;
+    border-color: #FF0000;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(255,0,0,0.35);
+    transform: translateY(-50%) scale(1.08);
+}
+
+.carousel-nav-btn.prev {
+    left: -20px;
+}
+
+.carousel-nav-btn.next {
+    right: -20px;
 }
 
 /* ── CARD ── */
@@ -306,6 +359,33 @@
     animation: cardFadeIn 0.5s ease both;
     display: flex;
     flex-direction: column;
+    flex: 0 0 calc((100% - (2 * 24px)) / 3);
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .programa-card {
+        flex: 0 0 calc((100% - (1 * 24px)) / 2);
+    }
+}
+
+@media (max-width: 768px) {
+    .programas-carousel-wrapper {
+        padding: 0;
+    }
+    .carousel-nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+    .carousel-nav-btn.prev {
+        left: -10px;
+    }
+    .carousel-nav-btn.next {
+        right: -10px;
+    }
+    .programa-card {
+        flex: 0 0 100%;
+    }
 }
 
 .programa-card:hover {

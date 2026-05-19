@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import '../../style/AdminDashboard.css';
 
 import Sidebar from './Sidebar';
@@ -62,7 +63,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
   const handleExport = (): void => {
     ServicesAdmin.getRegistrations()
       .then(data => {
-        if (data.length === 0) { alert("No hay datos para exportar."); return; }
+        if (data.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
         const csvContent = data.map((r: any) =>
           `${String(r.id)},"${String(r.name ?? r.nombre ?? '')}","${String(r.email ?? r.correo_electronico ?? '')}","${String(r.phone ?? r.telefono ?? '')}","${String(r.sport ?? r.disciplina ?? '')}","${String(r.region ?? r.programa ?? '')}","${String(r.status ?? r.estado ?? '')}"`
@@ -173,11 +174,25 @@ export default function PanelAdministrativo(): React.JSX.Element {
                     <CompetitionCard key={comp.id} competition={comp}
                       onEdit={(c) => { setEditData(c); setIsCompModalOpen(true); }}
                       onDelete={(id) => {
-                        if (window.confirm("¿Estás seguro de eliminar este evento o competición?")) {
-                          ServicesAdmin.deleteCompeticion(String(id))
-                            .then(() => handleSaveSuccess())
-                            .catch(err => alert((err as Error).message));
-                        }
+                        Swal.fire({
+                          title: '¿Estás seguro de eliminar este evento o competición?',
+                          text: "Esta acción no se puede deshacer.",
+                          icon: 'warning',
+                          showCancelButton: true,
+                          confirmButtonColor: '#e62334',
+                          cancelButtonColor: '#64748b',
+                          confirmButtonText: 'Sí, eliminar',
+                          cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            ServicesAdmin.deleteCompeticion(String(id))
+                              .then(() => {
+                                handleSaveSuccess();
+                                Swal.fire({ title: '¡Eliminado!', text: 'El evento ha sido eliminado.', icon: 'success', confirmButtonColor: '#e62334' });
+                              })
+                              .catch(err => Swal.fire({ title: 'Error', text: (err as Error).message, icon: 'error', confirmButtonColor: '#e62334' }));
+                          }
+                        });
                       }}
                     />
                   ))}
