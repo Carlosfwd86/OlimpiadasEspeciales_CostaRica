@@ -9,9 +9,9 @@ require('dotenv').config();
 
 // Inicialización del cliente de OpenAI utilizando la clave de entorno cargada.
 const llaveAPI = process.env.OPENAI_API_KEY;
-const clienteOpenAI = new OpenAI({
+const clienteOpenAI = llaveAPI ? new OpenAI({
   apiKey: llaveAPI
-});
+}) : null;
 
 /**
  * Convierte un buffer binario de archivo a su representación en cadena Base64.
@@ -31,7 +31,7 @@ const convertirBufferABase64 = (buffer) => {
 const analizarCertificadoOcr = async (archivo) => {
   try {
     // Si la clave de API no está configurada, lanzamos un error explícito.
-    if (!llaveAPI) {
+    if (!clienteOpenAI) {
       throw new Error('La clave OPENAI_API_KEY no está configurada en las variables de entorno (.env).');
     }
 

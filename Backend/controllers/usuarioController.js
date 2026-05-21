@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const { models } = require('../config/database');
 const { Usuario, Rol } = models;
 const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
@@ -104,6 +105,11 @@ const usuarioController = {
       if (data.equipo) updates.equipo = data.equipo;
       if (data.experiencia) updates.experiencia = data.experiencia;
       if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
+
+      if (data.password && data.password.trim() !== '') {
+        const salt = await bcrypt.genSalt(10);
+        updates.password_hash = await bcrypt.hash(data.password, salt);
+      }
 
       await usuario.update(updates);
       return res.status(200).json(successResponse(usuario, 'Usuario actualizado correctamente'));
