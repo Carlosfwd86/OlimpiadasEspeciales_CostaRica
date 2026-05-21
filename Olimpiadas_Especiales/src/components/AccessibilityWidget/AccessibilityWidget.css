@@ -1,0 +1,278 @@
+.a11y-widget-container {
+    position: fixed;
+    bottom: 2rem;
+    left: 100px; /* Posicionado estratégicamente a la derecha del botón 'Volver Arriba' */
+    z-index: 999999;
+}
+
+/* Botón flotante principal */
+.a11y-fab-button {
+    background-color: #1a1a2e; /* Azul oscuro del proyecto */
+    color: #fff;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    width: 52px; /* Ajustado al mismo tamaño que el botón de volver arriba (52px) */
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.a11y-fab-button:hover, .a11y-fab-button:focus-visible {
+    transform: scale(1.05);
+    background-color: #FF0000; /* Rojo del proyecto */
+}
+
+/* Panel expandible */
+.a11y-panel {
+    position: absolute;
+    bottom: 75px;
+    left: 0;
+    width: 320px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.a11y-panel-header {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.a11y-panel-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.a11y-close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.a11y-close-btn:hover {
+    opacity: 1;
+}
+
+.a11y-panel-content {
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Opciones tipo Toggle */
+.a11y-option-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.a11y-option-toggle:hover {
+    background: #f1f5f9;
+}
+
+.a11y-option-toggle.active {
+    background: rgba(255, 0, 0, 0.05); /* Toque de rojo */
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.a11y-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.a11y-icon {
+    font-size: 1.2rem;
+}
+
+.a11y-label {
+    font-size: 0.95rem;
+    color: #334155;
+    font-weight: 500;
+}
+
+/* Switch UI */
+.a11y-switch {
+    width: 44px;
+    height: 24px;
+    background: #cbd5e1;
+    border-radius: 20px;
+    position: relative;
+    transition: background 0.3s;
+}
+
+.a11y-switch-knob {
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.a11y-option-toggle.active .a11y-switch {
+    background: #FF0000;
+}
+
+.a11y-option-toggle.active .a11y-switch-knob {
+    transform: translateX(20px);
+}
+
+/* Controles de fuente */
+.a11y-font-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.a11y-font-btns {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.a11y-font-btns button {
+    background: #e2e8f0;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+.a11y-font-btns button:not(:disabled):hover {
+    background: #cbd5e1;
+}
+
+.a11y-font-btns button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.a11y-font-level {
+    font-weight: bold;
+    min-width: 1ch;
+    text-align: center;
+}
+
+/* Footer del panel */
+.a11y-panel-footer {
+    padding: 16px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.a11y-reset-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid #cbd5e1;
+    color: #475569;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.a11y-reset-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+/* Modo oscuro base (Alto Contraste UI interno) */
+body.a11y-high-contrast .a11y-panel {
+    background: #000;
+    border: 2px solid #fff;
+}
+body.a11y-high-contrast .a11y-option-toggle {
+    background: #000;
+    border-color: #fff;
+}
+body.a11y-high-contrast .a11y-label,
+body.a11y-high-contrast .a11y-reset-btn {
+    color: #fff;
+}
+body.a11y-high-contrast .a11y-option-toggle.active {
+    border-color: #FFEA00;
+}
+body.a11y-high-contrast .a11y-option-toggle.active .a11y-switch {
+    background: #FFEA00;
+}
+body.a11y-high-contrast .a11y-option-toggle.active .a11y-switch-knob {
+    background: #000;
+}
+
+/* Responsive Mobile */
+@media (max-width: 768px) {
+    .a11y-widget-container {
+        bottom: 1.5rem;
+        left: 80px; /* Posicionado junto al botón de volver arriba en móviles */
+    }
+    
+    .a11y-fab-button {
+        width: 44px; /* Mismo tamaño que el volver arriba en móvil */
+        height: 44px;
+    }
+
+    .a11y-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 24px 24px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        max-height: 80vh;
+    }
+    
+    .a11y-panel-content {
+        max-height: calc(80vh - 140px);
+    }
+    
+    .a11y-option-toggle, .a11y-font-controls {
+        padding: 16px;
+    }
+}

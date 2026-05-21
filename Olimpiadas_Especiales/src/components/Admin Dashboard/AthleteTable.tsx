@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/PendingTable.css';
 import { ServicesAtletas } from '../../services/ServicesAtletas';
-import type { Atleta } from '../../types';
+import type { Atleta, PaginationMeta } from '../../types';
 
 
 /* [verde] Interfaz para las propiedades del componente */
@@ -15,32 +15,37 @@ export default function AthleteTable({ refreshTrigger = 0, searchQuery = '' }: A
   const [atletas, setAtletas] = useState<Atleta[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [localSearch, setLocalSearch] = useState<string>('');
+  
+  // Paginación
+  const [page, setPage] = useState<number>(1);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
+  const limit = 10;
 
-
-  /* [verde] Efecto para cargar los datos reales al montar el componente o refrescar */
+  /* [verde] Efecto para cargar los datos reales al montar el componente o refrescar, con soporte para búsqueda y paginación */
   useEffect(() => {
-    ServicesAtletas.obtenerAtletas()
-      .then(data => {
-        setAtletas(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error("Error al cargar atletas desde el backend:", error);
-        setLoading(false);
-      });
-  }, [refreshTrigger]);
+    // Implementación simple de debounce para la búsqueda
+    const timer = setTimeout(() => {
+      setLoading(true);
+      const query = localSearch || searchQuery;
+      ServicesAtletas.obtenerAtletas(page, limit, query)
+        .then(response => {
+          setAtletas(response.data);
+          setMeta(response.meta);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Error al cargar atletas desde el backend:", error);
+          setLoading(false);
+        });
+    }, 400);
 
-  if (loading) return <div className="pending-table-container">Cargando lista oficial...</div>;
+    return () => clearTimeout(timer);
+  }, [refreshTrigger, localSearch, searchQuery, page]);
 
-  const filteredAtletas = atletas.filter(atleta => {
-    const q = (localSearch || searchQuery).toLowerCase();
-    const fullName = `${atleta.nombre} ${atleta.primer_apellido} ${atleta.segundo_apellido || ''}`.toLowerCase();
-    return (
-      fullName.includes(q) ||
-      atleta.correo_electronico?.toLowerCase().includes(q) ||
-      atleta.id.toString().includes(q)
-    );
-  });
+  if (loading && atletas.length === 0) return <div className="pending-table-container">Cargando lista oficial...</div>;
+
+  // Ya no filtramos localmente, el backend nos da los resultados precisos
+  const filteredAtletas = atletas;
 
   return (
     <div className="pending-table-container" style={{ marginTop: '0' }}>
@@ -108,6 +113,30 @@ export default function AthleteTable({ refreshTrigger = 0, searchQuery = '' }: A
           </tbody>
         </table>
       </div>
+      
+      {meta && meta.totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px' }}>
+          <span style={{ fontSize: '13px', color: '#64748b' }}>
+            Mostrando página {meta.currentPage} de {meta.totalPages} ({meta.totalItems} resultados)
+          </span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={() => setPage(p => Math.max(1, p - 1))} 
+              disabled={page === 1}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: page === 1 ? '#f1f5f9' : 'white', cursor: page === 1 ? 'not-allowed' : 'pointer', color: '#475569', fontSize: '13px', fontWeight: '500' }}
+            >
+              Anterior
+            </button>
+            <button 
+              onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))} 
+              disabled={page === meta.totalPages}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: page === meta.totalPages ? '#f1f5f9' : 'white', cursor: page === meta.totalPages ? 'not-allowed' : 'pointer', color: '#475569', fontSize: '13px', fontWeight: '500' }}
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,7 +9,7 @@
 /* HERO SECTION */
 .nosotros_hero {
     height: 350px;
-    background-image: url('/src/img/fotoNosotros.jpg');
+    /* background-image gestionado via style inline en Nosotros.tsx → s3Url() */
     background-size: cover;
     background-position: center;
     position: relative;

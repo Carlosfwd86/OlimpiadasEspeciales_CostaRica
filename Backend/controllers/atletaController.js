@@ -4,33 +4,64 @@ const AtletaMedicamento = require('../models/AtletaMedicamento');
 const AtletaCondicion = require('../models/AtletaCondicion');
 const AtletaDispositivo = require('../models/AtletaDispositivo');
 const AtletaAlergia = require('../models/AtletaAlergia');
+const { Op } = require('sequelize');
+const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
 
 // [verde] Controlador para gestionar la lógica de negocio de los Atletas
+/**
+ * @module atletaController
+ * @description Controlador para gestionar operaciones CRUD de atletas, incluyendo su información médica y documentos.
+ */
 const atletaController = {
 
-  // [verde] Obtener todos los atletas con su información relacionada
+  /**
+   * @function obtenerTodosLosAtletas
+   * @description Recupera la lista completa de atletas con sus relaciones (documentos, medicamentos, condiciones, etc.).
+   */
   obtenerTodosLosAtletas: async (req, res) => {
     try {
-      const atletas = await Atleta.findAll({
+      const { limit, offset, page } = getPagination(req.query);
+      const { search } = req.query;
+
+      const whereClause = {};
+      if (search) {
+        whereClause[Op.or] = [
+          { nombre: { [Op.like]: `%${search}%` } },
+          { primer_apellido: { [Op.like]: `%${search}%` } },
+          { segundo_apellido: { [Op.like]: `%${search}%` } },
+          { correo_electronico: { [Op.like]: `%${search}%` } }
+        ];
+      }
+
+      const { count, rows: atletas } = await Atleta.findAndCountAll({
+        where: whereClause,
         include: [
           { model: AtletaDocumento, as: 'documentos' },
           { model: AtletaMedicamento, as: 'medicamentos' },
           { model: AtletaCondicion, as: 'condiciones' },
           { model: AtletaDispositivo, as: 'dispositivos' },
           { model: AtletaAlergia, as: 'alergias' }
-        ]
+        ],
+        distinct: true,
+        limit,
+        offset
       });
-      res.status(200).json(atletas);
+      const meta = getPagingData(count, limit, page);
+      res.status(200).json(successResponse(atletas, 'Atletas obtenidos correctamente', meta));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al obtener los atletas', error: error.message });
+      res.status(500).json(errorResponse('Error al obtener los atletas', 500, error.message));
     }
   },
 
-  // [verde] Obtener un atleta específico por su ID
+  /**
+   * @function obtenerAtletaPorId
+   * @description Recupera un atleta específico y todas sus relaciones a partir de su ID.
+   */
   obtenerAtletaPorId: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
       
       // Manejar el ID si viene como "atleta_4"
       if (typeof id === 'string' && id.includes('_')) {
@@ -48,20 +79,26 @@ const atletaController = {
       });
 
       if (!atleta) {
-        return res.status(404).json({ mensaje: 'Atleta no encontrado' });
+        return res.status(404).json(errorResponse('Atleta no encontrado', 404));
       }
 
-      res.status(200).json(atleta);
+      res.status(200).json(successResponse(atleta, 'Atleta obtenido correctamente'));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al obtener el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al obtener el atleta', 500, error.message));
     }
   },
 
-  // [verde] Crear un nuevo atleta
+  /**
+   * @function crearAtleta
+   * @description Registra un nuevo atleta manejando una transacción SQL para insertar datos, condiciones médicas, alergias, dispositivos y medicamentos simultáneamente.
+   */
   crearAtleta: async (req, res) => {
     const t = await require('../config/database').sequelize.transaction();
     try {
       const data = req.body.datos || req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para crear el atleta.', 400));
+      }
       
       // Manejar el caso donde el frontend envía todo en 'nombre'
       let primerNombre = data.nombre || '';
@@ -144,21 +181,25 @@ const atletaController = {
       }
 
       await t.commit();
-      res.status(201).json({ mensaje: 'Atleta creado exitosamente', data: nuevoAtleta });
+      res.status(201).json(successResponse(nuevoAtleta, 'Atleta creado exitosamente'));
     } catch (error) {
       await t.rollback();
       console.error('Error al crear atleta:', error);
       if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors.map(e => e.message) });
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
-      res.status(500).json({ mensaje: 'Error al crear el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al crear el atleta', 500, error.message));
     }
   },
 
-  // [verde] Actualizar la información de un atleta
+  /**
+   * @function actualizarAtleta
+   * @description Actualiza los datos de un atleta existente, normalizando el payload recibido (camelCase a snake_case).
+   */
   actualizarAtleta: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
       
       // Manejar el ID si viene como "atleta_4"
       if (typeof id === 'string' && id.includes('_')) {
@@ -166,6 +207,9 @@ const atletaController = {
       }
 
       const data = req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar.', 400));
+      }
       
       // Mapeo inteligente de campos camelCase a snake_case
       const updates = {};
@@ -201,55 +245,69 @@ const atletaController = {
 
       if (actualizado || Object.keys(updates).length > 0) {
         const atletaActualizado = await Atleta.findByPk(id);
-        return res.status(200).json({ mensaje: 'Atleta actualizado correctamente', data: atletaActualizado });
+        return res.status(200).json(successResponse(atletaActualizado, 'Atleta actualizado correctamente'));
       }
       
-      res.status(404).json({ mensaje: 'Atleta no encontrado para actualizar' });
+      res.status(404).json(errorResponse('Atleta no encontrado para actualizar', 404));
     } catch (error) {
       console.error('Error al actualizar atleta:', error);
       if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors.map(e => e.message) });
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
-      res.status(500).json({ mensaje: 'Error al actualizar el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al actualizar el atleta', 500, error.message));
     }
   },
 
-  // [verde] Eliminar un atleta del sistema
+  /**
+   * @function eliminarAtleta
+   * @description Borra permanentemente el registro de un atleta de la base de datos por su ID.
+   */
   eliminarAtleta: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
+
       const eliminado = await Atleta.destroy({ where: { id } });
 
       if (eliminado) {
-        return res.status(200).json({ mensaje: 'Atleta eliminado correctamente' });
+        return res.status(200).json(successResponse(null, 'Atleta eliminado correctamente'));
       }
 
-      res.status(404).json({ mensaje: 'Atleta no encontrado' });
+      res.status(404).json(errorResponse('Atleta no encontrado', 404));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al eliminar el atleta', error: error.message });
+      res.status(500).json(errorResponse('Error al eliminar el atleta', 500, error.message));
     }
   },
-  // [verde] Obtener documentos de un atleta
+  /**
+   * @function obtenerDocumentosAtleta
+   * @description Lista todos los documentos o certificaciones asociadas a un atleta específico.
+   */
   obtenerDocumentosAtleta: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
+
       const documentos = await AtletaDocumento.findAll({ where: { atleta_id: id } });
-      res.status(200).json(documentos);
+      res.status(200).json(successResponse(documentos, 'Documentos obtenidos correctamente'));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al obtener documentos', error: error.message });
+      res.status(500).json(errorResponse('Error al obtener documentos', 500, error.message));
     }
   },
 
-  // [verde] Agregar un documento a un atleta
-  // Body esperado: { nombre_documento, tipo_documento, ruta_archivo }
-  // ruta_archivo debe ser una URL (CDN, S3, etc.) o ruta relativa del servidor
+  /**
+   * @function agregarDocumento
+   * @description Vincula un nuevo documento (ej. certificado médico) a un atleta específico.
+   * Espera en el body: { nombre_documento, tipo_documento, ruta_archivo }
+   */
   agregarDocumento: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
+
       const { nombre_documento, tipo_documento, ruta_archivo } = req.body;
 
       if (!nombre_documento || !tipo_documento || !ruta_archivo) {
-        return res.status(400).json({ mensaje: 'Faltan campos obligatorios: nombre_documento, tipo_documento, ruta_archivo' });
+        return res.status(400).json(errorResponse('Faltan campos obligatorios: nombre_documento, tipo_documento, ruta_archivo', 400));
       }
 
       const doc = await AtletaDocumento.create({
@@ -259,27 +317,32 @@ const atletaController = {
         ruta_archivo
       });
 
-      res.status(201).json({ mensaje: 'Documento agregado exitosamente', data: doc });
+      res.status(201).json(successResponse(doc, 'Documento agregado exitosamente'));
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors.map(e => e.message) });
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
-      res.status(500).json({ mensaje: 'Error al agregar documento', error: error.message });
+      res.status(500).json(errorResponse('Error al agregar documento', 500, error.message));
     }
   },
 
-  // [verde] Eliminar un documento de un atleta
+  /**
+   * @function eliminarDocumento
+   * @description Borra un documento específico asociado a un atleta por su ID y el ID del documento.
+   */
   eliminarDocumento: async (req, res) => {
     try {
       const { id, docId } = req.params;
+      if (!id || !docId) return res.status(400).json(errorResponse('El ID del atleta y del documento son requeridos.', 400));
+
       const eliminado = await AtletaDocumento.destroy({ where: { id: docId, atleta_id: id } });
 
       if (eliminado) {
-        return res.status(200).json({ mensaje: 'Documento eliminado correctamente' });
+        return res.status(200).json(successResponse(null, 'Documento eliminado correctamente'));
       }
-      res.status(404).json({ mensaje: 'Documento no encontrado' });
+      res.status(404).json(errorResponse('Documento no encontrado', 404));
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al eliminar el documento', error: error.message });
+      res.status(500).json(errorResponse('Error al eliminar el documento', 500, error.message));
     }
   }
 };

@@ -29,8 +29,12 @@ const Login = (): React.JSX.Element => {
     setLoading(true);
 
     try {
-      await auth.login({ correo_electronico: formData.email, password: formData.password });
-      navigate('/perfil');
+      const loggedInUser = await auth.login({ correo_electronico: formData.email, password: formData.password });
+      if (loggedInUser && loggedInUser.rol_id === 1) {
+        navigate('/admin');
+      } else {
+        navigate('/perfil');
+      }
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.error || 'Correo o contraseña incorrectos.');
@@ -158,6 +162,16 @@ const Login = (): React.JSX.Element => {
                   </svg>
                 )}
               </button>
+            </div>
+            <div style={{ textAlign: 'right', marginTop: '8px' }}>
+              <span 
+                onClick={() => navigate('/forgot-password')} 
+                style={{ color: '#e62334', fontSize: '13px', fontWeight: '500', cursor: 'pointer', transition: 'color 0.2s' }}
+                onMouseOver={(e) => (e.currentTarget.style.color = '#cc1f2e')}
+                onMouseOut={(e) => (e.currentTarget.style.color = '#e62334')}
+              >
+                ¿Olvidaste tu contraseña?
+              </span>
             </div>
           </div>
 

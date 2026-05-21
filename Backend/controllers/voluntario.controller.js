@@ -1,30 +1,41 @@
 const { models } = require('../config/database');
 const { Voluntario, VoluntarioArea } = models;
+const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
-// Controlador para la gestión de Voluntarios
+/**
+ * @module voluntarioController
+ * @description Controlador para gestionar el ciclo de vida de los voluntarios, sus datos personales y estados de aprobación.
+ */
 const voluntarioController = {
 
-  // Obtener todos los voluntarios con sus áreas de interés
+  /**
+   * @function obtenerTodos
+   * @description Recupera la lista completa de voluntarios, incluyendo las áreas de interés en las que desean participar.
+   */
   obtenerTodos: async (req, res) => {
     try {
-      // Se incluyen las áreas relacionadas mediante el modelo VoluntarioArea
-      const voluntarios = await Voluntario.findAll({
-        include: [{ model: VoluntarioArea }]
+      const { limit, offset, page } = getPagination(req.query);
+      const { count, rows: voluntarios } = await Voluntario.findAndCountAll({
+        include: [{ model: VoluntarioArea }],
+        distinct: true,
+        limit,
+        offset
       });
-      return res.status(200).json(voluntarios);
+      const meta = getPagingData(count, limit, page);
+      return res.status(200).json(successResponse(voluntarios, 'Voluntarios obtenidos correctamente', meta));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al obtener los voluntarios',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al obtener los voluntarios', 500, error.message));
     }
   },
 
-  // Obtener un voluntario por ID
+  /**
+   * @function obtenerPorId
+   * @description Obtiene los detalles de un voluntario específico por su ID y carga sus áreas de interés vinculadas.
+   */
   obtenerPorId: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       if (typeof id === 'string' && id.includes('_')) {
         id = id.split('_')[1];
       }
@@ -34,26 +45,25 @@ const voluntarioController = {
       });
 
       if (!voluntario) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'Voluntario no encontrado'
-        });
+        return res.status(404).json(errorResponse('Voluntario no encontrado', 404));
       }
 
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario obtenido'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al buscar el voluntario',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al buscar el voluntario', 500, error.message));
     }
   },
 
-  // Crear un voluntario y sus áreas asociadas
+  /**
+   * @function crear
+   * @description Registra un nuevo voluntario, normaliza los datos (camelCase a snake_case) e inserta simultáneamente sus áreas de interés.
+   */
   crear: async (req, res) => {
     try {
       const data = req.body.datos || req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para crear el voluntario.', 400));
+      }
       
       let primerNombre = data.nombre || '';
       let apellido = data.apellido || '';
@@ -95,24 +105,20 @@ const voluntarioController = {
         await Promise.all(areasPromesas);
       }
 
-      return res.status(201).json({
-        ok: true,
-        msg: 'Voluntario registrado con éxito',
-        data: nuevoVoluntario
-      });
+      return res.status(201).json(successResponse(nuevoVoluntario, 'Voluntario registrado con éxito'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al registrar el voluntario',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al registrar el voluntario', 500, error.message));
     }
   },
 
-  // Actualizar datos del voluntario
+  /**
+   * @function actualizar
+   * @description Modifica la información personal de un voluntario existente mapeando correctamente los nombres de atributos.
+   */
   actualizar: async (req, res) => {
     try {
       let { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       if (typeof id === 'string' && id.includes('_')) {
         id = id.split('_')[1];
       }
@@ -120,13 +126,13 @@ const voluntarioController = {
       const voluntario = await Voluntario.findByPk(id);
 
       if (!voluntario) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'Voluntario no encontrado para actualizar'
-        });
+        return res.status(404).json(errorResponse('Voluntario no encontrado para actualizar', 404));
       }
 
       const data = req.body;
+      if (!data || Object.keys(data).length === 0) {
+        return res.status(400).json(errorResponse('No se proporcionaron datos para actualizar.', 400));
+      }
       const updates = {};
       
       if (data.nombre) {
@@ -154,70 +160,69 @@ const voluntarioController = {
       if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
 
       await voluntario.update(updates);
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario actualizado correctamente'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al actualizar voluntario',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al actualizar voluntario', 500, error.message));
     }
   },
 
-  // Eliminar un voluntario (las áreas se borran por CASCADE en BD)
+  /**
+   * @function eliminar
+   * @description Borra el registro principal de un voluntario. Las áreas asociadas se eliminan en cascada desde la base de datos.
+   */
   eliminar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       const borrado = await Voluntario.destroy({ where: { id } });
 
       if (borrado === 0) {
-        return res.status(404).json({
-          ok: false,
-          msg: 'El registro no existe'
-        });
+        return res.status(404).json(errorResponse('El registro no existe', 404));
       }
 
-      return res.status(200).json({
-        ok: true,
-        msg: 'Voluntario eliminado'
-      });
+      return res.status(200).json(successResponse(null, 'Voluntario eliminado'));
     } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        msg: 'Error al eliminar registro',
-        error: error.message
-      });
+      return res.status(500).json(errorResponse('Error al eliminar registro', 500, error.message));
     }
   },
 
-  // Métodos de Aprobación y Rechazo (Tarea 4)
+  /**
+   * @function aprobar
+   * @description Cambia el estado de un voluntario a 'ACTIVO' y registra la fecha en que fue aprobado por el administrador.
+   */
   aprobar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       const voluntario = await Voluntario.findByPk(id);
-      if (!voluntario) return res.status(404).json({ msg: 'No encontrado' });
+      if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 
       await voluntario.update({ 
         status: 'ACTIVO', 
         fecha_aprobacion: new Date() 
       });
       
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario aprobado'));
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json(errorResponse(error.message));
     }
   },
 
+  /**
+   * @function rechazar
+   * @description Cambia el estado de un voluntario a 'INACTIVO' (rechazado).
+   */
   rechazar: async (req, res) => {
     try {
       const { id } = req.params;
+      if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
       const voluntario = await Voluntario.findByPk(id);
-      if (!voluntario) return res.status(404).json({ msg: 'No encontrado' });
+      if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 
       await voluntario.update({ status: 'INACTIVO' });
-      return res.status(200).json(voluntario);
+      return res.status(200).json(successResponse(voluntario, 'Voluntario rechazado'));
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json(errorResponse(error.message));
     }
   }
 };

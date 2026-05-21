@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import '../../style/PendingTable.css';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import ModalDetalleRegistro from './ModalDetalleRegistro';
-import type { Registro } from '../../types';
+import type { Registro, PaginationMeta } from '../../types';
 
 interface PendingTableProps {
   refreshTrigger?: number;
@@ -21,10 +22,16 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [localSearch, setLocalSearch] = useState<string>('');
 
-  const fetchRegistrations = (): void => {
-    ServicesAdmin.getRegistrations()
-      .then(data => {
-        setRegistrations(data);
+  // Paginación
+  const [page, setPage] = useState<number>(1);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
+  const limit = 10;
+
+  const fetchRegistrations = (currentPage = page, currentSearch = localSearch || searchQuery): void => {
+    ServicesAdmin.getRegistrations(currentPage, limit, currentSearch)
+      .then(response => {
+        setRegistrations(response.data);
+        setMeta(response.meta);
         setLoading(false);
       })
       .catch(error => {
@@ -34,60 +41,102 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   };
 
   useEffect(() => {
-    fetchRegistrations();
-  }, [refreshTrigger]);
+    // Implementación simple de debounce para la búsqueda
+    const timer = setTimeout(() => {
+      setLoading(true);
+      fetchRegistrations();
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [refreshTrigger, localSearch, searchQuery, page]);
 
   const handleApprove = (reg: Registro): void => {
-    // ... existing logic
-    if (!window.confirm(`¿Seguro que deseas APROBAR a ${String(reg.name ?? '')}? Pasará a la base de datos oficial.`)) return;
-
-    setProcessingId(reg.id);
-    ServicesAdmin.aprobarRegistro(reg)
-      .then(() => {
-        alert("¡Registro aprobado y guardado en la base de datos oficial!");
-        ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${String(reg.name ?? '')}`, "fa-solid fa-check-circle", "green");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-      })
-      .catch(err => {
-        console.error("Error al aprobar:", err);
-        alert("Error al procesar la aprobación.");
-      })
-      .finally(() => setProcessingId(null));
+    Swal.fire({
+      title: `¿Seguro que deseas APROBAR a ${String(reg.name ?? '')}?`,
+      text: "Pasará a la base de datos oficial.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, aprobar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setProcessingId(reg.id);
+        ServicesAdmin.aprobarRegistro(reg)
+          .then(() => {
+            Swal.fire({ title: '¡Aprobado!', text: '¡Registro aprobado y guardado en la base de datos oficial!', icon: 'success', confirmButtonColor: '#28a745' });
+            ServicesAdmin.logActivity("Aprobación", `Se aprobó a ${String(reg.name ?? '')}`, "fa-solid fa-check-circle", "green");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+          })
+          .catch(err => {
+            console.error("Error al aprobar:", err);
+            Swal.fire({ title: 'Error', text: 'Error al procesar la aprobación.', icon: 'error', confirmButtonColor: '#e62334' });
+          })
+          .finally(() => setProcessingId(null));
+      }
+    });
   };
 
   const handleReject = (reg: Registro): void => {
-    if (!window.confirm(`¿Seguro que deseas marcar el registro de ${reg.name} como RECHAZADO?`)) return;
-
-    setProcessingId(reg.id);
-    ServicesAdmin.rechazarRegistro(reg.id, reg.rol)
-      .then(() => {
-        ServicesAdmin.logActivity("Rechazo", `Se rechazó a ${reg.name}`, "fa-solid fa-circle-xmark", "red");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-      })
-      .catch(err => {
-        console.error("Error al rechazar:", err);
-        alert("Error al procesar el rechazo.");
-      })
-      .finally(() => setProcessingId(null));
+    Swal.fire({
+      title: `¿Seguro que deseas marcar el registro de ${reg.name} como RECHAZADO?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e62334',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, rechazar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setProcessingId(reg.id);
+        ServicesAdmin.rechazarRegistro(reg.id, reg.rol)
+          .then(() => {
+            Swal.fire({ title: '¡Rechazado!', text: 'El registro ha sido marcado como rechazado.', icon: 'success', confirmButtonColor: '#e62334' });
+            ServicesAdmin.logActivity("Rechazo", `Se rechazó a ${reg.name}`, "fa-solid fa-circle-xmark", "red");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+          })
+          .catch(err => {
+            console.error("Error al rechazar:", err);
+            Swal.fire({ title: 'Error', text: 'Error al procesar el rechazo.', icon: 'error', confirmButtonColor: '#e62334' });
+          })
+          .finally(() => setProcessingId(null));
+      }
+    });
   };
 
   const handleDelete = (id: string): void => {
-    if (!window.confirm("¿Estás seguro de que deseas ELIMINAR permanentemente este registro?")) return;
-
-    setProcessingId(id);
-    ServicesAdmin.deleteRegistro(id)
-      .then(() => {
-        ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
-        if (onActionSuccess) onActionSuccess();
-        fetchRegistrations();
-      })
-      .catch(err => console.error("Error al eliminar:", err))
-      .finally(() => setProcessingId(null));
+    Swal.fire({
+      title: '¿Estás seguro de que deseas ELIMINAR permanentemente este registro?',
+      text: "Esta acción no se puede deshacer.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e62334',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setProcessingId(id);
+        ServicesAdmin.deleteRegistro(id)
+          .then(() => {
+            Swal.fire({ title: '¡Eliminado!', text: 'Se ha eliminado el registro permanentemente.', icon: 'success', confirmButtonColor: '#e62334' });
+            ServicesAdmin.logActivity("Eliminación", `Se eliminó un registro pendiente`, "fa-solid fa-trash", "red");
+            if (onActionSuccess) onActionSuccess();
+            fetchRegistrations();
+          })
+          .catch(err => {
+            console.error("Error al eliminar:", err);
+            Swal.fire({ title: 'Error', text: 'Error al eliminar el registro.', icon: 'error', confirmButtonColor: '#e62334' });
+          })
+          .finally(() => setProcessingId(null));
+      }
+    });
   };
 
-  if (loading) {
+  if (loading && registrations.length === 0) {
     return (
       <div className="pending-table-container">
         <div className="table-header"><h3>Registros Pendientes</h3></div>
@@ -100,15 +149,11 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   }
 
   const filteredRegs = registrations.filter(reg => {
-    const q = (localSearch || searchQuery).toLowerCase();
-    const name = String(reg.name ?? '').toLowerCase();
-    const email = String(reg.email ?? '').toLowerCase();
-    
-    const matchesSearch = !q || name.includes(q) || email.includes(q);
+    // La búsqueda por texto ya se realiza en el backend
     const matchesSport = !filterSport || reg.sport === filterSport;
     const matchesRegion = !filterRegion || reg.region === filterRegion;
 
-    return matchesSearch && matchesSport && matchesRegion;
+    return matchesSport && matchesRegion;
   });
 
   return (
@@ -240,9 +285,29 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
         </table>
       </div>
 
-      <div className="table-footer">
-        <a href="#" onClick={(e) => e.preventDefault()}>Ver todos</a>
-      </div>
+      {meta && meta.totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px' }}>
+          <span style={{ fontSize: '13px', color: '#64748b' }}>
+            Mostrando página {meta.currentPage} de {meta.totalPages} ({meta.totalItems} resultados)
+          </span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={() => setPage(p => Math.max(1, p - 1))} 
+              disabled={page === 1}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: page === 1 ? '#f1f5f9' : 'white', cursor: page === 1 ? 'not-allowed' : 'pointer', color: '#475569', fontSize: '13px', fontWeight: '500' }}
+            >
+              Anterior
+            </button>
+            <button 
+              onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))} 
+              disabled={page === meta.totalPages}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: page === meta.totalPages ? '#f1f5f9' : 'white', cursor: page === meta.totalPages ? 'not-allowed' : 'pointer', color: '#475569', fontSize: '13px', fontWeight: '500' }}
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      )}
 
       <ModalDetalleRegistro
         isOpen={showDetail}

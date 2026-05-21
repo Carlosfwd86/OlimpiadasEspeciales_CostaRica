@@ -5,23 +5,23 @@ import type { Entrenador } from '../types';
 export const ServicesEntrenadores = {
     
     getEntrenadores: async (): Promise<Entrenador[]> => {
-        const response = await apiClient.get<Entrenador[]>('/entrenadores');
-        return response.data;
+        const response = await apiClient.get<{ data: Entrenador[] }>('/entrenadores');
+        return response.data.data;
     },
 
     getEntrenadorById: async (id: string | number): Promise<Entrenador> => {
-        const response = await apiClient.get<Entrenador>(`/entrenadores/${id}`);
-        return response.data;
+        const response = await apiClient.get<{ data: Entrenador }>(`/entrenadores/${id}`);
+        return response.data.data;
     },
 
     createEntrenador: async (entrenador: Omit<Entrenador, 'id'>): Promise<Entrenador> => {
-        const response = await apiClient.post<Entrenador>('/entrenadores', entrenador);
-        return response.data;
+        const response = await apiClient.post<{ data: Entrenador }>('/entrenadores', entrenador);
+        return response.data.data;
     },
 
     updateEntrenador: async (id: string | number, entrenador: Partial<Entrenador>): Promise<Entrenador> => {
-        const response = await apiClient.patch<Entrenador>(`/entrenadores/${id}`, entrenador);
-        return response.data;
+        const response = await apiClient.patch<{ data: Entrenador }>(`/entrenadores/${id}`, entrenador);
+        return response.data.data;
     },
 
     deleteEntrenador: async (id: string | number): Promise<void> => {

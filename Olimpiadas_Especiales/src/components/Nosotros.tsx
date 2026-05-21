@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Nosotros.css';
+import { s3Url } from '../utils/s3';
 
 const Nosotros = (): React.JSX.Element => {
   const [historiaIndex, setHistoriaIndex] = useState(0);
   
   const historiaItems = [
     {
-      img: '/img/Hero_contenedor_01.jpeg',
+      img: s3Url('img/Hero_contenedor_01.jpeg'),
       title: 'El Milagro de la Transformación',
       text: '"Es a nivel local, aquí mismo, donde los voluntarios se reúnen con los atletas. Ahí es donde las percepciones empiezan a cambiar y se produce el milagro de la transformación."'
     },
     {
-      img: '/img/Hero_contenedor_02.jpeg',
+      img: s3Url('img/Hero_contenedor_02.jpeg'),
       title: 'Desde 1968',
       text: 'El número de personas con y sin discapacidad que participan ha ido en aumento. Nuestro compromiso de llegar a más personas crece día con día.'
     },
     {
-      img: '/img/Hero_contenedor_03.jpeg',
+      img: s3Url('img/Hero_contenedor_03.jpeg'),
       title: 'Entrenamiento Olímpico',
       text: 'Ofrecemos preparación deportiva constante en diversas disciplinas, brindando oportunidades para desarrollar aptitudes y demostrar valentía.'
     }
@@ -32,7 +33,7 @@ const Nosotros = (): React.JSX.Element => {
   return (
     <div className="nosotros_container">
       {/* HERO SECTION */}
-      <section className="nosotros_hero">
+      <section className="nosotros_hero" style={{ backgroundImage: `url(${s3Url('img/fotoNosotros.jpg')})` }}>
         <div className="nosotros_hero_overlay"></div>
         <h1 className="nosotros_hero_title">¿Quiénes Somos?</h1>
       </section>
@@ -96,7 +97,7 @@ const Nosotros = (): React.JSX.Element => {
           
           {/* MISION */}
           <div className="tarjeta_info info_card animate-fade-in-left delay-200">
-            <div className="card_image" style={{ backgroundImage: "url('/img/atleta_down_1.png')" }} />
+            <div className="card_image" style={{ backgroundImage: `url(${s3Url('img/atleta_down_1.png')})` }} />
             
             <div className="card_body">
                 <div className="card_icon_container icono-rotado" style={{ color: '#FF0000', background: '#fff0f0', transform: 'rotate(-5deg)' }}>
@@ -115,7 +116,7 @@ const Nosotros = (): React.JSX.Element => {
 
           {/* VISION */}
           <div className="tarjeta_info info_card animate-fade-in-right delay-300">
-            <div className="card_image" style={{ backgroundImage: "url('/img/evento_ceremonia.png')" }} />
+            <div className="card_image" style={{ backgroundImage: `url(${s3Url('img/evento_ceremonia.png')})` }} />
             
             <div className="card_body">
                 <div className="card_icon_container icono-rotado" style={{ color: '#3b82f6', background: '#eff6ff', transform: 'rotate(5deg)' }}>

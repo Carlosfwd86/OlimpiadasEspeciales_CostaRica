@@ -1,0 +1,81 @@
+/* Estilos Globales de Accesibilidad */
+
+/* 1. Alto Contraste (Modo no destructivo mediante filtros) */
+/* Al aplicarlo al contenedor principal y no al body, evitamos que position:fixed de los widgets se rompa */
+html.a11y-high-contrast body {
+    background-color: #000 !important;
+}
+
+html.a11y-high-contrast #main-content-wrapper {
+    filter: invert(1) hue-rotate(180deg) contrast(150%) !important;
+    background-color: #fff !important; /* Se invierte a negro profundo */
+    min-height: 100vh;
+}
+
+/* Revertir inversión en imágenes y videos dentro del contenido principal para que mantengan sus colores */
+html.a11y-high-contrast #main-content-wrapper img,
+html.a11y-high-contrast #main-content-wrapper video,
+html.a11y-high-contrast #main-content-wrapper iframe {
+    filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* 2. Escala de Grises */
+html.a11y-grayscale #main-content-wrapper {
+    filter: grayscale(100%) !important;
+}
+
+/* 3. Subrayar Enlaces */
+html.a11y-underline-links a,
+html.a11y-underline-links button {
+    text-decoration: underline !important;
+}
+
+/* 4. Cursor Grande */
+html.a11y-big-cursor body, 
+html.a11y-big-cursor body * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24'%3E%3Cpath fill='%23FF0000' stroke='%23FFF' stroke-width='2' d='M5 2L18 13.5H11.5L15 21L11.5 22.5L8 15L4 18V2Z'/%3E%3C/svg%3E"), auto !important;
+}
+
+/* 5. Detener Animaciones */
+/* Solo se detienen las animaciones dentro del wrapper principal, los botones flotantes quedan intactos */
+html.a11y-stop-animations #main-content-wrapper *,
+html.a11y-stop-animations #main-content-wrapper *::before,
+html.a11y-stop-animations #main-content-wrapper *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* 6. Fuente Dislexia */
+html.a11y-dyslexia-font body,
+html.a11y-dyslexia-font body * {
+    font-family: 'OpenDyslexic', 'OpenDyslexicAlta', comic sans ms, sans-serif !important;
+}
+
+/* 7. Incremento de Tamaño (Uso de 'zoom' en el wrapper principal) */
+/* Los widgets de las esquinas NO crecerán y no se deformarán */
+html.a11y-font-size-1 #main-content-wrapper { zoom: 1.05 !important; }
+html.a11y-font-size-2 #main-content-wrapper { zoom: 1.10 !important; }
+html.a11y-font-size-3 #main-content-wrapper { zoom: 1.15 !important; }
+html.a11y-font-size-4 #main-content-wrapper { zoom: 1.20 !important; }
+
+/* 8. Guía de Lectura */
+.a11y-reading-guide-line {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: rgba(255, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: 9999999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    top: -50px;
+}
+
+/* 9. Focus Visible Accesible (Global) */
+*:focus-visible {
+    outline: 3px solid #FF0000 !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
+}

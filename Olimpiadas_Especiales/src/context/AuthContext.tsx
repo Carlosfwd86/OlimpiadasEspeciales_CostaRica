@@ -11,7 +11,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: any) => Promise<void>;
+  login: (credentials: any) => Promise<any>;
   logout: () => Promise<void>;
 }
 
@@ -41,11 +41,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (credentials: any) => {
     const res = await apiClient.post('/auth/login', credentials);
-    const { usuario } = res.data;
+    const usuario = res.data.data?.usuario || res.data.usuario;
     // El token JWT viaja como httpOnly cookie — no se almacena en localStorage
     // por seguridad (XSS protection). El backend ya setea la cookie en login.
     if (usuario) localStorage.setItem('usuarioSesion', JSON.stringify(usuario));
     setUser(usuario);
+    return usuario;
   };
 
   const logout = async () => {

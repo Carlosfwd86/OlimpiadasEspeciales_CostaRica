@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
 import '../styles/Navbar.css';
+import { s3Url } from '../utils/s3';
 
 const Navbar = (): React.JSX.Element => {
   const navegar = useNavigate();
@@ -10,10 +11,20 @@ const Navbar = (): React.JSX.Element => {
   const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
 
   const handleCerrarSesion = async (): Promise<void> => {
-    if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-      await logout();
-      navegar("/");
-    }
+    Swal.fire({
+      title: '¿Estás seguro de que deseas cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e62334',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, cerrar sesión',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await logout();
+        navegar("/");
+      }
+    });
   };
 
   const toggleMenu = (nombre: string) => {
@@ -74,7 +85,7 @@ const Navbar = (): React.JSX.Element => {
     <nav className="navbar_principal">
       {/* Logo */}
       <div className="navbar_logotipo" onClick={() => navegar("/")}>
-        <img src="/img/Logo Olimpiadas.png" alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
+        <img src={s3Url('img/Logo Olimpiadas.png')} alt="Logo Olimpiadas Especiales" className="icono_rojo_so" />
       </div>
 
       {/* Menú central */}
@@ -140,7 +151,6 @@ const Navbar = (): React.JSX.Element => {
                     Ver Programas
                   </li>
                 )}
-                <li className="dropdown_item">Próximamente...</li>
               </ul>
             )}
           </li>
@@ -153,7 +163,7 @@ const Navbar = (): React.JSX.Element => {
           <>
             <span
               className="saludo_usuario"
-              onClick={() => navegar("/perfil")}
+              onClick={() => user.rol_id === 1 ? navegar("/admin") : navegar("/perfil")}
               style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
             >
               <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }}></i>
@@ -164,9 +174,11 @@ const Navbar = (): React.JSX.Element => {
                 PANEL ADMIN
               </button>
             )}
-            <button className="boton_accion_rojo" onClick={() => navegar("/perfil")} style={{ padding: '8px 15px', fontSize: '12px' }}>
-              MI PERFIL
-            </button>
+            {user.rol_id !== 1 && (
+              <button className="boton_accion_rojo" onClick={() => navegar("/perfil")} style={{ padding: '8px 15px', fontSize: '12px' }}>
+                MI PERFIL
+              </button>
+            )}
             <button className="boton_cerrar_sesion" onClick={handleCerrarSesion}>CERRAR SESIÓN</button>
           </>
         ) : (

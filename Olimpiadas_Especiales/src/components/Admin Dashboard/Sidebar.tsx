@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../style/Sidebar.css';
-import logoUrl from '../../img/Logo Olimpiadas.png';
+import { s3Url } from '../../utils/s3';
 import { useAuth } from '../../context/AuthContext';
+import Swal from 'sweetalert2';
 
 interface SidebarProps {
   activeTab: string;
@@ -16,7 +17,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
     <aside className="admin-sidebar">
       <div className="sidebar-logo">
         <img
-          src={logoUrl}
+          src={s3Url('img/Logo Olimpiadas.png')}
           alt="Special Olympics Logo"
           className="logo-img"
         />
@@ -46,13 +47,6 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
           >
             <i className="fa-solid fa-users nav-icon"></i>
             Lista de Atletas
-          </li>
-          <li
-            className={`nav-item ${activeTab === 'competiciones' ? 'active' : ''}`}
-            onClick={() => onTabChange('competiciones')}
-          >
-            <i className="fa-solid fa-trophy nav-icon"></i>
-            Competiciones y Eventos
           </li>
           <li
             className={`nav-item ${activeTab === 'consultas' ? 'active' : ''}`}
@@ -123,9 +117,19 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
           <li
             className="nav-item"
             onClick={() => {
-              if (window.confirm('¿Seguro que deseas cerrar la sesión administrativa?')) {
-                logout();
-              }
+              Swal.fire({
+                title: '¿Seguro que deseas cerrar la sesión administrativa?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e62334',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, cerrar sesión',
+                cancelButtonText: 'Cancelar'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  logout();
+                }
+              });
             }}
           >
             <i className="fa-solid fa-right-from-bracket nav-icon"></i>

@@ -1,13 +1,31 @@
 const { models } = require('../config/database');
 const { Tutor } = models;
+const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 
+/**
+ * @module tutorController
+ * @description Controlador para gestionar el CRUD de los tutores o encargados de los atletas.
+ */
+
+/**
+ * @function getAll
+ * @description Obtiene el listado completo de todos los tutores registrados.
+ */
 exports.getAll = async (req, res, next) => {
   try {
-    const data = await Tutor.findAll();
-    res.json(data);
-  } catch (error) { next(error); }
+    const { limit, offset, page } = getPagination(req.query);
+    const { count, rows: tutores } = await Tutor.findAndCountAll({ limit, offset });
+    const meta = getPagingData(count, limit, page);
+    res.json(successResponse(tutores, 'Tutores obtenidos correctamente', meta));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };
 
+/**
+ * @function getById
+ * @description Busca y devuelve los datos de un tutor por su ID, manejando formatos compuestos como "tutor_1".
+ */
 exports.getById = async (req, res, next) => {
   try {
     let { id } = req.params;
@@ -15,11 +33,17 @@ exports.getById = async (req, res, next) => {
       id = id.split('_')[1];
     }
     const data = await Tutor.findByPk(id);
-    if (!data) return res.status(404).json({ message: 'Tutor no encontrado' });
-    res.json(data);
-  } catch (error) { next(error); }
+    if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
+    res.json(successResponse(data, 'Tutor obtenido correctamente'));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };
 
+/**
+ * @function create
+ * @description Registra un nuevo tutor, adaptando los nombres (separando nombre y apellido si es necesario) y transformando campos booleanos.
+ */
 exports.create = async (req, res, next) => {
   try {
     const data = req.body.datos || req.body;
@@ -52,13 +76,17 @@ exports.create = async (req, res, next) => {
     };
 
     const nuevoTutor = await Tutor.create(datosTutor);
-    res.status(201).json(nuevoTutor);
+    res.status(201).json(successResponse(nuevoTutor, 'Tutor creado exitosamente'));
   } catch (error) { 
     console.error('Error al crear tutor:', error);
-    next(error); 
+    res.status(500).json(errorResponse(error.message));
   }
 };
 
+/**
+ * @function update
+ * @description Actualiza los datos de un tutor, normalizando el formato del payload (camelCase a snake_case).
+ */
 exports.update = async (req, res, next) => {
   try {
     let { id } = req.params;
@@ -67,7 +95,7 @@ exports.update = async (req, res, next) => {
     }
 
     const data = await Tutor.findByPk(id);
-    if (!data) return res.status(404).json({ message: 'Tutor no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
 
     const body = req.body;
     const updates = {};
@@ -96,15 +124,23 @@ exports.update = async (req, res, next) => {
     if (body.experienciaNecesidadesEspeciales !== undefined) updates.experiencia_necesidades_especiales = body.experienciaNecesidadesEspeciales === 'Si' || body.experienciaNecesidadesEspeciales === true;
 
     await data.update(updates);
-    res.json(data);
-  } catch (error) { next(error); }
+    res.json(successResponse(data, 'Tutor actualizado exitosamente'));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };
 
+/**
+ * @function delete
+ * @description Elimina permanentemente un tutor de la base de datos por su ID.
+ */
 exports.delete = async (req, res, next) => {
   try {
     const data = await Tutor.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Tutor no encontrado' });
+    if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
     await data.destroy();
-    res.json({ message: 'Tutor eliminado' });
-  } catch (error) { next(error); }
+    res.json(successResponse(null, 'Tutor eliminado'));
+  } catch (error) { 
+    res.status(500).json(errorResponse(error.message));
+  }
 };

@@ -9,7 +9,7 @@ const winston = require('winston');
 const { sequelize } = require('./config/database');
 const errorHandler = require('./middlewares/errorHandler');
 
-// Logger profesional
+// Logger profesional - validation reload
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -48,29 +48,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Registro manual de rutas
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/usuarios', require('./routes/usuario.routes'));
-app.use('/api/Admin', require('./routes/admin.routes'));
-app.use('/api/atletas', require('./routes/atletaRoutes'));
-app.use('/api/competiciones', require('./routes/competicion.routes'));
-app.use('/api/competicion-atleta', require('./routes/competicion_atleta.routes'));
-app.use('/api/consultas', require('./routes/consultas.routes'));
-app.use('/api/disciplinas', require('./routes/disciplinas.routes'));
-app.use('/api/entrenadores', require('./routes/entrenador.routes'));
-app.use('/api/inscripciones', require('./routes/inscripciones.routes'));
-app.use('/api/niveles-habilidad', require('./routes/nivelesHabilidad.routes'));
-app.use('/api/programas', require('./routes/programas.routes'));
-app.use('/api/roles', require('./routes/rolesRoutes'));
-app.use('/api/tutores', require('./routes/tutores.routes'));
-app.use('/api/voluntarios', require('./routes/voluntario.routes'));
-app.use('/api/voluntario-area', require('./routes/voluntario_area.routes'));
+app.use('/api/v1/auth', require('./routes/authRoutes'));
+app.use('/api/v1/usuarios', require('./routes/usuario.routes'));
+app.use('/api/v1/admin', require('./routes/admin.routes'));
+app.use('/api/v1/atletas', require('./routes/atletaRoutes'));
+app.use('/api/v1/competiciones', require('./routes/competicion.routes'));
+app.use('/api/v1/competiciones-atletas', require('./routes/competicion_atleta.routes'));
+app.use('/api/v1/consultas', require('./routes/consultas.routes'));
+app.use('/api/v1/disciplinas', require('./routes/disciplinas.routes'));
+app.use('/api/v1/entrenadores', require('./routes/entrenador.routes'));
+app.use('/api/v1/inscripciones', require('./routes/inscripciones.routes'));
+app.use('/api/v1/niveles-habilidad', require('./routes/nivelesHabilidad.routes'));
+app.use('/api/v1/programas', require('./routes/programas.routes'));
+app.use('/api/v1/roles', require('./routes/rolesRoutes'));
+app.use('/api/v1/tutores', require('./routes/tutores.routes'));
+app.use('/api/v1/voluntarios', require('./routes/voluntario.routes'));
+app.use('/api/v1/voluntarios-areas', require('./routes/voluntario_area.routes'));
 
 // Nuevos endpoints
-app.use('/api/stats', require('./routes/stats.routes'));
-app.use('/api/settings', require('./routes/settings.routes'));
-app.use('/api/registros-pendientes', require('./routes/registrosPendientes.routes'));
-app.use('/api/actividad-sistema', require('./routes/actividadSistema.routes'));
-app.use('/api/chat', require('./routes/chat.routes'));
+app.use('/api/v1/stats', require('./routes/stats.routes'));
+app.use('/api/v1/settings', require('./routes/settings.routes'));
+app.use('/api/v1/registros-pendientes', require('./routes/registrosPendientes.routes'));
+app.use('/api/v1/actividades-sistema', require('./routes/actividadSistema.routes'));
+app.use('/api/v1/chats', require('./routes/chat.routes'));
 
 app.use(errorHandler);
 

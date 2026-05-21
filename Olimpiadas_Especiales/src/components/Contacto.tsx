@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import '../styles/Contacto.css';
+import { s3Url } from '../utils/s3';
 
 // ─── EMAILJS CREDENTIALS ───────────────────────────────────────────────────────
 const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
@@ -113,7 +114,7 @@ const Contacto = (): React.JSX.Element => {
     <div className="contenedor_contacto_principal">
 
       {/* ── HERO BANNER con título ─────────────────────────────────────── */}
-      <div className="hero_consultas">
+      <div className="hero_consultas" style={{ backgroundImage: `url(${s3Url('img/fotocontacto.jpg')})` }}>
         <div className="overlay_hero_consultas"></div>
         <h1 className="titulo_hero_consultas">CONTÁCTANOS</h1>
       </div>
