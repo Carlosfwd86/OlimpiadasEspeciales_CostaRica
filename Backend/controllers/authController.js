@@ -1,8 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { models } = require('../config/database');
 const { Usuario, Sesion, TokenBlacklist } = models;
 const { successResponse, errorResponse } = require('../utils/apiResponse');
+const { sendResetPasswordEmail } = require('../helpers/emailHelper');
 
 // ── Seguridad: JWT_SECRET es OBLIGATORIO ──────────────────────────────────────
 // Si la variable no está definida el proceso se detiene inmediatamente.
@@ -292,10 +294,105 @@ const updateProfile = async (req, res) => {
   }
 };
 
+/**
+ * @function solicitarRecuperacion
+ * @description Solicita un enlace de recuperación de contraseña para un usuario. Genera un token aleatorio con expiración y lo envía por correo.
+ */
+const solicitarRecuperacion = async (req, res) => {
+  try {
+    const { correo_electronico } = req.body;
+
+    const usuario = await Usuario.findOne({ where: { correo_electronico } });
+
+    if (usuario) {
+      // Generar token
+      const token = crypto.randomBytes(32).toString('hex');
+      // Hashear token para guardarlo de manera segura en DB
+      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+      // Expiración en 15 minutos
+      const tokenExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+      // Guardar en base de datos
+      await usuario.update({
+        reset_password_token: hashedToken,
+        reset_password_expires: tokenExpires
+      });
+
+      // Enviar correo electrónico
+      await sendResetPasswordEmail(usuario.correo_electronico, usuario.nombre, token);
+
+      // En modo desarrollo, guardar el token bruto a un archivo para facilitar pruebas sin servidor de correo
+      if (process.env.NODE_ENV === 'development') {
+        const fs = require('fs');
+        const path = require('path');
+        fs.writeFileSync(path.join(__dirname, '../reset_token_test.txt'), token);
+      }
+    }
+
+    // Por seguridad, siempre retornamos éxito para no revelar si el correo está registrado o no
+    return res.status(200).json(successResponse(null, 'Si tu correo electrónico está registrado, recibirás un enlace de recuperación en los próximos minutos.'));
+  } catch (error) {
+    console.error('Error al solicitar recuperación de contraseña:', error);
+    return res.status(500).json(errorResponse('Error al procesar la solicitud de recuperación de contraseña.', 500, error.message));
+  }
+};
+
+/**
+ * @function restablecerContrasena
+ * @description Restablece la contraseña de un usuario mediante un token válido y no expirado.
+ */
+const restablecerContrasena = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    // Hashear el token recibido para buscarlo en la DB
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Buscar el usuario que tenga este token y que no haya expirado
+    const { Op } = require('sequelize');
+    const usuario = await Usuario.findOne({
+      where: {
+        reset_password_token: hashedToken,
+        reset_password_expires: {
+          [Op.gt]: new Date()
+        }
+      }
+    });
+
+    if (!usuario) {
+      return res.status(400).json(errorResponse('El enlace de recuperación es inválido o ha expirado.', 400));
+    }
+
+    // Hashear nueva contraseña
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+
+    // Actualizar usuario
+    await usuario.update({
+      password_hash,
+      reset_password_token: null,
+      reset_password_expires: null
+    });
+
+    // Revocar todas las sesiones activas de este usuario para mayor seguridad
+    await Sesion.update(
+      { activa: false },
+      { where: { usuario_id: usuario.id } }
+    );
+
+    return res.status(200).json(successResponse(null, 'Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.'));
+  } catch (error) {
+    console.error('Error al restablecer contraseña:', error);
+    return res.status(500).json(errorResponse('Error al restablecer la contraseña.', 500, error.message));
+  }
+};
+
 module.exports = {
   registrarUsuario,
   iniciarSesion,
   cerrarSesion,
   getProfile,
-  updateProfile
+  updateProfile,
+  solicitarRecuperacion,
+  restablecerContrasena
 };

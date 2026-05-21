@@ -96,6 +96,14 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: true
   },
 */
+  reset_password_token: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  reset_password_expires: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   status: {
     type: DataTypes.ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO'),
     allowNull: false,

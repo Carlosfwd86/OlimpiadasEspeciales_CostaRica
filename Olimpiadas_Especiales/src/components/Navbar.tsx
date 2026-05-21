@@ -151,7 +151,6 @@ const Navbar = (): React.JSX.Element => {
                     Ver Programas
                   </li>
                 )}
-                <li className="dropdown_item">Próximamente...</li>
               </ul>
             )}
           </li>
