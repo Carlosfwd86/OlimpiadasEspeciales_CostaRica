@@ -375,6 +375,93 @@ const Programas = (): React.JSX.Element => {
                 )}
             </div>
 
+            {/* ── SECCIÓN DE VIDEO YOUTUBE ── */}
+            <div className="programas-video-section">
+                <div className="programas-video-container">
+                    <div className="programas-video-text-col">
+                        <span className="video-badge">🎬 Inspiración en Acción</span>
+                        <h2>Descubre el Poder de la Inclusión</h2>
+                        <p>
+                            Cada entrenamiento, cada sonrisa y cada logro es el resultado de un esfuerzo colectivo. 
+                            A través de Olimpiadas Especiales, nuestros atletas demuestran al mundo que la determinación y la pasión no conocen límites.
+                        </p>
+                        <p className="video-highlight-text">
+                            Acompáñanos a revivir los momentos más emotivos y a conocer el impacto real de nuestros programas deportivos en Costa Rica.
+                        </p>
+                    </div>
+                    <div className="programas-video-embed-col">
+                        <div className="video-iframe-wrapper">
+                            <iframe 
+                                src="https://www.youtube.com/embed/yAlbCaav9cI" 
+                                title="Olimpiadas Especiales Costa Rica" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── SECCIÓN DE TESTIMONIOS ── */}
+            <div className="programas-testimonios-section">
+                <div className="testimonios-container">
+                    <header className="testimonios-header">
+                        <span className="testimonios-badge">💬 Voces de Nuestra Comunidad</span>
+                        <h2>Historias que nos Inspiran</h2>
+                        <p>
+                            El impacto de Olimpiadas Especiales Costa Rica se refleja en el testimonio de quienes viven de cerca la transformación.
+                        </p>
+                    </header>
+                    
+                    <div className="testimonios-grid">
+                        <div className="testimonio-card">
+                            <div className="testimonio-quote-icon">“</div>
+                            <p className="testimonio-text">
+                                Olimpiadas Especiales me enseñó que no hay límites en la pista de atletismo. Aquí he encontrado amigos, apoyo y he aprendido a luchar siempre por mis metas con orgullo.
+                            </p>
+                            <div className="testimonio-divider"></div>
+                            <div className="testimonio-autor">
+                                <div className="testimonio-avatar avatar-1">AD</div>
+                                <div className="testimonio-info">
+                                    <h4>Adrián de la Ossa</h4>
+                                    <span>Atleta de Atletismo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="testimonio-card">
+                            <div className="testimonio-quote-icon">“</div>
+                            <p className="testimonio-text">
+                                Ver a mi hijo ganar confianza, hacer amigos entrañables y sentirse verdaderamente valorado por sus habilidades ha sido la mayor bendición para toda nuestra familia.
+                            </p>
+                            <div className="testimonio-divider"></div>
+                            <div className="testimonio-autor">
+                                <div className="testimonio-avatar avatar-2">MC</div>
+                                <div className="testimonio-info">
+                                    <h4>Mariela Castro</h4>
+                                    <span>Madre de un Atleta</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="testimonio-card">
+                            <div className="testimonio-quote-icon">“</div>
+                            <p className="testimonio-text">
+                                Ser voluntario y entrenador me ha cambiado la vida por completo. En cada entrenamiento aprendo mucho más de la valentía y el entusiasmo de los atletas de lo que yo les puedo enseñar.
+                            </p>
+                            <div className="testimonio-divider"></div>
+                            <div className="testimonio-autor">
+                                <div className="testimonio-avatar avatar-3">JV</div>
+                                <div className="testimonio-info">
+                                    <h4>José Pablo Vargas</h4>
+                                    <span>Entrenador Voluntario</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* ── CTA BOTTOM ── */}
             <div className="programas-cta-section">
                 <div className="programas-cta-inner">
