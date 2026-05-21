@@ -1,5 +1,18 @@
 /* Estilos Globales de Accesibilidad */
 
+/* ==========================================================================
+   Wrapper Layout Fix 
+   Asegurar que el wrapper no rompa la estructura flexbox original del #root
+   ========================================================================== */
+#main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+    min-height: 100svh;
+}
+
+
 /* 1. Alto Contraste (Modo no destructivo mediante filtros) */
 /* Al aplicarlo al contenedor principal y no al body, evitamos que position:fixed de los widgets se rompa */
 html.a11y-high-contrast body {
