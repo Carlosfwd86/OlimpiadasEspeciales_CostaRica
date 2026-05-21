@@ -209,6 +209,21 @@ export const ServicesAdmin = {
         return true;
     },
 
+    sugerirRespuesta: async (id: string | number): Promise<{ borrador: string }> => {
+        const res = await apiClient.post<{ borrador: string }>(`/consultas/${id}/sugerirRespuesta`);
+        return res.data;
+    },
+
+    responderConsulta: async (id: string | number, mensajeRespuesta: string): Promise<{ success: boolean, message: string }> => {
+        const res = await apiClient.post<{ success: boolean, message: string }>(`/consultas/${id}/responder`, { mensajeRespuesta });
+        return res.data;
+    },
+
+    responderMasivo: async (correos: string[], asunto: string, mensajeRespuesta: string, consultaIds?: (number | string)[]): Promise<{ success: boolean, message: string }> => {
+        const res = await apiClient.post<{ success: boolean, message: string }>('/consultas/responder-masivo', { correos, asunto, mensajeRespuesta, consultaIds });
+        return res.data;
+    },
+
     // Auditoría y Registro de Actividad
     logActivity: async (title: string, details: string, icon: string, iconColor: string): Promise<void> => {
         try {

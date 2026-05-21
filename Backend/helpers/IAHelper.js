@@ -25,13 +25,15 @@ const IAHelper = {
     /**
      * Valida que los datos del atleta existan antes de procesar alertas de salud
      */
-    validarDatosSalud: (atleta, condiciones, medicamentos) => {
+    validarDatosSalud: (atleta, condiciones, medicamentos, alergias = []) => {
         if (!atleta) throw new Error('Información del atleta no encontrada.');
         
         return {
             nombre: `${atleta.nombre} ${atleta.primer_apellido}`,
             condiciones: condiciones.map(c => c.condicion).join(', ') || 'Ninguna registrada',
-            medicamentos: medicamentos.map(m => `${m.nombre} (${m.dosis}, ${m.frecuencia})`).join(', ') || 'Ninguno registrado'
+            // Corregido: el campo en AtletaMedicamento es 'medicamento', no 'nombre'
+            medicamentos: medicamentos.map(m => `${m.medicamento} (${m.dosis || 'dosis no especificada'}, ${m.frecuencia || 'frecuencia no especificada'})`).join(', ') || 'Ninguno registrado',
+            alergias: alergias.map(a => a.alergia).join(', ') || 'Ninguna registrada'
         };
     }
 };
