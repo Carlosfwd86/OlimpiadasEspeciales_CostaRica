@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../style/ModalNuevoRegistro.css';
 import type { Registro } from '../../types';
 
@@ -13,31 +13,136 @@ interface ModalDetalleRegistroProps {
   data: Registro | null;
 }
 
+// ─── Componente de Semáforo de Riesgo IA ─────────────────────────────────────
+interface AnalisisSalud {
+  nivelRiesgo: 'Rojo' | 'Amarillo' | 'Verde';
+  alertas: string[];
+  recomendaciones: string[];
+}
+
+const CONFIG_SEMAFORO = {
+  Rojo:    { bg: '#fff1f2', border: '#fecaca', badge: '#E00000', badgeTxt: '#fff', icono: '🔴', label: 'Riesgo Alto' },
+  Amarillo:{ bg: '#fffbeb', border: '#fde68a', badge: '#d97706', badgeTxt: '#fff', icono: '🟡', label: 'Supervisión Requerida' },
+  Verde:   { bg: '#f0fdf4', border: '#bbf7d0', badge: '#16a34a', badgeTxt: '#fff', icono: '🟢', label: 'Sin Restricciones' },
+};
+
+const SemaforoRiesgo: React.FC<{ atletaId: string | number }> = ({ atletaId }) => {
+  const [analisis, setAnalisis] = useState<AnalisisSalud | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!atletaId) return;
+    setCargando(true);
+    setError(null);
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/IA/salud/analizar/${atletaId}`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.analisis) setAnalisis(res.analisis);
+        else setError('No se pudo obtener el análisis.');
+      })
+      .catch(() => setError('Error de conexión con el servicio de IA.'))
+      .finally(() => setCargando(false));
+  }, [atletaId]);
+
+  if (cargando) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px', background: '#f8fafc', borderRadius: '12px', marginBottom: '16px' }}>
+        <div style={{ width: '20px', height: '20px', border: '3px solid #e2e8f0', borderTopColor: '#E00000', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Analizando perfil de salud con IA...</span>
+      </div>
+    );
+  }
+
+  if (error || !analisis) {
+    return (
+      <div style={{ padding: '12px 16px', background: '#f8fafc', borderRadius: '12px', marginBottom: '16px', fontSize: '13px', color: '#94a3b8' }}>
+        ⚠️ Análisis de IA no disponible para este perfil.
+      </div>
+    );
+  }
+
+  const config = CONFIG_SEMAFORO[analisis.nivelRiesgo] ?? CONFIG_SEMAFORO.Verde;
+
+  return (
+    <div style={{ background: config.bg, border: `1.5px solid ${config.border}`, borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
+      {/* Header del semáforo */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ fontSize: '22px' }}>{config.icono}</span>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.08em' }}>Análisis Preventivo IA</div>
+            <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{config.label}</div>
+          </div>
+        </div>
+        <span style={{ background: config.badge, color: config.badgeTxt, fontSize: '11px', fontWeight: 800, padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase' }}>
+          {analisis.nivelRiesgo}
+        </span>
+      </div>
+
+      {/* Alertas */}
+      {analisis.alertas.length > 0 && (
+        <div style={{ marginBottom: '12px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', marginBottom: '8px' }}>⚠️ Alertas</div>
+          {analisis.alertas.map((a, i) => (
+            <div key={i} style={{ fontSize: '13px', color: '#334155', padding: '6px 12px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px', marginBottom: '5px', fontWeight: 500 }}>
+              {a}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Recomendaciones */}
+      {analisis.recomendaciones.length > 0 && (
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', marginBottom: '8px' }}>📋 Recomendaciones para el Entrenador</div>
+          {analisis.recomendaciones.map((r, i) => (
+            <div key={i} style={{ fontSize: '13px', color: '#334155', padding: '6px 12px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px', marginBottom: '5px', fontWeight: 500 }}>
+              • {r}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ marginTop: '12px', fontSize: '11px', color: '#94a3b8', textAlign: 'right' }}>
+        Generado por IA · gpt-4o-mini · No sustituye consejo médico
+      </div>
+    </div>
+  );
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDetalleRegistroProps): React.JSX.Element | null {
     if (!isOpen || !data) return null;
 
     const renderSection = (title: string, fields: FieldDef[]): React.JSX.Element | null => {
-        const activeFields = fields.filter(f =>
-            data[f.key] !== undefined && data[f.key] !== null && data[f.key] !== ''
-        );
+        const activeFields = fields.filter(f => {
+            const val = (data as Record<string, unknown>)[f.key];
+            return val !== undefined && val !== null && val !== '';
+        });
         if (activeFields.length === 0) return null;
 
         return (
             <div style={{ marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <h3 style={{ fontSize: '15px', color: '#e62334', fontWeight: '700', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.05em' }}>{title}</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px' }}>
-                    {activeFields.map(f => (
-                        <div key={f.key}>
-                            <label style={{ display: 'block', fontSize: '11px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', marginBottom: '4px' }}>{f.label}</label>
-                            <div style={{ fontSize: '14px', color: '#334155', fontWeight: '500' }}>
-                                {typeof data[f.key] === 'boolean' ? (data[f.key] ? 'Sí' : 'No') : String(data[f.key] ?? '')}
+                    {activeFields.map(f => {
+                        const val = (data as Record<string, unknown>)[f.key];
+                        const display = typeof val === 'boolean' ? (val ? 'Sí' : 'No') : String(val ?? '');
+                        return (
+                            <div key={f.key}>
+                                <label style={{ display: 'block', fontSize: '11px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', marginBottom: '4px' }}>{f.label}</label>
+                                <div style={{ fontSize: '14px', color: '#334155', fontWeight: '500' }}>{display}</div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         );
     };
+
+    // El tipo Registro define id como string. Lo pasamos directamente si el rol es atleta.
+    const atletaId: string | number | null = data.rol === 'atleta' ? (data.id ?? null) : null;
 
     return (
         <div className="modal-overlay" style={{ zIndex: 2000 }}>
@@ -55,6 +160,9 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDet
                 </div>
 
                 <div className="modal-body">
+                    {/* ── Semáforo de Riesgo IA (solo para atletas con ID) ── */}
+                    {atletaId && <SemaforoRiesgo atletaId={atletaId} />}
+
                     {renderSection("Datos de Identidad", [
                         { key: 'cedula', label: 'Cédula / ID' },
                         { key: 'fechaNacimiento', label: 'Fecha Nacimiento' },

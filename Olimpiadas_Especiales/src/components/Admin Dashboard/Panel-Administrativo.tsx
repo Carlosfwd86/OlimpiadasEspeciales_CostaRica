@@ -40,11 +40,12 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    ServicesAdmin.getRegistrations()
-      .then(data => {
-        if (data.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
+    ServicesAdmin.getRegistrations(1, 1000)
+      .then(res => {
+        const list = res.data || [];
+        if (list.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
-        const csvContent = data.map((r: any) =>
+        const csvContent = list.map((r: any) =>
           `${String(r.id)},"${String(r.name ?? r.nombre ?? '')}","${String(r.email ?? r.correo_electronico ?? '')}","${String(r.phone ?? r.telefono ?? '')}","${String(r.sport ?? r.disciplina ?? '')}","${String(r.region ?? r.programa ?? '')}","${String(r.status ?? r.estado ?? '')}"`
         ).join("\n");
 
