@@ -76,11 +76,151 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                     ${consulta.mensaje}
                 </div>
             `,
+            showDenyButton: true,
             confirmButtonText: 'Cerrar',
-            confirmButtonColor: '#2563eb',
+            confirmButtonColor: '#64748b',
+            denyButtonText: '🪄 Borrador IA',
+            denyButtonColor: '#e62334',
             width: '600px'
+        }).then((result) => {
+            if (result.isDenied) {
+                Swal.fire({
+                    title: 'Redactando borrador...',
+                    html: 'Nuestro Asistente de IA está redactando la mejor respuesta institucional.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                ServicesAdmin.sugerirRespuesta(consulta.id)
+                    .then((res) => {
+                        const correosMasivos = Array.from(new Set(consultas.map(c => c.correo).filter((c): c is string => !!c)));
+                        const consultaIds = consultas.map(c => c.id);
+
+                        Swal.fire({
+                            title: '🪄 Sugerencia de Respuesta IA',
+                            html: `
+                                <div style="text-align: left; margin-bottom: 15px; font-size: 13px; color: #64748b;">
+                                    Aquí tienes un borrador profesional redactado para <strong>${consulta.nombre}</strong>. Puedes editarlo antes de enviar:
+                                </div>
+                                <textarea id="copiloto-respuesta-texto" style="width: 100%; height: 180px; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; font-family: inherit; resize: vertical; background: #ffffff; color: #334155;">${res.borrador}</textarea>
+                                <div style="text-align: left; margin-top: 15px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                    <span style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 8px; color: #334155;">¿A quién deseas enviar esta respuesta?</span>
+                                    <label style="display: block; font-size: 13px; margin-bottom: 8px; cursor: pointer; color: #475569;">
+                                        <input type="radio" name="destinatarios-tipo" value="individual" defaultChecked style="margin-right: 8px; accent-color: #3b82f6;" />
+                                        Solo a <strong>${consulta.nombre}</strong> (${consulta.correo})
+                                    </label>
+                                    <label style="display: block; font-size: 13px; cursor: pointer; color: #475569;">
+                                        <input type="radio" name="destinatarios-tipo" value="masivo" style="margin-right: 8px; accent-color: #3b82f6;" />
+                                        <strong>Envío Masivo</strong> a todos los remitentes (${correosMasivos.length} correos)
+                                    </label>
+                                </div>
+                            `,
+                            showDenyButton: true,
+                            confirmButtonText: '📧 Enviar por Correo',
+                            confirmButtonColor: '#10b981',
+                            denyButtonText: '📋 Copiar Texto',
+                            denyButtonColor: '#3b82f6',
+                            showCancelButton: true,
+                            cancelButtonText: 'Volver',
+                            cancelButtonColor: '#64748b',
+                            width: '600px',
+                            preConfirm: () => {
+                                const textarea = document.getElementById('copiloto-respuesta-texto') as HTMLTextAreaElement;
+                                const textVal = textarea ? textarea.value : res.borrador;
+                                if (!textVal.trim()) {
+                                    Swal.showValidationMessage('El mensaje no puede estar vacío.');
+                                    return false;
+                                }
+                                const radioInput = document.querySelector('input[name="destinatarios-tipo"]:checked') as HTMLInputElement;
+                                const sendType = radioInput ? radioInput.value : 'individual';
+                                return { textVal, sendType };
+                            }
+                        }).then((subRes) => {
+                            if (subRes.isConfirmed && subRes.value) {
+                                const { textVal: mensajeFinal, sendType } = subRes.value;
+
+                                if (sendType === 'masivo') {
+                                    Swal.fire({
+                                        title: 'Enviando correos...',
+                                        html: `Enviando mensaje a ${correosMasivos.length} destinatarios.`,
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+
+                                    const asunto = `Respuesta Oficial - Olimpiadas Especiales`;
+                                    ServicesAdmin.responderMasivo(correosMasivos, asunto, mensajeFinal, consultaIds)
+                                        .then((envio) => {
+                                            Swal.fire({
+                                                title: '¡Enviado con Éxito!',
+                                                text: envio.message || 'Los correos han sido enviados.',
+                                                icon: 'success',
+                                                confirmButtonColor: '#10b981'
+                                            });
+                                            fetchConsultas();
+                                        })
+                                        .catch((err: any) => {
+                                            console.error(err);
+                                            const errorMsg = err.message || err.error || 'Error interno del servidor';
+                                            Swal.fire('Error', `No se pudo enviar masivamente: ${errorMsg}`, 'error');
+                                        });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Enviando correo...',
+                                        html: 'El sistema está enviando tu mensaje.',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+
+                                    // Usar únicamente el backend (SMTP / OAuth2 / Simulador)
+                                    ServicesAdmin.responderConsulta(consulta.id, mensajeFinal)
+                                        .then((envio) => {
+                                            Swal.fire({
+                                                title: '¡Enviado con Éxito!',
+                                                text: envio.message || 'La respuesta ha sido enviada.',
+                                                icon: 'success',
+                                                confirmButtonColor: '#10b981'
+                                            });
+                                            fetchConsultas();
+                                        })
+                                        .catch((err: any) => {
+                                            console.error(err);
+                                            const errorMsg = err.message || err.error || 'Error interno del servidor';
+                                            Swal.fire('Error', `No se pudo enviar el correo: ${errorMsg}`, 'error');
+                                        });
+                                }
+                            } else if (subRes.isDenied) {
+                                const textarea = document.getElementById('copiloto-respuesta-texto') as HTMLTextAreaElement;
+                                if (textarea) {
+                                    textarea.select();
+                                    document.execCommand('copy');
+                                    Swal.fire({
+                                        title: '¡Copiado!',
+                                        text: 'El borrador ha sido copiado al portapapeles.',
+                                        icon: 'success',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            } else if (subRes.isDismissed && subRes.dismiss === Swal.DismissReason.cancel) {
+                                handleView(consulta);
+                            }
+                        });
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        Swal.fire('Error', 'No se pudo generar la sugerencia con IA.', 'error');
+                    });
+            }
         });
     };
+
+
 
     if (loading) {
         return (
@@ -114,15 +254,17 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                     <h3 style={{ color: 'var(--admin-text-main)', margin: 0 }}><i className="fa-solid fa-envelope" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Bandeja de Consultas</h3>
                     <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px', margin: 0 }}>Gestión de los mensajes recibidos desde el Formulario de Contacto público.</p>
                 </div>
-                <div style={{ position: 'relative' }}>
-                    <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }}></i>
-                    <input 
-                        type="text" 
-                        placeholder="Buscar mensajes..." 
-                        value={localSearch}
-                        onChange={(e) => setLocalSearch(e.target.value)}
-                        style={{ padding: '8px 12px 8px 35px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', width: '250px', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
-                    />
+                <div style={{ position: 'relative', display: 'flex', gap: '10px' }}>
+                    <div style={{ position: 'relative' }}>
+                        <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }}></i>
+                        <input 
+                            type="text" 
+                            placeholder="Buscar mensajes..." 
+                            value={localSearch}
+                            onChange={(e) => setLocalSearch(e.target.value)}
+                            style={{ padding: '8px 12px 8px 35px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', width: '250px', background: 'var(--admin-white)', color: 'var(--admin-text-main)' }}
+                        />
+                    </div>
                 </div>
             </div>
 

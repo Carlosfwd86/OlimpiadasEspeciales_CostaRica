@@ -113,6 +113,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
   const [errores, setErrores] = useState<Record<string, boolean>>({});
   const [archivos, setArchivos] = useState<ArchivosAtleta>({ identificacion: null, certificado: null, foto: null, identificacionTutor: null });
   const [catalogos, setCatalogos] = useState<ConfigData>({ disciplinas: [], programas: [], niveles_habilidad: [], roles: [], areas_voluntariado: [], tipos_recursos: [], categorias_eventos: [] });
+  const [ocrCargando, setOcrCargando] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -276,6 +277,53 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
       return;
     }
     setArchivos({ ...archivos, [tipo]: file });
+  };
+
+  // Procesa el certificado médico con GPT-4o Vision y autocompleta el formulario
+  const procesarCertificadoConIA = async (): Promise<void> => {
+    if (!archivos.certificado) return;
+    const esImagen = archivos.certificado.type.startsWith('image/');
+    if (!esImagen) {
+      Swal.fire({ icon: 'info', title: 'Formato no compatible con IA', text: 'El auto-completado con IA solo funciona con imágenes (JPG, PNG, WebP). Para PDFs, complete el formulario manualmente.', confirmButtonColor: '#E00000' });
+      return;
+    }
+
+    setOcrCargando(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(archivos.certificado as File);
+      });
+
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/IA/registro/ocr`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imagenBase64: base64 })
+      });
+
+      const json = await response.json();
+      if (json.success && json.datos?.valido) {
+        const d = json.datos;
+        setDatos(prev => ({
+          ...prev,
+          ...(d.nombre && { nombre: d.nombre }),
+          ...(d.cedula && { cedula: d.cedula }),
+          ...(d.fechaNacimiento && { fechaNacimiento: d.fechaNacimiento }),
+          ...(d.medicamentos?.length && { medicamentos: d.medicamentos.map((m: string) => ({ nombre: m, dosis: '', frecuencia: '' })), tomaMedicamentos: 'Si' }),
+          ...(d.condiciones?.length && { condicionesMedicas: d.condiciones }),
+        }));
+        Swal.fire({ icon: 'success', title: '¡Datos detectados!', text: `La IA extrajo información del certificado. Revisa y ajusta los campos si es necesario.`, confirmButtonColor: '#E00000' });
+      } else {
+        Swal.fire({ icon: 'warning', title: 'No se pudo leer el certificado', text: json.datos?.error || 'La imagen no contiene datos médicos reconocibles. Complete el formulario manualmente.', confirmButtonColor: '#E00000' });
+      }
+    } catch {
+      Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servicio de IA.', confirmButtonColor: '#E00000' });
+    } finally {
+      setOcrCargando(false);
+    }
   };
 
   const validarPaso = (): boolean => {
@@ -633,8 +681,23 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                   </div>
                   <div className="zona-drop" onClick={() => document.getElementById('file-certificado')?.click()}>
                     <div style={{fontSize: '32px', marginBottom: '10px'}}>🏥</div><h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Certificado Médico</h4><p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Documento oficial debidamente firmado</p>
-                    <input id="file-certificado" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, 'certificado')} />
-                    {archivos.certificado && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.certificado.name}</div>}
+                    <input id="file-certificado" type="file" style={{ display: 'none' }} onChange={(e) => { validarYGuardarArchivo(e.target.files?.[0] ?? null, 'certificado'); }} />
+                    {archivos.certificado && (
+                      <div style={{marginTop: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px'}}>
+                        <div className="archivo-adjunto" style={{display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.certificado.name}</div>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); procesarCertificadoConIA(); }}
+                          disabled={ocrCargando}
+                          style={{ padding: '10px 20px', borderRadius: '12px', border: 'none', background: ocrCargando ? '#f1f5f9' : '#E00000', color: ocrCargando ? '#94a3b8' : '#fff', fontWeight: 700, fontSize: '13px', cursor: ocrCargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease' }}
+                        >
+                          {ocrCargando
+                            ? <><span style={{width:'14px',height:'14px',border:'2px solid #e2e8f0',borderTopColor:'#94a3b8',borderRadius:'50%',display:'inline-block'}} />Analizando certificado...</>
+                            : '✨ Auto-completar con IA'
+                          }
+                        </button>
+                      </div>
+                    )}
                   </div>
                   {esMenorDeEdad() && (
                     <div className="zona-drop" onClick={() => document.getElementById('file-identificacion-tutor')?.click()} style={{ border: '2px dashed #fda4af', background: '#fff1f2' }}>
