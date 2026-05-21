@@ -8,7 +8,9 @@ const validators = {
   registro: [
     body('nombre').trim().notEmpty().withMessage('El nombre es obligatorio').isLength({ min: 2 }).withMessage('Mínimo 2 caracteres'),
     body('apellido').trim().notEmpty().withMessage('El apellido es obligatorio'),
-    body('correo_electronico').isEmail().withMessage('Email inválido').normalizeEmail(),
+    body('correo_electronico')
+      .isEmail().withMessage('Email inválido')
+      .customSanitizer(value => value ? value.toLowerCase().trim() : value),
     body('password')
       .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres')
       .matches(/[A-Z]/).withMessage('La contraseña debe contener al menos una letra mayúscula')
@@ -23,7 +25,9 @@ const validators = {
 
   // Validación para inicio de sesión
   login: [
-    body('correo_electronico').isEmail().withMessage('Formato de email incorrecto').normalizeEmail(),
+    body('correo_electronico')
+      .isEmail().withMessage('Formato de email incorrecto')
+      .customSanitizer(value => value ? value.toLowerCase().trim() : value),
     body('password').notEmpty().withMessage('La contraseña es obligatoria')
   ],
 

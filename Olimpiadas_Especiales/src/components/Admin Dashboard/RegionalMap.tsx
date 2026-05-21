@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { ProvincePath } from "../../types";
+import apiClient from '../../api/apiClient';
 
 interface RegionalMapProps {
   mini?: boolean;
@@ -37,16 +38,12 @@ const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
         setProvincePaths(mapPaths);
 
         // Intentar obtener atletas reales
-        const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
-        const token = localStorage.getItem('token') ?? '';
-        const athletesRes = await fetch(`${BACKEND_URL}/atletas`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const athletesRes = await apiClient.get('/atletas');
 
         let counts: Record<string, number> = { ...demoData }; // Empezamos con demo
         
-        if (athletesRes.ok) {
-          const json = await athletesRes.json() as any;
+        if (athletesRes.data) {
+          const json = athletesRes.data as any;
           const atletas = Array.isArray(json) ? json : (json.data?.items || json.data || []);
           
           if (atletas.length > 0) {

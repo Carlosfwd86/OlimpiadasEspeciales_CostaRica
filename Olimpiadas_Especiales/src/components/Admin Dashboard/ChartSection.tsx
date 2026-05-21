@@ -117,7 +117,7 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
       <div className="chart-card chart-card-regional">
         <div className="chart-card-header d-flex-between">
           <h3>Distribución Regional</h3>
-          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); onTabChange && onTabChange('regiones'); }}>Ver Mapa</a>
+          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); onTabChange?.('regiones'); }}>Ver Mapa</a>
         </div>
 
         <div className="regional-content">
