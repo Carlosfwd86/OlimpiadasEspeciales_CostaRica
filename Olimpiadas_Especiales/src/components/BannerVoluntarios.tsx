@@ -1,15 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../styles/BannerVoluntarios.css';
 import { s3Url } from '../utils/s3';
 
 const BannerVoluntarios = (): React.JSX.Element => {
-    const navigate = useNavigate();
-
-    const handleRedirect = (): void => {
-        navigate('/voluntarios');
-    };
-
     const [rolActual, setRolActual] = React.useState<number>(0);
     const rolesDisponibles: string[] = ["un héroe", "un mentor", "un amigo", "un voluntario"];
 

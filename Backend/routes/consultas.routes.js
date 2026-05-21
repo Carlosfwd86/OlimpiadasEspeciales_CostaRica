@@ -18,4 +18,13 @@ router.post('/', validators.consulta, validate, consultaController.create);
 router.put('/:id', auth, checkRole([1]), validators.consulta, validate, consultaController.update);
 router.delete('/:id', auth, checkRole([1]), consultaController.delete);
 
+// Copiloto IA: genera borrador de respuesta institucional (Solo Admin)
+router.post('/:id/sugerirRespuesta', auth, checkRole([1]), consultaController.sugerirRespuesta);
+
+// Enviar respuesta masiva a varios correos (Solo Admin)
+router.post('/responder-masivo', auth, checkRole([1]), consultaController.responderMasivo);
+
+// Enviar respuesta real por correo directamente (Solo Admin)
+router.post('/:id/responder', auth, checkRole([1]), consultaController.responderConsulta);
+
 module.exports = router;

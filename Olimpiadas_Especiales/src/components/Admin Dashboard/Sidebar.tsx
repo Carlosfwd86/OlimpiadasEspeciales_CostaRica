@@ -102,6 +102,13 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps): React
             <i className="fa-solid fa-gear nav-icon"></i>
             Configuración
           </li>
+          <li
+            className={`nav-item ${activeTab === 'perfil' ? 'active' : ''}`}
+            onClick={() => onTabChange('perfil')}
+          >
+            <i className="fa-solid fa-circle-user nav-icon"></i>
+            Mi Perfil
+          </li>
         </ul>
       </div>
 
