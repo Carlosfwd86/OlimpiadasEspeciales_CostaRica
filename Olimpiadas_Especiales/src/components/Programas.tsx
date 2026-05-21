@@ -462,18 +462,6 @@ const Programas = (): React.JSX.Element => {
                 </div>
             </div>
 
-            {/* ── CTA BOTTOM ── */}
-            <div className="programas-cta-section">
-                <div className="programas-cta-inner">
-                    <span className="programas-cta-icon">🤝</span>
-                    <h2>¿Querés ser parte del cambio?</h2>
-                    <p>Únete como atleta, voluntario, entrenador o patrocinador y ayudá a transformar más vidas a través del deporte.</p>
-                    <div className="programas-cta-btns">
-                        <a href="/plataforma-registro" className="cta-btn-primary">Inscribirse ahora</a>
-                        <a href="/contacto" className="cta-btn-secondary">Contáctanos</a>
-                    </div>
-                </div>
-            </div>
 
         </section>
     );
