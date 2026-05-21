@@ -18,7 +18,6 @@ import RegionalMap from './RegionalMap';
 import ConsultasSection from './ConsultasSection';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import type { Stats, Registro } from '../../types';
-import apiClient from '../../api/apiClient';
 
 export default function PanelAdministrativo(): React.JSX.Element {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -40,13 +39,13 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    ServicesAdmin.getRegistrations(1, 1000)
-      .then(res => {
-        const list = res.data || [];
-        if (list.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
+    ServicesAdmin.getRegistrations(1, 10000, '')
+      .then(response => {
+        const registros = response.data;
+        if (registros.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
-        const csvContent = list.map((r: any) =>
-          `${String(r.id)},"${String(r.name ?? r.nombre ?? '')}","${String(r.email ?? r.correo_electronico ?? '')}","${String(r.phone ?? r.telefono ?? '')}","${String(r.sport ?? r.disciplina ?? '')}","${String(r.region ?? r.programa ?? '')}","${String(r.status ?? r.estado ?? '')}"`
+        const csvContent = registros.map((r: Registro) =>
+          `${String(r.id)},"${String(r.name)}","${String(r.email)}","${String(r.phone ?? '')}","${String(r.sport ?? '')}","${String(r.region ?? '')}","${String(r.status)}"`
         ).join("\n");
 
         const blob = new Blob([headers + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -72,7 +71,7 @@ export default function PanelAdministrativo(): React.JSX.Element {
     <div className={`admin-dashboard-layout ${theme === 'dark' ? 'dark-mode' : ''}`}>
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <main className="admin-main-content">
-        <Topbar onSearch={(q) => setSearchQuery(q)} onTabChange={setActiveTab} />
+        <Topbar onSearch={(q) => setSearchQuery(q)} onTabChange={setActiveTab} activeTab={activeTab} />
 
         <div className="admin-dashboard-body">
           <div className="dashboard-header">
@@ -150,10 +149,10 @@ export default function PanelAdministrativo(): React.JSX.Element {
           
           {activeTab === 'consultas' && <ConsultasSection searchQuery={searchQuery} />}
 
-          {activeTab === 'reportes' && <ReportsSection searchQuery={searchQuery} />}
-          {activeTab === 'perfil' && <ProfileSection />}
-          {activeTab === 'usuarios_tab' && <SettingsSection onThemeChange={setTheme} initialSubTab="usuarios" searchQuery={searchQuery} />}
-          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} initialSubTab="configuracion" searchQuery={searchQuery} />}
+          {activeTab === 'reportes'      && <ReportsSection searchQuery={searchQuery} />}
+          {activeTab === 'usuarios_tab'  && <SettingsSection onThemeChange={setTheme} view="usuarios"      searchQuery={searchQuery} />}
+          {activeTab === 'configuracion' && <SettingsSection onThemeChange={setTheme} view="configuracion" searchQuery={searchQuery} />}
+          {activeTab === 'perfil'        && <SettingsSection onThemeChange={setTheme} view="perfil"        searchQuery={searchQuery} />}
         </div>
       </main>
 

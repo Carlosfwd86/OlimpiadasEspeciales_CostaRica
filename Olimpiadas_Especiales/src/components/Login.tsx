@@ -35,9 +35,14 @@ const Login = (): React.JSX.Element => {
       } else {
         navigate('/perfil');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.response?.data?.error || 'Correo o contraseña incorrectos.');
+      const apiMessage =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : undefined;
+      const fallbackMessage = err instanceof Error ? err.message : undefined;
+      setError(apiMessage || fallbackMessage || 'Correo o contraseña incorrectos.');
     } finally {
       setLoading(false);
     }

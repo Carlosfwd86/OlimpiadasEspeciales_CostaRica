@@ -4,6 +4,7 @@ import { ServicesAdmin } from '../../services/ServicesAdmin';
 import '../../style/AdminDashboard.css';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import apiClient from '../../api/apiClient';
 
 type DataSource = 'atletas' | 'registros' | 'usuarios';
 
@@ -36,12 +37,8 @@ export default function ReportsSection({ searchQuery = '' }: ReportsSectionProps
                 results = atletas as unknown as DataRow[];
             } else if (source === 'registros') {
                 // Usar el endpoint real de registros pendientes
-                const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
-                const token = localStorage.getItem('token') ?? '';
-                const res = await fetch(`${BACKEND_URL}/registros-pendientes`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                const json = await res.json() as { data?: DataRow[] } | DataRow[];
+                const res = await apiClient.get('/registros-pendientes');
+                const json = res.data as { data?: DataRow[] } | DataRow[];
                 results = (Array.isArray(json) ? json : (json as { data?: DataRow[] }).data) ?? [];
             } else {
                 results = await ServicesAdmin.getUsers() as DataRow[];
