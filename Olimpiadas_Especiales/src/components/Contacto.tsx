@@ -51,7 +51,6 @@ const Contacto = (): React.JSX.Element => {
 
     // ── 1. Guardado en DB (siempre se ejecuta) ─────────────────
     const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
-    let dbSuccess = false;
     try {
       const response = await fetch(`${BACKEND_URL}/consultas`, {
         method: 'POST',
@@ -64,9 +63,7 @@ const Contacto = (): React.JSX.Element => {
         }),
       });
 
-      if (response.ok) {
-        dbSuccess = true;
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
         console.error('Error del servidor:', errorData);
         // Extraer el primer error de los detalles si existe

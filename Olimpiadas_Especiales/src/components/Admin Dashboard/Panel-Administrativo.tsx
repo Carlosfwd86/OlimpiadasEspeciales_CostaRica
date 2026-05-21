@@ -18,7 +18,6 @@ import RegionalMap from './RegionalMap';
 import ConsultasSection from './ConsultasSection';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import type { Stats, Registro } from '../../types';
-import apiClient from '../../api/apiClient';
 
 export default function PanelAdministrativo(): React.JSX.Element {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -40,12 +39,13 @@ export default function PanelAdministrativo(): React.JSX.Element {
   }, [refreshTrigger]);
 
   const handleExport = (): void => {
-    ServicesAdmin.getRegistrations()
-      .then(data => {
-        if (data.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
+    ServicesAdmin.getRegistrations(1, 10000, '')
+      .then(response => {
+        const registros = response.data;
+        if (registros.length === 0) { Swal.fire({ title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning', confirmButtonColor: '#e62334' }); return; }
         const headers = "ID,Nombre,Email,Telefono,Deporte,Region,Estado\n";
-        const csvContent = data.map((r: any) =>
-          `${String(r.id)},"${String(r.name ?? r.nombre ?? '')}","${String(r.email ?? r.correo_electronico ?? '')}","${String(r.phone ?? r.telefono ?? '')}","${String(r.sport ?? r.disciplina ?? '')}","${String(r.region ?? r.programa ?? '')}","${String(r.status ?? r.estado ?? '')}"`
+        const csvContent = registros.map((r: Registro) =>
+          `${String(r.id)},"${String(r.name)}","${String(r.email)}","${String(r.phone ?? '')}","${String(r.sport ?? '')}","${String(r.region ?? '')}","${String(r.status)}"`
         ).join("\n");
 
         const blob = new Blob([headers + csvContent], { type: 'text/csv;charset=utf-8;' });

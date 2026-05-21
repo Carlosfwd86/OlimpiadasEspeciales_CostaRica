@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 import { ServicesAtletas } from '../services/ServicesAtletas';
-import { getTutores } from '../services/ServicesTutores';
-import { getEntrenadores } from '../services/ServicesEntrenadores';
-import { getVoluntarios } from '../services/ServicesVoluntarios';
 import BannerVoluntarios from './BannerVoluntarios';
 import { s3Url } from '../utils/s3';
 import type { Atleta, Tutor, Entrenador, Voluntario, Competicion } from '../types';
@@ -100,8 +97,6 @@ const Home = (): React.JSX.Element => {
             window.removeEventListener('resize', resize);
         };
     }, []);
-
-    const irAFormulario = (rol: string) => navegar(`/formulario?rol=${rol}`);
 
     const manejarUnete = () => navegar('/plataforma-registro');
     const manejarConoceMas = () => navegar('/nosotros');

@@ -33,7 +33,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     try {
       const response = await sendMessage([...messages, userMessage]);
       setMessages((prev) => [...prev, { role: 'assistant', content: response }]);
-    } catch (error) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: 'Lo siento, hubo un error al procesar tu mensaje. Inténtalo de nuevo.' }

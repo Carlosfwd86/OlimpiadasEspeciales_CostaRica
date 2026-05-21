@@ -6,7 +6,7 @@ import { updateAtleta, getAtletaById } from '../services/ServicesAtletas';
 import { updateTutor, getTutorById } from '../services/ServicesTutores';
 import { updateEntrenador, getEntrenadorById } from '../services/ServicesEntrenadores';
 import { updateVoluntario, getVoluntarioById } from '../services/ServicesVoluntarios';
-import { updateUsuario, getUsuarioById } from '../services/ServicesUsuarios';
+import { updateUsuario } from '../services/ServicesUsuarios';
 import { ServicesAdmin } from '../services/ServicesAdmin';
 import type { Atleta, Tutor, Entrenador, Voluntario, Usuario } from '../types';
 import '../styles/Perfil.css';
@@ -88,8 +88,6 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
     const [editData, setEditData] = useState<any>({ ...user });
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [newPassword, setNewPassword] = useState<string>('');
-    const [linkedUser, setLinkedUser] = useState<any>(null);
-
     useEffect(() => { 
         const mappedUser = {
             ...user,
@@ -121,10 +119,8 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
                     const mappedData = { ...data, correoElectronico: data.correo_electronico || data.correoElectronico, fechaNacimiento: data.fecha_nacimiento || data.fechaNacimiento, aniosExperiencia: data.anios_experiencia || data.aniosExperiencia, experiencia: data.experiencia || data.experiencia_previa || data.experiencia, emergenciaNombre: data.emergencia_nombre || data.emergenciaNombre, emergenciaTelefono: data.emergencia_telefono || data.emergenciaTelefono, proximosRetos: data.proximos_retos || data.proximosRetos, equipo: data.equipo || data.disciplina || data.equipo };
                     setEditData((prev: any) => ({ ...prev, ...mappedData }));
                     
-                    if (user.rol === 'atleta' && data.tutorVinculado) setLinkedUser(await getTutorById(data.tutorVinculado));
-                    else if (user.rol === 'tutor' && data.atletaVinculado) setLinkedUser(await getAtletaById(data.atletaVinculado));
                 }
-            } catch (e) { console.warn("No se encontró registro extendido"); }
+            } catch { console.warn("No se encontró registro extendido"); }
         };
         fetchRoleData();
     }, [user]);
@@ -152,7 +148,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             if (setRefreshUser) setRefreshUser(finalData);
             setIsEditing(false);
             Swal.fire({ icon: 'success', title: '¡Guardado!', timer: 1800, showConfirmButton: false });
-        } catch (err) { Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar.' }); }
+        } catch { Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar.' }); }
     };
 
     const handlePasswordChange = async () => {
@@ -169,7 +165,7 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             localStorage.setItem('usuarioSesion', JSON.stringify(updated));
             setNewPassword('');
             Swal.fire({ icon: 'success', title: '¡Actualizada!', timer: 2500, showConfirmButton: false });
-        } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: 'Fallo al actualizar.' }); }
+        } catch { Swal.fire({ icon: 'error', title: 'Error', text: 'Fallo al actualizar.' }); }
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
