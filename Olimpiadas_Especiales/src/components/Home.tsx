@@ -7,7 +7,9 @@ import { getEntrenadores } from '../services/ServicesEntrenadores';
 import { getVoluntarios } from '../services/ServicesVoluntarios';
 import BannerVoluntarios from './BannerVoluntarios';
 import { s3Url } from '../utils/s3';
+import apiClient from '../api/apiClient';
 import type { Atleta, Tutor, Entrenador, Voluntario, Competicion } from '../types';
+
 
 interface CountsState {
     atletas: number;
@@ -128,10 +130,9 @@ const Home = (): React.JSX.Element => {
     useEffect(() => {
         const fetchCounts = async () => {
             try {
-                const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
                 const [statsRes, compsRes] = await Promise.all([
-                    fetch(`${BACKEND_URL}/stats/public`).then(r => r.ok ? r.json() : null).catch(() => null),
-                    fetch(`${BACKEND_URL}/competiciones`).then(r => r.ok ? r.json() : []).catch(() => [])
+                    apiClient.get('/stats/public').then(r => r.data).catch(() => null),
+                    apiClient.get('/competiciones').then(r => r.data).catch(() => null)
                 ]);
 
                 if (statsRes?.data) {
@@ -139,14 +140,14 @@ const Home = (): React.JSX.Element => {
                     setCounts({
                         atletas: stats.atletasActivos?.valor || 0,
                         tutores: stats.tutores?.valor || 0,
-                        entrenadores: 0, // Si es necesario, añadir en el backend
+                        entrenadores: 0,
                         voluntarios: stats.voluntarios?.valor || 0,
-                        competiciones: compsRes.length || 0,
+                        competiciones: compsRes?.data?.length || compsRes?.length || 0,
                         porSexo: { masc: 0, fem: 0 },
                         porEdad: { jovenes: 0, adultos: 0, ninos: 0 }
                     });
                 } else {
-                     setCounts(prev => ({ ...prev, competiciones: compsRes.length || 0 }));
+                     setCounts(prev => ({ ...prev, competiciones: compsRes?.data?.length || compsRes?.length || 0 }));
                 }
 
             } catch (error) {
@@ -247,7 +248,7 @@ const Home = (): React.JSX.Element => {
                             </h2>
                             {/* Imagen de Puntero (Cargada desde public/img/hand-pointer.png) */}
                             <img 
-                                src={s3Url('img/hand-pointer.png')} 
+                                src="/img/hand-pointer.png" 
                                 alt="Click indicator" 
                                 className="icono-click-titilante"
                                 style={{
