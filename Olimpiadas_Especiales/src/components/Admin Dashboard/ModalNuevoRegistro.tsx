@@ -29,6 +29,7 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
     fecha_nacimiento: '', genero: 'Masculino', telefono: '', correo_electronico: ''
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   /* [verde] Efecto para cargar datos en caso de edición o limpiar al crear nuevo */
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
         fecha_nacimiento: '', genero: 'Masculino', telefono: '', correo_electronico: ''
       });
     }
+    setFormError(null);
   }, [isOpen, editData]);
 
 
@@ -62,10 +64,28 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
 
   /* [verde] Función principal para persistir los datos en la base de datos MySQL */
   const manejarGuardado = async () => {
+    setFormError(null);
+    
     // [verde] Validación simple antes de enviar
-    if (!formData.nombre || !formData.primer_apellido || !formData.fecha_nacimiento) {
-      Swal.fire({ title: 'Campos requeridos', text: 'Por favor, complete los campos obligatorios.', icon: 'warning', confirmButtonColor: '#e62334' });
+    if (!formData.nombre.trim() || !formData.primer_apellido.trim() || !formData.fecha_nacimiento) {
+      setFormError("Por favor, complete los campos obligatorios (Nombre, Primer Apellido, Fecha de Nacimiento).");
       return;
+    }
+
+    if (formData.correo_electronico) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.correo_electronico)) {
+        setFormError("El formato del correo electrónico es inválido.");
+        return;
+      }
+    }
+
+    if (formData.telefono) {
+      const phoneRegex = /^[0-9+\-\s]{8,15}$/;
+      if (!phoneRegex.test(formData.telefono)) {
+        setFormError("El teléfono debe tener entre 8 y 15 dígitos numéricos (se permiten + y guiones).");
+        return;
+      }
     }
 
     try {
@@ -77,9 +97,10 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
       Swal.fire({ title: '¡Registrado!', text: '¡Atleta registrado exitosamente!', icon: 'success', confirmButtonColor: '#e62334' });
       onSaveSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al registrar:", error);
-      Swal.fire({ title: 'Error', text: 'Ocurrió un error al intentar conectar con el servidor.', icon: 'error', confirmButtonColor: '#e62334' });
+      const errorMsg = error.response?.data?.message || error.message || "Ocurrió un error al intentar conectar con el servidor.";
+      setFormError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -94,6 +115,13 @@ export default function ModalNuevoRegistro({ isOpen, onClose, onSaveSuccess, edi
         </div>
 
         <div className="modal-form">
+          {formError && (
+            <div style={{ padding: '12px', background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', fontSize: '13px', marginBottom: '15px' }}>
+              <i className="fa-solid fa-circle-exclamation" style={{ marginRight: '8px' }}></i>
+              {formError}
+            </div>
+          )}
+
           <div className="form-group">
             <label>Nombre</label>
             <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Ej. Juan" />

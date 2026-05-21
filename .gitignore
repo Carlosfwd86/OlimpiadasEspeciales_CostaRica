@@ -1,0 +1,11 @@
+# Ignorar archivos de variables de entorno globalmente
+.env
+.env.*
+*.env
+
+# Ignorar node_modules globales (por si acaso)
+node_modules/
+
+# Mac / Windows
+.DS_Store
+Thumbs.db

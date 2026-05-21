@@ -4,6 +4,8 @@ const auth = require('../middlewares/authMiddleware');
 const checkRole = require('../middlewares/roleMiddleware');
 const { models } = require('../config/database');
 const { RegistroPendiente } = models;
+const { Op } = require('sequelize');
+const { getPagination, getPagingData, successResponse } = require('../utils/apiResponse');
 
 /**
  * GET /api/registros-pendientes
@@ -11,9 +13,23 @@ const { RegistroPendiente } = models;
  */
 router.get('/', auth, checkRole([1]), async (req, res) => {
   try {
-    const registros = await RegistroPendiente.findAll({
-      where: { estado: 'PENDIENTE' },
-      order: [['fecha_registro', 'DESC']]
+    const { limit, offset, page } = getPagination(req.query);
+    const { search } = req.query;
+
+    const whereClause = { estado: 'PENDIENTE' };
+    
+    // Si hay busqueda (simplificado ya que datos está en JSON, podemos usar JSON_EXTRACT o busqueda en campos)
+    // Para SQLite/MySQL buscaremos en correo o en un campo normal si lo tuvieramos, pero para simplificar
+    // usaremos busqueda sobre el correo_electronico que sí es una columna normal.
+    if (search) {
+      whereClause.correo_electronico = { [Op.like]: `%${search}%` };
+    }
+
+    const { count, rows: registros } = await RegistroPendiente.findAndCountAll({
+      where: whereClause,
+      order: [['fecha_registro', 'DESC']],
+      limit,
+      offset
     });
 
     const data = registros.map(r => {
@@ -42,7 +58,8 @@ router.get('/', auth, checkRole([1]), async (req, res) => {
       };
     });
 
-    return res.status(200).json({ data, message: 'OK', status: 200 });
+    const meta = getPagingData(count, limit, page);
+    return res.status(200).json(successResponse(data, 'OK', meta));
 
   } catch (error) {
     console.error('Error al obtener registros pendientes:', error);

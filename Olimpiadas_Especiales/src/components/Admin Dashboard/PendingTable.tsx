@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import '../../style/PendingTable.css';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import ModalDetalleRegistro from './ModalDetalleRegistro';
-import type { Registro } from '../../types';
+import type { Registro, PaginationMeta } from '../../types';
 
 interface PendingTableProps {
   refreshTrigger?: number;
@@ -22,10 +22,16 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [localSearch, setLocalSearch] = useState<string>('');
 
-  const fetchRegistrations = (): void => {
-    ServicesAdmin.getRegistrations()
-      .then(data => {
-        setRegistrations(data);
+  // Paginación
+  const [page, setPage] = useState<number>(1);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
+  const limit = 10;
+
+  const fetchRegistrations = (currentPage = page, currentSearch = localSearch || searchQuery): void => {
+    ServicesAdmin.getRegistrations(currentPage, limit, currentSearch)
+      .then(response => {
+        setRegistrations(response.data);
+        setMeta(response.meta);
         setLoading(false);
       })
       .catch(error => {
@@ -35,8 +41,14 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   };
 
   useEffect(() => {
-    fetchRegistrations();
-  }, [refreshTrigger]);
+    // Implementación simple de debounce para la búsqueda
+    const timer = setTimeout(() => {
+      setLoading(true);
+      fetchRegistrations();
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [refreshTrigger, localSearch, searchQuery, page]);
 
   const handleApprove = (reg: Registro): void => {
     Swal.fire({
@@ -124,7 +136,7 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
     });
   };
 
-  if (loading) {
+  if (loading && registrations.length === 0) {
     return (
       <div className="pending-table-container">
         <div className="table-header"><h3>Registros Pendientes</h3></div>
@@ -137,15 +149,11 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
   }
 
   const filteredRegs = registrations.filter(reg => {
-    const q = (localSearch || searchQuery).toLowerCase();
-    const name = String(reg.name ?? '').toLowerCase();
-    const email = String(reg.email ?? '').toLowerCase();
-    
-    const matchesSearch = !q || name.includes(q) || email.includes(q);
+    // La búsqueda por texto ya se realiza en el backend
     const matchesSport = !filterSport || reg.sport === filterSport;
     const matchesRegion = !filterRegion || reg.region === filterRegion;
 
-    return matchesSearch && matchesSport && matchesRegion;
+    return matchesSport && matchesRegion;
   });
 
   return (
@@ -277,9 +285,29 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
         </table>
       </div>
 
-      <div className="table-footer">
-        <a href="#" onClick={(e) => e.preventDefault()}>Ver todos</a>
-      </div>
+      {meta && meta.totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px' }}>
+          <span style={{ fontSize: '13px', color: '#64748b' }}>
+            Mostrando página {meta.currentPage} de {meta.totalPages} ({meta.totalItems} resultados)
+          </span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={() => setPage(p => Math.max(1, p - 1))} 
+              disabled={page === 1}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: page === 1 ? '#f1f5f9' : 'white', cursor: page === 1 ? 'not-allowed' : 'pointer', color: '#475569', fontSize: '13px', fontWeight: '500' }}
+            >
+              Anterior
+            </button>
+            <button 
+              onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))} 
+              disabled={page === meta.totalPages}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: page === meta.totalPages ? '#f1f5f9' : 'white', cursor: page === meta.totalPages ? 'not-allowed' : 'pointer', color: '#475569', fontSize: '13px', fontWeight: '500' }}
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      )}
 
       <ModalDetalleRegistro
         isOpen={showDetail}

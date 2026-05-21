@@ -4,6 +4,17 @@
 
 // ------ Entidades principales ------
 
+export interface PaginationMeta {
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: PaginationMeta;
+}
+
 export interface Usuario {
   id: string | number;
   nombre: string;

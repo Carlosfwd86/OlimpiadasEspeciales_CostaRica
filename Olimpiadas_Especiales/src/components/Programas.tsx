@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Programas.css';
+import { s3Url } from '../utils/s3';
 
 interface Programa {
     id: string;
@@ -23,7 +24,7 @@ const programasMock: Programa[] = [
         resumen: 'Programa de entrenamiento en pista y campo para atletas con discapacidad intelectual. Incluye carreras de velocidad, salto de longitud y lanzamiento de jabalina adaptado.',
         fecha: 'Enero – Diciembre 2025',
         status: 'ACTIVO',
-        img: '/img/Hero_contenedor_01.jpeg',
+        img: s3Url('img/Hero_contenedor_01.jpeg'),
     },
     {
         id: '2',
@@ -32,7 +33,7 @@ const programasMock: Programa[] = [
         resumen: 'Entrenamiento acuático integral en piscinas olímpicas con metodología inclusiva. Desarrolla técnica, resistencia y confianza en nuestros deportistas.',
         fecha: 'Febrero – Noviembre 2025',
         status: 'ACTIVO',
-        img: '/img/Hero_contenedor_02.jpeg',
+        img: s3Url('img/Hero_contenedor_02.jpeg'),
     },
     {
         id: '3',
@@ -41,7 +42,7 @@ const programasMock: Programa[] = [
         resumen: 'Equipos mixtos donde atletas con y sin discapacidad intelectual juegan juntos. Promueve la inclusión social y el compañerismo en la cancha.',
         fecha: 'Marzo – Octubre 2025',
         status: 'ACTIVO',
-        img: '/img/Hero_contenedor_03.jpeg',
+        img: s3Url('img/Hero_contenedor_03.jpeg'),
     },
     {
         id: '4',
@@ -50,7 +51,7 @@ const programasMock: Programa[] = [
         resumen: 'Programa de seguimiento y reintegración para los atletas que representaron a Costa Rica en los Juegos Mundiales de Olimpiadas Especiales, Berlín 2023.',
         fecha: 'Continuo 2025',
         status: 'LEGADO',
-        img: '/img/Hero_contenedor_04.jpeg',
+        img: s3Url('img/Hero_contenedor_04.jpeg'),
     },
     {
         id: '5',
@@ -59,7 +60,7 @@ const programasMock: Programa[] = [
         resumen: 'Liga de fútbol adaptado con categorías juvenil y adulto. Partidos semanales, torneos regionales y participación en eventos nacionales de Olimpiadas Especiales.',
         fecha: 'Enero – Diciembre 2025',
         status: 'ACTIVO',
-        img: '/img/Hero_contenedor_01.jpeg',
+        img: s3Url('img/Hero_contenedor_01.jpeg'),
     },
     {
         id: '6',
@@ -68,7 +69,7 @@ const programasMock: Programa[] = [
         resumen: 'Programa artístico-deportivo enfocado en coordinación, expresión corporal y desarrollo psicomotriz. Presentaciones en eventos culturales y competencias nacionales.',
         fecha: 'Abril – Noviembre 2025',
         status: 'PRÓXIMO',
-        img: '/img/Hero_contenedor_02.jpeg',
+        img: s3Url('img/Hero_contenedor_02.jpeg'),
     },
     {
         id: '7',
@@ -246,7 +247,7 @@ const Programas = (): React.JSX.Element => {
             {/* ── HERO ── */}
             <div className="programas-hero">
                 <video autoPlay loop muted playsInline className="programas-hero-video">
-                    <source src="/img/berlin-film-2025-for-website.mp4" type="video/mp4" />
+                    <source src={s3Url('img/berlin-film-2025-for-website.mp4')} type="video/mp4" />
                 </video>
                 <div className="programas-hero-overlay">
                     <div className={`programas-hero-content ${animVisible ? 'visible' : ''}`}>

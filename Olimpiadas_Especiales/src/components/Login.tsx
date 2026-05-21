@@ -163,6 +163,16 @@ const Login = (): React.JSX.Element => {
                 )}
               </button>
             </div>
+            <div style={{ textAlign: 'right', marginTop: '8px' }}>
+              <span 
+                onClick={() => navigate('/forgot-password')} 
+                style={{ color: '#e62334', fontSize: '13px', fontWeight: '500', cursor: 'pointer', transition: 'color 0.2s' }}
+                onMouseOver={(e) => (e.currentTarget.style.color = '#cc1f2e')}
+                onMouseOut={(e) => (e.currentTarget.style.color = '#e62334')}
+              >
+                ¿Olvidaste tu contraseña?
+              </span>
+            </div>
           </div>
 
           <button type="submit" className="btn-login" disabled={loading}>

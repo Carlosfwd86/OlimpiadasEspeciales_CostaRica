@@ -18,6 +18,10 @@ router.post('/login', validators.login, validate, authController.iniciarSesion);
 // Ruta para cerrar sesión (el servidor invalida el token en BD y limpia la cookie)
 router.post('/logout', authController.cerrarSesion);
 
+// Rutas de recuperación de contraseña
+router.post('/forgot-password', validators.forgotPassword, validate, authController.solicitarRecuperacion);
+router.post('/reset-password', validators.resetPassword, validate, authController.restablecerContrasena);
+
 /**
  * GET /api/auth/me
  * Verifica la sesión activa sin lanzar 401 en consola.

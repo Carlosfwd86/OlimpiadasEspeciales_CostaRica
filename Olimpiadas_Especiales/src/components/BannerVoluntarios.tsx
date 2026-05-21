@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/BannerVoluntarios.css';
-import imgVoluntarios from '../img/fotoVoluntarios2.jpeg';
+import { s3Url } from '../utils/s3';
 
 const BannerVoluntarios = (): React.JSX.Element => {
     const navigate = useNavigate();
@@ -37,7 +37,7 @@ const BannerVoluntarios = (): React.JSX.Element => {
 
             <div className="banner-voluntarios-imagen">
                 <div className="imagen-wrapper-vol">
-                    <img src={imgVoluntarios} alt="Voluntarios en acción ayudando a atletas" />
+                    <img src={s3Url('img/fotoVoluntarios2.jpeg')} alt="Voluntarios en acción ayudando a atletas" />
                 </div>
             </div>
         </section>

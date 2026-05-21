@@ -9,7 +9,10 @@ const validators = {
     body('nombre').trim().notEmpty().withMessage('El nombre es obligatorio').isLength({ min: 2 }).withMessage('Mínimo 2 caracteres'),
     body('apellido').trim().notEmpty().withMessage('El apellido es obligatorio'),
     body('correo_electronico').isEmail().withMessage('Email inválido').normalizeEmail(),
-    body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+    body('password')
+      .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres')
+      .matches(/[A-Z]/).withMessage('La contraseña debe contener al menos una letra mayúscula')
+      .matches(/[0-9]/).withMessage('La contraseña debe contener al menos un número'),
     body('rol_id').isInt().withMessage('Rol inválido'),
     body('cedula').optional({ checkFalsy: true }).isString().withMessage('La cédula debe tener formato válido'),
     body('telefono').optional({ checkFalsy: true }).isString().withMessage('Teléfono inválido'),
@@ -39,6 +42,18 @@ const validators = {
     body('correo').isEmail().withMessage('Email inválido'),
     body('asunto').trim().escape().notEmpty().withMessage('Asunto obligatorio'),
     body('mensaje').trim().escape().notEmpty().withMessage('El mensaje no puede estar vacío').isLength({ min: 10 }).withMessage('Mínimo 10 caracteres')
+  ],
+
+  forgotPassword: [
+    body('correo_electronico').isEmail().withMessage('Formato de email incorrecto').normalizeEmail()
+  ],
+
+  resetPassword: [
+    body('token').notEmpty().withMessage('El token es obligatorio'),
+    body('password')
+      .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres')
+      .matches(/[A-Z]/).withMessage('La contraseña debe contener al menos una letra mayúscula')
+      .matches(/[0-9]/).withMessage('La contraseña debe contener al menos un número')
   ]
 };
 

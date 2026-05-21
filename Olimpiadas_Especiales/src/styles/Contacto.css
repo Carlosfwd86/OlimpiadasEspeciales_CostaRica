@@ -49,7 +49,7 @@
   position: relative;
   width: 100%;
   height: 420px;
-  background-image: url('../img/fotocontacto.jpg');
+  /* background-image gestionado via style inline en Contacto.tsx → s3Url() */
   background-size: cover;
   background-position: center 55%;
   overflow: hidden;

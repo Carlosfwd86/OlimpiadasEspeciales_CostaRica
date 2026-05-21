@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const { errorResponse } = require('../utils/apiResponse');
 
 /**
  * Middleware que captura los resultados de express-validator y responde
@@ -15,10 +16,7 @@ const validate = (req, res, next) => {
   const extractedErrors = [];
   errors.array().map(err => extractedErrors.push({ [err.path]: err.msg }));
 
-  return res.status(400).json({
-    error: 'Error de validación de datos',
-    details: extractedErrors
-  });
+  return res.status(400).json(errorResponse('Error de validación de datos', 400, extractedErrors));
 };
 
 module.exports = validate;

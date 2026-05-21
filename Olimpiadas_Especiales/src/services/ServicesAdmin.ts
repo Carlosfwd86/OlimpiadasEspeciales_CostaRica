@@ -1,5 +1,4 @@
-
-import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta } from '../types';
+import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta, PaginatedResponse } from '../types';
 import apiClient from '../api/apiClient';
 
 // Helper: retorna headers con JWT desde localStorage
@@ -13,10 +12,10 @@ const authHeaders = (): HeadersInit => ({
 export const ServicesAdmin = {
     
     // Registros Pendientes (Inscripciones)
-    getRegistrations: async (): Promise<Registro[]> => {
-        // El backend devuelve { data: [...] }
-        const res = await apiClient.get<{ data: Registro[] }>('/registros-pendientes');
-        return res.data.data;
+    getRegistrations: async (page = 1, limit = 10, search = ''): Promise<PaginatedResponse<Registro>> => {
+        // El backend devuelve { data: [...], meta: {...} }
+        const res = await apiClient.get<PaginatedResponse<Registro>>(`/registros-pendientes?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
+        return res.data;
     },
 
     saveRegistro: async (data: Partial<Registro>, id: string | null = null): Promise<Registro> => {
@@ -99,15 +98,15 @@ export const ServicesAdmin = {
 
     // Atletas Oficiales
     getAtletas: async (): Promise<Atleta[]> => {
-        const res = await apiClient.get<Atleta[]>('/atletas');
-        return res.data;
+        const res = await apiClient.get<{ data: Atleta[] }>('/atletas');
+        return res.data.data;
     },
 
     // Actividad del Sistema (Mockeado si no hay endpoint real)
     getActivities: async (): Promise<Activity[]> => {
         try {
-            const res = await apiClient.get<Activity[]>('/stats/activities');
-            return res.data;
+            const res = await apiClient.get<{ data: Activity[] }>('/stats/activities');
+            return res.data.data || [];
         } catch {
             return []; // Fallback seguro
         }
@@ -120,25 +119,25 @@ export const ServicesAdmin = {
     },
 
     updateProfile: async (id: number | string, data: Partial<AdminProfile>): Promise<AdminProfile> => {
-        const res = await apiClient.put<AdminProfile>(`/Admin/${id}`, data);
+        const res = await apiClient.put<AdminProfile>(`/admin/${id}`, data);
         return res.data;
     },
 
     // Configuración del sistema
     getSettings: async (): Promise<SystemSettings> => {
-        const res = await apiClient.get<SystemSettings>('/settings');
-        return res.data;
+        const res = await apiClient.get<{ data: SystemSettings }>('/settings');
+        return res.data.data;
     },
 
     updateSettings: async (data: SystemSettings): Promise<SystemSettings> => {
-        const res = await apiClient.put<SystemSettings>('/settings', data);
-        return res.data;
+        const res = await apiClient.put<{ data: SystemSettings }>('/settings', data);
+        return res.data.data;
     },
 
     // Gestión de usuarios
     getUsers: async (): Promise<any[]> => {
-        const res = await apiClient.get<any[]>('/usuarios');
-        return res.data;
+        const res = await apiClient.get<{ data: any[] }>('/usuarios');
+        return res.data.data;
     },
 
     deleteUser: async (id: string | number): Promise<void> => {
@@ -148,8 +147,8 @@ export const ServicesAdmin = {
     // Gráficos
     getCharts: async (): Promise<Graficos> => {
         try {
-            const res = await apiClient.get<Graficos>('/stats/charts');
-            return res.data;
+            const res = await apiClient.get<{ data: Graficos }>('/stats/charts');
+            return res.data.data;
         } catch {
             return { crecimiento: [], distribucion: [] };
         }
@@ -166,8 +165,8 @@ export const ServicesAdmin = {
      * Obtiene la lista de competiciones desde el backend usando apiClient.
      */
     getCompeticiones: async (): Promise<Competicion[]> => {
-        const res = await apiClient.get<Competicion[]>('/competiciones');
-        return res.data;
+        const res = await apiClient.get<{ data: Competicion[] }>('/competiciones');
+        return res.data.data;
     },
 
     /**
@@ -177,14 +176,14 @@ export const ServicesAdmin = {
      */
     saveCompeticion: async (data: Partial<Competicion>, id: string | null = null): Promise<Competicion> => {
         if (id) {
-            const res = await apiClient.patch<Competicion>(`/competiciones/${id}`, data);
-            return res.data;
+            const res = await apiClient.patch<{ data: Competicion }>(`/competiciones/${id}`, data);
+            return res.data.data;
         } else {
-            const res = await apiClient.post<Competicion>('/competiciones', {
+            const res = await apiClient.post<{ data: Competicion }>('/competiciones', {
                 ...data,
                 status: data.status || 'Programado'
             });
-            return res.data;
+            return res.data.data;
         }
     },
 
@@ -200,8 +199,9 @@ export const ServicesAdmin = {
     // Consultas — conectado al backend real
 
     getConsultas: async (): Promise<Consulta[]> => {
-        const res = await apiClient.get<Consulta[]>('/consultas');
-        return res.data;
+        const res = await apiClient.get<{ data: Consulta[] }>('/consultas');
+        // si data.data es undefined, retornamos array vacio para que no rompa el map
+        return res.data.data || (res.data as unknown as Consulta[]);
     },
 
     deleteConsulta: async (id: string | number): Promise<boolean> => {
@@ -212,7 +212,7 @@ export const ServicesAdmin = {
     // Auditoría y Registro de Actividad
     logActivity: async (title: string, details: string, icon: string, iconColor: string): Promise<void> => {
         try {
-            await apiClient.post('/actividad-sistema', {
+            await apiClient.post('/actividades-sistema', {
                 title,
                 details,
                 icon,

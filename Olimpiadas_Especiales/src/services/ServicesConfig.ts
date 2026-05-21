@@ -8,8 +8,8 @@ export const getConfig = async (key: string): Promise<ConfigItem[]> => {
 
     try {
         const path = ENDPOINT_MAP[key] ?? key;
-        const response = await apiClient.get<ConfigItem[]>(`/${path}`);
-        return response.data;
+        const response = await apiClient.get<{ data: ConfigItem[] }>(`/${path}`);
+        return response.data.data;
     } catch (error) {
         console.error(`Error en getConfig(${key}):`, error);
         return [];

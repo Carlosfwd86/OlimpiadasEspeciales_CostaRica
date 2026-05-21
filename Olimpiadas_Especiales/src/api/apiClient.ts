@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
 const apiClient = axios.create({
   baseURL,
@@ -36,7 +36,8 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     } else if (status === 403) {
-      console.error('Acceso prohibido: No tienes permisos suficientes para esta acción.');
+      console.error('Acceso prohibido: No tienes permisos suficientes para esta acción. Redirigiendo al inicio...');
+      window.location.href = '/';
     } else if (status === 500) {
       console.error('Error interno del servidor. Por favor, contacta al soporte.');
     }
