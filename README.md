@@ -23,7 +23,8 @@ El proyecto está organizado en dos directorios principales:
 ### Backend
 - **Node.js & Express:** Servidor HTTP ligero y estructurado bajo el patrón de diseño MVC.
 - **Sequelize ORM:** Gestor de base de datos relacional para MySQL con control de transacciones.
-- **Multer:** Manejo y parseo de archivos directamente en memoria RAM (Buffer).
+- **Multer:** Subida de documentos en memoria (Buffer) con validación de tipo y tamaño.
+- **Cifrado de documentos:** Archivos de inscripción y atletas almacenados en disco local cifrados (AES-256-GCM).
 - **OpenAI Vision API:** Inteligencia Artificial (`gpt-4o-mini`) con **Structured Outputs** para la lectura y análisis automático de certificados médicos de atletas.
 
 ---
@@ -47,6 +48,7 @@ Asegúrate de tener instalado **Node.js** (versión 18 o superior) y una base de
    npx sequelize-cli db:migrate
    node scripts/audit-check-constraints.js
    npm run dev
+   node scripts/smoke-documents-api.js
    ```
    Requiere **MySQL 8.0.16+**. Detalle de constraints CHECK: ver [ARCHITECTURE.md](./ARCHITECTURE.md#constraints-check-integridad-en-mysql).
 
@@ -81,8 +83,17 @@ DB_DIALECT=mysql
 JWT_SECRET=escribe_aqui_una_clave_secreta_y_segura
 NODE_ENV=development
 
+# Cifrado AES-256-GCM de documentos subidos (64 caracteres hex = 32 bytes)
+DOCUMENT_ENCRYPTION_KEY=genera_con_node_e_randomBytes_32_toString_hex
+
 # Clave de API de OpenAI para funciones de OCR y Chatbot
 OPENAI_API_KEY=tu_openai_api_key_aqui
+```
+
+Generar `DOCUMENT_ENCRYPTION_KEY`:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 ---

@@ -37,6 +37,7 @@ const models = {
   SystemSetting: require('../models/SystemSetting'),
   ActividadSistema: require('../models/ActividadSistema'),
   RegistroPendiente: require('../models/RegistroPendiente')(sequelize),
+  RegistroPendienteDocumento: require('../models/RegistroPendienteDocumento')(sequelize),
   AtletaAlergia: require('../models/AtletaAlergia'),
   AtletaCondicion: require('../models/AtletaCondicion'),
   AtletaDispositivo: require('../models/AtletaDispositivo'),
@@ -106,6 +107,17 @@ if (Sesion && Usuario) {
 if (Atleta && models.NivelHabilidad) {
   Atleta.belongsTo(models.NivelHabilidad, { foreignKey: 'nivel_habilidad_id', as: 'nivel_habilidad' });
   models.NivelHabilidad.hasMany(Atleta, { foreignKey: 'nivel_habilidad_id' });
+}
+
+const { RegistroPendiente, RegistroPendienteDocumento } = models;
+if (RegistroPendiente && RegistroPendienteDocumento) {
+  RegistroPendiente.hasMany(RegistroPendienteDocumento, {
+    foreignKey: 'registro_pendiente_id',
+    as: 'documentos',
+  });
+  RegistroPendienteDocumento.belongsTo(RegistroPendiente, {
+    foreignKey: 'registro_pendiente_id',
+  });
 }
 
 module.exports.models = models;

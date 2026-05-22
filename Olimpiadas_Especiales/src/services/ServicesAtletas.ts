@@ -40,17 +40,22 @@ export const ServicesAtletas = {
     }
   },
 
+  subirDocumentoAtleta: async (
+    id: number,
+    archivo: File,
+    tipoDocumento: string,
+    nombreDocumento?: string
+  ): Promise<void> => {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    formData.append('tipo_documento', tipoDocumento);
+    formData.append('nombre_documento', nombreDocumento || archivo.name);
+    await apiClient.post(`/atletas/${id}/documentos`, formData);
+  },
+
+  /** @deprecated Use subirDocumentoAtleta */
   subirDocumentosAtleta: async (id: number, formData: FormData): Promise<void> => {
-    try {
-      await apiClient.post(`/atletas/${id}/documentos`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-    } catch (error) {
-      console.error("Error en subirDocumentosAtleta:", error);
-      throw error;
-    }
+    await apiClient.post(`/atletas/${id}/documentos`, formData);
   }
 };
 

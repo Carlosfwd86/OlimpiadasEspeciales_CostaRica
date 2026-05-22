@@ -17,6 +17,16 @@ El token JWT se envía de una de estas formas:
 
 **Roles:** `rol_id: 1` = Administrador. Las rutas marcadas como **Admin** exigen `checkRole([1])`.
 
+### Documentos cifrados
+
+Los archivos adjuntos (inscripciones y atletas) se almacenan en `Backend/storage/encrypted/` con **AES-256-GCM**. Variable requerida en `.env`:
+
+```
+DOCUMENT_ENCRYPTION_KEY=<64 caracteres hex>
+```
+
+Generar clave: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+
 ---
 
 ## Índice rápido
@@ -107,12 +117,13 @@ Todas requieren autenticación. Escritura solo **Admin**.
 |--------|------|------|-------------|
 | `GET` | `/` | Sí | Listar atletas |
 | `GET` | `/:id` | Sí | Atleta por ID |
-| `GET` | `/:id/documentos` | Sí | Documentos del atleta |
-| `POST` | `/` | Admin | Crear atleta |
-| `POST` | `/:id/documentos` | Admin | Agregar documento |
+| `GET` | `/:id/documentos` | Sí | Metadata de documentos (sin datos cifrados) |
+| `GET` | `/:id/documentos/:docId/download` | Admin | Descargar archivo descifrado |
+| `POST` | `/` | Admin | Crear atleta (`registro_pendiente_id` migra documentos) |
+| `POST` | `/:id/documentos` | Admin | Subir archivo (`multipart`: `archivo`, `tipo_documento`, `nombre_documento`) |
 | `PUT` | `/:id` | Admin | Actualizar atleta |
 | `DELETE` | `/:id` | Admin | Eliminar atleta |
-| `DELETE` | `/:id/documentos/:docId` | Admin | Eliminar documento |
+| `DELETE` | `/:id/documentos/:docId` | Admin | Eliminar documento y archivo cifrado |
 
 **Query `GET /`:**
 
@@ -284,9 +295,25 @@ Mismo patrón CRUD (auth + Admin en escritura).
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | `GET` | `/` | Admin | Listar pendientes (`search`, `page`, `limit`) |
-| `POST` | `/` | No | Registro desde formulario público |
-| `PATCH` | `/:id` | Admin | Aprobar / rechazar / actualizar estado |
-| `DELETE` | `/:id` | Admin | Eliminar registro |
+| `GET` | `/:id/documentos` | Admin | Listar documentos cifrados del registro |
+| `GET` | `/:id/documentos/:docId/download` | Admin | Descargar documento descifrado |
+| `POST` | `/` | No | Registro público. JSON **o** `multipart/form-data` |
+| `PATCH` | `/:id` | Admin | Actualizar estado (`RECHAZADA` elimina archivos) |
+| `DELETE` | `/:id` | Admin | Eliminar registro y archivos cifrados |
+
+**POST multipart (formularios de inscripción):**
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `datos` | string (JSON) | Payload del formulario |
+| `cedula` | file | Cédula / identificación |
+| `certificado` | file | Certificado médico (atleta) |
+| `foto` | file | Foto |
+| `identificacion_tutor` | file | ID del tutor (menores) |
+| `delincuencia` | file | Hoja de delincuencia (voluntario) |
+| `titulo` | file | Título / certificación (entrenador) |
+
+Formatos: JPG, PNG, WEBP, PDF. Máximo **5 MB** por archivo.
 
 ---
 

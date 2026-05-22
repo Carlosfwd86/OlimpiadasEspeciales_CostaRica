@@ -69,6 +69,7 @@ const folders = [
       req('Buscar atletas', 'GET', '/atletas', { auth: true, query: true, queryParams: [{ key: 'search', value: 'Gerson' }] }),
       req('Atleta por ID', 'GET', '/atletas/1', { auth: true }),
       req('Documentos del atleta', 'GET', '/atletas/1/documentos', { auth: true }),
+      req('Descargar documento atleta', 'GET', '/atletas/1/documentos/1/download', { auth: true }),
       req('Crear atleta', 'POST', '/atletas', { auth: true, body: { nombre: 'Atleta', primer_apellido: 'Prueba', fecha_nacimiento: '2010-05-15', genero: 'Masculino', cedula: '1-2345-6789', pais: 'Costa Rica' } }),
       req('Actualizar atleta', 'PUT', '/atletas/1', { auth: true, body: { telefono: '7777-7777' } }),
       req('Eliminar atleta', 'DELETE', '/atletas/1', { auth: true }),
@@ -109,9 +110,11 @@ const folders = [
   {
     name: '7. Registros pendientes',
     item: [
-      req('Crear registro (público)', 'POST', '/registros-pendientes', { body: { rol: 'atleta', correoElectronico: 'nuevo@oe.cr', nombre: 'Nuevo' } }),
+      req('Crear registro JSON (sin archivos)', 'POST', '/registros-pendientes', { body: { rol: 'atleta', correoElectronico: 'nuevo@oe.cr', nombre: 'Nuevo' } }),
+      req('Listar documentos pendientes', 'GET', '/registros-pendientes/1/documentos', { auth: true }),
+      req('Descargar documento pendiente', 'GET', '/registros-pendientes/1/documentos/1/download', { auth: true }),
       req('Listar pendientes', 'GET', '/registros-pendientes', { auth: true }),
-      req('Actualizar estado', 'PATCH', '/registros-pendientes/1', { auth: true, body: { estado: 'APROBADO' } }),
+      req('Actualizar estado', 'PATCH', '/registros-pendientes/1', { auth: true, body: { estado: 'RECHAZADA' } }),
     ],
   },
   {

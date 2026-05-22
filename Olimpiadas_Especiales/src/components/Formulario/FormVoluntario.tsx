@@ -65,7 +65,11 @@ function FormVoluntario({ onVolver }: FormVoluntarioProps): React.JSX.Element {
         const archivosNombres = { cedula_nombre: archivos.cedula?.name || 'No adjuntado', delincuencia_nombre: archivos.delincuencia?.name || 'No adjuntado', foto_nombre: archivos.foto?.name || 'No adjuntado' };
         const entry = { ...datos, ...archivosNombres, usuarioId: sesion.id || null, rol: 'voluntario' as const, fechaRegistro: new Date().toISOString(), status: 'PENDIENTE', statusColor: 'yellow', bgColor: 'bg-light-blue', name: datos.nombre, initials: (datos.nombre?.charAt(0) || '') + (datos.nombre?.split(' ')[1]?.charAt(0) || ''), time: 'Registrado ahora' };
         try {
-          await ServicesAdmin.saveRegistro(entry);
+          await ServicesAdmin.saveRegistroConDocumentos(entry, {
+            cedula: archivos.cedula,
+            delincuencia: archivos.delincuencia,
+            foto: archivos.foto,
+          });
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', { to_email: datos.correoElectronico, to_name: datos.nombre, message: 'Tu registro como Voluntario fue enviado correctamente.' }, '4zWvRC7Yn7lUDqd1q');
           Swal.fire({ icon: 'success', title: '¡Bienvenido!', text: 'Te has unido exitosamente como voluntario.' }).then(() => window.location.href = '/');
         } catch { Swal.fire({ icon: 'success', title: 'Registro Guardado', text: 'Tu solicitud fue guardada.' }).then(() => window.location.href = '/'); }

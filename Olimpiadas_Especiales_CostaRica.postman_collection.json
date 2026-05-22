@@ -402,6 +402,39 @@
 					"response": []
 				},
 				{
+					"name": "Descargar documento atleta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/atletas/1/documentos/1/download",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"atletas",
+								"1",
+								"documentos",
+								"1",
+								"download"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Crear atleta",
 					"request": {
 						"method": "POST",
@@ -940,7 +973,7 @@
 			"name": "7. Registros pendientes",
 			"item": [
 				{
-					"name": "Crear registro (público)",
+					"name": "Crear registro JSON (sin archivos)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -968,6 +1001,70 @@
 									"language": "json"
 								}
 							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar documentos pendientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/registros-pendientes/1/documentos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"registros-pendientes",
+								"1",
+								"documentos"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Descargar documento pendiente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/registros-pendientes/1/documentos/1/download",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"registros-pendientes",
+								"1",
+								"documentos",
+								"1",
+								"download"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
 						}
 					},
 					"response": []
@@ -1025,7 +1122,7 @@
 						},
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"estado\": \"APROBADO\"\n}",
+							"raw": "{\n  \"estado\": \"RECHAZADA\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

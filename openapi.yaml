@@ -429,11 +429,108 @@ paths:
           description: Lista
     post:
       tags: [RegistrosPendientes]
-      summary: Crear registro (público)
+      summary: Crear registro (JSON o multipart con archivos cifrados)
       security: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                datos:
+                  type: string
+                  description: JSON del formulario
+                cedula:
+                  type: string
+                  format: binary
+                certificado:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              type: object
       responses:
         '201':
           description: Creado
+
+  /registros-pendientes/{id}/documentos:
+    get:
+      tags: [RegistrosPendientes]
+      summary: Listar documentos del registro (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Metadata de documentos
+
+  /registros-pendientes/{id}/documentos/{docId}/download:
+    get:
+      tags: [RegistrosPendientes]
+      summary: Descargar documento descifrado (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: docId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Archivo binario
+
+  /atletas/{id}/documentos:
+    post:
+      tags: [Atletas]
+      summary: Subir documento cifrado (admin, multipart)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                archivo:
+                  type: string
+                  format: binary
+                tipo_documento:
+                  type: string
+                nombre_documento:
+                  type: string
+      responses:
+        '201':
+          description: Documento guardado
+
+  /atletas/{id}/documentos/{docId}/download:
+    get:
+      tags: [Atletas]
+      summary: Descargar documento de atleta (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: docId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Archivo binario
 
   /stats/public:
     get:
