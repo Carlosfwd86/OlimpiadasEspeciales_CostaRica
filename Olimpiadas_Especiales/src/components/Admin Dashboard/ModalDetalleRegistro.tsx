@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../style/ModalNuevoRegistro.css';
 import type { Registro } from '../../types';
+import apiClient from '../../api/apiClient';
 
 interface FieldDef {
   key: string;
@@ -35,10 +36,10 @@ const SemaforoRiesgo: React.FC<{ atletaId: string | number }> = ({ atletaId }) =
     if (!atletaId) return;
     setCargando(true);
     setError(null);
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/IA/salud/analizar/${atletaId}`)
-      .then(r => r.json())
+    apiClient
+      .get<{ success: boolean; analisis?: AnalisisSalud }>(`/ia/salud/analizar/${atletaId}`)
       .then(res => {
-        if (res.success && res.analisis) setAnalisis(res.analisis);
+        if (res.data.success && res.data.analisis) setAnalisis(res.data.analisis);
         else setError('No se pudo obtener el análisis.');
       })
       .catch(() => setError('Error de conexión con el servicio de IA.'))
@@ -141,8 +142,12 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDet
         );
     };
 
-    // El tipo Registro define id como string. Lo pasamos directamente si el rol es atleta.
-    const atletaId: string | number | null = data.rol === 'atleta' ? (data.id ?? null) : null;
+    const datosExtra = (data as Registro & { datos?: Record<string, unknown> }).datos;
+    const atletaId: string | number | null =
+        data.rol === 'atleta'
+            ? (datosExtra?.atleta_id ?? datosExtra?.atletaId ?? null) as string | number | null
+            : null;
+    const esAtletaPendiente = data.rol === 'atleta' && !atletaId;
 
     return (
         <div className="modal-overlay" style={{ zIndex: 2000 }}>
@@ -160,8 +165,12 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDet
                 </div>
 
                 <div className="modal-body">
-                    {/* ── Semáforo de Riesgo IA (solo para atletas con ID) ── */}
-                    {atletaId && <SemaforoRiesgo atletaId={atletaId} />}
+                    {esAtletaPendiente && (
+                        <div style={{ padding: '12px 16px', background: '#f8fafc', borderRadius: '12px', marginBottom: '16px', fontSize: '13px', color: '#64748b' }}>
+                            El análisis de salud con IA estará disponible después de aprobar e registrar al atleta en el sistema.
+                        </div>
+                    )}
+                    {atletaId != null && <SemaforoRiesgo atletaId={atletaId} />}
 
                     {renderSection("Datos de Identidad", [
                         { key: 'cedula', label: 'Cédula / ID' },

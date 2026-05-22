@@ -138,7 +138,14 @@ function FormPerfil({ user, setRefreshUser }: FormPerfilProps): React.JSX.Elemen
             else if (user.rol === 'tutor') updatedRecord = await updateTutor(roleId, editData);
             else if (user.rol === 'entrenador') updatedRecord = await updateEntrenador(roleId, editData);
             else if (user.rol === 'voluntario') updatedRecord = await updateVoluntario(roleId, editData);
-            else if (user.rol === 'admin') updatedRecord = await ServicesAdmin.updateProfile(user.id, editData);
+            else if (user.rol === 'admin') {
+                updatedRecord = await ServicesAdmin.updateProfile({
+                    nombre: editData.nombre,
+                    correoElectronico: editData.correoElectronico ?? editData.email,
+                    passwordActual: editData.passwordActual,
+                    passwordNuevo: editData.passwordNuevo
+                });
+            }
             
             await updateUsuario(user.id, editData);
             

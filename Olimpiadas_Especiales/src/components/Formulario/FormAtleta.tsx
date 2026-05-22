@@ -297,10 +297,11 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
         reader.readAsDataURL(archivos.certificado as File);
       });
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      const response = await fetch(`${API_URL}/api/IA/registro/ocr`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+      const response = await fetch(`${API_URL}/ia/registro/ocr`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ imagenBase64: base64 })
       });
 

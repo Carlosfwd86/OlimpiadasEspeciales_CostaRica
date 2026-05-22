@@ -35,10 +35,12 @@ const usuarioController = {
   getByFilter: async (req, res) => {
     try {
       const { correo_electronico } = req.query;
+      if (!correo_electronico) {
+        return res.status(400).json(errorResponse('El parámetro correo_electronico es requerido.', 400));
+      }
       const { limit, offset, page } = getPagination(req.query);
-      
-      const where = {};
-      if (correo_electronico) where.correo_electronico = correo_electronico;
+
+      const where = { correo_electronico };
 
       const { count, rows: usuarios } = await Usuario.findAndCountAll({ 
         where, 
@@ -102,6 +104,12 @@ const usuarioController = {
       if (data.fechaNacimiento || data.fecha_nacimiento) updates.fecha_nacimiento = data.fechaNacimiento || data.fecha_nacimiento;
       if (data.genero) updates.genero = data.genero;
       if (data.avatarUrl || data.avatar_url) updates.avatar_url = data.avatarUrl || data.avatar_url;
+      if (data.rol_id) updates.rol_id = data.rol_id;
+      else if (data.rol) {
+        const rolMap = { admin: 1, atleta: 2, entrenador: 3, voluntario: 4, tutor: 5 };
+        if (rolMap[data.rol]) updates.rol_id = rolMap[data.rol];
+      }
+      if (data.status) updates.status = data.status;
       if (data.equipo) updates.equipo = data.equipo;
       if (data.experiencia) updates.experiencia = data.experiencia;
       if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
