@@ -1,6 +1,7 @@
 const { models } = require('../config/database');
 const { Entrenador } = models;
 const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
+const { handleDbError } = require('../utils/dbErrors');
 
 /**
  * @module entrenadorController
@@ -107,6 +108,7 @@ const entrenadorController = {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
         return res.status(400).json(errorResponse('Error en los datos proporcionados', 400, error.errors.map(err => err.message)));
       }
+      if (handleDbError(res, error, 'Error interno al registrar el entrenador')) return;
       return res.status(500).json(errorResponse('Error interno al registrar el entrenador', 500, error.message));
     }
   },
@@ -166,6 +168,10 @@ const entrenadorController = {
       await entrenador.update(updates);
       return res.status(200).json(successResponse(entrenador, 'Datos del entrenador actualizados correctamente'));
     } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
+      }
+      if (handleDbError(res, error, 'Error al actualizar el registro')) return;
       return res.status(500).json(errorResponse('Error al actualizar el registro', 500, error.message));
     }
   },

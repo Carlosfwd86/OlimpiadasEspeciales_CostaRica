@@ -42,10 +42,13 @@ Asegúrate de tener instalado **Node.js** (versión 18 o superior) y una base de
    npm install
    ```
 3. Crea un archivo `.env` en la carpeta `Backend/` basándote en la siguiente sección de Variables de Entorno.
-4. Ejecuta las migraciones y seeders de la base de datos (si aplica) o arranca el servidor en modo desarrollo:
+4. Ejecuta las migraciones de la base de datos (incluye constraints CHECK) y arranca el servidor:
    ```bash
+   npx sequelize-cli db:migrate
+   node scripts/audit-check-constraints.js
    npm run dev
    ```
+   Requiere **MySQL 8.0.16+**. Detalle de constraints CHECK: ver [ARCHITECTURE.md](./ARCHITECTURE.md#constraints-check-integridad-en-mysql).
 
 ### Paso 2: Configurar el Frontend
 1. Abre una nueva consola y navega al directorio del cliente:

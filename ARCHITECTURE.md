@@ -50,5 +50,42 @@ Para optimizar las consultas y evitar sobrecargar la transferencia de datos:
 * **Búsqueda por Texto Integrada:** Se implementó mediante operadores lógicos `Op.or` y filtros parciales `Op.like` en Sequelize sobre los campos clave de la tabla de atletas (`nombre`, `primer_apellido`, `segundo_apellido`, `cedula`).
 * **Filtros Exactos y Ordenamiento Dinámico:** Se delegan los filtros por género/país y el ordenamiento (columna y dirección ASC/DESC) directamente a la base de datos relacional MySQL, optimizando significativamente la velocidad de respuesta en comparación con ordenar la lista completa de objetos en JavaScript en el cliente.
 
+### Constraints CHECK (integridad en MySQL)
+
+Las reglas de validación se aplican en **tres capas** complementarias:
+
+| Capa | Ubicación | Alcance |
+|------|-----------|---------|
+| HTTP | `Backend/utils/validators.js` | Peticiones API (400 antes del INSERT) |
+| ORM | `Backend/models/*.js` (`validate`) | `Model.create` / `update` vía Sequelize |
+| BD | Migraciones `ALTER TABLE ... CHECK` | Cualquier escritura en MySQL (scripts, seeds, SQL directo) |
+
+**Nota técnica:** MySQL no permite funciones no deterministas (`CURDATE()`, `TIMESTAMPDIFF`) dentro de expresiones CHECK. Las reglas de edad y fechas usan **límites de fecha literales** calculados al ejecutar la migración `20260522120000-add-check-constraints-core-tables.js`. La API y Sequelize siguen validando con la fecha actual en tiempo de ejecución.
+
+#### Tablas con CHECK (catálogo)
+
+| Tabla | Constraints (ejemplos) |
+|-------|------------------------|
+| `consultas` | email, longitud nombre/asunto/mensaje |
+| `tutores` | email, cédula, teléfono |
+| `disciplinas`, `programas`, `niveles_habilidad` | `CHAR_LENGTH(nombre) >= 2` |
+| `inscripciones` | coherencia `estado` / `fecha_aprobacion` |
+| `usuarios` | nombre/apellido ≥ 2, fecha no futura, edad máx. 120 |
+| `atletas` | nombre/apellido ≥ 2, edad 8–120, fecha no futura |
+| `entrenadores` | nombre/apellido ≥ 2, edad 18–120, `anios_experiencia` 0–99 |
+| `voluntarios` | nombre/apellido ≥ 2, edad 18–120 |
+| `competiciones` | nombre ≥ 2, `fecha_fin >= fecha_inicio` |
+| `competicion_atletas` | `posicion >= 1` o NULL |
+
+#### Comandos de verificación
+
+```bash
+cd Backend
+node scripts/audit-check-constraints.js   # Debe reportar 0 violaciones
+npx sequelize-cli db:migrate              # Aplica remedio + CHECK si falta
+```
+
+Errores de CHECK en la API se traducen a HTTP 400 mediante `Backend/utils/dbErrors.js`.
+
 ---
 **Equipo de Desarrollo de Olimpiadas Especiales Costa Rica.**
