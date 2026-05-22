@@ -4,6 +4,9 @@ import emailjs from '@emailjs/browser';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getFullConfig } from '../../services/ServicesConfig';
 import DatePickerInput from '../DatePickerInput';
+import { useAuth } from '../../context/AuthContext';
+import apiClient from '../../api/apiClient';
+import { mapUsuarioToDatosAtleta, leerUsuarioSesion } from '../../utils/mapUsuarioSesion';
 import '../../styles/Formulario/FormAtleta.css';
 import type { ConfigData } from '../../types';
 
@@ -97,6 +100,7 @@ interface FormAtletaProps {
 }
 
 function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [paso, setPaso] = useState<number>(1);
   const [dislexiaActivo, setDislexiaActivo] = useState<boolean>(false);
   const [datos, setDatos] = useState<DatosAtleta>({
@@ -125,22 +129,41 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
   }, []);
 
   useEffect(() => {
-    const sesion = localStorage.getItem('usuarioSesion');
-    if (sesion) {
-      const user = JSON.parse(sesion) as Record<string, string>;
+    if (authLoading) return;
+
+    const aplicarPrefill = (raw: Record<string, unknown> | null | undefined) => {
+      const mapped = mapUsuarioToDatosAtleta(raw);
+      if (!Object.values(mapped).some(v => v)) return;
+
       setDatos(prev => ({
         ...prev,
-        nombre: user.nombre || prev.nombre,
-        cedula: user.cedula || prev.cedula,
-        correoElectronico: user.correoElectronico || prev.correoElectronico,
-        telefono: user.telefono || prev.telefono,
-        direccion: user.direccion || prev.direccion,
-        pais: user.pais || prev.pais,
-        genero: user.genero || prev.genero,
-        fechaNacimiento: user.fechaNacimiento || prev.fechaNacimiento
+        nombre: mapped.nombre || prev.nombre,
+        cedula: mapped.cedula || prev.cedula,
+        correoElectronico: mapped.correoElectronico || prev.correoElectronico,
+        telefono: mapped.telefono || prev.telefono,
+        direccion: mapped.direccion || prev.direccion,
+        pais: mapped.pais || prev.pais,
+        genero: mapped.genero || prev.genero,
+        fechaNacimiento: mapped.fechaNacimiento || prev.fechaNacimiento
       }));
-    }
-  }, []);
+    };
+
+    const cargarDatosUsuario = async (): Promise<void> => {
+      aplicarPrefill(leerUsuarioSesion());
+      aplicarPrefill(user as Record<string, unknown> | null);
+
+      if (!isAuthenticated) return;
+
+      try {
+        const res = await apiClient.get<{ data: Record<string, unknown> }>('/auth/profile');
+        if (res.data?.data) aplicarPrefill(res.data.data);
+      } catch (err) {
+        console.warn('[FormAtleta] No se pudo cargar perfil para autocompletar:', err);
+      }
+    };
+
+    cargarDatosUsuario();
+  }, [authLoading, isAuthenticated, user]);
 
   const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { id, name, value } = e.target;
