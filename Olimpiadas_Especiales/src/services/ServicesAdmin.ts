@@ -1,25 +1,60 @@
 import type { Registro, Activity, Competicion, Stats, AdminProfile, SystemSettings, Graficos, Atleta, Consulta, PaginatedResponse } from '../types';
 import apiClient from '../api/apiClient';
 
-// Helper: retorna headers con JWT desde localStorage
-const authHeaders = (): HeadersInit => ({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`
+const ROL_ID_MAP: Record<string, number> = {
+    admin: 1,
+    atleta: 2,
+    entrenador: 3,
+    voluntario: 4,
+    tutor: 5
+};
+
+const formatActivityTime = (time: string | Date | undefined): string => {
+    if (!time) return 'Ahora';
+    if (typeof time === 'string' && time.toLowerCase() === 'ahora') return 'Ahora';
+    const date = new Date(time);
+    if (Number.isNaN(date.getTime())) return String(time);
+    return date.toLocaleString('es-CR', { dateStyle: 'short', timeStyle: 'short' });
+};
+
+const mapActivityRow = (item: Record<string, unknown>): Activity => ({
+    id: String(item.id ?? ''),
+    title: String(item.title ?? ''),
+    details: String(item.details ?? ''),
+    time: formatActivityTime(item.time as string | Date | undefined),
+    icon: String(item.icon ?? 'fa-solid fa-circle-info'),
+    iconColor: String(item.icon_color ?? item.iconColor ?? 'blue')
 });
 
+type ChartsApiPayload = {
+    registrosPorMes?: Array<{ name: string; value: number }>;
+    distribucionAtletas?: Array<{ name: string; value: number }>;
+    crecimiento?: Graficos['crecimiento'];
+    distribucion?: Graficos['distribucion'];
+};
 
-/* [verde] Servicio administrativo centralizado conectado al Backend real */
+const mapChartsResponse = (raw: ChartsApiPayload): Graficos => ({
+    crecimiento: raw.crecimiento ?? (raw.registrosPorMes ?? []).map(p => ({
+        mes: p.name,
+        valor: p.value
+    })),
+    distribucion: raw.distribucion ?? (raw.distribucionAtletas ?? []).map(p => ({
+        label: p.name,
+        valor: p.value
+    }))
+});
+
+/* Servicio administrativo centralizado conectado al Backend real */
 export const ServicesAdmin = {
-    
+
     // Registros Pendientes (Inscripciones)
     getRegistrations: async (page = 1, limit = 10, search = ''): Promise<PaginatedResponse<Registro>> => {
-        // El backend devuelve { data: [...], meta: {...} }
         const res = await apiClient.get<PaginatedResponse<Registro>>(`/registros-pendientes?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
         return res.data;
     },
 
     saveRegistro: async (data: Partial<Registro>, id: string | null = null): Promise<Registro> => {
-        const res = id 
+        const res = id
             ? await apiClient.patch<Registro>(`/registros-pendientes/${id}`, data)
             : await apiClient.post<Registro>('/registros-pendientes', data);
         return res.data;
@@ -31,22 +66,12 @@ export const ServicesAdmin = {
 
     // Lógica de Aprobación
     aprobarRegistro: async (registro: Registro): Promise<boolean> => {
-        // En el backend real, esto se maneja vía /api/inscripciones/:id/aprobar o similar
-        // Por ahora mantenemos la lógica pero apuntando a los endpoints correctos
         const role = registro.rol || 'atleta';
-
-        // Aprobación específica para voluntarios
-        if (role === 'voluntario') {
-            await apiClient.put(`/voluntarios/${registro.id}/aprobar`);
-            await apiClient.delete(`/registros-pendientes/${registro.id}`);
-            return true;
-        }
-
         const targetEndpoint: Record<string, string> = {
-            'atleta': 'atletas',
-            'entrenador': 'entrenadores',
-            'voluntario': 'voluntarios',
-            'tutor': 'tutores'
+            atleta: 'atletas',
+            entrenador: 'entrenadores',
+            voluntario: 'voluntarios',
+            tutor: 'tutores'
         };
         const endpoint = targetEndpoint[role] || 'atletas';
 
@@ -55,30 +80,36 @@ export const ServicesAdmin = {
 
         if (!userId && userEmail) {
             try {
-                const resU = await apiClient.get<Array<{ id: string }>>(`/usuarios?correo_electronico=${userEmail}`);
-                if (resU.data.length > 0) userId = resU.data[0].id;
-            } catch (e) { console.error("Error buscando usuario:", e); }
+                const resU = await apiClient.get<{ data: Array<{ id: string | number }> }>(
+                    `/usuarios?correo_electronico=${encodeURIComponent(userEmail)}`
+                );
+                const users = resU.data.data ?? [];
+                if (users.length > 0) userId = users[0].id;
+            } catch (e) {
+                console.error('Error buscando usuario:', e);
+            }
         }
 
         if (userId) {
             try {
                 await apiClient.patch(`/usuarios/${userId}`, {
-                    rol: role,
+                    rol_id: ROL_ID_MAP[role] ?? 2,
                     status: 'ACTIVO'
                 });
-            } catch (e) { console.error("Error actualizando usuario base:", e); }
+            } catch (e) {
+                console.error('Error actualizando usuario base:', e);
+            }
         }
 
-        const officialData = {
-            ...registro,
-            id: userId ? `${role}_${userId}` : registro.id,
+        const payloadDatos = (registro as Registro & { datos?: Record<string, unknown> }).datos ?? registro;
+        const officialData: Record<string, unknown> = {
+            ...(typeof payloadDatos === 'object' ? payloadDatos : {}),
             usuario_id: userId || null,
             status: 'ACTIVO',
-            fecha_aprobacion: new Date().toISOString()
+            fecha_aprobacion: new Date().toISOString(),
+            correo_electronico: registro.email,
+            correoElectronico: registro.email
         };
-
-        const fieldsToDelete = ['statusColor', 'bgColor', 'time', 'initials'];
-        fieldsToDelete.forEach(f => delete (officialData as any)[f]);
 
         await apiClient.post(`/${endpoint}`, officialData);
         await apiClient.delete(`/registros-pendientes/${registro.id}`);
@@ -86,14 +117,10 @@ export const ServicesAdmin = {
         return true;
     },
 
-    rechazarRegistro: async (id: string, role: string = 'atleta'): Promise<void> => {
-        if (role === 'voluntario') {
-            await apiClient.put(`/voluntarios/${id}/rechazar`);
-        } else {
-            await apiClient.patch(`/registros-pendientes/${id}`, { 
-                status: 'RECHAZADO'
-            });
-        }
+    rechazarRegistro: async (id: string, _role: string = 'atleta'): Promise<void> => {
+        await apiClient.patch(`/registros-pendientes/${id}`, {
+            estado: 'RECHAZADA'
+        });
     },
 
     // Atletas Oficiales
@@ -102,28 +129,46 @@ export const ServicesAdmin = {
         return res.data.data;
     },
 
-    // Actividad del Sistema (Mockeado si no hay endpoint real)
     getActivities: async (): Promise<Activity[]> => {
         try {
-            const res = await apiClient.get<{ data: Activity[] }>('/stats/activities');
-            return res.data.data || [];
+            const res = await apiClient.get<Record<string, unknown>[] | { data: Record<string, unknown>[] }>('/actividades-sistema');
+            const rows = Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+            return rows.map(mapActivityRow);
         } catch {
-            return []; // Fallback seguro
+            return [];
         }
     },
 
-    // Perfil Administrativo
     getProfile: async (): Promise<AdminProfile> => {
-        const res = await apiClient.get<{ data: AdminProfile }>('/auth/profile');
-        return res.data.data;
+        const res = await apiClient.get<{ data: AdminProfile & { correoElectronico?: string } }>('/auth/profile');
+        const data = res.data.data;
+        return {
+            ...data,
+            email: data.email ?? data.correoElectronico ?? ''
+        };
     },
 
-    updateProfile: async (id: number | string, data: Partial<AdminProfile>): Promise<AdminProfile> => {
-        const res = await apiClient.put<AdminProfile>(`/admin/${id}`, data);
-        return res.data;
+    updateProfile: async (
+        data: Partial<AdminProfile> & {
+            correoElectronico?: string;
+            passwordActual?: string;
+            passwordNuevo?: string;
+        }
+    ): Promise<AdminProfile> => {
+        const payload = {
+            nombre: data.nombre,
+            correoElectronico: data.correoElectronico ?? data.email,
+            passwordActual: data.passwordActual,
+            passwordNuevo: data.passwordNuevo
+        };
+        const res = await apiClient.patch<{ data: AdminProfile & { correoElectronico?: string } }>('/auth/profile', payload);
+        const updated = res.data.data;
+        return {
+            ...updated,
+            email: updated.email ?? updated.correoElectronico ?? ''
+        };
     },
 
-    // Configuración del sistema
     getSettings: async (): Promise<SystemSettings> => {
         const res = await apiClient.get<{ data: SystemSettings }>('/settings');
         return res.data.data;
@@ -134,73 +179,53 @@ export const ServicesAdmin = {
         return res.data.data;
     },
 
-    // Gestión de usuarios
     getUsers: async (): Promise<any[]> => {
-        const res = await apiClient.get<{ data: any[] }>('/usuarios');
-        return res.data.data;
+        const res = await apiClient.get<{ data: any[] }>('/usuarios/all');
+        return res.data.data ?? [];
     },
 
     deleteUser: async (id: string | number): Promise<void> => {
         await apiClient.delete(`/usuarios/${id}`);
     },
 
-    // Gráficos
     getCharts: async (): Promise<Graficos> => {
         try {
-            const res = await apiClient.get<{ data: Graficos }>('/stats/charts');
-            return res.data.data;
+            const res = await apiClient.get<{ data: ChartsApiPayload }>('/stats/charts');
+            return mapChartsResponse(res.data.data ?? {});
         } catch {
             return { crecimiento: [], distribucion: [] };
         }
     },
 
-    // Estadísticas — Llamada unificada al endpoint profesional del backend
     getStats: async (): Promise<Stats> => {
         const res = await apiClient.get<{ data: Stats }>('/stats');
         return res.data.data;
     },
 
-    // Competiciones
-    /**
-     * Obtiene la lista de competiciones desde el backend usando apiClient.
-     */
     getCompeticiones: async (): Promise<Competicion[]> => {
         const res = await apiClient.get<{ data: Competicion[] }>('/competiciones');
         return res.data.data;
     },
 
-    /**
-     * Guarda una nueva competición o actualiza una existente usando apiClient.
-     * @param data Datos parciales de la competición.
-     * @param id ID opcional. Si se provee, se actualiza la competición.
-     */
     saveCompeticion: async (data: Partial<Competicion>, id: string | null = null): Promise<Competicion> => {
         if (id) {
-            const res = await apiClient.patch<{ data: Competicion }>(`/competiciones/${id}`, data);
-            return res.data.data;
-        } else {
-            const res = await apiClient.post<{ data: Competicion }>('/competiciones', {
-                ...data,
-                status: data.status || 'Programado'
-            });
+            const res = await apiClient.put<{ data: Competicion }>(`/competiciones/${id}`, data);
             return res.data.data;
         }
+        const res = await apiClient.post<{ data: Competicion }>('/competiciones', {
+            ...data,
+            status: data.status || 'Programado'
+        });
+        return res.data.data;
     },
 
-    /**
-     * Elimina una competición por su ID usando apiClient.
-     * @param id ID de la competición a eliminar.
-     */
     deleteCompeticion: async (id: string): Promise<boolean> => {
         await apiClient.delete(`/competiciones/${id}`);
         return true;
     },
 
-    // Consultas — conectado al backend real
-
     getConsultas: async (): Promise<Consulta[]> => {
         const res = await apiClient.get<{ data: Consulta[] }>('/consultas');
-        // si data.data es undefined, retornamos array vacio para que no rompa el map
         return res.data.data || (res.data as unknown as Consulta[]);
     },
 
@@ -214,17 +239,26 @@ export const ServicesAdmin = {
         return res.data;
     },
 
-    responderConsulta: async (id: string | number, mensajeRespuesta: string): Promise<{ success: boolean, message: string }> => {
-        const res = await apiClient.post<{ success: boolean, message: string }>(`/consultas/${id}/responder`, { mensajeRespuesta });
+    responderConsulta: async (id: string | number, mensajeRespuesta: string): Promise<{ success: boolean; message: string }> => {
+        const res = await apiClient.post<{ success: boolean; message: string }>(`/consultas/${id}/responder`, { mensajeRespuesta });
         return res.data;
     },
 
-    responderMasivo: async (correos: string[], asunto: string, mensajeRespuesta: string, consultaIds?: (number | string)[]): Promise<{ success: boolean, message: string }> => {
-        const res = await apiClient.post<{ success: boolean, message: string }>('/consultas/responder-masivo', { correos, asunto, mensajeRespuesta, consultaIds });
+    responderMasivo: async (
+        correos: string[],
+        asunto: string,
+        mensajeRespuesta: string,
+        consultaIds?: (number | string)[]
+    ): Promise<{ success: boolean; message: string }> => {
+        const res = await apiClient.post<{ success: boolean; message: string }>('/consultas/responder-masivo', {
+            correos,
+            asunto,
+            mensajeRespuesta,
+            consultaIds
+        });
         return res.data;
     },
 
-    // Auditoría y Registro de Actividad
     logActivity: async (title: string, details: string, icon: string, iconColor: string): Promise<void> => {
         try {
             await apiClient.post('/actividades-sistema', {
@@ -232,11 +266,10 @@ export const ServicesAdmin = {
                 details,
                 icon,
                 iconColor,
-                time: "Ahora"
+                time: 'Ahora'
             });
         } catch (e) {
-            console.error("Error registrando actividad:", e);
+            console.error('Error registrando actividad:', e);
         }
     }
 };
-

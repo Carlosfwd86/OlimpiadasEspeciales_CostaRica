@@ -71,6 +71,7 @@ app.use('/api/v1/settings', require('./routes/settings.routes'));
 app.use('/api/v1/registros-pendientes', require('./routes/registrosPendientes.routes'));
 app.use('/api/v1/actividades-sistema', require('./routes/actividadSistema.routes'));
 app.use('/api/v1/chats', require('./routes/chat.routes'));
+app.use('/api/v1/ia', require('./routes/ia.routes'));
 
 app.use(errorHandler);
 

@@ -24,7 +24,6 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
         nombre: '', correoElectronico: '', passwordActual: '', passwordNuevo: ''
     });
     const [savingPerfil, setSavingPerfil] = useState<boolean>(false);
-    const [adminId, setAdminId] = useState<string | number | null>(null);
 
     const loadUsers = async () => {
         try {
@@ -42,7 +41,6 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
                 await loadUsers();
                 const p = await ServicesAdmin.getProfile();
                 setSettings(s);
-                setAdminId(p.id);
                 setPerfil(prev => ({
                     ...prev,
                     nombre: p.nombre ?? '',
@@ -79,13 +77,17 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
     };
 
     const handleSavePerfil = (): void => {
-        if (!adminId) return;
         setSavingPerfil(true);
-        const payload: any = { nombre: perfil.nombre, email: perfil.correoElectronico };
+        const payload: {
+            nombre: string;
+            correoElectronico: string;
+            passwordActual?: string;
+            passwordNuevo?: string;
+        } = { nombre: perfil.nombre, correoElectronico: perfil.correoElectronico };
         if (perfil.passwordActual) payload.passwordActual = perfil.passwordActual;
-        if (perfil.passwordNuevo)  payload.passwordNuevo  = perfil.passwordNuevo;
+        if (perfil.passwordNuevo) payload.passwordNuevo = perfil.passwordNuevo;
 
-        ServicesAdmin.updateProfile(adminId, payload)
+        ServicesAdmin.updateProfile(payload)
             .then(() => {
                 setSavingPerfil(false);
                 ServicesAdmin.logActivity("Perfil", "Se actualizaron los datos del perfil administrador", "fa-solid fa-user-pen", "blue");
