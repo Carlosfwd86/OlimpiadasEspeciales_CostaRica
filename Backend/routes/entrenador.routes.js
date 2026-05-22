@@ -3,6 +3,8 @@ const router = express.Router();
 const entrenadorController = require('../controllers/entrenador.controller.js');
 const auth = require('../middlewares/authMiddleware');
 const checkRole = require('../middlewares/roleMiddleware');
+const validators = require('../utils/validators');
+const validate = require('../middlewares/validationMiddleware');
 
 // Rutas para la gestión de Entrenadores
 
@@ -15,10 +17,10 @@ router.get('/', entrenadorController.obtenerTodos);
 router.get('/:id', entrenadorController.obtenerPorId);
 
 // Solo Admin puede mutar entrenadores
-router.post('/', checkRole([1]), entrenadorController.crear);
+router.post('/', checkRole([1]), validators.entrenador, validate, entrenadorController.crear);
 
 // Actualizar un entrenador por ID
-router.put('/:id', checkRole([1]), entrenadorController.actualizar);
+router.put('/:id', checkRole([1]), validators.entrenador, validate, entrenadorController.actualizar);
 
 // Eliminar un entrenador por ID
 router.delete('/:id', checkRole([1]), entrenadorController.eliminar);

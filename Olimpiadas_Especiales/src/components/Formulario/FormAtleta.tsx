@@ -471,7 +471,12 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
         };
 
         try {
-          await ServicesAdmin.saveRegistro(entry);
+          await ServicesAdmin.saveRegistroConDocumentos(entry, {
+            cedula: archivos.identificacion,
+            certificado: archivos.certificado,
+            foto: archivos.foto,
+            identificacion_tutor: archivos.identificacionTutor,
+          });
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', {
             to_email: datos.correoElectronico,
             to_name: datos.nombre,

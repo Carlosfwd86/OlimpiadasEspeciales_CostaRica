@@ -6,6 +6,8 @@ const AtletaDispositivo = require('../models/AtletaDispositivo');
 const AtletaAlergia = require('../models/AtletaAlergia');
 const { Op } = require('sequelize');
 const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
+const { handleDbError } = require('../utils/dbErrors');
+const documentoService = require('../services/documentoService');
 
 
 // [verde] Controlador para gestionar la lógica de negocio de los Atletas
@@ -181,13 +183,34 @@ const atletaController = {
       }
 
       await t.commit();
-      res.status(201).json(successResponse(nuevoAtleta, 'Atleta creado exitosamente'));
+
+      const registroPendienteId =
+        data.registro_pendiente_id || data.registroPendienteId || null;
+      let documentosMigrados = [];
+      if (registroPendienteId) {
+        try {
+          documentosMigrados = await documentoService.migratePendingToAtleta(
+            registroPendienteId,
+            nuevoAtleta.id
+          );
+        } catch (migrateErr) {
+          console.error('Error migrando documentos pendientes:', migrateErr);
+        }
+      }
+
+      res.status(201).json(
+        successResponse(
+          { ...nuevoAtleta.toJSON(), documentos: documentosMigrados },
+          'Atleta creado exitosamente'
+        )
+      );
     } catch (error) {
       await t.rollback();
       console.error('Error al crear atleta:', error);
       if (error.name === 'SequelizeValidationError') {
         return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
+      if (handleDbError(res, error, 'Error al crear el atleta')) return;
       res.status(500).json(errorResponse('Error al crear el atleta', 500, error.message));
     }
   },
@@ -254,6 +277,7 @@ const atletaController = {
       if (error.name === 'SequelizeValidationError') {
         return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
+      if (handleDbError(res, error, 'Error al actualizar el atleta')) return;
       res.status(500).json(errorResponse('Error al actualizar el atleta', 500, error.message));
     }
   },
@@ -288,7 +312,8 @@ const atletaController = {
       if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
 
       const documentos = await AtletaDocumento.findAll({ where: { atleta_id: id } });
-      res.status(200).json(successResponse(documentos, 'Documentos obtenidos correctamente'));
+      const safe = documentos.map((d) => documentoService.sanitizePublicAtleta(d));
+      res.status(200).json(successResponse(safe, 'Documentos obtenidos correctamente'));
     } catch (error) {
       res.status(500).json(errorResponse('Error al obtener documentos', 500, error.message));
     }
@@ -304,18 +329,17 @@ const atletaController = {
       const { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
 
-      const { nombre_documento, tipo_documento, ruta_archivo } = req.body;
-
-      if (!nombre_documento || !tipo_documento || !ruta_archivo) {
-        return res.status(400).json(errorResponse('Faltan campos obligatorios: nombre_documento, tipo_documento, ruta_archivo', 400));
+      if (!req.file) {
+        return res.status(400).json(errorResponse('Debe adjuntar un archivo en el campo "archivo".', 400));
       }
 
-      const doc = await AtletaDocumento.create({
-        atleta_id: id,
-        nombre_documento,
-        tipo_documento,
-        ruta_archivo
-      });
+      const { nombre_documento, tipo_documento } = req.body;
+      const doc = await documentoService.saveAtletaDocument(
+        id,
+        tipo_documento || 'Otro',
+        nombre_documento || req.file.originalname,
+        req.file
+      );
 
       res.status(201).json(successResponse(doc, 'Documento agregado exitosamente'));
     } catch (error) {
@@ -323,6 +347,28 @@ const atletaController = {
         return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
       }
       res.status(500).json(errorResponse('Error al agregar documento', 500, error.message));
+    }
+  },
+
+  descargarDocumentoAtleta: async (req, res) => {
+    try {
+      const { id, docId } = req.params;
+      const doc = await documentoService.getAtletaDocumentForDownload(id, docId);
+      if (!doc) return res.status(404).json(errorResponse('Documento no encontrado', 404));
+
+      const meta = documentoService.resolveDownloadMeta(doc);
+      if (!meta) {
+        return res.status(404).json(errorResponse('Archivo cifrado no disponible', 404));
+      }
+
+      res.setHeader('Content-Type', meta.mime_type);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${encodeURIComponent(meta.nombre)}"`
+      );
+      return res.send(meta.buffer);
+    } catch (error) {
+      res.status(500).json(errorResponse('Error al descargar documento', 500, error.message));
     }
   },
 
@@ -335,7 +381,7 @@ const atletaController = {
       const { id, docId } = req.params;
       if (!id || !docId) return res.status(400).json(errorResponse('El ID del atleta y del documento son requeridos.', 400));
 
-      const eliminado = await AtletaDocumento.destroy({ where: { id: docId, atleta_id: id } });
+      const eliminado = await documentoService.deleteAtletaDocument(id, docId);
 
       if (eliminado) {
         return res.status(200).json(successResponse(null, 'Documento eliminado correctamente'));

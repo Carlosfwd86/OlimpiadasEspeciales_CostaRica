@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { models } = require('../config/database');
 const { Usuario, Sesion, TokenBlacklist } = models;
 const { successResponse, errorResponse } = require('../utils/apiResponse');
+const { handleDbError } = require('../utils/dbErrors');
 const { sendResetPasswordEmail } = require('../helpers/emailHelper');
 
 // ── Seguridad: JWT_SECRET es OBLIGATORIO ──────────────────────────────────────
@@ -98,6 +99,7 @@ const registrarUsuario = async (req, res) => {
       return res.status(400).json(errorResponse(error.errors[0].message, 400));
     }
 
+    if (handleDbError(res, error, 'Ocurrió un error al registrar el usuario.')) return;
     return res.status(500).json(errorResponse('Ocurrió un error al registrar el usuario.', 500, error.message));
   }
 };
@@ -301,6 +303,7 @@ const updateProfile = async (req, res) => {
     return res.status(200).json(successResponse(payload, 'Perfil actualizado correctamente'));
   } catch (error) {
     console.error('Error al actualizar perfil:', error);
+    if (handleDbError(res, error, 'Error al actualizar el perfil.')) return;
     return res.status(500).json(errorResponse('Error al actualizar el perfil.', 500, error.message));
   }
 };

@@ -6,6 +6,9 @@
 # Ignorar node_modules globales (por si acaso)
 node_modules/
 
+# Archivos cifrados subidos al backend
+Backend/storage/
+
 # Mac / Windows
 .DS_Store
 Thumbs.db
