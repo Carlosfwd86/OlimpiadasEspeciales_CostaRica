@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/CarouselProgramas.css';
+import {
+    API_BASE_URL,
+    mapCompeticionFromApi,
+    mapMockPrograma,
+    programaListKey,
+    type ProgramaDisplay,
+} from '../utils/programaDisplay';
 
-interface Programa {
-    id: string | number;
+interface Programa extends ProgramaDisplay {
     nombre: string;
     resumen: string;
     categoria: string;
     img: string;
-    [key: string]: unknown;
 }
 
 const programasMockCarousel: Programa[] = [
@@ -45,28 +50,28 @@ const CarouselProgramas = (): React.JSX.Element => {
     };
 
     useEffect(() => {
-        const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
-        fetch(`${BACKEND_URL}/competiciones`)
+        fetch(`${API_BASE_URL}/competiciones`)
             .then(res => res.json())
             .then((json: unknown) => {
                 const raw = (json && typeof json === 'object' && 'data' in (json as object))
                     ? (json as { data: Programa[] }).data
                     : json as Programa[];
-                const normalized = raw.map(e => ({
-                    ...e,
-                    resumen:   e.resumen   ?? (e as Record<string, unknown>).descripcion as string ?? '',
-                    img:       e.img       ?? (e as Record<string, unknown>).imagen as string ?? '',
-                    categoria: e.categoria ?? (e as Record<string, unknown>).deporte as string ?? '',
-                }));
+                const normalized = raw.map(e =>
+                    mapCompeticionFromApi({
+                        ...e,
+                        resumen: e.resumen ?? (e.descripcion as string) ?? '',
+                        categoria: e.categoria ?? (e.deporte as string) ?? '',
+                    })
+                );
                 if (Array.isArray(normalized) && normalized.length > 0) {
-                    setProgramas(normalized.slice(-3));
+                    setProgramas(normalized.slice(-3) as Programa[]);
                 } else {
-                    setProgramas(programasMockCarousel);
+                    setProgramas(programasMockCarousel.map(mapMockPrograma) as Programa[]);
                 }
                 setCargando(false);
             })
             .catch(() => {
-                setProgramas(programasMockCarousel);
+                setProgramas(programasMockCarousel.map(mapMockPrograma) as Programa[]);
                 setCargando(false);
             });
     }, []);
@@ -88,9 +93,9 @@ const CarouselProgramas = (): React.JSX.Element => {
             </div>
 
             <div className="carrusel-programas-contenedor" role="list">
-                {programas.map((programa) => (
+                {programas.map((programa, idx) => (
                     <article
-                        key={programa.id}
+                        key={programaListKey(programa, idx)}
                         className="programa-card-carousel"
                         role="listitem"
                         onClick={() => {

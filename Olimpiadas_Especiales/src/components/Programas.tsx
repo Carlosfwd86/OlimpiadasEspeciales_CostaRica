@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Programas.css';
 import { s3Url } from '../utils/s3';
+import {
+    API_BASE_URL,
+    mapCompeticionFromApi,
+    mapMockPrograma,
+    programaListKey,
+    type ProgramaDisplay,
+} from '../utils/programaDisplay';
 
-interface Programa {
+interface Programa extends ProgramaDisplay {
     id: string;
     nombre: string;
     img?: string;
@@ -147,37 +154,36 @@ const Programas = (): React.JSX.Element => {
     const [isPaused, setIsPaused] = useState<boolean>(false);
 
     useEffect(() => {
-        const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
-        fetch(`${BACKEND_URL}/competiciones`)
+        fetch(`${API_BASE_URL}/competiciones`)
             .then(res => res.json())
             .then((json: unknown) => {
                 const raw = (json && typeof json === 'object' && 'data' in (json as object))
                     ? (json as { data: Programa[] }).data
                     : json as Programa[];
                 if (Array.isArray(raw) && raw.length > 0) {
-                    // Normalizar estados (p. ej., PROGRAMADO -> PRÓXIMO)
                     const normalized = raw.map(p => {
                         let normalizedStatus = (p.status || 'ACTIVO').toUpperCase();
                         if (normalizedStatus === 'PROGRAMADO') {
                             normalizedStatus = 'PRÓXIMO';
                         }
-                        return {
+                        return mapCompeticionFromApi({
                             ...p,
-                            status: normalizedStatus
-                        };
+                            status: normalizedStatus,
+                        });
                     });
-                    
-                    // Combinar elementos de la base de datos con los mocks para asegurar volumen y ver el carrusel en acción
+
                     const dbNames = new Set(normalized.map(p => p.nombre.toLowerCase().trim()));
-                    const filteredMock = programasMock.filter(m => !dbNames.has(m.nombre.toLowerCase().trim()));
+                    const filteredMock = programasMock
+                        .filter(m => !dbNames.has(m.nombre.toLowerCase().trim()))
+                        .map(mapMockPrograma);
                     setProgramas([...normalized, ...filteredMock]);
                 } else {
-                    setProgramas(programasMock);
+                    setProgramas(programasMock.map(mapMockPrograma));
                 }
                 setCargando(false);
             })
             .catch(() => {
-                setProgramas(programasMock);
+                setProgramas(programasMock.map(mapMockPrograma));
                 setCargando(false);
             });
 
@@ -324,7 +330,7 @@ const Programas = (): React.JSX.Element => {
                             >
                                 {programas.map((programa, idx) => (
                                     <article
-                                        key={programa.id}
+                                        key={programaListKey(programa, idx)}
                                         className="programa-card"
                                         style={{ animationDelay: `${idx * 0.08}s` }}
                                     >
