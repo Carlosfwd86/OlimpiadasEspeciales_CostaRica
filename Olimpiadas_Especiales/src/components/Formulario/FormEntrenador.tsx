@@ -144,7 +144,11 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
           time: 'Registrado ahora'
         };
         try {
-          await ServicesAdmin.saveRegistro(entry);
+          await ServicesAdmin.saveRegistroConDocumentos(entry, {
+            cedula: archivos.cedula,
+            titulo: archivos.titulo,
+            foto: archivos.foto,
+          });
           await emailjs.send('service_ttxcgou', 'template_2eklg8i', {
             to_email: datos.correoElectronico, to_name: datos.nombre,
             message: `Tus datos de postulación para el rol de Entrenador han sido enviados correctamente.`

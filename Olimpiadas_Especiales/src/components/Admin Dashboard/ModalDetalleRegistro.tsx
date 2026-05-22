@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../style/ModalNuevoRegistro.css';
 import type { Registro } from '../../types';
 import apiClient from '../../api/apiClient';
+import { ServicesAdmin } from '../../services/ServicesAdmin';
 
 interface FieldDef {
   key: string;
@@ -113,7 +114,40 @@ const SemaforoRiesgo: React.FC<{ atletaId: string | number }> = ({ atletaId }) =
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
+type DocPendiente = {
+  id: number;
+  categoria: string;
+  nombre_original: string;
+  mime_type: string;
+  tamano_bytes: number;
+};
+
+const CATEGORIA_LABEL: Record<string, string> = {
+  cedula: 'Cédula',
+  certificado_medico: 'Certificado médico',
+  foto: 'Foto',
+  id_tutor: 'ID tutor',
+  antecedentes: 'Antecedentes',
+  titulo: 'Título / certificado',
+  otro: 'Otro',
+};
+
 export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDetalleRegistroProps): React.JSX.Element | null {
+    const [documentos, setDocumentos] = useState<DocPendiente[]>([]);
+    const [cargandoDocs, setCargandoDocs] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen || !data?.id) {
+            setDocumentos([]);
+            return;
+        }
+        setCargandoDocs(true);
+        ServicesAdmin.getDocumentosRegistro(data.id)
+            .then(setDocumentos)
+            .catch(() => setDocumentos([]))
+            .finally(() => setCargandoDocs(false));
+    }, [isOpen, data?.id]);
+
     if (!isOpen || !data) return null;
 
     const renderSection = (title: string, fields: FieldDef[]): React.JSX.Element | null => {
@@ -220,6 +254,29 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDet
                         { key: 'delincuencia_nombre', label: 'Hoja Delincuencia' },
                         { key: 'foto_nombre', label: 'Foto Perfil' },
                     ])}
+
+                    <div style={{ marginTop: '24px', padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>Archivos adjuntos (cifrados)</h4>
+                        {cargandoDocs && <p style={{ fontSize: '13px', color: '#64748b' }}>Cargando documentos...</p>}
+                        {!cargandoDocs && documentos.length === 0 && (
+                            <p style={{ fontSize: '13px', color: '#94a3b8' }}>No hay archivos subidos al servidor (registro anterior o sin adjuntos).</p>
+                        )}
+                        {!cargandoDocs && documentos.map((doc) => (
+                            <div key={doc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #e2e8f0' }}>
+                                <div>
+                                    <div style={{ fontWeight: 600, fontSize: '13px' }}>{CATEGORIA_LABEL[doc.categoria] || doc.categoria}</div>
+                                    <div style={{ fontSize: '12px', color: '#64748b' }}>{doc.nombre_original} · {(doc.tamano_bytes / 1024).toFixed(1)} KB</div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => ServicesAdmin.descargarDocumentoRegistro(data.id, doc.id, doc.nombre_original)}
+                                    style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', background: '#1a1a2e', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                                >
+                                    Descargar
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="modal-footer" style={{ marginTop: '32px', display: 'flex', gap: '12px' }}>

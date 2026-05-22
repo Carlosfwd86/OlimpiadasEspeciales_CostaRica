@@ -23,7 +23,8 @@ El proyecto está organizado en dos directorios principales:
 ### Backend
 - **Node.js & Express:** Servidor HTTP ligero y estructurado bajo el patrón de diseño MVC.
 - **Sequelize ORM:** Gestor de base de datos relacional para MySQL con control de transacciones.
-- **Multer:** Manejo y parseo de archivos directamente en memoria RAM (Buffer).
+- **Multer:** Subida de documentos en memoria (Buffer) con validación de tipo y tamaño.
+- **Cifrado de documentos:** Archivos de inscripción y atletas almacenados en disco local cifrados (AES-256-GCM).
 - **OpenAI Vision API:** Inteligencia Artificial (`gpt-4o-mini`) con **Structured Outputs** para la lectura y análisis automático de certificados médicos de atletas.
 
 ---
@@ -47,6 +48,7 @@ Asegúrate de tener instalado **Node.js** (versión 18 o superior) y una base de
    npx sequelize-cli db:migrate
    node scripts/audit-check-constraints.js
    npm run dev
+   node scripts/smoke-documents-api.js
    ```
    Requiere **MySQL 8.0.16+**. Detalle de constraints CHECK: ver [ARCHITECTURE.md](./ARCHITECTURE.md#constraints-check-integridad-en-mysql).
 
@@ -81,8 +83,17 @@ DB_DIALECT=mysql
 JWT_SECRET=escribe_aqui_una_clave_secreta_y_segura
 NODE_ENV=development
 
+# Cifrado AES-256-GCM de documentos subidos (64 caracteres hex = 32 bytes)
+DOCUMENT_ENCRYPTION_KEY=genera_con_node_e_randomBytes_32_toString_hex
+
 # Clave de API de OpenAI para funciones de OCR y Chatbot
 OPENAI_API_KEY=tu_openai_api_key_aqui
+```
+
+Generar `DOCUMENT_ENCRYPTION_KEY`:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 ---
@@ -96,17 +107,22 @@ El diseño lógico de la base de datos se encuentra documentado en la siguiente 
 
 ---
 
-## 🎯 6. Colección de Postman e Integración de Endpoints
+## 🎯 6. Documentación de la API
 
-Para facilitar la verificación y el testing de todos los servicios, se incluye una colección de Postman exportada en la raíz del repositorio:
-* 📂 **Archivo:** `Olimpiadas_Especiales_CostaRica.postman_collection.json`
-* 📝 **Instrucciones:** Consulta la guía rápida de pruebas en [Postman_Consultas.md](./Postman_Consultas.md) para aprender a importar la colección y ejecutar las pruebas automáticas.
+| Recurso | Archivo |
+|---------|---------|
+| Referencia completa (Markdown) | [API_ENDPOINTS.md](./API_ENDPOINTS.md) |
+| OpenAPI / Swagger | [openapi.yaml](./openapi.yaml) |
+| Colección Postman | [Olimpiadas_Especiales_CostaRica.postman_collection.json](./Olimpiadas_Especiales_CostaRica.postman_collection.json) |
+| Guía de importación | [Postman_Consultas.md](./Postman_Consultas.md) |
+
+Base URL: `http://localhost:3000/api/v1`
 
 ### Ejemplos Clave de Peticiones HTTP
 
 #### A. Iniciar Sesión (Login)
 * **Método:** `POST`
-* **URL:** `{{base_url}}/api/auth/login`
+* **URL:** `{{base_url}}/api/v1/auth/login`
 * **Cuerpo (JSON):**
   ```json
   {
@@ -115,12 +131,10 @@ Para facilitar la verificación y el testing de todos los servicios, se incluye 
   }
   ```
 
-#### B. OCR Inteligente de Certificados Médicos (Carga de Archivo)
+#### B. OCR de certificados médicos (IA)
 * **Método:** `POST`
-* **URL:** `{{base_url}}/api/certificados/analizar`
-* **Headers:** `Content-Type: multipart/form-data`
-* **Cuerpo (Form-Data):**
-  * `certificado` (Tipo File / Imagen adjunta).
+* **URL:** `{{base_url}}/api/v1/ia/registro/ocr`
+* **Cuerpo (JSON):** `{ "imagenBase64": "..." }`
 
 ---
 
