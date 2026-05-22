@@ -1,0 +1,558 @@
+openapi: 3.0.3
+info:
+  title: Olimpiadas Especiales Costa Rica API
+  description: |
+    API REST del backend Express + Sequelize.
+    Documentación extendida en [API_ENDPOINTS.md](./API_ENDPOINTS.md).
+  version: 1.0.0
+  contact:
+    name: Olimpiadas Especiales Costa Rica
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Desarrollo local
+
+tags:
+  - name: Auth
+  - name: Usuarios
+  - name: Admin
+  - name: Atletas
+  - name: Competiciones
+  - name: Consultas
+  - name: Voluntarios
+  - name: Entrenadores
+  - name: IA
+  - name: Chat
+  - name: Stats
+  - name: RegistrosPendientes
+  - name: Catalogos
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+    LoginRequest:
+      type: object
+      required: [correo_electronico, contrasena]
+      properties:
+        correo_electronico:
+          type: string
+          format: email
+        contrasena:
+          type: string
+    ChatMessages:
+      type: object
+      required: [messages]
+      properties:
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: [user, assistant, system]
+              content:
+                type: string
+
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Registrar usuario
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Usuario creado
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Token JWT
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cerrar sesión
+      security: []
+      responses:
+        '200':
+          description: Sesión cerrada
+
+  /auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Solicitar recuperación de contraseña
+      security: []
+      responses:
+        '200':
+          description: Correo enviado si existe
+
+  /auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Restablecer contraseña
+      security: []
+      responses:
+        '200':
+          description: Contraseña actualizada
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Verificar sesión actual
+      security: []
+      responses:
+        '200':
+          description: Usuario o null
+
+  /auth/profile:
+    get:
+      tags: [Auth]
+      summary: Obtener perfil
+      responses:
+        '200':
+          description: Perfil del usuario
+    patch:
+      tags: [Auth]
+      summary: Actualizar perfil
+      responses:
+        '200':
+          description: Perfil actualizado
+
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Buscar por correo
+      security: []
+      parameters:
+        - name: correo_electronico
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista filtrada
+
+  /usuarios/all:
+    get:
+      tags: [Usuarios]
+      summary: Listar todos (admin)
+      responses:
+        '200':
+          description: Usuarios
+
+  /usuarios/{id}:
+    get:
+      tags: [Usuarios]
+      summary: Usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario
+    patch:
+      tags: [Usuarios]
+      summary: Actualizar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Actualizado
+    delete:
+      tags: [Usuarios]
+      summary: Eliminar usuario (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Eliminado
+
+  /admin/stats:
+    get:
+      tags: [Admin]
+      summary: Estadísticas administrativas
+      responses:
+        '200':
+          description: Stats
+
+  /admin/graficos:
+    get:
+      tags: [Admin]
+      summary: Datos para gráficos
+      responses:
+        '200':
+          description: Gráficos
+
+  /admin/registros_pendientes:
+    get:
+      tags: [Admin]
+      summary: Registros pendientes
+      responses:
+        '200':
+          description: Lista
+
+  /atletas:
+    get:
+      tags: [Atletas]
+      summary: Listar atletas
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista paginada
+    post:
+      tags: [Atletas]
+      summary: Crear atleta (admin)
+      responses:
+        '201':
+          description: Creado
+
+  /atletas/{id}:
+    get:
+      tags: [Atletas]
+      summary: Atleta por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Atleta
+    put:
+      tags: [Atletas]
+      summary: Actualizar atleta (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Actualizado
+    delete:
+      tags: [Atletas]
+      summary: Eliminar atleta (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Eliminado
+
+  /atletas/{id}/documentos:
+    get:
+      tags: [Atletas]
+      summary: Documentos del atleta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Documentos
+
+  /competiciones:
+    get:
+      tags: [Competiciones]
+      summary: Listar competiciones
+      security: []
+      responses:
+        '200':
+          description: Lista
+    post:
+      tags: [Competiciones]
+      summary: Crear competición (admin)
+      responses:
+        '201':
+          description: Creada
+
+  /competiciones/{id}:
+    get:
+      tags: [Competiciones]
+      summary: Competición por ID
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Competición
+
+  /competiciones/inscribir-atleta:
+    post:
+      tags: [Competiciones]
+      summary: Inscribir atleta
+      responses:
+        '200':
+          description: Inscrito
+
+  /consultas:
+    get:
+      tags: [Consultas]
+      summary: Listar consultas (admin)
+      responses:
+        '200':
+          description: Lista
+    post:
+      tags: [Consultas]
+      summary: Enviar consulta (público)
+      security: []
+      responses:
+        '201':
+          description: Creada
+
+  /consultas/{id}/responder:
+    post:
+      tags: [Consultas]
+      summary: Responder consulta por correo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Enviada
+
+  /voluntarios:
+    get:
+      tags: [Voluntarios]
+      summary: Listar voluntarios
+      responses:
+        '200':
+          description: Lista
+    post:
+      tags: [Voluntarios]
+      summary: Crear voluntario
+      responses:
+        '201':
+          description: Creado
+
+  /voluntarios/{id}/aprobar:
+    put:
+      tags: [Voluntarios]
+      summary: Aprobar voluntario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Aprobado
+
+  /entrenadores:
+    get:
+      tags: [Entrenadores]
+      summary: Listar entrenadores
+      responses:
+        '200':
+          description: Lista
+
+  /registros-pendientes:
+    get:
+      tags: [RegistrosPendientes]
+      summary: Listar pendientes (admin)
+      responses:
+        '200':
+          description: Lista
+    post:
+      tags: [RegistrosPendientes]
+      summary: Crear registro (público)
+      security: []
+      responses:
+        '201':
+          description: Creado
+
+  /stats/public:
+    get:
+      tags: [Stats]
+      summary: Estadísticas públicas
+      security: []
+      responses:
+        '200':
+          description: Stats
+
+  /stats:
+    get:
+      tags: [Stats]
+      summary: Estadísticas del panel
+      responses:
+        '200':
+          description: Stats
+
+  /stats/charts:
+    get:
+      tags: [Stats]
+      summary: Datos para gráficos
+      responses:
+        '200':
+          description: Charts
+
+  /chats:
+    post:
+      tags: [Chat]
+      summary: Chatbot del sitio
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessages'
+      responses:
+        '200':
+          description: Respuesta del asistente
+
+  /ia/inclusion/chat:
+    post:
+      tags: [IA]
+      summary: Chat de inclusión
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: Respuesta IA
+
+  /ia/salud/analizar/{atletaId}:
+    get:
+      tags: [IA]
+      summary: Análisis de salud del atleta
+      security: []
+      parameters:
+        - name: atletaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Análisis
+
+  /ia/registro/ocr:
+    post:
+      tags: [IA]
+      summary: OCR certificado médico
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imagenBase64:
+                  type: string
+      responses:
+        '200':
+          description: Datos extraídos
+
+  /disciplinas:
+    get:
+      tags: [Catalogos]
+      summary: Listar disciplinas
+      responses:
+        '200':
+          description: Lista
+
+  /programas:
+    get:
+      tags: [Catalogos]
+      summary: Listar programas
+      responses:
+        '200':
+          description: Lista
+
+  /voluntarios-areas:
+    get:
+      tags: [Catalogos]
+      summary: Áreas de voluntariado
+      security: []
+      responses:
+        '200':
+          description: Lista
+
+  /settings:
+    get:
+      tags: [Catalogos]
+      summary: Configuración del sistema
+      responses:
+        '200':
+          description: Settings
