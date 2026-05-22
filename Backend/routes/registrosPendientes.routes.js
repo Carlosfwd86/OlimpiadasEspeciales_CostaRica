@@ -90,7 +90,13 @@ router.post('/', async (req, res) => { // Removido auth y checkRole porque un vi
 router.patch('/:id', auth, checkRole([1]), async (req, res) => {
   try {
     const { id } = req.params;
-    const [updated] = await RegistroPendiente.update(req.body, { where: { id } });
+    const body = { ...req.body };
+    if (body.status !== undefined && body.estado === undefined) {
+      body.estado = body.status;
+      delete body.status;
+    }
+    if (body.estado === 'RECHAZADO') body.estado = 'RECHAZADA';
+    const [updated] = await RegistroPendiente.update(body, { where: { id } });
     if (!updated) return res.status(404).json({ error: 'Registro no encontrado.' });
     const data = await RegistroPendiente.findByPk(id);
     return res.status(200).json({ data, message: 'OK', status: 200 });

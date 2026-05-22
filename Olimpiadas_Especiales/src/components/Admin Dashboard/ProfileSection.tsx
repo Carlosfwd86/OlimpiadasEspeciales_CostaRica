@@ -25,7 +25,10 @@ export default function ProfileSection(): React.JSX.Element {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        ServicesAdmin.updateProfile(formData.id, formData)
+        ServicesAdmin.updateProfile({
+            nombre: formData.nombre,
+            correoElectronico: formData.email
+        })
             .then(updated => {
                 setProfile(updated);
                 setEditMode(false);
