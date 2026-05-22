@@ -1,6 +1,7 @@
 const { models } = require('../config/database');
 const { Competicion, CompeticionAtleta } = models;
 const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
+const { handleDbError } = require('../utils/dbErrors');
 
 /**
  * @module competicionController
@@ -58,6 +59,10 @@ const competicionController = {
       const nuevaCompeticion = await Competicion.create(req.body);
       return res.status(201).json(successResponse(nuevaCompeticion, 'Competición creada correctamente'));
     } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
+      }
+      if (handleDbError(res, error, 'Error al crear la competición')) return;
       return res.status(500).json(errorResponse('Error al crear la competición', 500, error.message));
     }
   },
@@ -82,6 +87,10 @@ const competicionController = {
       await competicion.update(req.body);
       return res.status(200).json(successResponse(competicion, 'Competición actualizada'));
     } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
+      }
+      if (handleDbError(res, error, 'Error al actualizar registro')) return;
       return res.status(500).json(errorResponse('Error al actualizar registro', 500, error.message));
     }
   },

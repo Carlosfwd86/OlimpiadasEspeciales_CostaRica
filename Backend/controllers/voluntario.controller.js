@@ -1,6 +1,7 @@
 const { models } = require('../config/database');
 const { Voluntario, VoluntarioArea } = models;
 const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
+const { handleDbError } = require('../utils/dbErrors');
 
 /**
  * @module voluntarioController
@@ -107,6 +108,10 @@ const voluntarioController = {
 
       return res.status(201).json(successResponse(nuevoVoluntario, 'Voluntario registrado con éxito'));
     } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
+      }
+      if (handleDbError(res, error, 'Error al registrar el voluntario')) return;
       return res.status(500).json(errorResponse('Error al registrar el voluntario', 500, error.message));
     }
   },
@@ -162,6 +167,10 @@ const voluntarioController = {
       await voluntario.update(updates);
       return res.status(200).json(successResponse(voluntario, 'Voluntario actualizado correctamente'));
     } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json(errorResponse('Error de validación', 400, error.errors.map(e => e.message)));
+      }
+      if (handleDbError(res, error, 'Error al actualizar voluntario')) return;
       return res.status(500).json(errorResponse('Error al actualizar voluntario', 500, error.message));
     }
   },
