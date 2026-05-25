@@ -96,6 +96,17 @@ const Entrenador = sequelize.define('Entrenador', {
     type: DataTypes.TEXT,
     allowNull: true
   },
+  otros_dispositivos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  especificacion_otros_dispositivos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  terminos_aceptados: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  firma_entrenador: { type: DataTypes.STRING(255), allowNull: true },
+  fecha_firma_entrenador: { type: DataTypes.DATEONLY, allowNull: true },
   equipo: {
     type: DataTypes.STRING(100),
     allowNull: true

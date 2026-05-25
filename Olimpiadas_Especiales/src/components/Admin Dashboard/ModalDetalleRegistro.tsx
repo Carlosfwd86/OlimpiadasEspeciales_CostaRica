@@ -114,12 +114,16 @@ const SemaforoRiesgo: React.FC<{ atletaId: string | number }> = ({ atletaId }) =
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
+type EstadoIA = 'PENDIENTE' | 'APROBADO' | 'RECHAZADO' | 'NO_APLICA';
+
 type DocPendiente = {
   id: number;
   categoria: string;
   nombre_original: string;
   mime_type: string;
   tamano_bytes: number;
+  estado_ia?: EstadoIA;
+  analisis_ia?: string | null;
 };
 
 const CATEGORIA_LABEL: Record<string, string> = {
@@ -131,6 +135,95 @@ const CATEGORIA_LABEL: Record<string, string> = {
   titulo: 'Título / certificado',
   otro: 'Otro',
 };
+
+// ─── Panel de Análisis IA por Documento ──────────────────────────────────────
+const CONFIG_IA: Record<EstadoIA, { bg: string; border: string; badge: string; badgeTxt: string; icono: string; label: string }> = {
+  APROBADO:  { bg: '#f0fdf4', border: '#bbf7d0', badge: '#16a34a', badgeTxt: '#fff', icono: '✅', label: 'Aprobado por IA' },
+  RECHAZADO: { bg: '#fff1f2', border: '#fecaca', badge: '#dc2626', badgeTxt: '#fff', icono: '❌', label: 'Rechazado por IA' },
+  PENDIENTE: { bg: '#fffbeb', border: '#fde68a', badge: '#d97706', badgeTxt: '#fff', icono: '⏳', label: 'Análisis pendiente' },
+  NO_APLICA: { bg: '#f8fafc', border: '#e2e8f0', badge: '#94a3b8', badgeTxt: '#fff', icono: '—',  label: 'No analizable' },
+};
+
+const PanelAnalisisIA: React.FC<{ doc: DocPendiente }> = ({ doc }) => {
+  const estado: EstadoIA = doc.estado_ia ?? 'PENDIENTE';
+  const cfg = CONFIG_IA[estado];
+  return (
+    <div style={{ marginTop: '8px', background: cfg.bg, border: `1px solid ${cfg.border}`, borderRadius: '10px', padding: '10px 14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: doc.analisis_ia ? '6px' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '14px' }}>{cfg.icono}</span>
+          <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.06em' }}>Análisis IA</span>
+        </div>
+        <span style={{ background: cfg.badge, color: cfg.badgeTxt, fontSize: '10px', fontWeight: 800, padding: '2px 10px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          {cfg.label}
+        </span>
+      </div>
+      {doc.analisis_ia && (
+        <p style={{ margin: 0, fontSize: '12px', color: '#475569', lineHeight: '1.5', fontStyle: 'italic' }}>
+          "{doc.analisis_ia}"
+        </p>
+      )}
+      {estado === 'PENDIENTE' && !doc.analisis_ia && (
+        <p style={{ margin: 0, fontSize: '12px', color: '#92400e' }}>
+          El análisis automático aún está procesando o requiere revisión manual.
+        </p>
+      )}
+      <div style={{ marginTop: '5px', fontSize: '10px', color: '#94a3b8', textAlign: 'right' }}>gpt-4o · No sustituye revisión humana</div>
+    </div>
+  );
+};
+
+const ResumenGeneralIA: React.FC<{ documentos: DocPendiente[] }> = ({ documentos }) => {
+  if (documentos.length === 0) return null;
+  const docsValidos = documentos.filter(d => d.estado_ia && d.estado_ia !== 'NO_APLICA');
+  if (docsValidos.length === 0) return null;
+
+  const aprobados = docsValidos.filter(d => d.estado_ia === 'APROBADO').length;
+  const rechazados = docsValidos.filter(d => d.estado_ia === 'RECHAZADO').length;
+  const pendientes = docsValidos.filter(d => d.estado_ia === 'PENDIENTE').length;
+  
+  let estadoGeneral = 'PENDIENTE';
+  let color = '#d97706';
+  let bg = '#fffbeb';
+  let border = '#fde68a';
+  
+  if (rechazados > 0) {
+    estadoGeneral = 'ATENCIÓN REQUERIDA';
+    color = '#dc2626';
+    bg = '#fff1f2';
+    border = '#fecaca';
+  } else if (pendientes === 0 && aprobados > 0) {
+    estadoGeneral = 'APROBADO';
+    color = '#16a34a';
+    bg = '#f0fdf4';
+    border = '#bbf7d0';
+  }
+
+  const advertencias = docsValidos
+    .filter(d => d.estado_ia === 'RECHAZADO' || d.estado_ia === 'PENDIENTE')
+    .map(d => `${CATEGORIA_LABEL[d.categoria] || d.categoria}: ${d.analisis_ia || 'Requiere revisión manual'}`);
+
+  return (
+    <div style={{ marginBottom: '16px', background: bg, border: `1px solid ${border}`, borderRadius: '12px', padding: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+         <span style={{ fontSize: '18px' }}>🧠</span>
+         <h4 style={{ margin: 0, fontSize: '14px', color, fontWeight: 800, textTransform: 'uppercase' }}>Mini Resumen IA de Documentos</h4>
+      </div>
+      <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#334155', fontWeight: 600 }}>
+        Se procesaron {docsValidos.length} documentos analizables: {aprobados} aprobados, {rechazados} rechazados/observados, {pendientes} pendientes.
+      </p>
+      {advertencias.length > 0 && (
+         <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#475569', fontStyle: 'italic' }}>
+           {advertencias.map((adv, i) => <li key={i} style={{ marginBottom: '4px' }}>{adv}</li>)}
+         </ul>
+      )}
+      {advertencias.length === 0 && aprobados > 0 && (
+         <p style={{ margin: 0, fontSize: '12px', color: '#16a34a', fontWeight: 600 }}>Todos los documentos revisados cumplen con los criterios automáticamente.</p>
+      )}
+    </div>
+  );
+};
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDetalleRegistroProps): React.JSX.Element | null {
     const [documentos, setDocumentos] = useState<DocPendiente[]>([]);
@@ -255,25 +348,53 @@ export default function ModalDetalleRegistro({ isOpen, onClose, data }: ModalDet
                         { key: 'foto_nombre', label: 'Foto Perfil' },
                     ])}
 
-                    <div style={{ marginTop: '24px', padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                        <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>Archivos adjuntos (cifrados)</h4>
-                        {cargandoDocs && <p style={{ fontSize: '13px', color: '#64748b' }}>Cargando documentos...</p>}
-                        {!cargandoDocs && documentos.length === 0 && (
-                            <p style={{ fontSize: '13px', color: '#94a3b8' }}>No hay archivos subidos al servidor (registro anterior o sin adjuntos).</p>
+                    <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                            <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>Archivos adjuntos</h4>
+                            <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>Cifrados · Analizados por IA</span>
+                        </div>
+                        {cargandoDocs && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#64748b', fontSize: '13px' }}>
+                                <div style={{ width: '16px', height: '16px', border: '2px solid #e2e8f0', borderTopColor: '#E00000', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
+                                Cargando documentos...
+                            </div>
                         )}
-                        {!cargandoDocs && documentos.map((doc) => (
-                            <div key={doc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #e2e8f0' }}>
-                                <div>
-                                    <div style={{ fontWeight: 600, fontSize: '13px' }}>{CATEGORIA_LABEL[doc.categoria] || doc.categoria}</div>
-                                    <div style={{ fontSize: '12px', color: '#64748b' }}>{doc.nombre_original} · {(doc.tamano_bytes / 1024).toFixed(1)} KB</div>
+                        {!cargandoDocs && documentos.length === 0 && (
+                            <p style={{ fontSize: '13px', color: '#94a3b8', textAlign: 'center', padding: '20px 0' }}>No hay archivos adjuntos en este registro.</p>
+                        )}
+                        {!cargandoDocs && documentos.length > 0 && <ResumenGeneralIA documentos={documentos} />}
+                        {!cargandoDocs && documentos.map((doc, idx) => (
+                            <div
+                                key={doc.id}
+                                style={{
+                                    background: '#fff',
+                                    border: '1px solid #e2e8f0',
+                                    borderRadius: '12px',
+                                    padding: '14px 16px',
+                                    marginBottom: idx < documentos.length - 1 ? '12px' : 0,
+                                }}
+                            >
+                                {/* Fila superior: nombre + botón descargar */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                                    <div style={{ minWidth: 0 }}>
+                                        <div style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a', marginBottom: '2px' }}>
+                                            {CATEGORIA_LABEL[doc.categoria] || doc.categoria}
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {doc.nombre_original} · {(doc.tamano_bytes / 1024).toFixed(1)} KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => ServicesAdmin.descargarDocumentoRegistro(data.id, doc.id, doc.nombre_original)}
+                                        style={{ flexShrink: 0, padding: '6px 14px', borderRadius: '8px', border: 'none', background: '#1a1a2e', color: '#fff', fontSize: '11px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                    >
+                                        <i className="fa-solid fa-download" style={{ fontSize: '10px' }}></i>
+                                        Descargar
+                                    </button>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => ServicesAdmin.descargarDocumentoRegistro(data.id, doc.id, doc.nombre_original)}
-                                    style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', background: '#1a1a2e', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                                >
-                                    Descargar
-                                </button>
+                                {/* Panel de análisis IA */}
+                                <PanelAnalisisIA doc={doc} />
                             </div>
                         ))}
                     </div>

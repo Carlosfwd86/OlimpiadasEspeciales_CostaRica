@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 const {
   encryptBuffer,
   decryptFileFromDisk,
@@ -7,6 +8,7 @@ const {
   getStorageRoot,
   ensureDir,
 } = require('../utils/fileEncryption');
+const { uploadDocumentoPendiente, deleteDocumentoPendiente } = require('./s3Service');
 const { models } = require('../config/database');
 
 const { RegistroPendienteDocumento, AtletaDocumento } = models;
@@ -41,6 +43,9 @@ function sanitizePublicPending(doc) {
     nombre_original: row.nombre_original,
     mime_type: row.mime_type,
     tamano_bytes: row.tamano_bytes,
+    url_documento: row.url_documento || null,
+    estado_ia: row.estado_ia || 'PENDIENTE',
+    analisis_ia: row.analisis_ia || null,
     created_at: row.created_at,
   };
 }
@@ -72,28 +77,35 @@ async function writeEncryptedFile(relativeKey, buffer) {
 
 /**
  * Guarda documento de registro pendiente.
+ * NUEVO FLUJO: sube a S3 / almacenamiento local público y guarda la URL.
  */
 async function savePendingDocument(registroId, categoria, file) {
   if (!file || !file.buffer) {
     throw new Error('Archivo inválido.');
   }
-  const ext = path.extname(file.originalname || '') || '.bin';
-  const safeCat = String(categoria).replace(/[^a-z0-9_]/gi, '_');
-  const fileName = `${safeCat}_${Date.now()}${ext}.enc`;
-  const storageKey = path.join('pending', String(registroId), fileName).replace(/\\/g, '/');
 
-  const meta = await writeEncryptedFile(storageKey, file.buffer);
+  // Subir archivo a S3 o carpeta pública local
+  const urlDocumento = await uploadDocumentoPendiente(
+    registroId,
+    normalizeCategoria(categoria),
+    file.buffer,
+    file.mimetype || 'application/octet-stream',
+    file.originalname || 'documento'
+  );
 
   const row = await RegistroPendienteDocumento.create({
     registro_pendiente_id: registroId,
     categoria: normalizeCategoria(categoria),
-    nombre_original: file.originalname || fileName,
+    nombre_original: file.originalname || 'documento',
     mime_type: file.mimetype || 'application/octet-stream',
-    storage_key: storageKey,
-    iv: meta.iv,
-    auth_tag: meta.authTag,
-    hash_sha256: meta.hash,
-    tamano_bytes: meta.tamano,
+    // Campos crypto quedan null (ya no se usa cifrado en disco)
+    storage_key: null,
+    iv: null,
+    auth_tag: null,
+    hash_sha256: null,
+    tamano_bytes: file.size || file.buffer.length,
+    url_documento: urlDocumento,
+    estado_ia: 'PENDIENTE',
   });
 
   return sanitizePublicPending(row);
@@ -159,11 +171,22 @@ async function getAtletaDocumentForDownload(atletaId, docId) {
 }
 
 function resolveDownloadMeta(doc) {
+  // NUEVO: si tiene URL pública, el descargado se hace vía URL (ver ruta de descarga)
+  if (doc.url_documento) {
+    return {
+      useUrl: true,
+      url: doc.url_documento,
+      mime_type: doc.mime_type || 'application/octet-stream',
+      nombre: doc.nombre_original || doc.nombre_documento || 'documento',
+    };
+  }
+  // LEGADO: registros cifrados en disco
   const storageKey = doc.storage_key || doc.ruta_archivo;
   if (!storageKey || !doc.iv || !doc.auth_tag) {
     return null;
   }
   return {
+    useUrl: false,
     buffer: decryptFileFromDisk(storageKey, doc.iv, doc.auth_tag),
     mime_type: doc.mime_type || 'application/octet-stream',
     nombre: doc.nombre_original || doc.nombre_documento || 'documento',
@@ -175,9 +198,16 @@ async function deletePendingByRegistro(registroId) {
     where: { registro_pendiente_id: registroId },
   });
   for (const doc of docs) {
-    deleteFileIfExists(doc.storage_key);
+    if (doc.url_documento) {
+      // Nuevo flujo: eliminar de S3 / almacenamiento local público
+      await deleteDocumentoPendiente(doc.url_documento).catch(() => {});
+    } else if (doc.storage_key) {
+      // Legado: eliminar archivo cifrado del disco
+      deleteFileIfExists(doc.storage_key);
+    }
   }
   await RegistroPendienteDocumento.destroy({ where: { registro_pendiente_id: registroId } });
+  // Limpiar directorio cifrado legado si existe
   const pendingDir = path.join(getStorageRoot(), 'pending', String(registroId));
   if (fs.existsSync(pendingDir)) {
     fs.rmSync(pendingDir, { recursive: true, force: true });
@@ -269,6 +299,13 @@ async function savePendingFilesFromRequest(registroId, files) {
       }
     }
   }
+
+  // NUEVO: Disparar el análisis IA (fire-and-forget) para todos los documentos recién subidos
+  if (saved.length > 0) {
+    const { dispararAnalisisIA } = require('./openaiDocumentService');
+    dispararAnalisisIA(registroId, saved);
+  }
+
   return saved;
 }
 
