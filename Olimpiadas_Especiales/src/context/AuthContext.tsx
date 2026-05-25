@@ -6,6 +6,7 @@ interface User {
   nombre: string;
   apellido?: string;
   rol_id: number;
+  avatar_url?: string;
   cedula?: string;
   correo_electronico?: string;
   correoElectronico?: string;
@@ -18,7 +19,7 @@ interface User {
 }
 
 const normalizarUsuarioSesion = (usuario: Record<string, unknown>): User => ({
-  ...(usuario as User),
+  ...(usuario as unknown as User),
   correoElectronico: (usuario.correo_electronico ?? usuario.correoElectronico) as string | undefined,
   fechaNacimiento: (usuario.fecha_nacimiento ?? usuario.fechaNacimiento) as string | undefined
 });

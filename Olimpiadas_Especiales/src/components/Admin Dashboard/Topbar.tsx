@@ -131,7 +131,11 @@ export default function Topbar({ onSearch, onTabChange, activeTab = 'resumen' }:
             onClick={() => { setShowProfile(!showProfile); setShowNotif(false); }}
             title={userName}
           >
-            <div className="profile-avatar-icon">{initials}</div>
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="Avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              <div className="profile-avatar-icon">{initials}</div>
+            )}
           </div>
 
           {showProfile && (

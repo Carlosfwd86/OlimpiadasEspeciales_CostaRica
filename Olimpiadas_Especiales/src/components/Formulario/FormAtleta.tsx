@@ -9,6 +9,7 @@ import apiClient from '../../api/apiClient';
 import { mapUsuarioToDatosAtleta, leerUsuarioSesion } from '../../utils/mapUsuarioSesion';
 import '../../styles/Formulario/FormAtleta.css';
 import type { ConfigData } from '../../types';
+import { ArchivoAdjuntoBadge, BotonIconoEliminar, FormIcon, type FormIconName } from './FormIcons';
 
 emailjs.init("4zWvRC7Yn7lUDqd1q");
 
@@ -260,7 +261,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
             `).join('')}
           </div>
         `,
-        focusConfirm: false, showCancelButton: true, confirmButtonText: '✅ Aceptar', cancelButtonText: '❌ Cancelar',
+        focusConfirm: false, showCancelButton: true, confirmButtonText: 'Aceptar', cancelButtonText: 'Cancelar',
         confirmButtonColor: '#E00000', cancelButtonColor: '#A7A9AC', width: '650px',
         preConfirm: () => {
           const resultado: string[] = [];
@@ -499,16 +500,21 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
   return (
     <div className="form-atleta-layout">
       <header className="form-header">
-        <div className="header-logo"><div className="logo-icon">🏆</div><h1>Olimpiadas Especiales CR</h1></div>
-        <div className="header-actions"><div className="action-icon">🔔</div><div className="action-icon">👤</div></div>
+        <div className="header-logo"><div className="logo-icon"><FormIcon name="trophy" size={22} /></div><h1>Olimpiadas Especiales CR</h1></div>
+        <div className="header-actions"><div className="action-icon"><FormIcon name="bell" size={18} /></div><div className="action-icon"><FormIcon name="user" size={18} /></div></div>
       </header>
 
       <div className="form-body">
         <aside className="form-sidebar">
-          <div className="sidebar-card"><div className="registro-info"><div className="registro-icon">👤</div><div className="registro-text"><h4>Registro</h4><p>NUEVO ATLETA</p></div></div></div>
+          <div className="sidebar-card"><div className="registro-info"><div className="registro-icon"><FormIcon name="user" size={26} /></div><div className="registro-text"><h4>Registro</h4><p>NUEVO ATLETA</p></div></div></div>
           <nav className="sidebar-nav sidebar-card">
-            {[{ id: 1, name: "1. Datos Personales", icon: "👤" }, { id: 2, name: "2. Info Médica", icon: "🏥" }, { id: 3, name: "3. Deporte", icon: "⚽" }, { id: 4, name: "4. Documentos", icon: "📄" }].map((step) => (
-              <div key={step.id} className={`nav-item ${paso === step.id ? 'active' : ''}`}><span className="nav-icon">{step.icon}</span><span>{step.name}</span></div>
+            {([
+              { id: 1, name: '1. Datos Personales', icon: 'user' as FormIconName },
+              { id: 2, name: '2. Info Médica', icon: 'hospital' as FormIconName },
+              { id: 3, name: '3. Deporte', icon: 'football' as FormIconName },
+              { id: 4, name: '4. Documentos', icon: 'file' as FormIconName },
+            ]).map((step) => (
+              <div key={step.id} className={`nav-item ${paso === step.id ? 'active' : ''}`}><span className="nav-icon"><FormIcon name={step.icon} size={18} /></span><span>{step.name}</span></div>
             ))}
           </nav>
           <div className="sidebar-footer">
@@ -600,7 +606,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                     <div style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                       {datos.condicionesMedicas.map((cond, index) => (
                         <div key={index} className="archivo-adjunto" style={{ borderRadius: '12px', border: '1px solid #E00000', color: '#E00000', padding: '8px 15px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {cond} <span onClick={() => eliminarCondicion(cond)} style={{ cursor: 'pointer', opacity: 0.7 }}>✕</span>
+                          {cond} <button type="button" onClick={() => eliminarCondicion(cond)} className="btn-icono-eliminar" style={{ width: 22, height: 22, background: 'transparent' }} aria-label={`Quitar ${cond}`}><FormIcon name="x" size={12} strokeWidth={2.5} /></button>
                         </div>
                       ))}
                     </div>
@@ -680,7 +686,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                               <td style={{padding: '12px'}}><input type="text" name="nombre" className="input-field" style={{padding: '10px', fontSize: '14px', background: 'white'}} value={med.nombre} onChange={(e) => manejarCambioMedicamento(index, e)} /></td>
                               <td style={{padding: '12px'}}><input type="text" name="dosis" className="input-field" style={{padding: '10px', fontSize: '14px', background: 'white'}} value={med.dosis} onChange={(e) => manejarCambioMedicamento(index, e)} /></td>
                               <td style={{padding: '12px'}}><input type="text" name="frecuencia" className="input-field" style={{padding: '10px', fontSize: '14px', background: 'white'}} value={med.frecuencia} onChange={(e) => manejarCambioMedicamento(index, e)} /></td>
-                              <td style={{padding: '12px', textAlign: 'center'}}><button type="button" onClick={() => eliminarMedicamento(index)} style={{color: '#ef4444', border: 'none', background: '#fee2e2', width: '30px', height: '30px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'}}>✕</button></td>
+                              <td style={{padding: '12px', textAlign: 'center'}}><BotonIconoEliminar onClick={() => eliminarMedicamento(index)} title="Eliminar medicamento" /></td>
                             </tr>
                           ))}
                         </tbody>
@@ -704,16 +710,16 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
               <div className="docs-grid" style={{display: 'flex', flexDirection: 'column', gap: '40px'}}>
                 <div style={{display: 'grid', gridTemplateColumns: '1fr', gap: '30px'}}>
                   <div className="zona-drop" onClick={() => document.getElementById('file-identificacion')?.click()}>
-                    <div style={{fontSize: '32px', marginBottom: '10px'}}>📄</div><h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Documento de Identidad</h4><p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Haga clic para subir PDF o Imagen</p>
+                    <div className="upload-zone-icon" style={{ marginBottom: '10px' }}><FormIcon name="file" size={32} /></div><h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Documento de Identidad</h4><p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Haga clic para subir PDF o Imagen</p>
                     <input id="file-identificacion" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, 'identificacion')} />
-                    {archivos.identificacion && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.identificacion.name}</div>}
+                    {archivos.identificacion && <ArchivoAdjuntoBadge nombre={archivos.identificacion.name} style={{ marginTop: '15px' }} />}
                   </div>
                   <div className="zona-drop" onClick={() => document.getElementById('file-certificado')?.click()}>
-                    <div style={{fontSize: '32px', marginBottom: '10px'}}>🏥</div><h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Certificado Médico</h4><p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Documento oficial debidamente firmado</p>
+                    <div className="upload-zone-icon" style={{ marginBottom: '10px' }}><FormIcon name="hospital" size={32} /></div><h4 style={{margin: '0 0 5px 0', fontSize: '16px'}}>Certificado Médico</h4><p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Documento oficial debidamente firmado</p>
                     <input id="file-certificado" type="file" style={{ display: 'none' }} onChange={(e) => { validarYGuardarArchivo(e.target.files?.[0] ?? null, 'certificado'); }} />
                     {archivos.certificado && (
                       <div style={{marginTop: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px'}}>
-                        <div className="archivo-adjunto" style={{display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.certificado.name}</div>
+                        <ArchivoAdjuntoBadge nombre={archivos.certificado.name} style={{ marginTop: 0 }} />
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); procesarCertificadoConIA(); }}
@@ -722,7 +728,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                         >
                           {ocrCargando
                             ? <><span style={{width:'14px',height:'14px',border:'2px solid #e2e8f0',borderTopColor:'#94a3b8',borderRadius:'50%',display:'inline-block'}} />Analizando certificado...</>
-                            : '✨ Auto-completar con IA'
+                            : <><FormIcon name="sparkles" size={16} /> Auto-completar con IA</>
                           }
                         </button>
                       </div>
@@ -730,9 +736,9 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                   </div>
                   {esMenorDeEdad() && (
                     <div className="zona-drop" onClick={() => document.getElementById('file-identificacion-tutor')?.click()} style={{ border: '2px dashed #fda4af', background: '#fff1f2' }}>
-                      <div style={{fontSize: '32px', marginBottom: '10px'}}>👤</div><h4 style={{margin: '0 0 5px 0', fontSize: '16px', color: '#E00000'}}>ID del Padre / Tutor</h4><p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Requerido (PDF o Imagen)</p>
+                      <div className="upload-zone-icon" style={{ marginBottom: '10px' }}><FormIcon name="user" size={32} /></div><h4 style={{margin: '0 0 5px 0', fontSize: '16px', color: '#E00000'}}>ID del Padre / Tutor</h4><p style={{margin: 0, fontSize: '13px', color: '#64748b'}}>Requerido (PDF o Imagen)</p>
                       <input id="file-identificacion-tutor" type="file" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, 'identificacionTutor')} />
-                      {archivos.identificacionTutor && <div className="archivo-adjunto" style={{marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#f0fdf4', color: '#166534', borderRadius: '20px', fontSize: '12px', fontWeight: 600}}>✓ {archivos.identificacionTutor.name}</div>}
+                      {archivos.identificacionTutor && <ArchivoAdjuntoBadge nombre={archivos.identificacionTutor.name} style={{ marginTop: '15px' }} />}
                     </div>
                   )}
                 </div>
@@ -740,7 +746,7 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
                 <div style={{ background: '#f8fafc', padding: '30px', borderRadius: '15px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
                     <h3 style={{fontSize: '18px', fontWeight: 700, color: '#E00000', margin: 0, textTransform: 'uppercase'}}>Exenciones, Liberaciones y Políticas</h3>
-                    <button type="button" onClick={() => setDislexiaActivo(!dislexiaActivo)} style={{ padding: '8px 15px', background: dislexiaActivo ? '#E00000' : 'white', color: dislexiaActivo ? 'white' : '#475569', border: `1px solid ${dislexiaActivo ? '#E00000' : '#cbd5e1'}`, borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}>{dislexiaActivo ? '✔️ Modo Lectura Activado (Ubuntu)' : '👁️ Modo Lectura (Anti-Dislexia)'}</button>
+                    <button type="button" onClick={() => setDislexiaActivo(!dislexiaActivo)} style={{ padding: '8px 15px', background: dislexiaActivo ? '#E00000' : 'white', color: dislexiaActivo ? 'white' : '#475569', border: `1px solid ${dislexiaActivo ? '#E00000' : '#cbd5e1'}`, borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}>{dislexiaActivo ? <><FormIcon name="check" size={16} /> Modo Lectura Activado (Ubuntu)</> : <><FormIcon name="eye" size={16} /> Modo Lectura (Anti-Dislexia)</>}</button>
                   </div>
                   
                   <div style={{ background: 'white', padding: '20px', borderRadius: '10px', height: '400px', overflowY: 'auto', border: '1px solid #e2e8f0', fontSize: dislexiaActivo ? '15px' : '14px', color: '#475569', lineHeight: dislexiaActivo ? '1.8' : '1.6', fontFamily: dislexiaActivo ? '"Ubuntu", sans-serif' : 'inherit', letterSpacing: dislexiaActivo ? '0.5px' : 'normal', wordSpacing: dislexiaActivo ? '1px' : 'normal', transition: 'all 0.3s ease' }}>

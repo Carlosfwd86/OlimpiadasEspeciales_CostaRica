@@ -4,8 +4,10 @@ import emailjs from '@emailjs/browser';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
 import DatePickerInput from '../DatePickerInput';
+import { mensajeValidacionFechaAdulto } from '../../utils/edad';
 import '../../styles/Formulario/FormEntrenador.css';
 import type { ConfigItem } from '../../types';
+import { ArchivoAdjuntoBadge, FormIcon, type FormIconName } from './FormIcons';
 
 emailjs.init("4zWvRC7Yn7lUDqd1q");
 
@@ -38,6 +40,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
     horarioDisponible: '', afeccionSalud: 'No', detalleSalud: '',
   });
   const [errores, setErrores] = useState<Record<string, boolean>>({});
+  const [errorFechaNacimiento, setErrorFechaNacimiento] = useState<string>('');
   const [archivos, setArchivos] = useState<Archivos>({ cedula: null, titulo: null, foto: null });
   const [disciplinas, setDisciplinas] = useState<ConfigItem[]>([]);
 
@@ -67,6 +70,14 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
     const { id, value } = e.target;
     setDatos(prev => ({ ...prev, [id]: value }));
     if (errores[id]) setErrores(prev => ({ ...prev, [id]: false }));
+  };
+
+  const manejarCambioFecha = (e: { target: { name: string; value: string; id?: string } }): void => {
+    const { name, value } = e.target;
+    setDatos(prev => ({ ...prev, [name]: value }));
+    const msg = mensajeValidacionFechaAdulto(value, 'entrenador');
+    setErrorFechaNacimiento(msg || '');
+    setErrores(prev => ({ ...prev, fechaNacimiento: !!msg }));
   };
 
   const ManejarManual = (id: string, val: string): void => {
@@ -100,6 +111,18 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
         Swal.fire({ icon: 'error', title: 'Correo Inválido', text: 'Ingrese un correo válido.', confirmButtonColor: '#E00000' });
         return false;
       }
+      const msgFecha = mensajeValidacionFechaAdulto(datos.fechaNacimiento, 'entrenador');
+      if (msgFecha) {
+        setErrorFechaNacimiento(msgFecha);
+        setErrores(prev => ({ ...prev, fechaNacimiento: true }));
+        Swal.fire({
+          icon: 'error',
+          title: 'Edad no permitida',
+          text: msgFecha,
+          confirmButtonColor: '#E00000',
+        });
+        return false;
+      }
     }
     if (paso === 2 && (!datos.aniosExperiencia || !datos.disciplinaPrincipal)) {
       Swal.fire({ icon: 'error', title: 'Paso 2 Incompleto', text: 'Por favor complete experiencia y disciplina.', confirmButtonColor: '#E00000' });
@@ -125,6 +148,19 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
   const manejarAnterior = (): void => { if (paso === 1) onVolver(); else setPaso(paso - 1); };
 
   const finalizarInscripcion = (): void => {
+    const msgFecha = mensajeValidacionFechaAdulto(datos.fechaNacimiento, 'entrenador');
+    if (msgFecha) {
+      setErrorFechaNacimiento(msgFecha);
+      setErrores(prev => ({ ...prev, fechaNacimiento: true }));
+      setPaso(1);
+      Swal.fire({
+        icon: 'error',
+        title: 'Edad no permitida',
+        text: msgFecha,
+        confirmButtonColor: '#E00000',
+      });
+      return;
+    }
     Swal.fire({ title: '¿Finalizar Registro?', text: 'Se enviará su solicitud de entrenador para revisión.', icon: 'question', showCancelButton: true, confirmButtonText: 'Sí, Enviar', confirmButtonColor: '#E00000' }).then(async (res) => {
       if (res.isConfirmed) {
         Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
@@ -167,7 +203,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
     <div className="form-entrenador-layout">
       <header className="form-header">
         <div className="header-logo">
-          <div className="logo-icon">📋</div>
+          <div className="logo-icon"><FormIcon name="clipboard-form" size={22} /></div>
           <h1>Inscripción Entrenador</h1>
         </div>
       </header>
@@ -176,14 +212,19 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
         <aside className="form-sidebar">
           <div className="sidebar-card">
             <div className="registro-info">
-              <div className="registro-icon">👨‍🏫</div>
+              <div className="registro-icon"><FormIcon name="coach" size={26} /></div>
               <div className="registro-text"><h4>Registro</h4><p>NUEVO ENTRENADOR</p></div>
             </div>
           </div>
           <nav className="sidebar-nav sidebar-card">
-            {[{ id: 1, name: "1. Datos Personales", icon: "👤" }, { id: 2, name: "2. Perfil Profesional", icon: "🏫" }, { id: 3, name: "3. Disponibilidad", icon: "⏰" }, { id: 4, name: "4. Documentos", icon: "📄" }].map(step => (
+            {([
+              { id: 1, name: '1. Datos Personales', icon: 'user' as FormIconName },
+              { id: 2, name: '2. Perfil Profesional', icon: 'school' as FormIconName },
+              { id: 3, name: '3. Disponibilidad', icon: 'clock' as FormIconName },
+              { id: 4, name: '4. Documentos', icon: 'file' as FormIconName },
+            ]).map(step => (
               <div key={step.id} className={`nav-item ${paso === step.id ? 'active' : ''}`}>
-                <span className="nav-icon">{step.icon}</span><span>{step.name}</span>
+                <span className="nav-icon"><FormIcon name={step.icon} size={18} /></span><span>{step.name}</span>
               </div>
             ))}
           </nav>
@@ -206,7 +247,21 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
               <div className="form-grid-ref">
                 <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
                 <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Fecha de Nacimiento *</label><DatePickerInput id='fechaNacimiento' name='fechaNacimiento' value={datos.fechaNacimiento} onChange={manejarCambio as any} hasError={!!errores.fechaNacimiento} /></div>
+                <div className="input-container">
+                  <label>Fecha de Nacimiento *</label>
+                  <DatePickerInput
+                    id="fechaNacimiento"
+                    name="fechaNacimiento"
+                    value={datos.fechaNacimiento}
+                    onChange={manejarCambioFecha}
+                    hasError={!!errores.fechaNacimiento}
+                  />
+                  {errorFechaNacimiento && (
+                    <p style={{ color: '#E00000', fontSize: '13px', marginTop: '6px', fontWeight: 600 }}>
+                      {errorFechaNacimiento}
+                    </p>
+                  )}
+                </div>
                 <div className="input-container"><label>Género *</label>
                   <select id="genero" className={`input-field ${errores.genero ? 'error' : ''}`} value={datos.genero} onChange={manejarCambio}>
                     <option value="">Seleccione...</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option>
@@ -260,16 +315,16 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
                 <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '10px' }}>Adjunte sus documentos en formato <strong>PDF, JPG o PNG</strong> (máx. 5MB). La cédula es obligatoria.</p>
 
                 {[
-                  { campo: 'cedula' as keyof Archivos, fileId: 'file-cedula-e', emoji: '📄', titulo: 'Cédula de Identidad', requerido: true },
-                  { campo: 'titulo' as keyof Archivos, fileId: 'file-titulo-e', emoji: '📜', titulo: 'Título / Certificado Deportivo', requerido: false },
-                  { campo: 'foto' as keyof Archivos, fileId: 'file-foto-e', emoji: '📸', titulo: 'Foto de Perfil Formal', requerido: false },
-                ].map(({ campo, fileId, emoji, titulo, requerido }) => (
+                  { campo: 'cedula' as keyof Archivos, fileId: 'file-cedula-e', icon: 'file' as FormIconName, titulo: 'Cédula de Identidad', requerido: true },
+                  { campo: 'titulo' as keyof Archivos, fileId: 'file-titulo-e', icon: 'certificate', titulo: 'Título / Certificado Deportivo', requerido: false },
+                  { campo: 'foto' as keyof Archivos, fileId: 'file-foto-e', icon: 'camera', titulo: 'Foto de Perfil Formal', requerido: false },
+                ].map(({ campo, fileId, icon, titulo, requerido }) => (
                   <div key={fileId} className="zona-drop" onClick={() => (document.getElementById(fileId) as HTMLInputElement)?.click()}
                     style={{ cursor: 'pointer', border: `2px dashed ${archivos[campo] ? '#16a34a' : requerido ? '#E00000' : '#cbd5e1'}`, borderRadius: '16px', padding: '25px', textAlign: 'center', background: archivos[campo] ? '#f0fdf4' : requerido ? '#fff1f2' : '#f8fafc', transition: 'all 0.2s' }}>
-                    <div style={{ fontSize: '36px', marginBottom: '8px' }}>{emoji}</div>
+                    <div className="upload-zone-icon"><FormIcon name={icon} size={36} /></div>
                     <h4 style={{ margin: '0 0 4px', fontSize: '15px', color: '#1e293b' }}>{titulo}{requerido && <span style={{ color: '#E00000' }}> *</span>}</h4>
                     <input id={fileId} type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, campo)} />
-                    {archivos[campo] && <div style={{ marginTop: '12px', padding: '6px 16px', background: '#dcfce7', color: '#166534', borderRadius: '20px', display: 'inline-block', fontSize: '13px', fontWeight: 700 }}>✓ {archivos[campo]!.name}</div>}
+                    {archivos[campo] && <ArchivoAdjuntoBadge nombre={archivos[campo]!.name} />}
                   </div>
                 ))}
 
@@ -285,7 +340,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
             <button className="btn-secondary" onClick={manejarAnterior}>{paso === 1 ? 'Cancelar' : 'Anterior'}</button>
             {paso < 4
               ? <button className="btn-primary" onClick={manejarSiguiente}>Siguiente Paso →</button>
-              : <button className="btn-primary" onClick={finalizarInscripcion}>Finalizar Registro ✓</button>
+              : <button className="btn-primary" onClick={finalizarInscripcion} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><FormIcon name="check" size={18} /> Finalizar Registro</button>
             }
           </div>
         </main>

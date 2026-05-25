@@ -145,9 +145,8 @@
 }
 
 .form-tutor-layout .nav-icon {
-  font-size: 18px;
   width: 24px;
-  text-align: center;
+  flex-shrink: 0;
 }
 
 .form-tutor-layout .sidebar-footer {
