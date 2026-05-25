@@ -8,29 +8,33 @@
   --bg-soft: #f8fafc;
 }
 
+/* ==========================================================================
+   ESTILOS BASE (Mobile-First ~375px)
+   ========================================================================== */
+
 .selector-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  padding: 40px 20px;
+  padding: 40px 16px; /* Padding reducido móvil */
   background-color: var(--bg-soft);
   font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .selector-title {
-  font-size: 32px;
+  font-size: 26px; /* Adaptado a móvil */
   font-weight: 800;
   color: #1e293b;
-  margin-bottom: 50px;
+  margin-bottom: 30px; /* Reducido en móvil */
   text-align: center;
 }
 
 .botonesDeRol {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
+  grid-template-columns: 1fr; /* 1 columna en móvil */
+  gap: 20px;
   width: 100%;
   max-width: 600px;
 }
@@ -38,24 +42,25 @@
 /* Individual Role Card (Big Squares) */
 .botonRol {
   position: relative;
-  aspect-ratio: 1 / 1; /* Perfect Square */
+  aspect-ratio: auto; /* Cuadrado no es ideal si hay texto largo en 1fr, mejor auto con padding o mantener 1/1 si se prefiere, dejamos auto para flexibilidad en móvil o min-height */
+  min-height: 200px;
   border: none;
-  border-radius: 35px;
+  border-radius: 30px; /* Menos radio en móvil */
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background: white;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   overflow: hidden;
   padding: 20px;
 }
 
 .botonRol:hover {
-  transform: translateY(-12px) scale(1.02);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px) scale(1.01); /* Hover reducido móvil */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* Specific Colors and Gradients for each Role */
@@ -72,7 +77,7 @@
 
 /* Text Labels */
 .nombreRol {
-  font-size: 22px;
+  font-size: 20px; /* Reducido móvil */
   font-weight: 800;
   color: #334155;
   letter-spacing: -0.5px;
@@ -97,16 +102,44 @@
 .botonRol[data-role="voluntario"]::after { background: var(--color-voluntario); }
 
 .botonRol:hover::after {
-  bottom: 25px;
+  bottom: 20px; /* Ajuste móvil */
 }
 
-/* Responsive Grid */
-@media (max-width: 500px) {
-  .botonesDeRol {
-    grid-template-columns: 1fr;
-    gap: 20px;
+/* ==========================================================================
+   TABLET Y DESKTOP (sm: 500px+)
+   ========================================================================== */
+@media (min-width: 500px) {
+  .selector-container {
+    padding: 40px 20px;
   }
+
   .selector-title {
-    font-size: 26px;
+    font-size: 32px;
+    margin-bottom: 50px;
+  }
+
+  .botonesDeRol {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas más grandes */
+    gap: 30px;
+  }
+
+  .botonRol {
+    aspect-ratio: 1 / 1; /* Cuadrado perfecto */
+    min-height: auto;
+    border-radius: 35px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+  }
+
+  .botonRol:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+  }
+
+  .nombreRol {
+    font-size: 22px;
+  }
+
+  .botonRol:hover::after {
+    bottom: 25px;
   }
 }

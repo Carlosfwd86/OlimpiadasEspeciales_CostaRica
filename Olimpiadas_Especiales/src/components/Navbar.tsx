@@ -131,7 +131,11 @@ const Navbar = (): React.JSX.Element => {
   ];
 
   const irPerfilOAdmin = () => {
-    user?.rol_id === 1 ? navegar('/admin') : navegar('/perfil');
+    if (user?.rol_id === 1) {
+      navegar('/admin');
+    } else {
+      navegar('/perfil');
+    }
     cerrarMenuMovil();
   };
 

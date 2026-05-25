@@ -1,15 +1,17 @@
 /* NOSOTROS.CSS - Estilos para el componente Nosotros */
 
+/* ==========================================================================
+   ESTILOS BASE (Mobile-First ~375px)
+   ========================================================================== */
 .nosotros_container {
     font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
     background: #ffffff;
     overflow-x: hidden;
 }
 
-/* HERO SECTION */
+/* --- HERO SECTION --- */
 .nosotros_hero {
-    height: 350px;
-    /* background-image gestionado via style inline en Nosotros.tsx → s3Url() */
+    height: 300px; /* Reducido en móvil */
     background-size: cover;
     background-position: center;
     position: relative;
@@ -20,10 +22,7 @@
 
 .nosotros_hero_overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -31,24 +30,25 @@
     position: relative;
     z-index: 1;
     color: #ffffff;
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2rem, 8vw, 2.5rem); /* Ajustado para móvil */
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 2px;
     text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
     margin: 0;
     text-align: center;
+    padding: 0 16px;
 }
 
-/* SECCIONES GENERALES */
+/* --- SECCIONES GENERALES --- */
 .section_historia {
-    padding: 60px 24px 0;
+    padding: 40px 16px 0; /* Padding móvil reducido */
     position: relative;
 }
 
 .section_header {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }
 
 .section_badge {
@@ -58,7 +58,7 @@
     padding: 10px 24px;
     border-radius: 50px;
     font-weight: 800;
-    font-size: 0.95rem;
+    font-size: 0.85rem; /* Más pequeño en móvil */
     margin-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -66,16 +66,17 @@
 
 .section_title {
     color: #000;
-    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-size: clamp(1.8rem, 6vw, 2.2rem);
     font-weight: 900;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: -1px;
 }
 
-/* CAROUSEL */
+/* --- CAROUSEL --- */
 .historia_carousel_container {
-    width: 1200px;
+    width: 100%;
+    max-width: 1200px; /* Fluid en móvil */
     margin: 0 auto;
     position: relative;
     z-index: 4;
@@ -83,10 +84,10 @@
 
 .historia_carousel {
     position: relative;
-    height: 450px;
-    border-radius: 30px;
+    height: 350px; /* Reducido en móvil */
+    border-radius: 20px; /* Bordes más suaves */
     overflow: hidden;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
 
 .carousel_item {
@@ -105,25 +106,25 @@
 
 .carousel_content {
     position: absolute;
-    bottom: 50px;
-    left: 50px;
-    right: 50px;
+    bottom: 30px; /* Menos espacio abajo */
+    left: 20px; /* Menos padding lateral */
+    right: 20px;
     color: #fff;
+    text-align: center; /* Centrado en móvil */
 }
 
 .carousel_title {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.5rem, 5vw, 2rem);
     font-weight: 900;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     color: #FF0000;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .carousel_text {
-    font-size: clamp(1.1rem, 2vw, 1.4rem);
-    line-height: 1.6;
+    font-size: 0.95rem; /* Texto legible sin hacer scroll horizontal */
+    line-height: 1.5;
     margin: 0;
-    max-width: 900px;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
 
@@ -133,53 +134,48 @@
 
 .carousel_indicators {
     position: absolute;
-    bottom: 20px;
+    bottom: 15px;
     left: 0;
     right: 0;
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 8px; /* Gap más pequeño */
     z-index: 2;
 }
 
 .carousel_dot {
-    height: 12px;
+    height: 10px; /* Área táctil ligeramente más pequeña pero válida con gap */
+    width: 20px; /* Click area horizontal */
     border-radius: 6px;
     border: none;
     cursor: pointer;
     transition: all 0.4s ease;
 }
 
-/* MISION & VISION */
+/* --- MISION & VISION --- */
 .section_mision {
-    padding: 20px 24px 60px;
+    padding: 20px 16px 40px;
 }
 
 .clase-culpable {
-  min-height: unset;
-  height: auto;
-}
-
-@media (max-width: 768px) {
-  .clase-culpable {
     height: auto;
+    min-height: unset;
     padding: 1rem;
-  }
 }
 
 .mision_vision_grid {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 40px;
+    grid-template-columns: 1fr; /* 1 columna en móvil base */
+    gap: 30px;
 }
 
 .info_card {
     background: #fff;
-    border-radius: 30px;
+    border-radius: 20px;
     border: 1px solid #f1f5f9;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.04);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -187,79 +183,85 @@
 }
 
 .card_image {
-    height: 240px;
+    height: 200px; /* Más pequeño en móvil */
     background-size: cover;
     background-position: center top;
 }
 
 .card_body {
-    padding: 40px;
+    padding: 30px 20px; /* Menos padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Contenido centrado en móvil */
+    text-align: center;
 }
 
 .card_icon_container {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80px;
-    height: 80px;
-    border-radius: 24px;
-    margin-top: -80px;
-    margin-bottom: 20px;
+    width: 60px; /* Reducido */
+    height: 60px;
+    border-radius: 20px;
+    margin-top: -60px; /* Mitad de altura */
+    margin-bottom: 15px;
     position: relative;
     z-index: 2;
-    border: 5px solid #fff;
+    border: 4px solid #fff;
     transition: transform 0.3s;
 }
 
 .card_title {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     color: #000;
-    margin: 0 0 15px;
+    margin: 0 0 10px;
     font-weight: 900;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
 }
 
 .card_text {
-    font-size: 1.15rem;
+    font-size: 1rem;
     color: #64748b;
-    line-height: 1.7;
+    line-height: 1.6;
     margin: 0;
 }
 
-/* NUESTROS VALORES */
+/* --- NUESTROS VALORES --- */
 .section_valores {
-    padding: 60px 24px;
+    padding: 40px 16px;
 }
 
 .valores_grid {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
+    grid-template-columns: 1fr; /* 1 columna en móvil */
+    gap: 20px;
 }
 
 .valor_card {
     background: #fff;
-    border-radius: 24px;
+    border-radius: 20px;
     border: 1px solid #f1f5f9;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-    padding: 36px 28px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 24px 20px; /* Padding móvil */
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    align-items: center; /* Centrado móvil */
+    text-align: center;
+    gap: 12px;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .valor_card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    transform: translateY(-5px); /* Efecto reducido */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 .valor_icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -267,7 +269,7 @@
 }
 
 .valor_title {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 900;
     color: #000;
     margin: 0;
@@ -275,23 +277,23 @@
 }
 
 .valor_text {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #64748b;
-    line-height: 1.7;
+    line-height: 1.6;
     margin: 0;
 }
 
-/* PLATAFORMA DIGITAL */
+/* --- PLATAFORMA DIGITAL --- */
 .section_plataforma {
-    padding: 60px 24px 80px;
+    padding: 40px 16px 60px;
 }
 
 .platform_card {
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
     background: #FF0000;
-    border-radius: 40px;
-    padding: 80px 40px;
+    border-radius: 24px;
+    padding: 40px 20px; /* Padding reducido móvil */
     color: #fff;
     text-align: center;
     position: relative;
@@ -300,6 +302,9 @@
 
 .platform_svg_bg {
     position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0.1;
     stroke: currentColor;
     stroke-width: 1;
@@ -307,9 +312,9 @@
 }
 
 .platform_title {
-    font-size: clamp(2.5rem, 5vw, 3.8rem);
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
     font-weight: 900;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     letter-spacing: -1px;
     position: relative;
     z-index: 1;
@@ -317,17 +322,17 @@
 }
 
 .platform_description {
-    font-size: 1.25rem;
-    line-height: 1.8;
+    font-size: 1rem;
+    line-height: 1.6;
     opacity: 0.95;
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
     position: relative;
     z-index: 1;
     font-weight: 500;
 }
 
-/* ANIMACIONES */
+/* --- ANIMACIONES --- */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
@@ -349,9 +354,9 @@
 }
 
 @keyframes pulseBackground {
-    0% { box-shadow: 0 20px 40px rgba(255,0,0,0.3); transform: scale(1); }
-    50% { box-shadow: 0 30px 60px rgba(255,0,0,0.4); transform: scale(1.01); }
-    100% { box-shadow: 0 20px 40px rgba(255,0,0,0.3); transform: scale(1); }
+    0% { box-shadow: 0 10px 20px rgba(255,0,0,0.3); transform: scale(1); }
+    50% { box-shadow: 0 15px 30px rgba(255,0,0,0.4); transform: scale(1.01); }
+    100% { box-shadow: 0 10px 20px rgba(255,0,0,0.3); transform: scale(1); }
 }
 
 .animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
@@ -369,8 +374,8 @@
 }
 
 .tarjeta_info:hover {
-    transform: translateY(-15px) !important;
-    box-shadow: 0 30px 70px rgba(230, 35, 52, 0.12) !important;
+    transform: translateY(-8px) !important;
+    box-shadow: 0 15px 35px rgba(230, 35, 52, 0.12) !important;
     border-color: rgba(230, 35, 52, 0.15) !important;
 }
 
@@ -380,4 +385,113 @@
 
 .pulse-rojo {
     animation: pulseBackground 4s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   TABLET / LAPTOP PEQUEÑA (md: 768px+)
+   ========================================================================== */
+@media (min-width: 768px) {
+  .section_historia, .section_mision, .section_valores, .section_plataforma {
+      padding: 60px 24px;
+  }
+  
+  .section_title {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+  }
+  
+  .historia_carousel {
+      height: 450px;
+  }
+  
+  .carousel_content {
+      bottom: 50px;
+      left: 50px;
+      right: 50px;
+      text-align: left;
+  }
+  
+  .carousel_text {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+  }
+  
+  .mision_vision_grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 Columnas */
+  }
+
+  .card_body {
+      padding: 40px;
+      align-items: flex-start;
+      text-align: left;
+  }
+
+  .card_icon_container {
+      width: 80px;
+      height: 80px;
+      margin-top: -80px;
+  }
+  
+  .card_title {
+      font-size: 2.2rem;
+  }
+  
+  .card_text {
+      font-size: 1.15rem;
+  }
+
+  .valores_grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  
+  .valor_card {
+      align-items: flex-start;
+      text-align: left;
+      padding: 36px 28px;
+  }
+  
+  .valor_icon {
+      width: 70px;
+      height: 70px;
+  }
+
+  .valor_card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+  }
+  
+  .platform_card {
+      padding: 80px 40px;
+      border-radius: 40px;
+  }
+  
+  .platform_description {
+      font-size: 1.25rem;
+  }
+  
+  .clase-culpable {
+      padding: 0;
+  }
+}
+
+/* ==========================================================================
+   DESKTOP (lg: 1024px+)
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .nosotros_hero {
+      height: 350px;
+  }
+
+  .historia_carousel {
+      border-radius: 30px;
+  }
+
+  .tarjeta_info:hover {
+      transform: translateY(-15px) !important;
+      box-shadow: 0 30px 70px rgba(230, 35, 52, 0.12) !important;
+  }
+
+  @keyframes pulseBackground {
+      0% { box-shadow: 0 20px 40px rgba(255,0,0,0.3); transform: scale(1); }
+      50% { box-shadow: 0 30px 60px rgba(255,0,0,0.4); transform: scale(1.01); }
+      100% { box-shadow: 0 20px 40px rgba(255,0,0,0.3); transform: scale(1); }
+  }
 }
