@@ -239,8 +239,19 @@ export const ServicesAdmin = {
         return res.data;
     },
 
-    responderConsulta: async (id: string | number, mensajeRespuesta: string): Promise<{ success: boolean; message: string }> => {
-        const res = await apiClient.post<{ success: boolean; message: string }>(`/consultas/${id}/responder`, { mensajeRespuesta });
+    responderConsulta: async (id: string | number, mensajeRespuesta: string): Promise<{ success: boolean; message: string; simulado?: boolean }> => {
+        const res = await apiClient.post<{ success: boolean; message: string; simulado?: boolean }>(`/consultas/${id}/responder`, { mensajeRespuesta });
+        return res.data;
+    },
+
+    responderAutomatico: async (id: string | number): Promise<{
+        success: boolean;
+        borrador: string;
+        message: string;
+        simulado?: boolean;
+        destinatario?: string;
+    }> => {
+        const res = await apiClient.post(`/consultas/${id}/responder-automatico`);
         return res.data;
     },
 
