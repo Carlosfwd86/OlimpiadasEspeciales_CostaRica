@@ -1,18 +1,19 @@
 import React from 'react';
 import type { RolType } from '../../types';
+import { FormIcon, type FormIconName } from './FormIcons';
 import "../../styles/Formulario/SelectorRoles.css";
 
 interface RolItem {
   id: RolType;
   nombre: string;
-  icono: string;
+  icono: FormIconName;
 }
 
 const roles: RolItem[] = [
-  { id: 'atleta', nombre: 'Atleta', icono: '🏃‍♂️' },
-  { id: 'entrenador', nombre: 'Entrenador', icono: '📋' },
-  { id: 'tutor', nombre: 'Tutor', icono: '👪' },
-  { id: 'voluntario', nombre: 'Voluntario', icono: '🤝' },
+  { id: 'atleta', nombre: 'Atleta', icono: 'runner' },
+  { id: 'entrenador', nombre: 'Entrenador', icono: 'clipboard-form' },
+  { id: 'tutor', nombre: 'Tutor', icono: 'family' },
+  { id: 'voluntario', nombre: 'Voluntario', icono: 'handshake' },
 ];
 
 interface SelectorDeRolProps {
@@ -31,7 +32,9 @@ const SelectorDeRol: React.FC<SelectorDeRolProps> = ({ alElegir }) => {
             className="botonRol"
             data-role={rol.id}
           >
-            <span className="iconoRol">{rol.icono}</span>
+            <span className="iconoRol">
+              <FormIcon name={rol.icono} size={56} strokeWidth={1.75} />
+            </span>
             <span className="nombreRol">{rol.nombre}</span>
           </button>
         ))}

@@ -148,9 +148,8 @@
 }
 
 .form-entrenador-layout .nav-icon {
-  font-size: 18px;
   width: 24px;
-  text-align: center;
+  flex-shrink: 0;
 }
 
 .form-entrenador-layout .sidebar-footer {

@@ -1,0 +1,73 @@
+.form-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.upload-zone-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  color: #64748b;
+}
+
+.archivo-adjunto-badge {
+  margin-top: 12px;
+  padding: 6px 16px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn-icono-eliminar {
+  color: #ef4444;
+  border: none;
+  background: #fee2e2;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s ease;
+}
+
+.btn-icono-eliminar:hover {
+  background: #fecaca;
+}
+
+.logo-icon .form-icon,
+.registro-icon .form-icon {
+  display: block;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item.active .form-icon {
+  color: inherit;
+}
+
+.iconoRol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  color: #334155;
+  transition: transform 0.3s ease;
+}
+
+.botonRol:hover .iconoRol {
+  transform: scale(1.15);
+}
+
+.botonRol:hover .iconoRol .form-icon {
+  transform: rotate(5deg);
+}
