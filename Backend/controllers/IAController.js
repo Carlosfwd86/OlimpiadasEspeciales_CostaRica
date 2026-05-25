@@ -27,7 +27,9 @@ const IAController = {
 
             return res.status(200).json({ success: true, respuesta });
         } catch (error) {
-            return res.status(400).json({ success: false, error: error.message });
+            console.error('[IAController] obtenerRespuestaIA:', error.message);
+            const status = error.message?.includes('OPENAI') ? 503 : 400;
+            return res.status(status).json({ success: false, error: error.message });
         }
     },
 
@@ -54,7 +56,9 @@ const IAController = {
 
             return res.status(200).json({ success: true, analisis });
         } catch (error) {
-            return res.status(500).json({ success: false, error: error.message });
+            console.error('[IAController] analizarSaludAtleta:', error.message);
+            const status = error.message?.includes('OPENAI') || error.message?.includes('configurada') ? 503 : 500;
+            return res.status(status).json({ success: false, error: error.message });
         }
     },
 

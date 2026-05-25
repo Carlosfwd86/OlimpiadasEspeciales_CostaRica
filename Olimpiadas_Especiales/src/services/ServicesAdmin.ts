@@ -60,6 +60,43 @@ export const ServicesAdmin = {
         return res.data;
     },
 
+    /** Registro público con archivos cifrados (multipart/form-data). */
+    saveRegistroConDocumentos: async (
+        data: Partial<Registro>,
+        archivos: Record<string, File | null>
+    ): Promise<Registro> => {
+        const formData = new FormData();
+        formData.append('datos', JSON.stringify(data));
+        Object.entries(archivos).forEach(([campo, file]) => {
+            if (file) formData.append(campo, file);
+        });
+        const res = await apiClient.post<{ data: Registro }>('/registros-pendientes', formData);
+        return res.data.data ?? (res.data as unknown as Registro);
+    },
+
+    getDocumentosRegistro: async (registroId: string | number) => {
+        const res = await apiClient.get<{ data: Array<{
+            id: number;
+            categoria: string;
+            nombre_original: string;
+            mime_type: string;
+            tamano_bytes: number;
+        }> }>(`/registros-pendientes/${registroId}/documentos`);
+        return res.data.data ?? [];
+    },
+
+    descargarDocumentoRegistro: async (registroId: string | number, docId: number, nombre: string) => {
+        const res = await apiClient.get(`/registros-pendientes/${registroId}/documentos/${docId}/download`, {
+            responseType: 'blob',
+        });
+        const url = window.URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombre;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    },
+
     deleteRegistro: async (id: string): Promise<void> => {
         await apiClient.delete(`/registros-pendientes/${id}`);
     },
@@ -108,11 +145,17 @@ export const ServicesAdmin = {
             status: 'ACTIVO',
             fecha_aprobacion: new Date().toISOString(),
             correo_electronico: registro.email,
-            correoElectronico: registro.email
+            correoElectronico: registro.email,
         };
 
+        if (role === 'atleta' && registro.id) {
+            officialData.registro_pendiente_id = registro.id;
+            officialData.registroPendienteId = registro.id;
+        }
+
         await apiClient.post(`/${endpoint}`, officialData);
-        await apiClient.delete(`/registros-pendientes/${registro.id}`);
+        // Marcar aprobado sin borrar: conserva documentos cifrados (todos los roles).
+        await apiClient.patch(`/registros-pendientes/${registro.id}`, { estado: 'APROBADA' });
 
         return true;
     },

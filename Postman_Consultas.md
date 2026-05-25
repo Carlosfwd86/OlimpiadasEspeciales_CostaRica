@@ -1,58 +1,64 @@
-# 🚀 Documentación de Consultas y Colección de Postman
+# Colección Postman y documentación de la API
 
-Esta guía explica cómo importar y utilizar la colección de Postman configurada para el proyecto **Olimpiadas Especiales Costa Rica**. El archivo de colección se encuentra en la raíz del repositorio con el nombre:
-📂 `Olimpiadas_Especiales_CostaRica.postman_collection.json`
+Guía para probar la API de **Olimpiadas Especiales Costa Rica**.
 
----
+## Archivos disponibles
 
-## 📥 ¿Cómo importar la colección en Postman?
-
-1. Abre **Postman**.
-2. Haz clic en el botón **Import** (esquina superior izquierda).
-3. Selecciona o arrastra el archivo `Olimpiadas_Especiales_CostaRica.postman_collection.json` de la raíz del proyecto.
-4. ¡Listo! La colección aparecerá en tu barra lateral izquierda.
+| Archivo | Descripción |
+|---------|-------------|
+| [API_ENDPOINTS.md](./API_ENDPOINTS.md) | **Documentación completa** de todos los endpoints (español) |
+| [openapi.yaml](./openapi.yaml) | Especificación OpenAPI 3 — importar en **Swagger UI**, Postman o Insomnia |
+| [Olimpiadas_Especiales_CostaRica.postman_collection.json](./Olimpiadas_Especiales_CostaRica.postman_collection.json) | Colección Postman lista para importar |
 
 ---
 
-## ⚙️ Configuración de Variables en Postman
+## Importar en Postman
 
-La colección viene pre-configurada con variables globales:
-- **`base_url`**: Por defecto apunta a `http://localhost:3000`. Si usas otro puerto, puedes modificarla en la pestaña *Variables* de la colección.
-- **`token`**: Se encarga de almacenar tu token de autenticación (JWT). 
+1. Abre **Postman** → **Import**.
+2. Arrastra `Olimpiadas_Especiales_CostaRica.postman_collection.json`.
+3. En la colección, pestaña **Variables**:
+   - `base_url` = `http://localhost:3000`
+   - `token` = (se llena solo al hacer login)
 
-> 💡 **Guardado Automático de Token:** Al realizar una petición exitosa a **Iniciar Sesión (Login)**, un script de Postman guardará automáticamente el JWT retornado en la variable `{{token}}`. No necesitas copiar y pegar el token manualmente para las peticiones protegidas.
+> Todas las rutas usan el prefijo **`/api/v1`**.
+
+---
+
+## Importar en Swagger UI
+
+1. Entra a [Swagger Editor](https://editor.swagger.io/) o levanta Swagger UI localmente.
+2. **File → Import** → selecciona `openapi.yaml`.
+3. El servidor por defecto es `http://localhost:3000/api/v1`.
 
 ---
 
-## 🛣️ Detalle de Endpoints Disponibles
+## Autenticación
 
-La colección se encuentra estructurada en 4 carpetas principales:
+1. Ejecuta **Iniciar sesión** (`POST /api/v1/auth/login`).
+2. El script de la petición guarda el JWT en `{{token}}`.
+3. Las peticiones protegidas usan **Bearer Token** con esa variable.
 
-### 1. Autenticación (`/api/auth`)
-* **Registrar Usuario (`POST /register`):** Permite registrar una nueva cuenta base.
-* **Iniciar Sesión (`POST /login`):** Valida credenciales y genera el token de sesión (lo guarda automáticamente en Postman).
-* **Obtener Usuario Actual (`GET /me`):** Verifica si hay una sesión activa y retorna el payload descifrado del JWT.
-* **Obtener Perfil Completo (`GET /profile`):** Retorna la información extendida del perfil del usuario (requiere autenticación).
-* **Cerrar Sesión (`POST /logout`):** Invalida el token activo.
-
-### 2. Atletas (`/api/atletas`)
-* **Listar todos los Atletas (`GET /`):** Retorna la lista completa de atletas con sus condiciones médicas, alergias, medicamentos, dispositivos y documentos adjuntos.
-* **Búsqueda por Texto (`GET /?buscar=texto`):** Filtra coincidencias parciales de texto en el nombre, primer apellido, segundo apellido o cédula.
-* **Filtros por Campo (`GET /?genero=M&pais=Costa Rica`):** Filtra atletas por valores de igualdad exacta.
-* **Ordenamiento Dinámico (`GET /?ordenarPor=fecha_nacimiento&orden=DESC`):** Ordena la base de datos de atletas dinámicamente por la columna elegida.
-* **Obtener Atleta por ID (`GET /:id`):** Consulta a un atleta específico.
-* **Crear Atleta (`POST /`):** Inserta un atleta nuevo vinculando transaccionalmente alergias, dispositivos y medicamentos (solo administradores).
-* **Actualizar Atleta (`PUT /:id`):** Actualiza campos específicos del atleta.
-* **Eliminar Atleta (`DELETE /:id`):** Remueve físicamente a un atleta y su historial relacionado.
-
-### 3. OCR Certificados - IA (`/api/certificados`)
-* **Analizar Certificado Médico (`POST /analizar`):** 
-  * Envía un archivo de imagen en formato `multipart/form-data` bajo el campo `certificado`.
-  * El backend procesa el archivo con Inteligencia Artificial de Visión (`gpt-4o-mini`) y responde con un JSON estructurado conteniendo el nombre completo y la fecha de vencimiento calculada de manera autónoma.
-
-### 4. Chatbot Inteligente (`/api/chat`)
-* **Enviar Consulta (`POST /`):**
-  * Envía un JSON con un mensaje conversacional (`{ "message": "..." }`) para interactuar con la lógica del asistente de salud y prevención de Olimpiadas Especiales.
+También puedes usar la cookie `token` que devuelve el login en el navegador.
 
 ---
-**Equipo de Desarrollo de Olimpiadas Especiales Costa Rica.**
+
+## Regenerar la colección Postman
+
+Si se agregan rutas nuevas en el backend:
+
+```bash
+node Backend/scripts/generate-postman-collection.js
+```
+
+Esto actualiza `Olimpiadas_Especiales_CostaRica.postman_collection.json` en la raíz del repo.
+
+---
+
+## Requisitos
+
+- Backend en ejecución: `npm run dev` (puerto **3000** por defecto).
+- Base de datos MySQL configurada en `Backend/.env`.
+
+---
+
+*Equipo Olimpiadas Especiales Costa Rica*

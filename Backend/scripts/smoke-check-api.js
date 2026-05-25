@@ -49,8 +49,8 @@ function getCookie(setCookie) {
 
   try {
     const login = await request('POST', '/api/v1/auth/login', {
-      correo_electronico: 'admin@olimpiadas.cr',
-      password: 'Admin1234!',
+      correo_electronico: process.env.SMOKE_ADMIN_EMAIL || 'admin@olimpiadas.cr',
+      password: process.env.SMOKE_ADMIN_PASSWORD || 'Admin1234!',
     });
     const cookie = getCookie(login.headers['set-cookie']);
     const loginOk = login.status === 200 && login.json?.data?.usuario;

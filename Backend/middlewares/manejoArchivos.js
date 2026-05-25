@@ -37,9 +37,35 @@ const subirArchivo = multer({
   fileFilter: filtroArchivos
 });
 
-// Middleware Express que captura un único archivo bajo el campo "certificado".
 const cargarCertificado = subirArchivo.single('certificado');
 
+const cargarDocumentosRegistro = subirArchivo.fields([
+  { name: 'cedula', maxCount: 1 },
+  { name: 'certificado', maxCount: 1 },
+  { name: 'foto', maxCount: 1 },
+  { name: 'identificacion_tutor', maxCount: 1 },
+  { name: 'delincuencia', maxCount: 1 },
+  { name: 'titulo', maxCount: 1 },
+]);
+
+const cargarDocumentoAtleta = subirArchivo.single('archivo');
+
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'El archivo supera el límite de 5 MB.' });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+  if (err) {
+    return res.status(400).json({ error: err.message });
+  }
+  next();
+};
+
 module.exports = {
-  cargarCertificado
+  cargarCertificado,
+  cargarDocumentosRegistro,
+  cargarDocumentoAtleta,
+  handleMulterError,
 };

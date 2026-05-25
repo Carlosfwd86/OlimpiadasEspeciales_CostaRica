@@ -10,7 +10,18 @@ const apiClient = axios.create({
   },
 });
 
-// Interceptor de solicitud para depuración en desarrollo
+// FormData: axios debe fijar el boundary; el default application/json rompe la subida de archivos.
+apiClient.interceptors.request.use((config) => {
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    if (config.headers) {
+      const headers = config.headers as Record<string, unknown>;
+      delete headers['Content-Type'];
+      delete headers['content-type'];
+    }
+  }
+  return config;
+});
+
 if (import.meta.env.DEV) {
   apiClient.interceptors.request.use((config) => {
     console.log(`[apiClient] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);

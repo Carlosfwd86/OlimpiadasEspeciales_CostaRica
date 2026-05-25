@@ -68,8 +68,16 @@ const registrarUsuario = async (req, res) => {
       pais,
       fecha_nacimiento,
       genero,
-      avatar_url
+      avatar_url: null // lo actualizaremos después de crearlo para tener su ID
     });
+
+    if (avatar_url && avatar_url.startsWith('data:image/')) {
+      const s3Service = require('../services/s3Service');
+      const uploadUrl = await s3Service.uploadAvatar(nuevoUsuario.id, avatar_url);
+      await nuevoUsuario.update({ avatar_url: uploadUrl });
+    } else if (avatar_url) {
+      await nuevoUsuario.update({ avatar_url });
+    }
 
     const datosRespuesta = {
       id: nuevoUsuario.id,
@@ -231,7 +239,10 @@ const cerrarSesion = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const usuario = await Usuario.findByPk(req.user.id, {
-      attributes: ['id', 'nombre', 'apellido', 'correo_electronico', 'rol_id', 'avatar_url', 'telefono']
+      attributes: [
+        'id', 'nombre', 'apellido', 'correo_electronico', 'rol_id', 'avatar_url',
+        'telefono', 'cedula', 'fecha_nacimiento', 'genero', 'direccion', 'pais'
+      ]
     });
     if (!usuario) return res.status(404).json(errorResponse('Usuario no encontrado.', 404));
 
@@ -240,9 +251,17 @@ const getProfile = async (req, res) => {
       nombre: usuario.nombre,
       apellido: usuario.apellido,
       correoElectronico: usuario.correo_electronico,
+      correo_electronico: usuario.correo_electronico,
       rol: usuario.rol_id,
+      rol_id: usuario.rol_id,
       fotoPerfil: usuario.avatar_url || null,
-      telefono: usuario.telefono || null
+      telefono: usuario.telefono || null,
+      cedula: usuario.cedula || null,
+      fecha_nacimiento: usuario.fecha_nacimiento || null,
+      fechaNacimiento: usuario.fecha_nacimiento || null,
+      genero: usuario.genero || null,
+      direccion: usuario.direccion || null,
+      pais: usuario.pais || null
     };
 
     return res.status(200).json(successResponse(payload, 'OK'));
@@ -258,7 +277,7 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
   try {
-    const { nombre, correoElectronico, passwordActual, passwordNuevo } = req.body;
+    const { nombre, correoElectronico, passwordActual, passwordNuevo, avatar_url, avatarUrl, fotoPerfil } = req.body;
 
     const usuario = await Usuario.findByPk(req.user.id);
     if (!usuario) return res.status(404).json(errorResponse('Usuario no encontrado.', 404));
@@ -266,6 +285,19 @@ const updateProfile = async (req, res) => {
     const updates = {};
     if (nombre)             updates.nombre = nombre;
     if (correoElectronico)  updates.correo_electronico = correoElectronico;
+
+    const inputAvatar = avatar_url || avatarUrl || fotoPerfil;
+    if (inputAvatar) {
+      if (inputAvatar.startsWith('data:image/')) {
+        const s3Service = require('../services/s3Service');
+        if (usuario.avatar_url) {
+          await s3Service.deleteOldAvatar(usuario.avatar_url);
+        }
+        updates.avatar_url = await s3Service.uploadAvatar(usuario.id, inputAvatar);
+      } else {
+        updates.avatar_url = inputAvatar;
+      }
+    }
 
     // Cambio de contraseña — requiere validar la contraseña actual
     if (passwordNuevo) {
@@ -390,10 +422,47 @@ const restablecerContrasena = async (req, res) => {
   }
 };
 
+/**
+ * @function getMe
+ * @description Devuelve el usuario autenticado con datos de perfil para la sesión activa.
+ */
+const getMe = async (req, res) => {
+  try {
+    const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    if (!token) return res.status(200).json({ usuario: null });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const usuario = await Usuario.findByPk(decoded.id, {
+      attributes: { exclude: ['password_hash', 'reset_password_token', 'reset_password_expires'] }
+    });
+    if (!usuario) return res.status(200).json({ usuario: null });
+
+    return res.status(200).json({
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        cedula: usuario.cedula,
+        correo_electronico: usuario.correo_electronico,
+        telefono: usuario.telefono,
+        direccion: usuario.direccion,
+        pais: usuario.pais,
+        fecha_nacimiento: usuario.fecha_nacimiento,
+        genero: usuario.genero,
+        avatar_url: usuario.avatar_url,
+        rol_id: usuario.rol_id
+      }
+    });
+  } catch {
+    return res.status(200).json({ usuario: null });
+  }
+};
+
 module.exports = {
   registrarUsuario,
   iniciarSesion,
   cerrarSesion,
+  getMe,
   getProfile,
   updateProfile,
   solicitarRecuperacion,

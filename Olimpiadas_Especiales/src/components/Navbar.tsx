@@ -130,61 +130,71 @@ const Navbar = (): React.JSX.Element => {
     { label: 'Contacto', ruta: '/contacto' }
   ];
 
+  const irPerfilOAdmin = () => {
+    user?.rol_id === 1 ? navegar('/admin') : navegar('/perfil');
+    cerrarMenuMovil();
+  };
+
   const renderAccionesAuth = (claseContenedor = 'navbar_acciones', modoDrawer = false) => (
     <div className={claseContenedor}>
       {isAuthenticated && user ? (
-        <>
-          <div className={modoDrawer ? 'navbar_usuario_bloque' : undefined}>
-            {modoDrawer ? (
-              <button
-                type="button"
-                className="saludo_usuario saludo_usuario--drawer"
-                onClick={() => {
-                  user.rol_id === 1 ? navegar('/admin') : navegar('/perfil');
-                  cerrarMenuMovil();
-                }}
-              >
+        modoDrawer ? (
+          <>
+            <div className="navbar_usuario_bloque">
+              <button type="button" className="saludo_usuario saludo_usuario--drawer" onClick={irPerfilOAdmin}>
                 <i className="fa-solid fa-circle-user" />
                 <span>Hola, <strong>{user.nombre ? user.nombre.split(' ')[0] : 'Usuario'}</strong></span>
               </button>
-            ) : (
-              <span
-                className="saludo_usuario"
-                onClick={() => {
-                  user.rol_id === 1 ? navegar('/admin') : navegar('/perfil');
-                  cerrarMenuMovil();
-                }}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
-              >
-                <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }} />
-                Hola, <strong>{user.nombre ? user.nombre.split(' ')[0] : 'Usuario'}</strong>
-              </span>
-            )}
+              {user.rol_id === 1 && (
+                <button
+                  type="button"
+                  className="boton_usuario_compact boton_usuario_compact--admin"
+                  onClick={() => { navegar('/admin'); cerrarMenuMovil(); }}
+                >
+                  <i className="fa-solid fa-gauge-high" aria-hidden />
+                  Panel Admin
+                </button>
+              )}
+              {user.rol_id !== 1 && (
+                <button
+                  type="button"
+                  className="boton_usuario_compact boton_usuario_compact--perfil"
+                  onClick={() => { navegar('/perfil'); cerrarMenuMovil(); }}
+                >
+                  <i className="fa-solid fa-user" aria-hidden />
+                  Mi Perfil
+                </button>
+              )}
+            </div>
+            <button type="button" className="boton_cerrar_sesion boton_cerrar_sesion--drawer" onClick={handleCerrarSesion}>
+              CERRAR SESIÓN
+            </button>
+          </>
+        ) : (
+          <>
+            <span
+              className="saludo_usuario"
+              onClick={irPerfilOAdmin}
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+            >
+              <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }} />
+              Hola, <strong>{user.nombre ? user.nombre.split(' ')[0] : 'Usuario'}</strong>
+            </span>
             {user.rol_id === 1 && (
-              <button
-                type="button"
-                className={modoDrawer ? 'boton_usuario_compact boton_usuario_compact--admin' : 'boton_accion_rojo'}
-                onClick={() => { navegar('/admin'); cerrarMenuMovil(); }}
-                style={modoDrawer ? undefined : { padding: '8px 15px', fontSize: '12px', background: '#1e293b' }}
-              >
-                <i className="fa-solid fa-gauge-high" aria-hidden />
-                Panel Admin
+              <button type="button" className="boton_panel_admin" onClick={() => navegar('/admin')}>
+                PANEL ADMIN
               </button>
             )}
             {user.rol_id !== 1 && (
-              <button
-                type="button"
-                className={modoDrawer ? 'boton_usuario_compact boton_usuario_compact--perfil' : 'boton_accion_rojo'}
-                onClick={() => { navegar('/perfil'); cerrarMenuMovil(); }}
-                style={modoDrawer ? undefined : { padding: '8px 15px', fontSize: '12px' }}
-              >
-                <i className="fa-solid fa-user" aria-hidden />
-                Mi Perfil
+              <button type="button" className="boton_accion_rojo" onClick={() => navegar('/perfil')}>
+                MI PERFIL
               </button>
             )}
-          </div>
-          <button type="button" className="boton_cerrar_sesion" onClick={handleCerrarSesion}>CERRAR SESIÓN</button>
-        </>
+            <button type="button" className="boton_cerrar_sesion" onClick={handleCerrarSesion}>
+              CERRAR SESIÓN
+            </button>
+          </>
+        )
       ) : (
         <button type="button" className="boton_registrate" onClick={() => { navegar('/plataforma-registro'); cerrarMenuMovil(); }}>
           REGÍSTRATE
