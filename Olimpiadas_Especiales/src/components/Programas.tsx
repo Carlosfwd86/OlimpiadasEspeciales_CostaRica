@@ -18,7 +18,7 @@ interface Programa extends ProgramaDisplay {
     deporte?: string;
     resumen?: string;
     descripcion?: string;
-    fecha: string;
+    fecha?: string;
     status?: string;
     [key: string]: unknown;
 }

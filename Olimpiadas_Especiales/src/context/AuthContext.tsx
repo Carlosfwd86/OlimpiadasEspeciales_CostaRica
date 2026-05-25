@@ -19,7 +19,7 @@ interface User {
 }
 
 const normalizarUsuarioSesion = (usuario: Record<string, unknown>): User => ({
-  ...(usuario as User),
+  ...(usuario as unknown as User),
   correoElectronico: (usuario.correo_electronico ?? usuario.correoElectronico) as string | undefined,
   fechaNacimiento: (usuario.fecha_nacimiento ?? usuario.fechaNacimiento) as string | undefined
 });
