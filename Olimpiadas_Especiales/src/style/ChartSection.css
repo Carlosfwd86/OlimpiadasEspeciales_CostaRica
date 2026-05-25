@@ -119,6 +119,13 @@
   border-radius: 99px;
 }
 
+.chart-empty-hint {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+  padding: 12px 0;
+}
+
 .fill-red   { background: linear-gradient(to right, #e60000, #ff4d4d); }
 .fill-blue  { background: linear-gradient(to right, #2563eb, #60a5fa); }
 .fill-green { background: linear-gradient(to right, #16a34a, #4ade80); }

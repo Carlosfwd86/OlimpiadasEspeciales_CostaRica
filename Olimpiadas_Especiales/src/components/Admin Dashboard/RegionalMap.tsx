@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import type { ProvincePath } from "../../types";
 import apiClient from '../../api/apiClient';
+import { buildProvinciaCounts, PROVINCIAS_CR } from '../../utils/adminChartData';
 
 interface RegionalMapProps {
   mini?: boolean;
+  /** Conteos por provincia; si se pasa, no se vuelve a calcular desde la API. */
+  counts?: Record<string, number>;
 }
 
 interface ProvinceData {
@@ -11,74 +14,43 @@ interface ProvinceData {
   count: number;
 }
 
-const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false }) => {
-  const [data, setData] = useState<Record<string, number>>({});
+const emptyCounts = (): Record<string, number> =>
+  Object.fromEntries(PROVINCIAS_CR.map((p) => [p, 0])) as Record<string, number>;
+
+const RegionalMap: React.FC<RegionalMapProps> = ({ mini = false, counts: countsProp }) => {
+  const [data, setData] = useState<Record<string, number>>(emptyCounts());
   const [provincePaths, setProvincePaths] = useState<ProvincePath[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [hoveredProvince, setHoveredProvince] = useState<ProvinceData | null>(null);
-
-  // Datos reales del prompt para demostración si no hay datos en el backend
-  const demoData: Record<string, number> = {
-    "San José": 62,
-    "Alajuela": 45,
-    "Cartago": 31,
-    "Heredia": 28,
-    "Puntarenas": 15,
-    "Guanacaste": 0,
-    "Limón": 0
-  };
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
         setLoading(true);
 
-        // Importar paths precisos
         const { default: mapPaths } = await import('../../data/mapa-cr.json') as { default: ProvincePath[] };
         setProvincePaths(mapPaths);
 
-        // Intentar obtener atletas reales
-        const athletesRes = await apiClient.get('/atletas');
-
-        let counts: Record<string, number> = { ...demoData }; // Empezamos con demo
-        
-        if (athletesRes.data) {
-          const json = athletesRes.data as any;
-          const atletas = Array.isArray(json) ? json : (json.data?.items || json.data || []);
-          
-          if (atletas.length > 0) {
-            // Si hay atletas en el backend, los usamos
-            const realCounts: Record<string, number> = {
-              "San José": 0, "Alajuela": 0, "Cartago": 0, "Heredia": 0, 
-              "Guanacaste": 0, "Puntarenas": 0, "Limón": 0
-            };
-            
-            const provincesList = Object.keys(realCounts);
-            
-            atletas.forEach((a: any) => {
-              const region = a.region || a.programa;
-              if (region && provincesList.includes(region)) {
-                realCounts[region]++;
-              } else if (a.direccion) {
-                const found = provincesList.find(p => a.direccion.toLowerCase().includes(p.toLowerCase()));
-                if (found) realCounts[found]++;
-              }
-            });
-            counts = realCounts;
-          }
+        if (countsProp && Object.keys(countsProp).length > 0) {
+          setData({ ...emptyCounts(), ...countsProp });
+          return;
         }
-        
-        setData(counts);
+
+        const athletesRes = await apiClient.get('/atletas');
+        const json = athletesRes.data as { data?: unknown[] };
+        const atletas = Array.isArray(json?.data) ? json.data : [];
+
+        setData(atletas.length > 0 ? buildProvinciaCounts(atletas as Parameters<typeof buildProvinciaCounts>[0]) : emptyCounts());
       } catch (err) {
         console.error('Error cargando mapa:', err);
-        setData(demoData);
+        setData(emptyCounts());
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [countsProp]);
 
   if (loading) return <div className="loading-map">Cargando mapa interactivo...</div>;
 

@@ -1,14 +1,9 @@
-const Atleta = require('../models/Atleta');
-const AtletaDocumento = require('../models/AtletaDocumento');
-const AtletaMedicamento = require('../models/AtletaMedicamento');
-const AtletaCondicion = require('../models/AtletaCondicion');
-const AtletaDispositivo = require('../models/AtletaDispositivo');
-const AtletaAlergia = require('../models/AtletaAlergia');
+const { sequelize, models } = require('../config/database');
+const { Atleta, Programa, AtletaDocumento, AtletaMedicamento, AtletaCondicion, AtletaDispositivo, AtletaAlergia } = models;
 const { Op } = require('sequelize');
 const { successResponse, errorResponse, getPagination, getPagingData } = require('../utils/apiResponse');
 const { handleDbError } = require('../utils/dbErrors');
 const documentoService = require('../services/documentoService');
-
 
 // [verde] Controlador para gestionar la lógica de negocio de los Atletas
 /**
@@ -39,6 +34,7 @@ const atletaController = {
       const { count, rows: atletas } = await Atleta.findAndCountAll({
         where: whereClause,
         include: [
+          { model: Programa, as: 'programa', attributes: ['id', 'nombre', 'provincia'] },
           { model: AtletaDocumento, as: 'documentos' },
           { model: AtletaMedicamento, as: 'medicamentos' },
           { model: AtletaCondicion, as: 'condiciones' },
