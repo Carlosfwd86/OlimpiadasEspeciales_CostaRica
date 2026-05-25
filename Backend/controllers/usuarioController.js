@@ -103,7 +103,18 @@ const usuarioController = {
       if (data.pais) updates.pais = data.pais;
       if (data.fechaNacimiento || data.fecha_nacimiento) updates.fecha_nacimiento = data.fechaNacimiento || data.fecha_nacimiento;
       if (data.genero) updates.genero = data.genero;
-      if (data.avatarUrl || data.avatar_url) updates.avatar_url = data.avatarUrl || data.avatar_url;
+      if (data.avatarUrl || data.avatar_url) {
+        const inputAvatar = data.avatarUrl || data.avatar_url;
+        if (inputAvatar && inputAvatar.startsWith('data:image/')) {
+          const s3Service = require('../services/s3Service');
+          if (usuario.avatar_url) {
+            await s3Service.deleteOldAvatar(usuario.avatar_url);
+          }
+          updates.avatar_url = await s3Service.uploadAvatar(usuario.id, inputAvatar);
+        } else {
+          updates.avatar_url = inputAvatar;
+        }
+      }
       if (data.rol_id) updates.rol_id = data.rol_id;
       else if (data.rol) {
         const rolMap = { admin: 1, atleta: 2, entrenador: 3, voluntario: 4, tutor: 5 };

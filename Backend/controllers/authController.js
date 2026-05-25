@@ -68,8 +68,16 @@ const registrarUsuario = async (req, res) => {
       pais,
       fecha_nacimiento,
       genero,
-      avatar_url
+      avatar_url: null // lo actualizaremos después de crearlo para tener su ID
     });
+
+    if (avatar_url && avatar_url.startsWith('data:image/')) {
+      const s3Service = require('../services/s3Service');
+      const uploadUrl = await s3Service.uploadAvatar(nuevoUsuario.id, avatar_url);
+      await nuevoUsuario.update({ avatar_url: uploadUrl });
+    } else if (avatar_url) {
+      await nuevoUsuario.update({ avatar_url });
+    }
 
     const datosRespuesta = {
       id: nuevoUsuario.id,
@@ -269,7 +277,7 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
   try {
-    const { nombre, correoElectronico, passwordActual, passwordNuevo } = req.body;
+    const { nombre, correoElectronico, passwordActual, passwordNuevo, avatar_url, avatarUrl, fotoPerfil } = req.body;
 
     const usuario = await Usuario.findByPk(req.user.id);
     if (!usuario) return res.status(404).json(errorResponse('Usuario no encontrado.', 404));
@@ -277,6 +285,19 @@ const updateProfile = async (req, res) => {
     const updates = {};
     if (nombre)             updates.nombre = nombre;
     if (correoElectronico)  updates.correo_electronico = correoElectronico;
+
+    const inputAvatar = avatar_url || avatarUrl || fotoPerfil;
+    if (inputAvatar) {
+      if (inputAvatar.startsWith('data:image/')) {
+        const s3Service = require('../services/s3Service');
+        if (usuario.avatar_url) {
+          await s3Service.deleteOldAvatar(usuario.avatar_url);
+        }
+        updates.avatar_url = await s3Service.uploadAvatar(usuario.id, inputAvatar);
+      } else {
+        updates.avatar_url = inputAvatar;
+      }
+    }
 
     // Cambio de contraseña — requiere validar la contraseña actual
     if (passwordNuevo) {

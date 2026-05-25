@@ -47,6 +47,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'storage/public')));
+
 // Registro manual de rutas
 app.use('/api/v1/auth', require('./routes/authRoutes'));
 app.use('/api/v1/usuarios', require('./routes/usuario.routes'));
