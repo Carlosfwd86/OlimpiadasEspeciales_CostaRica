@@ -210,13 +210,90 @@ async function responderAutomatico(consulta) {
   return { borrador, ...envio };
 }
 
+/** Activo por defecto; solo se desactiva con CONSULTAS_AUTO_RESPONDER=false */
 function autoResponderHabilitado() {
-  return process.env.CONSULTAS_AUTO_RESPONDER === 'true';
+  return process.env.CONSULTAS_AUTO_RESPONDER !== 'false';
+}
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Procesa todas las consultas pendientes (cola). Usado al arrancar el servidor y como respaldo admin.
+ */
+async function procesarColaPendientes() {
+  const { models } = require('../config/database');
+  const { Consulta } = models;
+
+  const pendientes = await Consulta.findAll({
+    where: { leida: false },
+    order: [['fecha', 'ASC']]
+  });
+
+  if (pendientes.length === 0) {
+    return {
+      success: true,
+      total: 0,
+      enviados: 0,
+      fallidos: 0,
+      simulados: 0,
+      message: 'No hay consultas pendientes.'
+    };
+  }
+
+  const delayMs = Math.max(0, parseInt(process.env.CONSULTAS_BATCH_DELAY_MS || '800', 10));
+  let enviados = 0;
+  let fallidos = 0;
+  let simulados = 0;
+  const detalles = [];
+
+  for (let i = 0; i < pendientes.length; i++) {
+    const consulta = pendientes[i];
+    try {
+      await consulta.reload();
+      if (consulta.leida) continue;
+
+      const resultado = await responderAutomatico(consulta);
+      enviados++;
+      if (resultado.simulado) simulados++;
+      detalles.push({
+        id: consulta.id,
+        nombre: consulta.nombre,
+        correo: consulta.correo,
+        ok: true,
+        simulado: !!resultado.simulado,
+        message: resultado.message
+      });
+    } catch (err) {
+      fallidos++;
+      detalles.push({
+        id: consulta.id,
+        nombre: consulta.nombre,
+        correo: consulta.correo,
+        ok: false,
+        error: err.message
+      });
+    }
+
+    if (delayMs > 0 && i < pendientes.length - 1) {
+      await delay(delayMs);
+    }
+  }
+
+  return {
+    success: fallidos === 0,
+    total: pendientes.length,
+    enviados,
+    fallidos,
+    simulados,
+    detalles,
+    message: `Cola automática: ${enviados} enviadas, ${fallidos} con error (de ${pendientes.length}).`
+  };
 }
 
 module.exports = {
   generarBorrador,
   enviarRespuesta,
   responderAutomatico,
-  autoResponderHabilitado
+  autoResponderHabilitado,
+  procesarColaPendientes
 };

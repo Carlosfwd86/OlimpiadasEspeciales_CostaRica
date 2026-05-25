@@ -27,6 +27,9 @@ router.post('/:id/responder-automatico', auth, checkRole([1]), consultaControlle
 // Enviar respuesta masiva a varios correos (Solo Admin)
 router.post('/responder-masivo', auth, checkRole([1]), consultaController.responderMasivo);
 
+// IA + envío a todas las consultas pendientes de una vez (Solo Admin)
+router.post('/responder-pendientes', auth, checkRole([1]), consultaController.responderTodasPendientes);
+
 // Enviar respuesta real por correo directamente (Solo Admin)
 router.post('/:id/responder', auth, checkRole([1]), consultaController.responderConsulta);
 

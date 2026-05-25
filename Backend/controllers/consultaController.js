@@ -35,7 +35,7 @@ exports.getById = async (req, res, next) => {
   }
 };
 
-/** Responde con IA en segundo plano (no bloquea la respuesta al formulario público) */
+/** IA + correo en segundo plano (el usuario del formulario no espera ni ve este proceso) */
 function autoResponderEnBackground(consultaId) {
   setImmediate(async () => {
     try {
@@ -52,7 +52,7 @@ function autoResponderEnBackground(consultaId) {
 
 /**
  * @function create
- * @description Crea consulta y, si CONSULTAS_AUTO_RESPONDER=true, la IA responde y envía el correo sola.
+ * @description Guarda la consulta, responde al usuario al instante; la IA envía el correo en background.
  */
 exports.create = async (req, res, next) => {
   try {
@@ -62,7 +62,10 @@ exports.create = async (req, res, next) => {
       autoResponderEnBackground(data.id);
     }
 
-    return res.status(201).json(successResponse(data, 'Consulta creada'));
+    const payload = typeof data.toJSON === 'function' ? data.toJSON() : data;
+    return res.status(201).json(
+      successResponse(payload, '¡Gracias! Hemos recibido tu consulta.')
+    );
   } catch (error) { 
     return res.status(500).json(errorResponse('Error al crear consulta', 500, error.message));
   }
@@ -126,6 +129,17 @@ exports.responderConsulta = async (req, res, next) => {
   } catch (error) {
     console.error('Error en responderConsulta:', error);
     if (error.statusCode) return res.status(error.statusCode).json({ success: false, error: error.message });
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/** Respaldo manual: procesar cola pendiente (normalmente no hace falta) */
+exports.responderTodasPendientes = async (req, res, next) => {
+  try {
+    const resultado = await consultaIaService.procesarColaPendientes();
+    return res.json(resultado);
+  } catch (error) {
+    console.error('Error en responderTodasPendientes:', error);
     return res.status(500).json({ success: false, error: error.message });
   }
 };

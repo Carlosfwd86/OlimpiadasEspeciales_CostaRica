@@ -89,8 +89,25 @@ const startServer = async () => {
     await sequelize.sync({ alter: false }); 
     logger.info('✅ Modelos sincronizados.');
 
+    const consultaIaService = require('./services/consultaIaService');
+    if (consultaIaService.autoResponderHabilitado()) {
+      setImmediate(async () => {
+        try {
+          const resumen = await consultaIaService.procesarColaPendientes();
+          if (resumen.total > 0) {
+            logger.info(`🤖 [Auto IA] ${resumen.message}`);
+          }
+        } catch (err) {
+          logger.error(`🤖 [Auto IA] Error al procesar cola: ${err.message}`);
+        }
+      });
+    }
+
     app.listen(PORT, () => {
       logger.info(`🚀 Servidor corriendo en el puerto ${PORT}`);
+      if (consultaIaService.autoResponderHabilitado()) {
+        logger.info('🤖 Respuesta automática de consultas: ACTIVA (formulario + cola pendiente)');
+      }
     });
   } catch (error) {
     logger.error('❌ Error al iniciar el servidor:', error);

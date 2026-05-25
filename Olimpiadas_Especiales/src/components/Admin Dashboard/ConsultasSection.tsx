@@ -30,6 +30,50 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
         fetchConsultas();
     }, []);
 
+    const pendientesCount = consultas.filter((c) => !c.leida).length;
+
+    const ejecutarTodasPendientes = () => {
+        if (pendientesCount === 0) {
+            Swal.fire('Sin pendientes', 'No hay consultas por responder.', 'info');
+            return;
+        }
+
+        Swal.fire({
+            title: '¿Responder todas?',
+            html: `Se enviará un correo personalizado con IA a <strong>${pendientesCount}</strong> persona(s) pendiente(s), una tras otra en esta misma acción.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, enviar todas',
+            confirmButtonColor: '#10b981',
+            cancelButtonText: 'Cancelar',
+        }).then((confirm) => {
+            if (!confirm.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Enviando todas...',
+                html: `Procesando <strong>${pendientesCount}</strong> consultas. No cierres esta ventana.`,
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
+
+            ServicesAdmin.responderTodasPendientes()
+                .then((res) => {
+                    const icon = res.fallidos > 0 ? 'warning' : res.simulados > 0 ? 'warning' : 'success';
+                    Swal.fire({
+                        title: 'Proceso terminado',
+                        html: `<p>${res.message}</p>
+                            <p style="font-size:13px;margin-top:8px;">Enviadas: <strong>${res.enviados}</strong> · Errores: <strong>${res.fallidos}</strong>${res.simulados ? ` · Simuladas: <strong>${res.simulados}</strong>` : ''}</p>`,
+                        icon,
+                        confirmButtonColor: '#10b981',
+                    });
+                    fetchConsultas();
+                })
+                .catch((err: { message?: string; error?: string }) => {
+                    Swal.fire('Error', err?.message || err?.error || 'No se pudo procesar el lote.', 'error');
+                });
+        });
+    };
+
     const filteredConsultas = consultas.filter(c => {
         const q = (localSearch || searchQuery).toLowerCase();
         return (
@@ -108,16 +152,9 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                     ${consulta.mensaje}
                 </div>
             `,
-            showCancelButton: true,
-            confirmButtonText: yaRespondida ? 'Cerrar' : '🤖 Responder con IA',
-            confirmButtonColor: yaRespondida ? '#64748b' : '#10b981',
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Cerrar',
+            confirmButtonColor: '#64748b',
             width: '600px'
-        }).then((result) => {
-            if (result.isConfirmed && !yaRespondida) {
-                ejecutarRespuestaAutomatica(consulta);
-            }
         });
     };
 
@@ -154,10 +191,30 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                 <div>
                     <h3 style={{ color: 'var(--admin-text-main)', margin: 0 }}><i className="fa-solid fa-envelope" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Bandeja de Consultas</h3>
                     <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px', margin: 0 }}>
-                        Las consultas nuevas se responden solas con IA si <code>CONSULTAS_AUTO_RESPONDER=true</code>. Un clic en 🤖 reenvía manualmente.
+                        <strong>Modo automático:</strong> al enviar el formulario de contacto, la IA redacta y envía el correo sin que hagas nada. Esta bandeja es solo para revisar.
                     </p>
                 </div>
-                <div style={{ position: 'relative', display: 'flex', gap: '10px' }}>
+                <div style={{ position: 'relative', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    {pendientesCount > 0 && (
+                        <button
+                            type="button"
+                            onClick={ejecutarTodasPendientes}
+                            title="Solo si el automático falló (reinicia el backend primero)"
+                            style={{
+                                padding: '8px 14px',
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0',
+                                background: '#fff',
+                                color: '#64748b',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                            }}
+                        >
+                            Reintentar pendientes ({pendientesCount})
+                        </button>
+                    )}
                     <div style={{ position: 'relative' }}>
                         <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }}></i>
                         <input 
@@ -230,7 +287,7 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                                                     marginRight: '5px',
                                                     cursor: consulta.leida ? 'not-allowed' : 'pointer',
                                                 }}
-                                                title={consulta.leida ? 'Ya respondida' : 'Un clic: IA redacta y envía'}
+                                                title={consulta.leida ? 'Ya respondida automáticamente' : 'Reintentar envío automático (solo si falló)'}
                                             >
                                                 <i className="fa-solid fa-robot"></i>
                                             </button>

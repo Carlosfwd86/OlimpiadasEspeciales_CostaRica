@@ -49,8 +49,7 @@ const Contacto = (): React.JSX.Element => {
     setLoading(true);
     setError('');
 
-    // ── 1. Guardado en DB (siempre se ejecuta) ─────────────────
-    const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+    const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
     try {
       const response = await fetch(`${BACKEND_URL}/consultas`, {
         method: 'POST',
@@ -63,18 +62,22 @@ const Contacto = (): React.JSX.Element => {
         }),
       });
 
+      const responseData = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error del servidor:', errorData);
-        // Extraer el primer error de los detalles si existe
-        const msg = errorData.details?.[0] ? Object.values(errorData.details[0])[0] : (errorData.error || 'Error al procesar la consulta.');
-        setError(msg as string);
+        console.error('Error del servidor:', responseData);
+        const details = responseData.details?.[0];
+        const msg = details
+          ? (Object.values(details)[0] as string)
+          : (responseData.message || responseData.error || 'Error al procesar la consulta.');
+        setError(msg);
         setLoading(false);
-        return; // Detener si falla el guardado en BD
+        return;
       }
+
     } catch (dbErr) {
       console.error('Error al conectar con la BD:', dbErr);
-      setError('No se pudo conectar con el servidor.');
+      setError('No se pudo conectar con el servidor. Verifica que el backend esté activo.');
       setLoading(false);
       return;
     }
@@ -100,11 +103,10 @@ const Contacto = (): React.JSX.Element => {
       }
     }
 
-    // ── 3. Feedback al usuario ─────────────────────────────────
     setForm(initialForm);
     setSuccess(true);
     setLoading(false);
-    setTimeout(() => setSuccess(false), 5000);
+    setTimeout(() => setSuccess(false), 6000);
   };
 
   return (
@@ -203,7 +205,7 @@ const Contacto = (): React.JSX.Element => {
 
           {success && (
             <div className="alerta_exito" role="alert">
-              ✅ ¡Consulta enviada con éxito!
+              ¡Consulta enviada con éxito! Nos pondremos en contacto contigo pronto.
             </div>
           )}
           {error && (
