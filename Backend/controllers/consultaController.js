@@ -1,8 +1,7 @@
 const { models } = require('../config/database');
 const { Consulta } = models;
-const { OpenAI } = require('openai');
-const { Resend } = require('resend');
 const { successResponse, errorResponse } = require('../utils/apiResponse');
+const consultaIaService = require('../services/consultaIaService');
 
 /**
  * @module consultaController
@@ -36,13 +35,33 @@ exports.getById = async (req, res, next) => {
   }
 };
 
+/** Responde con IA en segundo plano (no bloquea la respuesta al formulario público) */
+function autoResponderEnBackground(consultaId) {
+  setImmediate(async () => {
+    try {
+      const consulta = await Consulta.findByPk(consultaId);
+      if (!consulta || consulta.leida) return;
+      const resultado = await consultaIaService.responderAutomatico(consulta);
+      const modo = resultado.simulado ? 'simulado' : 'enviado';
+      console.log(`[Auto IA] Consulta #${consultaId} → ${resultado.destinatario} (${modo})`);
+    } catch (err) {
+      console.error(`[Auto IA] Consulta #${consultaId}:`, err.message);
+    }
+  });
+}
+
 /**
  * @function create
- * @description Crea un nuevo registro de consulta en la base de datos a partir del cuerpo de la petición.
+ * @description Crea consulta y, si CONSULTAS_AUTO_RESPONDER=true, la IA responde y envía el correo sola.
  */
 exports.create = async (req, res, next) => {
   try {
     const data = await Consulta.create(req.body);
+
+    if (consultaIaService.autoResponderHabilitado()) {
+      autoResponderEnBackground(data.id);
+    }
+
     return res.status(201).json(successResponse(data, 'Consulta creada'));
   } catch (error) { 
     return res.status(500).json(errorResponse('Error al crear consulta', 500, error.message));
@@ -88,48 +107,13 @@ exports.sugerirRespuesta = async (req, res, next) => {
     const consulta = await Consulta.findByPk(req.params.id);
     if (!consulta) return res.status(404).json({ message: 'Consulta no encontrada' });
 
-    const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
-    if (!openai) return res.status(503).json({ message: 'Servicio de IA no configurado.' });
-
-    const mensajeConsulta = consulta.mensaje || consulta.message || consulta.contenido || JSON.stringify(consulta);
-    const nombreRemitente = consulta.nombre || consulta.name || 'visitante';
-
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: `Eres el asistente de comunicaciones oficial de Olimpiadas Especiales Costa Rica. 
-Redactas respuestas institucionales profesionales, cálidas e inclusivas en español. 
-Las respuestas deben:
-- Comenzar con un saludo personalizado (ejemplo: "Estimada Nasling," o "Estimado Juan,")
-- Abordar directamente la consulta del ciudadano
-- Mencionar los programas o canales de contacto relevantes del sitio web cuando aplique
-- Cerrar con una invitación a seguir en contacto
-- Usar el tono institucional de una ONG dedicada a personas con discapacidad intelectual
-- NUNCA utilices corchetes ni marcadores de posición como "[Tu Nombre]", "[Tu Nombre / Firma]", "[Tu Cargo]" o "[Firma]".
-- Firma el correo de forma fija al final exactamente con la siguiente firma terminada:
-
-Atentamente,
-Equipo de Olimpiadas Especiales Costa Rica
-
-- Longitud máxima: 150 palabras`
-        },
-        {
-          role: 'user',
-          content: `Redacta una respuesta de correo electrónico para esta consulta recibida de "${nombreRemitente}":\n\n${mensajeConsulta}`
-        }
-      ],
-      temperature: 0.6,
-      max_tokens: 400
-    });
-
-    const borrador = response.choices[0].message.content;
+    const borrador = await consultaIaService.generarBorrador(consulta);
     res.json({ borrador });
-  } catch (error) { next(error); }
+  } catch (error) {
+    if (error.statusCode) return res.status(error.statusCode).json({ message: error.message });
+    next(error);
+  }
 };
-
-const nodemailer = require('nodemailer');
 
 exports.responderConsulta = async (req, res, next) => {
   try {
@@ -137,102 +121,31 @@ exports.responderConsulta = async (req, res, next) => {
     if (!consulta) return res.status(404).json({ message: 'Consulta no encontrada' });
 
     const { mensajeRespuesta } = req.body;
-    if (!mensajeRespuesta) return res.status(400).json({ message: 'El mensaje de respuesta es requerido.' });
-
-    const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT || 587;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-
-    const oauthUser = process.env.OAUTH_USER;
-    const oauthClientId = process.env.OAUTH_CLIENT_ID;
-    const oauthClientSecret = process.env.OAUTH_CLIENT_SECRET;
-    const oauthRefreshToken = process.env.OAUTH_REFRESH_TOKEN;
-
-    const emailDestinatario = consulta.correo || consulta.email;
-
-    const resendApiKey = process.env.RESEND_API_KEY;
-    const resendSender = process.env.RESEND_SENDER || 'onboarding@resend.dev';
-
-    if (resendApiKey) {
-      const resend = new Resend(resendApiKey);
-      const response = await resend.emails.send({
-        from: `Olimpiadas Especiales <${resendSender}>`,
-        to: emailDestinatario,
-        subject: `RE: ${consulta.asunto || 'Consulta'}`,
-        text: mensajeRespuesta
-      });
-
-      if (response.error) {
-        console.error("Error retornado por Resend API:", response.error);
-        let errorMsg = response.error.message || JSON.stringify(response.error);
-        if (resendSender === 'onboarding@resend.dev') {
-          errorMsg += "\n\n💡 Tip de Pruebas: Al usar el remitente gratuito 'onboarding@resend.dev' de Resend, solo puedes enviar correos a la misma cuenta con la que te registraste en Resend. Si quieres probar el envío real, asegúrate de que el correo del ciudadano al que respondes sea tu misma cuenta de registro de Resend.";
-        }
-        return res.status(400).json({ success: false, error: errorMsg });
-      }
-
-      await consulta.update({ leida: true });
-
-      return res.json({ success: true, message: `Respuesta enviada con éxito vía Resend a ${emailDestinatario}` });
-    } else if (oauthUser && oauthClientId && oauthClientSecret && oauthRefreshToken) {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          type: 'OAuth2',
-          user: oauthUser,
-          clientId: oauthClientId,
-          clientSecret: oauthClientSecret,
-          refreshToken: oauthRefreshToken
-        }
-      });
-
-      await transporter.sendMail({
-        from: `"Olimpiadas Especiales Costa Rica" <${oauthUser}>`,
-        to: emailDestinatario,
-        subject: `RE: ${consulta.asunto || 'Consulta'}`,
-        text: mensajeRespuesta
-      });
-
-      await consulta.update({ leida: true });
-
-      return res.json({ success: true, message: `Respuesta enviada con éxito vía OAuth2 a ${emailDestinatario}` });
-    } else if (user && pass && host) {
-      const transporter = nodemailer.createTransport({
-        host,
-        port,
-        secure: port == 465,
-        auth: { user, pass }
-      });
-
-      await transporter.sendMail({
-        from: `"Olimpiadas Especiales Costa Rica" <${user}>`,
-        to: emailDestinatario,
-        subject: `RE: ${consulta.asunto || 'Consulta'}`,
-        text: mensajeRespuesta
-      });
-
-      await consulta.update({ leida: true });
-
-      return res.json({ success: true, message: `Respuesta enviada con éxito a ${emailDestinatario}` });
-    } else {
-      console.log(`[SMTP SIMULATOR] Enviando correo a: ${emailDestinatario}`);
-      console.log(`[SMTP SIMULATOR] Asunto: RE: ${consulta.asunto || 'Consulta'}`);
-      console.log(`[SMTP SIMULATOR] Mensaje:\n${mensajeRespuesta}`);
-
-      await consulta.update({ leida: true });
-
-      return res.json({ 
-        success: true, 
-        simulado: true,
-        message: `Respuesta enviada (Simulado) a ${emailDestinatario}` 
-      });
-    }
+    const resultado = await consultaIaService.enviarRespuesta(consulta, mensajeRespuesta);
+    return res.json(resultado);
   } catch (error) {
-    console.error("Error en responderConsulta:", error);
+    console.error('Error en responderConsulta:', error);
+    if (error.statusCode) return res.status(error.statusCode).json({ success: false, error: error.message });
     return res.status(500).json({ success: false, error: error.message });
   }
 };
+
+/** IA genera borrador y envía correo al remitente en un solo paso */
+exports.responderAutomatico = async (req, res, next) => {
+  try {
+    const consulta = await Consulta.findByPk(req.params.id);
+    if (!consulta) return res.status(404).json({ message: 'Consulta no encontrada' });
+
+    const resultado = await consultaIaService.responderAutomatico(consulta);
+    return res.json(resultado);
+  } catch (error) {
+    console.error('Error en responderAutomatico:', error);
+    if (error.statusCode) return res.status(error.statusCode).json({ success: false, error: error.message });
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const nodemailer = require('nodemailer');
 
 exports.responderMasivo = async (req, res, next) => {
   try {
@@ -248,7 +161,7 @@ exports.responderMasivo = async (req, res, next) => {
     const host = process.env.SMTP_HOST || 'smtp.gmail.com';
     const port = process.env.SMTP_PORT || 465;
     const user = process.env.SMTP_USER; 
-    const pass = process.env.SMTP_PASS;
+    const pass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
 
     if (!user || !pass) {
        return res.status(500).json({ success: false, message: 'Credenciales de correo (SMTP_USER / SMTP_PASS) no configuradas en el backend (.env).' });

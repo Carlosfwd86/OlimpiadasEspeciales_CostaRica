@@ -152,7 +152,7 @@ const atletaController = {
           if (med.nombre) {
             await AtletaMedicamento.create({
               atleta_id: nuevoAtleta.id,
-              medicamento: med.nombre,
+              nombre: med.nombre || med.medicamento || 'Sin nombre',
               dosis: med.dosis || '',
               frecuencia: med.frecuencia || ''
             }, { transaction: t });

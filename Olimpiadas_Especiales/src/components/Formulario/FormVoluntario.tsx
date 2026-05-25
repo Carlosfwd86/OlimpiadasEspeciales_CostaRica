@@ -3,6 +3,8 @@ import Swal from 'sweetalert2';
 import emailjs from '@emailjs/browser';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
+import DatePickerInput from '../DatePickerInput';
+import { mensajeValidacionFechaAdulto } from '../../utils/edad';
 import '../../styles/Formulario/FormVoluntario.css';
 import type { ConfigItem } from '../../types';
 
@@ -16,6 +18,7 @@ function FormVoluntario({ onVolver }: FormVoluntarioProps): React.JSX.Element {
   const [paso, setPaso] = useState<number>(1);
   const [datos, setDatos] = useState<DatosVoluntario>({ nombre: '', cedula: '', fechaNacimiento: '', genero: '', telefono: '', correoElectronico: '', direccion: '', pais: '', areasInteres: [], otraArea: '', disponibilidad: '', experienciaPrevia: '' });
   const [errores, setErrores] = useState<Record<string, boolean>>({});
+  const [errorFechaNacimiento, setErrorFechaNacimiento] = useState<string>('');
   const [archivos, setArchivos] = useState<ArchivosVoluntario>({ cedula: null, delincuencia: null, foto: null });
   const [areasCatalogo, setAreasCatalogo] = useState<ConfigItem[]>([]);
 
@@ -34,6 +37,14 @@ function FormVoluntario({ onVolver }: FormVoluntarioProps): React.JSX.Element {
     if (errores[id]) setErrores(prev => ({ ...prev, [id]: false }));
   };
 
+  const manejarCambioFecha = (e: { target: { name: string; value: string } }): void => {
+    const { name, value } = e.target;
+    setDatos(prev => ({ ...prev, [name]: value }));
+    const msg = mensajeValidacionFechaAdulto(value, 'voluntario');
+    setErrorFechaNacimiento(msg || '');
+    setErrores(prev => ({ ...prev, fechaNacimiento: !!msg }));
+  };
+
   const validarYGuardarArchivo = (file: File | null, campo: keyof ArchivosVoluntario): void => {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { Swal.fire({ icon: 'error', title: 'Archivo Muy Grande', text: 'El archivo no debe superar los 5MB.', confirmButtonColor: '#E00000' }); return; }
@@ -46,6 +57,18 @@ function FormVoluntario({ onVolver }: FormVoluntarioProps): React.JSX.Element {
     if (paso === 1) {
       ['nombre', 'cedula', 'fechaNacimiento', 'telefono', 'correoElectronico', 'direccion'].forEach(f => { if (!datos[f]?.toString().trim()) { nuevosErrores[f] = true; falte = true; } });
       if (datos.correoElectronico && !/\S+@\S+\.\S+/.test(datos.correoElectronico)) { Swal.fire({ icon: 'error', title: 'Correo Inválido', text: 'Ingrese un correo válido.', confirmButtonColor: '#E00000' }); return false; }
+      const msgFecha = mensajeValidacionFechaAdulto(datos.fechaNacimiento, 'voluntario');
+      if (msgFecha) {
+        setErrorFechaNacimiento(msgFecha);
+        setErrores(prev => ({ ...prev, fechaNacimiento: true }));
+        Swal.fire({
+          icon: 'error',
+          title: 'Edad no permitida',
+          text: msgFecha,
+          confirmButtonColor: '#E00000',
+        });
+        return false;
+      }
     }
     if (paso === 2 && datos.areasInteres.length === 0 && !datos.otraArea.trim()) { Swal.fire({ icon: 'error', title: 'Selección Requerida', text: 'Seleccione al menos un área de interés.', confirmButtonColor: '#E00000' }); return false; }
     if (paso === 3 && !datos.disponibilidad.trim()) { Swal.fire({ icon: 'error', title: 'Falta Disponibilidad', text: 'Indique su disponibilidad de tiempo.', confirmButtonColor: '#E00000' }); return false; }
@@ -58,6 +81,19 @@ function FormVoluntario({ onVolver }: FormVoluntarioProps): React.JSX.Element {
   const manejarAnterior = (): void => { if (paso === 1) onVolver(); else setPaso(paso - 1); };
 
   const finalizarInscripcion = (): void => {
+    const msgFecha = mensajeValidacionFechaAdulto(datos.fechaNacimiento, 'voluntario');
+    if (msgFecha) {
+      setErrorFechaNacimiento(msgFecha);
+      setErrores(prev => ({ ...prev, fechaNacimiento: true }));
+      setPaso(1);
+      Swal.fire({
+        icon: 'error',
+        title: 'Edad no permitida',
+        text: msgFecha,
+        confirmButtonColor: '#E00000',
+      });
+      return;
+    }
     Swal.fire({ title: '¿Finalizar Inscripción de Voluntario?', icon: 'question', showCancelButton: true, confirmButtonText: 'Enviar Registro', confirmButtonColor: '#E00000' }).then(async (res) => {
       if (res.isConfirmed) {
         Swal.fire({ title: 'Guardando registro...', didOpen: () => Swal.showLoading() });
@@ -97,7 +133,21 @@ function FormVoluntario({ onVolver }: FormVoluntarioProps): React.JSX.Element {
             {paso === 1 && (<div className="form-grid-ref">
               <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
               <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} /></div>
-              <div className="input-container"><label>Fecha de Nacimiento *</label><input type="date" id='fechaNacimiento' className={`input-field ${errores.fechaNacimiento ? 'error' : ''}`} value={datos.fechaNacimiento} onChange={manejarCambio} /></div>
+              <div className="input-container">
+                <label>Fecha de Nacimiento *</label>
+                <DatePickerInput
+                  id="fechaNacimiento"
+                  name="fechaNacimiento"
+                  value={datos.fechaNacimiento}
+                  onChange={manejarCambioFecha}
+                  hasError={!!errores.fechaNacimiento}
+                />
+                {errorFechaNacimiento && (
+                  <p style={{ color: '#E00000', fontSize: '13px', marginTop: '6px', fontWeight: 600 }}>
+                    {errorFechaNacimiento}
+                  </p>
+                )}
+              </div>
               <div className="input-container"><label>Género</label><select id="genero" className="input-field" value={datos.genero} onChange={manejarCambio}><option value="">Seleccione...</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option></select></div>
               <div className="input-container"><label>Teléfono *</label><input type="text" id='telefono' className={`input-field ${errores.telefono ? 'error' : ''}`} value={datos.telefono} onChange={manejarCambio} /></div>
               <div className="input-container"><label>País</label><input type="text" id='pais' className="input-field" value={datos.pais} onChange={manejarCambio} /></div>

@@ -4,6 +4,7 @@ import emailjs from '@emailjs/browser';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
 import DatePickerInput from '../DatePickerInput';
+import { mensajeValidacionFechaAdulto } from '../../utils/edad';
 import '../../styles/Formulario/FormEntrenador.css';
 import type { ConfigItem } from '../../types';
 
@@ -38,6 +39,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
     horarioDisponible: '', afeccionSalud: 'No', detalleSalud: '',
   });
   const [errores, setErrores] = useState<Record<string, boolean>>({});
+  const [errorFechaNacimiento, setErrorFechaNacimiento] = useState<string>('');
   const [archivos, setArchivos] = useState<Archivos>({ cedula: null, titulo: null, foto: null });
   const [disciplinas, setDisciplinas] = useState<ConfigItem[]>([]);
 
@@ -67,6 +69,14 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
     const { id, value } = e.target;
     setDatos(prev => ({ ...prev, [id]: value }));
     if (errores[id]) setErrores(prev => ({ ...prev, [id]: false }));
+  };
+
+  const manejarCambioFecha = (e: { target: { name: string; value: string; id?: string } }): void => {
+    const { name, value } = e.target;
+    setDatos(prev => ({ ...prev, [name]: value }));
+    const msg = mensajeValidacionFechaAdulto(value, 'entrenador');
+    setErrorFechaNacimiento(msg || '');
+    setErrores(prev => ({ ...prev, fechaNacimiento: !!msg }));
   };
 
   const ManejarManual = (id: string, val: string): void => {
@@ -100,6 +110,18 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
         Swal.fire({ icon: 'error', title: 'Correo Inválido', text: 'Ingrese un correo válido.', confirmButtonColor: '#E00000' });
         return false;
       }
+      const msgFecha = mensajeValidacionFechaAdulto(datos.fechaNacimiento, 'entrenador');
+      if (msgFecha) {
+        setErrorFechaNacimiento(msgFecha);
+        setErrores(prev => ({ ...prev, fechaNacimiento: true }));
+        Swal.fire({
+          icon: 'error',
+          title: 'Edad no permitida',
+          text: msgFecha,
+          confirmButtonColor: '#E00000',
+        });
+        return false;
+      }
     }
     if (paso === 2 && (!datos.aniosExperiencia || !datos.disciplinaPrincipal)) {
       Swal.fire({ icon: 'error', title: 'Paso 2 Incompleto', text: 'Por favor complete experiencia y disciplina.', confirmButtonColor: '#E00000' });
@@ -125,6 +147,19 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
   const manejarAnterior = (): void => { if (paso === 1) onVolver(); else setPaso(paso - 1); };
 
   const finalizarInscripcion = (): void => {
+    const msgFecha = mensajeValidacionFechaAdulto(datos.fechaNacimiento, 'entrenador');
+    if (msgFecha) {
+      setErrorFechaNacimiento(msgFecha);
+      setErrores(prev => ({ ...prev, fechaNacimiento: true }));
+      setPaso(1);
+      Swal.fire({
+        icon: 'error',
+        title: 'Edad no permitida',
+        text: msgFecha,
+        confirmButtonColor: '#E00000',
+      });
+      return;
+    }
     Swal.fire({ title: '¿Finalizar Registro?', text: 'Se enviará su solicitud de entrenador para revisión.', icon: 'question', showCancelButton: true, confirmButtonText: 'Sí, Enviar', confirmButtonColor: '#E00000' }).then(async (res) => {
       if (res.isConfirmed) {
         Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
@@ -206,7 +241,21 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
               <div className="form-grid-ref">
                 <div className="input-container"><label>Nombre Completo *</label><input type="text" id='nombre' className={`input-field ${errores.nombre ? 'error' : ''}`} value={datos.nombre} onChange={manejarCambio} /></div>
                 <div className="input-container"><label>Cédula *</label><input type="text" id='cedula' className={`input-field ${errores.cedula ? 'error' : ''}`} value={datos.cedula} onChange={manejarCambio} /></div>
-                <div className="input-container"><label>Fecha de Nacimiento *</label><DatePickerInput id='fechaNacimiento' name='fechaNacimiento' value={datos.fechaNacimiento} onChange={manejarCambio as any} hasError={!!errores.fechaNacimiento} /></div>
+                <div className="input-container">
+                  <label>Fecha de Nacimiento *</label>
+                  <DatePickerInput
+                    id="fechaNacimiento"
+                    name="fechaNacimiento"
+                    value={datos.fechaNacimiento}
+                    onChange={manejarCambioFecha}
+                    hasError={!!errores.fechaNacimiento}
+                  />
+                  {errorFechaNacimiento && (
+                    <p style={{ color: '#E00000', fontSize: '13px', marginTop: '6px', fontWeight: 600 }}>
+                      {errorFechaNacimiento}
+                    </p>
+                  )}
+                </div>
                 <div className="input-container"><label>Género *</label>
                   <select id="genero" className={`input-field ${errores.genero ? 'error' : ''}`} value={datos.genero} onChange={manejarCambio}>
                     <option value="">Seleccione...</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option>

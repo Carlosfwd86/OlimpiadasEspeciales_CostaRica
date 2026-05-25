@@ -1,17 +1,4 @@
-const { OpenAI } = require('openai');
-
-let openai = null;
-try {
-  if (process.env.OPENAI_API_KEY) {
-    openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-  } else {
-    console.warn('[chatController] Advertencia: OPENAI_API_KEY no definida. El chat no funcionará.');
-  }
-} catch (error) {
-  console.error('[chatController] Error al inicializar OpenAI:', error.message);
-}
+const { getOpenAIClient, isOpenAIConfigured } = require('../config/openai');
 
 const systemPrompt = `
 Eres el asistente virtual experto de Olimpiadas Especiales Costa Rica. Tu objetivo es ayudar a los visitantes del sitio web de manera amable, inclusiva y profesional.
@@ -22,9 +9,9 @@ Tus responsabilidades principales incluyen:
 3. **Navegación**: Dirigir al usuario a secciones clave: /atletas, /voluntarios, /eventos, /contacto.
 4. **Misión**: Promover la inclusión y el empoderamiento de personas con discapacidad intelectual a través del deporte.
 5. **Analista de Salud y Prevención**: Si se te proporcionan datos médicos o condiciones de un atleta, actúa como un experto en prevención para entrenadores. Clasifica la información en:
-   - ⚠️ Riesgos Inmediatos (Alergias severas o condiciones críticas).
-   - 💊 Protocolo de Medicación (Vigilancia necesaria).
-   - 📋 Recomendaciones de Actividad (Qué evitar o priorizar).
+   - Riesgos Inmediatos (Alergias severas o condiciones críticas).
+   - Protocolo de Medicación (Vigilancia necesaria).
+   - Recomendaciones de Actividad (Qué evitar o priorizar).
 
 Reglas de respuesta:
 - Responde siempre en español.
@@ -33,15 +20,6 @@ Reglas de respuesta:
 - Usa un lenguaje inclusivo y respetuoso.
 `;
 
-/**
- * @module chatController
- * @description Controlador para gestionar las interacciones con el chatbot impulsado por OpenAI.
- */
-
-/**
- * @function processChat
- * @description Procesa los mensajes recibidos del frontend, los envía a la API de OpenAI y devuelve la respuesta del asistente virtual.
- */
 const processChat = async (req, res) => {
   const { messages } = req.body;
 
@@ -49,28 +27,43 @@ const processChat = async (req, res) => {
     return res.status(400).json({ error: 'Historial de mensajes no proporcionado o inválido.' });
   }
 
+  if (!isOpenAIConfigured()) {
+    console.warn('[chatController] OPENAI_API_KEY no definida en .env');
+    return res.status(503).json({ error: 'El servicio de IA no está configurado (falta OPENAI_API_KEY).' });
+  }
+
+  const openai = getOpenAIClient();
+  if (!openai) {
+    return res.status(503).json({ error: 'No se pudo inicializar el cliente de OpenAI.' });
+  }
+
   try {
-    if (!openai) {
-      return res.status(503).json({ error: 'El servicio de IA no está configurado actualmente.' });
-    }
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages
       ],
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 500
     });
 
-    const assistantMessage = response.choices[0].message.content;
+    const assistantMessage = response.choices[0]?.message?.content;
+    if (!assistantMessage) {
+      return res.status(502).json({ error: 'La IA no devolvió una respuesta válida.' });
+    }
+
     res.json({ message: assistantMessage });
   } catch (error) {
-    console.error('Error en OpenAI:', error);
-    res.status(500).json({ error: 'Hubo un problema al procesar tu solicitud con la IA.' });
+    console.error('[chatController] Error en OpenAI:', error.status, error.code, error.message);
+    const detalle = process.env.NODE_ENV === 'development' ? error.message : undefined;
+    res.status(500).json({
+      error: 'Hubo un problema al procesar tu solicitud con la IA.',
+      ...(detalle && { detalle })
+    });
   }
 };
 
 module.exports = {
-  processChat,
+  processChat
 };

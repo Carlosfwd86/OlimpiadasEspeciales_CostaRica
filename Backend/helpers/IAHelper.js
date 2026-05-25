@@ -28,12 +28,26 @@ const IAHelper = {
     validarDatosSalud: (atleta, condiciones, medicamentos, alergias = []) => {
         if (!atleta) throw new Error('Información del atleta no encontrada.');
         
+        const nombreCompleto = [atleta.nombre, atleta.primer_apellido, atleta.segundo_apellido]
+            .filter(Boolean)
+            .join(' ')
+            .trim();
+
         return {
-            nombre: `${atleta.nombre} ${atleta.primer_apellido}`,
+            nombre: nombreCompleto || 'Atleta',
             condiciones: condiciones.map(c => c.condicion).join(', ') || 'Ninguna registrada',
-            // Corregido: el campo en AtletaMedicamento es 'medicamento', no 'nombre'
-            medicamentos: medicamentos.map(m => `${m.medicamento} (${m.dosis || 'dosis no especificada'}, ${m.frecuencia || 'frecuencia no especificada'})`).join(', ') || 'Ninguno registrado',
-            alergias: alergias.map(a => a.alergia).join(', ') || 'Ninguna registrada'
+            medicamentos: medicamentos
+                .map(m => {
+                    const nombreMed = m.nombre || m.medicamento || 'Medicamento';
+                    return `${nombreMed} (${m.dosis || 'dosis no especificada'}, ${m.frecuencia || 'frecuencia no especificada'})`;
+                })
+                .join(', ') || 'Ninguno registrado',
+            alergias: alergias
+                .map(a => {
+                    const base = a.tipo_alergia || a.alergia || 'Alergia';
+                    return a.especificacion ? `${base}: ${a.especificacion}` : base;
+                })
+                .join(', ') || 'Ninguna registrada'
         };
     }
 };

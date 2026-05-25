@@ -214,6 +214,47 @@
   font-weight: 800;
 }
 
+/* Panel admin — tamaño original en escritorio */
+.boton_panel_admin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 2px solid #1e293b;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.boton_panel_admin:hover {
+  background-color: #334155;
+  border-color: #334155;
+  transform: translateY(-1px);
+}
+
+/* Escritorio: asegurar tamaños originales (no afectados por estilos del drawer) */
+@media (min-width: 769px) {
+  .navbar_acciones:not(.navbar_acciones--drawer) .boton_accion_rojo,
+  .navbar_acciones:not(.navbar_acciones--drawer) .boton_panel_admin,
+  .navbar_acciones:not(.navbar_acciones--drawer) .boton_cerrar_sesion {
+    width: auto;
+    max-width: none;
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    border-radius: 50px;
+  }
+
+  .navbar_acciones:not(.navbar_acciones--drawer) .saludo_usuario {
+    font-size: 0.82rem;
+  }
+}
+
 /* --- RESPONSIVIDAD --- */
 @media (max-width: 1100px) {
   .lista_navegacion {
@@ -537,7 +578,7 @@
 }
 
 .navbar_acciones--drawer .boton_registrate,
-.navbar_acciones--drawer .boton_cerrar_sesion {
+.navbar_acciones--drawer .boton_cerrar_sesion--drawer {
   width: 100%;
   max-width: 100%;
   padding: 11px 16px;
@@ -549,11 +590,11 @@
   box-sizing: border-box;
 }
 
-.navbar_acciones--drawer .boton_cerrar_sesion {
+.navbar_acciones--drawer .boton_cerrar_sesion--drawer {
   margin-top: 2px;
 }
 
-.navbar_acciones--drawer .boton_cerrar_sesion:hover {
+.navbar_acciones--drawer .boton_cerrar_sesion--drawer:hover {
   transform: none;
   box-shadow: 0 4px 12px rgba(192, 0, 0, 0.2);
 }
