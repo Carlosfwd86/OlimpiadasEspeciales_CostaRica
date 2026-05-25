@@ -5,6 +5,7 @@ interface User {
   id: number;
   nombre: string;
   rol_id: number;
+  avatar_url?: string;
 }
 
 interface AuthContextType {
