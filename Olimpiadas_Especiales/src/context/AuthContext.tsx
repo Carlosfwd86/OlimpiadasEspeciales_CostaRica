@@ -6,6 +6,7 @@ interface User {
   nombre: string;
   apellido?: string;
   rol_id: number;
+  avatar_url?: string;
   cedula?: string;
   correo_electronico?: string;
   correoElectronico?: string;
