@@ -18,21 +18,21 @@ interface Programa extends ProgramaDisplay {
 
 const programasMockCarousel: Programa[] = [
     {
-        id: 1,
+        id: '1',
         nombre: 'Atletismo Adaptado Costa Rica',
         resumen: 'Entrenamiento en pista y campo para atletas con discapacidad intelectual a nivel nacional.',
         categoria: 'Atletismo',
         img: '/img/Hero_contenedor_01.jpeg',
     },
     {
-        id: 2,
+        id: '2',
         nombre: 'Natación para Campeones',
         resumen: 'Programa acuático integral con metodología inclusiva en piscinas olímpicas.',
         categoria: 'Natación',
         img: '/img/Hero_contenedor_02.jpeg',
     },
     {
-        id: 3,
+        id: '3',
         nombre: 'Baloncesto Unificado',
         resumen: 'Equipos mixtos donde atletas con y sin discapacidad juegan juntos por la inclusión.',
         categoria: 'Baloncesto',

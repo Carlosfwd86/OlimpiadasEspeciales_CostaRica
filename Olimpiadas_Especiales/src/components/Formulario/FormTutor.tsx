@@ -5,6 +5,7 @@ import { ServicesAdmin } from '../../services/ServicesAdmin';
 import { getConfig } from '../../services/ServicesConfig';
 import '../../styles/Formulario/FormTutor.css';
 import type { ConfigItem } from '../../types';
+import { ArchivoAdjuntoBadge, FormIcon, type FormIconName } from './FormIcons';
 
 emailjs.init("4zWvRC7Yn7lUDqd1q");
 
@@ -76,15 +77,20 @@ function FormTutor({ onVolver }: FormTutorProps): React.JSX.Element {
   };
 
   const porcentajeProgreso = paso * 25;
-  const steps = [{ id: 1, name: "1. Datos Personales", icon: "👤" }, { id: 2, name: "2. Atleta a Cargo", icon: "🏃" }, { id: 3, name: "3. Perfil y Motivo", icon: "✨" }, { id: 4, name: "4. Documentos", icon: "📄" }];
+  const steps: { id: number; name: string; icon: FormIconName }[] = [
+    { id: 1, name: '1. Datos Personales', icon: 'user' },
+    { id: 2, name: '2. Atleta a Cargo', icon: 'runner' },
+    { id: 3, name: '3. Perfil y Motivo', icon: 'sparkles' },
+    { id: 4, name: '4. Documentos', icon: 'file' },
+  ];
 
   return (
     <div className="form-tutor-layout">
-      <header className="form-header"><div className="header-logo"><div className="logo-icon">👪</div><h1>Inscripción Tutor / Familiar</h1></div></header>
+      <header className="form-header"><div className="header-logo"><div className="logo-icon"><FormIcon name="family" size={22} /></div><h1>Inscripción Tutor / Familiar</h1></div></header>
       <div className="form-body">
         <aside className="form-sidebar">
-          <div className="sidebar-card"><div className="registro-info"><div className="registro-icon">🏠</div><div className="registro-text"><h4>Registro</h4><p>NUEVO TUTOR</p></div></div></div>
-          <nav className="sidebar-nav sidebar-card">{steps.map(s => <div key={s.id} className={`nav-item ${paso === s.id ? 'active' : ''}`}><span className="nav-icon">{s.icon}</span><span>{s.name}</span></div>)}</nav>
+          <div className="sidebar-card"><div className="registro-info"><div className="registro-icon"><FormIcon name="home" size={26} /></div><div className="registro-text"><h4>Registro</h4><p>NUEVO TUTOR</p></div></div></div>
+          <nav className="sidebar-nav sidebar-card">{steps.map(s => <div key={s.id} className={`nav-item ${paso === s.id ? 'active' : ''}`}><span className="nav-icon"><FormIcon name={s.icon} size={18} /></span><span>{s.name}</span></div>)}</nav>
           <div className="sidebar-footer"><div className="progress-label"><span>PROGRESO</span><span>{porcentajeProgreso}%</span></div><div className="progress-bar-container"><div className="progress-bar-fill" style={{ width: `${porcentajeProgreso}%` }}></div></div></div>
         </aside>
         <main className="form-content">
@@ -110,12 +116,12 @@ function FormTutor({ onVolver }: FormTutorProps): React.JSX.Element {
               <div className="input-container" style={{ gridColumn: 'span 2' }}><label>¿Tiene experiencia previa con personas con necesidades especiales?</label><div className="switch-container"><div className={`switch-option yes ${datos.experienciaNecesidadesEspeciales === 'Si' ? 'active' : ''}`} onClick={() => setDatos(p => ({ ...p, experienciaNecesidadesEspeciales: 'Si' }))}>SÍ</div><div className={`switch-option no ${datos.experienciaNecesidadesEspeciales === 'No' ? 'active' : ''}`} onClick={() => setDatos(p => ({ ...p, experienciaNecesidadesEspeciales: 'No' }))}>NO</div></div></div>
             </div>)}
             {paso === 4 && (<div className="form-sections-modern">
-              {[{ campo: 'cedula' as keyof ArchivosTutor, fileId: 'file-cedula-t', emoji: '📄', titulo: 'Cédula de Identidad', requerido: true }, { campo: 'foto' as keyof ArchivosTutor, fileId: 'file-foto-t', emoji: '📸', titulo: 'Foto de Perfil', requerido: false }].map(({ campo, fileId, emoji, titulo, requerido }) => (
+              {[{ campo: 'cedula' as keyof ArchivosTutor, fileId: 'file-cedula-t', icon: 'file' as FormIconName, titulo: 'Cédula de Identidad', requerido: true }, { campo: 'foto' as keyof ArchivosTutor, fileId: 'file-foto-t', icon: 'camera', titulo: 'Foto de Perfil', requerido: false }].map(({ campo, fileId, icon, titulo, requerido }) => (
                 <div key={fileId} onClick={() => (document.getElementById(fileId) as HTMLInputElement)?.click()} style={{ cursor: 'pointer', border: `2px dashed ${archivos[campo] ? '#16a34a' : requerido ? '#E00000' : '#cbd5e1'}`, borderRadius: '16px', padding: '25px', textAlign: 'center', background: archivos[campo] ? '#f0fdf4' : requerido ? '#fff1f2' : '#f8fafc', transition: 'all 0.2s' }}>
-                  <div style={{ fontSize: '36px', marginBottom: '8px' }}>{emoji}</div>
+                  <div className="upload-zone-icon"><FormIcon name={icon} size={36} /></div>
                   <h4 style={{ margin: '0 0 4px', fontSize: '15px', color: '#1e293b' }}>{titulo}{requerido && <span style={{ color: '#E00000' }}> *</span>}</h4>
                   <input id={fileId} type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, campo)} />
-                  {archivos[campo] && <div style={{ marginTop: '12px', padding: '6px 16px', background: '#dcfce7', color: '#166534', borderRadius: '20px', display: 'inline-block', fontSize: '13px', fontWeight: 700 }}>✓ {archivos[campo]!.name}</div>}
+                  {archivos[campo] && <ArchivoAdjuntoBadge nombre={archivos[campo]!.name} />}
                 </div>
               ))}
               <div style={{ marginTop: '10px', padding: '15px 20px', background: '#f8fafc', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -126,7 +132,7 @@ function FormTutor({ onVolver }: FormTutorProps): React.JSX.Element {
           </div>
           <div className="content-footer">
             <button className="btn-secondary" onClick={manejarAnterior}>{paso === 1 ? 'Cancelar' : 'Anterior'}</button>
-            {paso < 4 ? <button className="btn-primary" onClick={manejarSiguiente}>Siguiente Paso →</button> : <button className="btn-primary" onClick={finalizarInscripcion}>Registrar ✓</button>}
+            {paso < 4 ? <button className="btn-primary" onClick={manejarSiguiente}>Siguiente Paso →</button> : <button className="btn-primary" onClick={finalizarInscripcion} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><FormIcon name="check" size={18} /> Registrar</button>}
           </div>
         </main>
       </div>

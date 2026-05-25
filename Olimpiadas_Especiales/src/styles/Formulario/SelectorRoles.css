@@ -66,14 +66,8 @@
 
 /* Icons (Huge and Graphical) */
 .iconoRol {
-  font-size: 70px;
   margin-bottom: 15px;
   filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
-  transition: transform 0.3s ease;
-}
-
-.botonRol:hover .iconoRol {
-  transform: scale(1.2) rotate(5deg);
 }
 
 /* Text Labels */
@@ -86,7 +80,7 @@
 
 /* Interactive Feedback */
 .botonRol::after {
-  content: 'Elegir ➔';
+  content: 'Elegir →';
   position: absolute;
   bottom: -40px;
   font-size: 14px;
