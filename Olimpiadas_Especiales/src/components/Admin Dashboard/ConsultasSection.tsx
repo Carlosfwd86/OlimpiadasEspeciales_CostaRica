@@ -63,7 +63,38 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
         });
     };
 
+    const ejecutarRespuestaAutomatica = (consulta: Consulta) => {
+        if (consulta.leida) {
+            Swal.fire('Ya respondida', 'Esta consulta ya tiene respuesta enviada.', 'info');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Procesando...',
+            html: `La IA redacta y envía el correo a <strong>${consulta.nombre}</strong>.`,
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+        });
+
+        ServicesAdmin.responderAutomatico(consulta.id)
+            .then((res) => {
+                const icon = res.simulado ? 'warning' : 'success';
+                Swal.fire({
+                    title: res.simulado ? 'IA listo (revisa SMTP)' : '¡Enviado!',
+                    text: res.message,
+                    icon,
+                    confirmButtonColor: '#10b981',
+                });
+                fetchConsultas();
+            })
+            .catch((err: { message?: string; error?: string }) => {
+                const errorMsg = err?.message || err?.error || 'No se pudo completar la respuesta automática.';
+                Swal.fire('Error', errorMsg, 'error');
+            });
+    };
+
     const handleView = (consulta: Consulta) => {
+        const yaRespondida = !!consulta.leida;
         Swal.fire({
             title: `Asunto: ${consulta.asunto || 'Sin Asunto'}`,
             html: `
@@ -71,151 +102,21 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                     <p style="margin: 0 0 5px;"><strong>De:</strong> ${consulta.nombre}</p>
                     <p style="margin: 0 0 5px;"><strong>Email:</strong> <a href="mailto:${consulta.correo}" style="color: #3b82f6; text-decoration: none;">${consulta.correo}</a></p>
                     <p style="margin: 0; font-size: 12px; color: #64748b;"><strong>Fecha:</strong> ${new Date(consulta.fecha).toLocaleString()}</p>
+                    ${yaRespondida ? '<p style="margin: 8px 0 0; color: #059669; font-weight: 600;">✓ Ya respondida por IA</p>' : ''}
                 </div>
                 <div style="text-align: left; background: #ffffff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; white-space: pre-wrap; font-size: 14px; color: #334155;">
                     ${consulta.mensaje}
                 </div>
             `,
-            showDenyButton: true,
-            confirmButtonText: 'Cerrar',
-            confirmButtonColor: '#64748b',
-            denyButtonText: '🪄 Borrador IA',
-            denyButtonColor: '#e62334',
+            showCancelButton: true,
+            confirmButtonText: yaRespondida ? 'Cerrar' : '🤖 Responder con IA',
+            confirmButtonColor: yaRespondida ? '#64748b' : '#10b981',
+            cancelButtonText: 'Cerrar',
+            cancelButtonColor: '#64748b',
             width: '600px'
         }).then((result) => {
-            if (result.isDenied) {
-                Swal.fire({
-                    title: 'Redactando borrador...',
-                    html: 'Nuestro Asistente de IA está redactando la mejor respuesta institucional.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                ServicesAdmin.sugerirRespuesta(consulta.id)
-                    .then((res) => {
-                        const correosMasivos = Array.from(new Set(consultas.map(c => c.correo).filter((c): c is string => !!c)));
-                        const consultaIds = consultas.map(c => c.id);
-
-                        Swal.fire({
-                            title: '🪄 Sugerencia de Respuesta IA',
-                            html: `
-                                <div style="text-align: left; margin-bottom: 15px; font-size: 13px; color: #64748b;">
-                                    Aquí tienes un borrador profesional redactado para <strong>${consulta.nombre}</strong>. Puedes editarlo antes de enviar:
-                                </div>
-                                <textarea id="copiloto-respuesta-texto" style="width: 100%; height: 180px; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; font-family: inherit; resize: vertical; background: #ffffff; color: #334155;">${res.borrador}</textarea>
-                                <div style="text-align: left; margin-top: 15px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                    <span style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 8px; color: #334155;">¿A quién deseas enviar esta respuesta?</span>
-                                    <label style="display: block; font-size: 13px; margin-bottom: 8px; cursor: pointer; color: #475569;">
-                                        <input type="radio" name="destinatarios-tipo" value="individual" defaultChecked style="margin-right: 8px; accent-color: #3b82f6;" />
-                                        Solo a <strong>${consulta.nombre}</strong> (${consulta.correo})
-                                    </label>
-                                    <label style="display: block; font-size: 13px; cursor: pointer; color: #475569;">
-                                        <input type="radio" name="destinatarios-tipo" value="masivo" style="margin-right: 8px; accent-color: #3b82f6;" />
-                                        <strong>Envío Masivo</strong> a todos los remitentes (${correosMasivos.length} correos)
-                                    </label>
-                                </div>
-                            `,
-                            showDenyButton: true,
-                            confirmButtonText: '📧 Enviar por Correo',
-                            confirmButtonColor: '#10b981',
-                            denyButtonText: '📋 Copiar Texto',
-                            denyButtonColor: '#3b82f6',
-                            showCancelButton: true,
-                            cancelButtonText: 'Volver',
-                            cancelButtonColor: '#64748b',
-                            width: '600px',
-                            preConfirm: () => {
-                                const textarea = document.getElementById('copiloto-respuesta-texto') as HTMLTextAreaElement;
-                                const textVal = textarea ? textarea.value : res.borrador;
-                                if (!textVal.trim()) {
-                                    Swal.showValidationMessage('El mensaje no puede estar vacío.');
-                                    return false;
-                                }
-                                const radioInput = document.querySelector('input[name="destinatarios-tipo"]:checked') as HTMLInputElement;
-                                const sendType = radioInput ? radioInput.value : 'individual';
-                                return { textVal, sendType };
-                            }
-                        }).then((subRes) => {
-                            if (subRes.isConfirmed && subRes.value) {
-                                const { textVal: mensajeFinal, sendType } = subRes.value;
-
-                                if (sendType === 'masivo') {
-                                    Swal.fire({
-                                        title: 'Enviando correos...',
-                                        html: `Enviando mensaje a ${correosMasivos.length} destinatarios.`,
-                                        allowOutsideClick: false,
-                                        didOpen: () => {
-                                            Swal.showLoading();
-                                        }
-                                    });
-
-                                    const asunto = `Respuesta Oficial - Olimpiadas Especiales`;
-                                    ServicesAdmin.responderMasivo(correosMasivos, asunto, mensajeFinal, consultaIds)
-                                        .then((envio) => {
-                                            Swal.fire({
-                                                title: '¡Enviado con Éxito!',
-                                                text: envio.message || 'Los correos han sido enviados.',
-                                                icon: 'success',
-                                                confirmButtonColor: '#10b981'
-                                            });
-                                            fetchConsultas();
-                                        })
-                                        .catch((err: any) => {
-                                            console.error(err);
-                                            const errorMsg = err.message || err.error || 'Error interno del servidor';
-                                            Swal.fire('Error', `No se pudo enviar masivamente: ${errorMsg}`, 'error');
-                                        });
-                                } else {
-                                    Swal.fire({
-                                        title: 'Enviando correo...',
-                                        html: 'El sistema está enviando tu mensaje.',
-                                        allowOutsideClick: false,
-                                        didOpen: () => {
-                                            Swal.showLoading();
-                                        }
-                                    });
-
-                                    // Usar únicamente el backend (SMTP / OAuth2 / Simulador)
-                                    ServicesAdmin.responderConsulta(consulta.id, mensajeFinal)
-                                        .then((envio) => {
-                                            Swal.fire({
-                                                title: '¡Enviado con Éxito!',
-                                                text: envio.message || 'La respuesta ha sido enviada.',
-                                                icon: 'success',
-                                                confirmButtonColor: '#10b981'
-                                            });
-                                            fetchConsultas();
-                                        })
-                                        .catch((err: any) => {
-                                            console.error(err);
-                                            const errorMsg = err.message || err.error || 'Error interno del servidor';
-                                            Swal.fire('Error', `No se pudo enviar el correo: ${errorMsg}`, 'error');
-                                        });
-                                }
-                            } else if (subRes.isDenied) {
-                                const textarea = document.getElementById('copiloto-respuesta-texto') as HTMLTextAreaElement;
-                                if (textarea) {
-                                    textarea.select();
-                                    document.execCommand('copy');
-                                    Swal.fire({
-                                        title: '¡Copiado!',
-                                        text: 'El borrador ha sido copiado al portapapeles.',
-                                        icon: 'success',
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    });
-                                }
-                            } else if (subRes.isDismissed && subRes.dismiss === Swal.DismissReason.cancel) {
-                                handleView(consulta);
-                            }
-                        });
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        Swal.fire('Error', 'No se pudo generar la sugerencia con IA.', 'error');
-                    });
+            if (result.isConfirmed && !yaRespondida) {
+                ejecutarRespuestaAutomatica(consulta);
             }
         });
     };
@@ -252,7 +153,9 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <div>
                     <h3 style={{ color: 'var(--admin-text-main)', margin: 0 }}><i className="fa-solid fa-envelope" style={{ color: '#3b82f6', marginRight: '10px' }}></i> Bandeja de Consultas</h3>
-                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px', margin: 0 }}>Gestión de los mensajes recibidos desde el Formulario de Contacto público.</p>
+                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px', margin: 0 }}>
+                        Las consultas nuevas se responden solas con IA si <code>CONSULTAS_AUTO_RESPONDER=true</code>. Un clic en 🤖 reenvía manualmente.
+                    </p>
                 </div>
                 <div style={{ position: 'relative', display: 'flex', gap: '10px' }}>
                     <div style={{ position: 'relative' }}>
@@ -284,6 +187,7 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                                     <th style={{ padding: '12px' }}>Email</th>
                                     <th style={{ padding: '12px' }}>Asunto</th>
                                     <th style={{ padding: '12px' }}>Fecha</th>
+                                    <th style={{ padding: '12px' }}>Estado</th>
                                     <th style={{ padding: '12px', borderRadius: '0 8px 8px 0', textAlign: 'center' }}>Acciones</th>
                                 </tr>
                             </thead>
@@ -294,13 +198,41 @@ export default function ConsultasSection({ searchQuery = '' }: ConsultasSectionP
                                         <td style={{ padding: '12px', color: '#64748b' }}>{consulta.correo}</td>
                                         <td style={{ padding: '12px', color: '#1d1d1f' }}>{consulta.asunto}</td>
                                         <td style={{ padding: '12px', color: '#64748b' }}>{new Date(consulta.fecha).toLocaleDateString()}</td>
+                                        <td style={{ padding: '12px' }}>
+                                            <span style={{
+                                                fontSize: '11px',
+                                                fontWeight: 600,
+                                                padding: '4px 8px',
+                                                borderRadius: '6px',
+                                                background: consulta.leida ? '#ecfdf5' : '#fef3c7',
+                                                color: consulta.leida ? '#059669' : '#b45309',
+                                            }}>
+                                                {consulta.leida ? 'Respondida' : 'Pendiente'}
+                                            </span>
+                                        </td>
                                         <td style={{ padding: '12px', textAlign: 'center' }}>
                                             <button 
                                                 onClick={() => handleView(consulta)} 
                                                 style={{ background: '#eff6ff', border: 'none', color: '#2563eb', padding: '6px 10px', borderRadius: '6px', marginRight: '5px', cursor: 'pointer' }}
-                                                title="Ver o Responder"
+                                                title="Ver mensaje"
                                             >
                                                 <i className="fa-solid fa-eye"></i>
+                                            </button>
+                                            <button 
+                                                onClick={() => ejecutarRespuestaAutomatica(consulta)} 
+                                                disabled={!!consulta.leida}
+                                                style={{
+                                                    background: consulta.leida ? '#f1f5f9' : '#ecfdf5',
+                                                    border: 'none',
+                                                    color: consulta.leida ? '#94a3b8' : '#059669',
+                                                    padding: '6px 10px',
+                                                    borderRadius: '6px',
+                                                    marginRight: '5px',
+                                                    cursor: consulta.leida ? 'not-allowed' : 'pointer',
+                                                }}
+                                                title={consulta.leida ? 'Ya respondida' : 'Un clic: IA redacta y envía'}
+                                            >
+                                                <i className="fa-solid fa-robot"></i>
                                             </button>
                                             <button 
                                                 onClick={() => handleDelete(consulta.id)} 

@@ -21,6 +21,9 @@ router.delete('/:id', auth, checkRole([1]), consultaController.delete);
 // Copiloto IA: genera borrador de respuesta institucional (Solo Admin)
 router.post('/:id/sugerirRespuesta', auth, checkRole([1]), consultaController.sugerirRespuesta);
 
+// IA + envío automático a un solo remitente (Solo Admin)
+router.post('/:id/responder-automatico', auth, checkRole([1]), consultaController.responderAutomatico);
+
 // Enviar respuesta masiva a varios correos (Solo Admin)
 router.post('/responder-masivo', auth, checkRole([1]), consultaController.responderMasivo);
 
