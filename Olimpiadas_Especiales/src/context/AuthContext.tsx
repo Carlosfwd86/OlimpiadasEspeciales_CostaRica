@@ -4,8 +4,24 @@ import apiClient from '../api/apiClient';
 interface User {
   id: number;
   nombre: string;
+  apellido?: string;
   rol_id: number;
+  cedula?: string;
+  correo_electronico?: string;
+  correoElectronico?: string;
+  telefono?: string;
+  direccion?: string;
+  pais?: string;
+  fecha_nacimiento?: string;
+  fechaNacimiento?: string;
+  genero?: string;
 }
+
+const normalizarUsuarioSesion = (usuario: Record<string, unknown>): User => ({
+  ...(usuario as User),
+  correoElectronico: (usuario.correo_electronico ?? usuario.correoElectronico) as string | undefined,
+  fechaNacimiento: (usuario.fecha_nacimiento ?? usuario.fechaNacimiento) as string | undefined
+});
 
 interface AuthContextType {
   user: User | null;
@@ -27,8 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         console.log('[AuthContext] Verificando sesión...');
         const res = await apiClient.get('/auth/me');
-        console.log('[AuthContext] Resultado /me:', res.data.usuario);
-        setUser(res.data.usuario);
+        const raw = res.data.usuario as Record<string, unknown> | null;
+        console.log('[AuthContext] Resultado /me:', raw);
+        if (raw) {
+          const sesion = normalizarUsuarioSesion(raw);
+          setUser(sesion);
+          localStorage.setItem('usuarioSesion', JSON.stringify(sesion));
+        } else {
+          setUser(null);
+        }
       } catch (error) {
         console.error('[AuthContext] Error en checkAuth:', error);
         setUser(null);
@@ -44,7 +67,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const usuario = res.data.data?.usuario || res.data.usuario;
     // El token JWT viaja como httpOnly cookie — no se almacena en localStorage
     // por seguridad (XSS protection). El backend ya setea la cookie en login.
-    if (usuario) localStorage.setItem('usuarioSesion', JSON.stringify(usuario));
+    if (usuario) {
+      const sesion = normalizarUsuarioSesion(usuario as Record<string, unknown>);
+      localStorage.setItem('usuarioSesion', JSON.stringify(sesion));
+      setUser(sesion);
+      return sesion;
+    }
     setUser(usuario);
     return usuario;
   };
