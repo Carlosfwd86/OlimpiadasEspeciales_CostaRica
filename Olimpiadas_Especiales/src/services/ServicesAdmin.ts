@@ -298,6 +298,19 @@ export const ServicesAdmin = {
         return res.data;
     },
 
+    responderTodasPendientes: async (): Promise<{
+        success: boolean;
+        total: number;
+        enviados: number;
+        fallidos: number;
+        simulados: number;
+        message: string;
+        detalles?: Array<{ id: number | string; nombre: string; ok: boolean; error?: string; message?: string }>;
+    }> => {
+        const res = await apiClient.post('/consultas/responder-pendientes');
+        return res.data;
+    },
+
     responderMasivo: async (
         correos: string[],
         asunto: string,
