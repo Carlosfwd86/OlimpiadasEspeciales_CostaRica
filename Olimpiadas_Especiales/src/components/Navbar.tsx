@@ -142,7 +142,11 @@ const Navbar = (): React.JSX.Element => {
           <>
             <div className="navbar_usuario_bloque">
               <button type="button" className="saludo_usuario saludo_usuario--drawer" onClick={irPerfilOAdmin}>
-                <i className="fa-solid fa-circle-user" />
+                {user.avatar_url ? (
+                  <img src={user.avatar_url} alt="Perfil" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <i className="fa-solid fa-circle-user" />
+                )}
                 <span>Hola, <strong>{user.nombre ? user.nombre.split(' ')[0] : 'Usuario'}</strong></span>
               </button>
               {user.rol_id === 1 && (
@@ -177,7 +181,11 @@ const Navbar = (): React.JSX.Element => {
               onClick={irPerfilOAdmin}
               style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
             >
-              <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }} />
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt="Perfil" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <i className="fa-solid fa-circle-user" style={{ color: '#E00000' }} />
+              )}
               Hola, <strong>{user.nombre ? user.nombre.split(' ')[0] : 'Usuario'}</strong>
             </span>
             {user.rol_id === 1 && (
