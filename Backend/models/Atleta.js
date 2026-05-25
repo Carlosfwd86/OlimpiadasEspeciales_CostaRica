@@ -145,6 +145,55 @@ const Atleta = sequelize.define('Atleta', {
       key: 'id'
     }
   }
+  ,
+  disciplina_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: { model: 'disciplinas', key: 'id' }
+  },
+  req_dietetico: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  especificacion_dietetico: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  otros_dispositivos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  especificacion_otros_dispositivos: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  afeccion_cardiaca: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  asma: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  diabetes: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  disc_visual: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  disc_auditiva: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  trastorno_hemorragico: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  medico_limito_deportes: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  epilepsia_convulsivo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  anemia_depranocitica: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  conmocion_cerebral: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  cantidad_conmociones: { type: DataTypes.INTEGER, allowNull: true },
+  fecha_ultima_conmocion: { type: DataTypes.DATEONLY, allowNull: true },
+  afecciones_mentales: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  especificacion_afecciones_mentales: { type: DataTypes.TEXT, allowNull: true },
+  alergias_graves: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  toma_medicamentos: { type: DataTypes.STRING(100), allowNull: true },
+  terminos_aceptados: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  objecion_tratamiento_medico: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  objecion_transfusiones: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  firma_atleta: { type: DataTypes.STRING(255), allowNull: true },
+  fecha_firma_atleta: { type: DataTypes.DATEONLY, allowNull: true },
+  firma_tutor: { type: DataTypes.STRING(255), allowNull: true },
+  relacion_tutor: { type: DataTypes.STRING(100), allowNull: true },
+  fecha_firma_tutor: { type: DataTypes.DATEONLY, allowNull: true },
+  interes_investigacion: { type: DataTypes.STRING(100), allowNull: true },
+  relacion_atleta: { type: DataTypes.STRING(100), allowNull: true },
+  relacion_atleta_otro: { type: DataTypes.STRING(255), allowNull: true }
 }, {
   tableName: 'atletas',
   timestamps: false // Según SQL usa fecha_registro explícito

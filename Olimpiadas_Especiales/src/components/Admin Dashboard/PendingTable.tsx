@@ -71,8 +71,19 @@ export default function PendingTable({ refreshTrigger = 0, onEdit, searchQuery =
             fetchRegistrations();
           })
           .catch(err => {
-            console.error("Error al aprobar:", err);
-            Swal.fire({ title: 'Error', text: 'Error al procesar la aprobación.', icon: 'error', confirmButtonColor: '#e62334' });
+            console.error("Error al aprobar:", err.response?.data || err);
+            
+            let errorMsg = 'Error al procesar la aprobación.';
+            const resData = err.response?.data;
+            if (resData?.errors && Array.isArray(resData.errors)) {
+                errorMsg = resData.errors.map((e: any) => e.msg || e.message || JSON.stringify(e)).join(', ');
+            } else if (resData?.message || resData?.error) {
+                errorMsg = resData.message || resData.error;
+            } else if (err.message) {
+                errorMsg = err.message;
+            }
+
+            Swal.fire({ title: 'Error de Validación', text: errorMsg, icon: 'error', confirmButtonColor: '#e62334' });
           })
           .finally(() => setProcessingId(null));
       }

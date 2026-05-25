@@ -139,8 +139,37 @@ export const ServicesAdmin = {
         }
 
         const payloadDatos = (registro as Registro & { datos?: Record<string, unknown> }).datos ?? registro;
+        
+        let nombre = String(payloadDatos.nombre || registro.name || '');
+        let primer_apellido = String(payloadDatos.primer_apellido || payloadDatos.apellido || '');
+        let segundo_apellido = String(payloadDatos.segundo_apellido || '');
+
+        if (!primer_apellido && nombre.includes(' ')) {
+            const parts = nombre.split(' ');
+            nombre = parts[0];
+            primer_apellido = parts[1];
+            if (parts.length > 2) {
+                segundo_apellido = parts.slice(2).join(' ');
+            }
+        }
+        
+        if (!primer_apellido || primer_apellido.trim().length < 2) {
+            primer_apellido = primer_apellido.trim() || 'ND';
+            if (primer_apellido.length < 2) primer_apellido += '.';
+        }
+        
+        let genero = String(payloadDatos.genero || 'Otro');
+        if (!['Masculino', 'Femenino', 'Otro'].includes(genero)) {
+            genero = 'Otro';
+        }
+
         const officialData: Record<string, unknown> = {
             ...(typeof payloadDatos === 'object' ? payloadDatos : {}),
+            nombre,
+            primer_apellido,
+            segundo_apellido,
+            genero,
+            fecha_nacimiento: payloadDatos.fecha_nacimiento || payloadDatos.fechaNacimiento || payloadDatos.fechaNacimientoAtleta || '2000-01-01',
             usuario_id: userId || null,
             status: 'ACTIVO',
             fecha_aprobacion: new Date().toISOString(),

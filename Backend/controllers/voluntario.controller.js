@@ -91,7 +91,10 @@ const voluntarioController = {
         disponibilidad: data.disponibilidad || null,
         experiencia_previa: data.experienciaPrevia || data.experiencia_previa || null,
         status: req.body.status || 'PENDIENTE',
-        fecha_aprobacion: req.body.fecha_aprobacion || null
+        fecha_aprobacion: req.body.fecha_aprobacion || null,
+        terminos_aceptados: data.terminosAceptados === true || data.terminosAceptados === 'true',
+        firma_voluntario: data.firmaVoluntario || null,
+        fecha_firma_voluntario: data.fechaFirmaVoluntario || null
       };
       
       // Creación del voluntario principal

@@ -115,6 +115,20 @@ const atletaController = {
       if (!primerApellido) primerApellido = 'N/A'; // Evitar error de validación
 
       // Mapear el payload del frontend a los campos del modelo
+      // Resolver ids referenciales si vienen nombres desde frontend
+      let disciplinaId = null;
+      if (data.disciplina) {
+        const { Disciplina } = require('../config/database').models;
+        const disc = await Disciplina.findOne({ where: { nombre: data.disciplina } });
+        if (disc) disciplinaId = disc.id;
+      }
+      let nivelHabilidadId = null;
+      if (data.nivelHabilidad) {
+        const { NivelHabilidad } = require('../config/database').models;
+        const nivel = await NivelHabilidad.findOne({ where: { nombre: data.nivelHabilidad } });
+        if (nivel) nivelHabilidadId = nivel.id;
+      }
+
       const atletaPayload = {
         nombre: primerNombre,
         primer_apellido: primerApellido,
@@ -135,6 +149,39 @@ const atletaController = {
         tutor_correo: data.tutorCorreo || null,
         tutor_pais: data.tutorPais || null,
         tutor_cedula: data.tutorCedula || null
+        , disciplina_id: disciplinaId,
+        nivel_habilidad_id: nivelHabilidadId,
+        req_dietetico: data.reqDietetico || data.req_dietetico || null,
+        especificacion_dietetico: data.especificacionDietetico || data.especificacion_dietetico || null,
+        otros_dispositivos: data.otrosDispositivos || data.otros_dispositivos || null,
+        especificacion_otros_dispositivos: data.especificacionOtrosDispositivos || data.especificacion_otros_dispositivos || null,
+        afeccion_cardiaca: (data.afeccionCardiaca === 'Si' || data.afeccionCardiaca === true),
+        asma: (data.asma === 'Si' || data.asma === true),
+        diabetes: (data.diabetes === 'Si' || data.diabetes === true),
+        disc_visual: (data.discVisual === 'Si' || data.discVisual === true),
+        disc_auditiva: (data.discAuditiva === 'Si' || data.discAuditiva === true),
+        trastorno_hemorragico: (data.trastornoHemorragico === 'Si' || data.trastornoHemorragico === true),
+        medico_limito_deportes: (data.medicoLimitoDeportes === 'Si' || data.medicoLimitoDeportes === true),
+        epilepsia_convulsivo: (data.epilepsiaConvulsivo === 'Si' || data.epilepsiaConvulsivo === true),
+        anemia_depranocitica: (data.anemiaDepranocitica === 'Si' || data.anemiaDepranocitica === true),
+        conmocion_cerebral: (data.conmocionCerebral === 'Si' || data.conmocionCerebral === true),
+        cantidad_conmociones: data.cantidadConmociones || null,
+        fecha_ultima_conmocion: data.fechaUltimaConmocion || null,
+        afecciones_mentales: (data.afeccionesMentales === 'Si' || data.afeccionesMentales === true),
+        especificacion_afecciones_mentales: data.especificacionAfeccionesMentales || null,
+        alergias_graves: (data.alergiasGraves === 'Si' || data.alergiasGraves === true),
+        toma_medicamentos: data.tomaMedicamentos || null,
+        terminos_aceptados: (data.terminosAceptados === true || data.terminosAceptados === 'true'),
+        objecion_tratamiento_medico: (data.objecionTratamientoMedico === true || data.objecionTratamientoMedico === 'true'),
+        objecion_transfusiones: (data.objecionTransfusiones === true || data.objecionTransfusiones === 'true'),
+        firma_atleta: data.firmaAtleta || null,
+        fecha_firma_atleta: data.fechaFirmaAtleta || null,
+        firma_tutor: data.firmaTutor || null,
+        relacion_tutor: data.relacionTutor || data.relacion_tutor || null,
+        fecha_firma_tutor: data.fechaFirmaTutor || null,
+        interes_investigacion: data.interesInvestigacion || null,
+        relacion_atleta: data.relacionAtleta || null,
+        relacion_atleta_otro: data.relacionAtletaOtro || null
       };
 
       const nuevoAtleta = await Atleta.create(atletaPayload, { transaction: t });
@@ -170,17 +217,23 @@ const atletaController = {
         }
       }
 
-      // Guardar dispositivos
-      const dispositivos = [
-        ...(data.dispositivosMovilidad || []),
-        ...(data.ayudasEstiloVida || []),
-        ...(data.comunicaciones || []),
-        ...(data.dispositivosMedicos || [])
-      ].filter(d => d !== 'Ninguno');
+      // Guardar dispositivos con tipo y nombre para el modelo AtletaDispositivo
+      const guardarDispositivo = async (items, tipo) => {
+        if (!Array.isArray(items)) return;
+        for (const nombre of items) {
+          if (!nombre || nombre === 'Ninguno') continue;
+          await AtletaDispositivo.create({
+            atleta_id: nuevoAtleta.id,
+            tipo,
+            nombre: nombre.toString().trim() || 'Otro'
+          }, { transaction: t });
+        }
+      };
 
-      for (const disp of dispositivos) {
-        await AtletaDispositivo.create({ atleta_id: nuevoAtleta.id, dispositivo: disp }, { transaction: t });
-      }
+      await guardarDispositivo(data.dispositivosMovilidad, 'movilidad');
+      await guardarDispositivo(data.ayudasEstiloVida, 'vida');
+      await guardarDispositivo(data.comunicaciones, 'comunicacion');
+      await guardarDispositivo(data.dispositivosMedicos, 'medico');
 
       await t.commit();
 
@@ -263,6 +316,47 @@ const atletaController = {
       if (data.equipo) updates.equipo = data.equipo;
       if (data.experiencia) updates.experiencia = data.experiencia;
       if (data.proximosRetos || data.proximos_retos) updates.proximos_retos = data.proximosRetos || data.proximos_retos;
+      if (data.disciplina) {
+        const { Disciplina } = require('../config/database').models;
+        const disc = await Disciplina.findOne({ where: { nombre: data.disciplina } });
+        if (disc) updates.disciplina_id = disc.id;
+      }
+      if (data.nivelHabilidad) {
+        const { NivelHabilidad } = require('../config/database').models;
+        const nivel = await NivelHabilidad.findOne({ where: { nombre: data.nivelHabilidad } });
+        if (nivel) updates.nivel_habilidad_id = nivel.id;
+      }
+      if (data.reqDietetico || data.req_dietetico) updates.req_dietetico = data.reqDietetico || data.req_dietetico;
+      if (data.especificacionDietetico || data.especificacion_dietetico) updates.especificacion_dietetico = data.especificacionDietetico || data.especificacion_dietetico;
+      if (data.otrosDispositivos || data.otros_dispositivos) updates.otros_dispositivos = data.otrosDispositivos || data.otros_dispositivos;
+      if (data.especificacionOtrosDispositivos || data.especificacion_otros_dispositivos) updates.especificacion_otros_dispositivos = data.especificacionOtrosDispositivos || data.especificacion_otros_dispositivos;
+      if (data.afeccionCardiaca !== undefined) updates.afeccion_cardiaca = data.afeccionCardiaca === 'Si' || data.afeccionCardiaca === true;
+      if (data.asma !== undefined) updates.asma = data.asma === 'Si' || data.asma === true;
+      if (data.diabetes !== undefined) updates.diabetes = data.diabetes === 'Si' || data.diabetes === true;
+      if (data.discVisual !== undefined) updates.disc_visual = data.discVisual === 'Si' || data.discVisual === true;
+      if (data.discAuditiva !== undefined) updates.disc_auditiva = data.discAuditiva === 'Si' || data.discAuditiva === true;
+      if (data.trastornoHemorragico !== undefined) updates.trastorno_hemorragico = data.trastornoHemorragico === 'Si' || data.trastornoHemorragico === true;
+      if (data.medicoLimitoDeportes !== undefined) updates.medico_limito_deportes = data.medicoLimitoDeportes === 'Si' || data.medicoLimitoDeportes === true;
+      if (data.epilepsiaConvulsivo !== undefined) updates.epilepsia_convulsivo = data.epilepsiaConvulsivo === 'Si' || data.epilepsiaConvulsivo === true;
+      if (data.anemiaDepranocitica !== undefined) updates.anemia_depranocitica = data.anemiaDepranocitica === 'Si' || data.anemiaDepranocitica === true;
+      if (data.conmocionCerebral !== undefined) updates.conmocion_cerebral = data.conmocionCerebral === 'Si' || data.conmocionCerebral === true;
+      if (data.cantidadConmociones) updates.cantidad_conmociones = data.cantidadConmociones;
+      if (data.fechaUltimaConmocion) updates.fecha_ultima_conmocion = data.fechaUltimaConmocion;
+      if (data.afeccionesMentales !== undefined) updates.afecciones_mentales = data.afeccionesMentales === 'Si' || data.afeccionesMentales === true;
+      if (data.especificacionAfeccionesMentales) updates.especificacion_afecciones_mentales = data.especificacionAfeccionesMentales;
+      if (data.alergiasGraves !== undefined) updates.alergias_graves = data.alergiasGraves === 'Si' || data.alergiasGraves === true;
+      if (data.tomaMedicamentos) updates.toma_medicamentos = data.tomaMedicamentos;
+      if (data.terminosAceptados !== undefined) updates.terminos_aceptados = data.terminosAceptados === true || data.terminosAceptados === 'true';
+      if (data.objecionTratamientoMedico !== undefined) updates.objecion_tratamiento_medico = data.objecionTratamientoMedico === true || data.objecionTratamientoMedico === 'true';
+      if (data.objecionTransfusiones !== undefined) updates.objecion_transfusiones = data.objecionTransfusiones === true || data.objecionTransfusiones === 'true';
+      if (data.firmaAtleta) updates.firma_atleta = data.firmaAtleta;
+      if (data.fechaFirmaAtleta) updates.fecha_firma_atleta = data.fechaFirmaAtleta;
+      if (data.firmaTutor) updates.firma_tutor = data.firmaTutor;
+      if (data.relacionTutor) updates.relacion_tutor = data.relacionTutor;
+      if (data.fechaFirmaTutor) updates.fecha_firma_tutor = data.fechaFirmaTutor;
+      if (data.interesInvestigacion) updates.interes_investigacion = data.interesInvestigacion;
+      if (data.relacionAtleta) updates.relacion_atleta = data.relacionAtleta;
+      if (data.relacionAtletaOtro) updates.relacion_atleta_otro = data.relacionAtletaOtro;
 
       const [actualizado] = await Atleta.update(updates, { where: { id } });
 
