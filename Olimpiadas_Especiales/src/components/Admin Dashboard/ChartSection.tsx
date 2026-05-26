@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../style/ChartSection.css';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
 import RegionalMap from './RegionalMap';
+import { buildProvinciaCounts, enrichGraficosFromAtletas } from '../../utils/adminChartData';
 import type { Graficos } from '../../types';
 
 interface ChartSectionProps {
@@ -10,6 +11,7 @@ interface ChartSectionProps {
 
 export default function ChartSection({ onTabChange }: ChartSectionProps): React.JSX.Element {
   const [graficos, setGraficos] = useState<Graficos | null>(null);
+  const [mapCounts, setMapCounts] = useState<Record<string, number>>({});
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -17,35 +19,8 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
       ServicesAdmin.getCharts(),
       ServicesAdmin.getAtletas()
     ]).then(([chartData, atletas]) => {
-      const processedCharts: Graficos = { ...chartData };
-
-      if ((processedCharts.distribucionRegional?.length || 0) === 0 && atletas.length > 0) {
-        const provinces = ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"];
-        const counts: Record<string, number> = {};
-        atletas.forEach(a => {
-          let r = a.region || "Desconocido";
-          if (r === "Desconocido" && a.direccion) {
-            const found = provinces.find(p => a.direccion!.toLowerCase().includes(p.toLowerCase()));
-            if (found) r = found;
-          }
-          const key = r as string;
-          counts[key] = (counts[key] || 0) + 1;
-        });
-
-        processedCharts.distribucionRegional = Object.entries(counts).map(([name, val]) => ({
-          region: name,
-          valor: val,
-          colorClase: `color-${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-')}`
-        }));
-        processedCharts.totalGeneral = atletas.length;
-      } else if (processedCharts.distribucionRegional) {
-        processedCharts.distribucionRegional = processedCharts.distribucionRegional.map(item => ({
-          ...item,
-          colorClase: `color-${item.region.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-')}`
-        }));
-      }
-
-      setGraficos(processedCharts);
+      setGraficos(enrichGraficosFromAtletas(chartData, atletas));
+      setMapCounts(buildProvinciaCounts(atletas));
     }).catch(error => console.error("Error al cargar datos de gráficos:", error));
   }, []);
 
@@ -99,6 +74,9 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
         </div>
 
         <div className="progress-list">
+          {(graficos.atletasPorDeporte || []).length === 0 && (
+            <p className="chart-empty-hint">No hay atletas registrados para mostrar estadísticas por deporte.</p>
+          )}
           {(graficos.atletasPorDeporte || []).map((deporte, i) => (
             <div className="progress-item" key={i}>
               <div className="progress-info">
@@ -140,7 +118,7 @@ export default function ChartSection({ onTabChange }: ChartSectionProps): React.
         </div>
 
         <div className="map-summary-preview">
-           <RegionalMap mini={true} />
+           <RegionalMap mini counts={mapCounts} />
         </div>
       </div>
 

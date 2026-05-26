@@ -1,8 +1,12 @@
+/* ==========================================================================
+   ESTILOS BASE (Mobile-First ~375px)
+   ========================================================================== */
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 80px 20px;
+  padding: 40px 16px; /* Padding reducido móvil */
   min-height: 100vh;
   background-color: #f8fafc;
   font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
@@ -13,32 +17,32 @@
   background-color: #ffffff;
   width: 100%;
   max-width: 480px;
-  padding: 50px;
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  padding: 30px 20px; /* Padding reducido móvil */
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #f1f5f9;
   text-align: center;
   transition: transform 0.3s ease;
 }
 
 .login-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-2px); /* Hover menor en móvil */
 }
 
 .login-card h1 {
   margin-top: 0;
   color: #FF0000;
   margin-bottom: 12px;
-  font-size: 2.2rem;
+  font-size: 1.8rem; /* Tamaño reducido en móvil */
   font-weight: 900;
   letter-spacing: -0.02em;
 }
 
 .login-card p {
   color: #64748b;
-  margin-bottom: 40px;
-  font-size: 1.05rem;
-  line-height: 1.8;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .login-form {
@@ -48,22 +52,22 @@
 }
 
 .login-form .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .login-form label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-weight: 700;
   color: #1e293b;
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* Adaptado */
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .login-form input {
   width: 100%;
-  padding: 16px;
+  padding: 14px; /* Área táctil */
   border: 1px solid #FF0000;
   border-radius: 12px;
   font-size: 1rem;
@@ -72,6 +76,7 @@
   background-color: #ffffff;
   color: #1e293b;
   font-family: inherit;
+  min-height: 48px; /* Accesibilidad */
 }
 
 .login-form input::placeholder {
@@ -93,10 +98,10 @@
 .error-message {
   color: #FF0000;
   background-color: #ffe6e6;
-  padding: 16px;
+  padding: 14px;
   border-radius: 12px;
-  margin-bottom: 24px;
-  font-size: 0.95rem;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
   text-align: center;
   font-weight: 500;
   border: 1px solid rgba(255, 0, 0, 0.1);
@@ -104,27 +109,87 @@
 
 .btn-login {
   width: 100%;
-  padding: 18px;
+  padding: 16px;
   background-color: #FF0000;
   color: #fff;
   border: none;
   border-radius: 16px;
-  font-size: 1.15rem;
+  font-size: 1.05rem; /* Ajustado */
   font-weight: 800;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 15px;
-  box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2);
+  margin-top: 10px;
+  box-shadow: 0 8px 15px rgba(255, 0, 0, 0.2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  min-height: 48px;
 }
 
 .btn-login:hover {
   background-color: #D00000;
-  box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3);
-  transform: translateY(-2px);
 }
 
 .btn-login:active {
   transform: translateY(0);
-}
+}
+
+/* ==========================================================================
+   TABLETS Y DESKTOP (md: 768px+)
+   ========================================================================== */
+@media (min-width: 768px) {
+  .login-container {
+    padding: 80px 20px;
+  }
+
+  .login-card {
+    padding: 50px;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  }
+
+  .login-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .login-card h1 {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+  }
+
+  .login-card p {
+    margin-bottom: 40px;
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  .login-form .form-group {
+    margin-bottom: 24px;
+  }
+
+  .login-form label {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+
+  .login-form input {
+    padding: 16px;
+  }
+
+  .error-message {
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+  }
+
+  .btn-login {
+    padding: 18px;
+    font-size: 1.15rem;
+    margin-top: 15px;
+    box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2);
+  }
+
+  .btn-login:hover {
+    box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
+}

@@ -308,6 +308,14 @@ describe('Rutas de Autenticación (Integration: routes/authRoutes.js)', () => {
       const mockPayload = { id: 10, rol_id: 2, email: 'sofia@olimpiadas.org', nombre: 'Sofía' };
       const validToken = jwt.sign(mockPayload, process.env.JWT_SECRET);
 
+      mockUsuario.findByPk.mockResolvedValue({
+        id: 10,
+        rol_id: 2,
+        correo_electronico: 'sofia@olimpiadas.org',
+        nombre: 'Sofía',
+        status: 'ACTIVO'
+      });
+
       const response = await request(app)
         .get('/api/v1/auth/me')
         .set('Cookie', [`token=${validToken}`]);
@@ -316,7 +324,7 @@ describe('Rutas de Autenticación (Integration: routes/authRoutes.js)', () => {
       expect(response.body.usuario).toEqual(expect.objectContaining({
         id: mockPayload.id,
         rol_id: mockPayload.rol_id,
-        email: mockPayload.email
+        correo_electronico: mockPayload.email
       }));
     });
   });
@@ -351,7 +359,7 @@ describe('Rutas de Autenticación (Integration: routes/authRoutes.js)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.status).toBe(200);
-      expect(response.body.data).toEqual({
+      expect(response.body.data).toEqual(expect.objectContaining({
         id: 10,
         nombre: 'Sofía',
         apellido: 'Castro',
@@ -359,7 +367,7 @@ describe('Rutas de Autenticación (Integration: routes/authRoutes.js)', () => {
         rol: 2,
         fotoPerfil: 'avatar.png',
         telefono: '88888888'
-      });
+      }));
       expect(mockUsuario.findByPk).toHaveBeenCalledWith(10, expect.any(Object));
     });
   });

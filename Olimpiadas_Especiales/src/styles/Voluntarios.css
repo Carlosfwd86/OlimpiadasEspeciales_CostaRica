@@ -1,5 +1,5 @@
 .seccion-voluntarios-completa {
-    padding: 80px 10%;
+    padding: 50px 5%; /* Móvil primero */
     background: #fdfdfd;
     min-height: 100vh;
 }
@@ -10,7 +10,7 @@
 }
 
 .voluntarios-hero h1 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 6vw, 3rem); /* Fluid */
     color: #1a1a1a;
     margin-bottom: 15px;
     font-weight: 800;
@@ -35,8 +35,8 @@
 
 .grid-roles-voluntarios {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
+    grid-template-columns: 1fr; /* 1 columna en móvil */
+    gap: 20px;
 }
 
 .rol-voluntario-card {
@@ -84,6 +84,7 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-height: 44px; /* Accesible */
 }
 
 .boton-postular:hover {
@@ -117,14 +118,7 @@
     margin-bottom: 15px;
 }
 
-@media (max-width: 768px) {
-    .voluntarios-hero h1 {
-        font-size: 2.2rem;
-    }
-    .grid-roles-voluntarios {
-        grid-template-columns: 1fr;
-    }
-    .seccion-voluntarios-completa {
-        padding: 50px 5%;
-    }
+@media (min-width: 768px) {
+    .seccion-voluntarios-completa { padding: 80px 10%; }
+    .grid-roles-voluntarios { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
 }

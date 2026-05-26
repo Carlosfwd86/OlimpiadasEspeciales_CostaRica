@@ -31,6 +31,9 @@ type ChartsApiPayload = {
     distribucionAtletas?: Array<{ name: string; value: number }>;
     crecimiento?: Graficos['crecimiento'];
     distribucion?: Graficos['distribucion'];
+    atletasPorDeporte?: Graficos['atletasPorDeporte'];
+    distribucionRegional?: Graficos['distribucionRegional'];
+    totalGeneral?: number;
 };
 
 const mapChartsResponse = (raw: ChartsApiPayload): Graficos => ({
@@ -41,7 +44,10 @@ const mapChartsResponse = (raw: ChartsApiPayload): Graficos => ({
     distribucion: raw.distribucion ?? (raw.distribucionAtletas ?? []).map(p => ({
         label: p.name,
         valor: p.value
-    }))
+    })),
+    atletasPorDeporte: raw.atletasPorDeporte,
+    distribucionRegional: raw.distribucionRegional,
+    totalGeneral: raw.totalGeneral
 });
 
 /* Servicio administrativo centralizado conectado al Backend real */
@@ -139,8 +145,37 @@ export const ServicesAdmin = {
         }
 
         const payloadDatos = (registro as Registro & { datos?: Record<string, unknown> }).datos ?? registro;
+        
+        let nombre = String(payloadDatos.nombre || registro.name || '');
+        let primer_apellido = String(payloadDatos.primer_apellido || payloadDatos.apellido || '');
+        let segundo_apellido = String(payloadDatos.segundo_apellido || '');
+
+        if (!primer_apellido && nombre.includes(' ')) {
+            const parts = nombre.split(' ');
+            nombre = parts[0];
+            primer_apellido = parts[1];
+            if (parts.length > 2) {
+                segundo_apellido = parts.slice(2).join(' ');
+            }
+        }
+        
+        if (!primer_apellido || primer_apellido.trim().length < 2) {
+            primer_apellido = primer_apellido.trim() || 'ND';
+            if (primer_apellido.length < 2) primer_apellido += '.';
+        }
+        
+        let genero = String(payloadDatos.genero || 'Otro');
+        if (!['Masculino', 'Femenino', 'Otro'].includes(genero)) {
+            genero = 'Otro';
+        }
+
         const officialData: Record<string, unknown> = {
             ...(typeof payloadDatos === 'object' ? payloadDatos : {}),
+            nombre,
+            primer_apellido,
+            segundo_apellido,
+            genero,
+            fecha_nacimiento: payloadDatos.fecha_nacimiento || payloadDatos.fechaNacimiento || payloadDatos.fechaNacimientoAtleta || '2000-01-01',
             usuario_id: userId || null,
             status: 'ACTIVO',
             fecha_aprobacion: new Date().toISOString(),

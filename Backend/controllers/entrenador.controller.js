@@ -95,8 +95,13 @@ const entrenadorController = {
         anios_experiencia: parseInt(data.aniosExperiencia || data.anios_experiencia || 0, 10),
         certificaciones: data.certificaciones || null,
         horario_disponible: data.horarioDisponible || data.horario_disponible || null,
-        afeccion_salud: data.afeccionSalud === 'Si',
+        afeccion_salud: data.afeccionSalud === 'Si' || data.afeccionSalud === true,
         detalle_salud: data.detalleSalud || data.detalle_salud || null,
+        otros_dispositivos: data.otrosDispositivos || data.otros_dispositivos || null,
+        especificacion_otros_dispositivos: data.especificacionOtrosDispositivos || data.especificacion_otros_dispositivos || null,
+        terminos_aceptados: data.terminosAceptados === true || data.terminosAceptados === 'true',
+        firma_entrenador: data.firmaEntrenador || null,
+        fecha_firma_entrenador: data.fechaFirmaEntrenador || null,
         status: req.body.status || 'PENDIENTE',
         fecha_aprobacion: req.body.fecha_aprobacion || null
       };

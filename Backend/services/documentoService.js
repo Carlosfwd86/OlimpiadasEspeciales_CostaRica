@@ -130,6 +130,9 @@ function sanitizePublicPending(doc) {
     nombre_original: row.nombre_original,
     mime_type: row.mime_type,
     tamano_bytes: row.tamano_bytes,
+    url_documento: row.url_documento || null,
+    estado_ia: row.estado_ia || 'PENDIENTE',
+    analisis_ia: row.analisis_ia || null,
     created_at: row.created_at,
     s3_url: row.storage_key ? buildPublicUrl(row.storage_key) : null,
   };
@@ -167,13 +170,16 @@ async function savePendingDocument(registroId, categoria, file) {
   const row = await RegistroPendienteDocumento.create({
     registro_pendiente_id: registroId,
     categoria: normalizeCategoria(categoria),
-    nombre_original: file.originalname || fileName,
+    nombre_original: file.originalname || 'documento',
     mime_type: file.mimetype || 'application/octet-stream',
-    storage_key: key,
+    // Campos crypto quedan null (ya no se usa cifrado en disco)
+    storage_key: null,
     iv: null,
     auth_tag: null,
-    hash_sha256: sha256(file.buffer),
-    tamano_bytes: file.buffer.length,
+    hash_sha256: null,
+    tamano_bytes: file.size || file.buffer.length,
+    url_documento: urlDocumento,
+    estado_ia: 'PENDIENTE',
   });
 
   return sanitizePublicPending(row);
@@ -248,9 +254,20 @@ async function deletePendingByRegistro(registroId) {
     where: { registro_pendiente_id: registroId },
   });
   for (const doc of docs) {
-    await deleteFromS3(doc.storage_key);
+    if (doc.url_documento) {
+      // Nuevo flujo: eliminar de S3 / almacenamiento local público
+      await deleteDocumentoPendiente(doc.url_documento).catch(() => {});
+    } else if (doc.storage_key) {
+      // Legado: eliminar archivo cifrado del disco
+      deleteFileIfExists(doc.storage_key);
+    }
   }
   await RegistroPendienteDocumento.destroy({ where: { registro_pendiente_id: registroId } });
+  // Limpiar directorio cifrado legado si existe
+  const pendingDir = path.join(getStorageRoot(), 'pending', String(registroId));
+  if (fs.existsSync(pendingDir)) {
+    fs.rmSync(pendingDir, { recursive: true, force: true });
+  }
 }
 
 async function deleteAtletaDocument(atletaId, docId) {
@@ -334,6 +351,13 @@ async function savePendingFilesFromRequest(registroId, files) {
       }
     }
   }
+
+  // NUEVO: Disparar el análisis IA (fire-and-forget) para todos los documentos recién subidos
+  if (saved.length > 0) {
+    const { dispararAnalisisIA } = require('./openaiDocumentService');
+    dispararAnalisisIA(registroId, saved);
+  }
+
   return saved;
 }
 

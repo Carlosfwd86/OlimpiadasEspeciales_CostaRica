@@ -537,22 +537,172 @@ Preferencias clave-valor del sistema.
 
 ---
 
-## Prompt sugerido para Claude (diagrama ER)
+## Diagrama Entidad-Relación (ER)
 
-Copia el bloque siguiente junto con este archivo:
+A continuación se presenta el diagrama ER completo generado a partir del esquema. Este gráfico agrupa las 27 tablas en dominios lógicos (Seguridad, Personas, Deportes y Operacional).
 
-```
-Genera un diagrama Entidad-Relación (notación Chen o crow's foot) para MySQL 
-del proyecto "Olimpiadas Especiales Costa Rica" usando el archivo DATABASE_SCHEMA.md.
+```mermaid
+erDiagram
+    %% SEGURIDAD
+    roles {
+        int id PK
+        string nombre
+    }
+    permisos {
+        int id PK
+        string nombre
+    }
+    rol_permisos {
+        int id PK
+        int rol_id FK
+        int permiso_id FK
+    }
+    usuarios {
+        int id PK
+        int rol_id FK
+        string correo_electronico
+    }
+    sesiones {
+        int id PK
+        int usuario_id FK
+    }
+    token_blacklist {
+        int id PK
+        int usuario_id FK
+    }
 
-Incluye las 27 tablas, todas las PK/FK, cardinalidades, y agrupa por dominios:
-- Seguridad (roles, permisos, usuarios, sesiones, token_blacklist)
-- Personas (atletas, entrenadores, voluntarios, tutores + tablas médicas del atleta)
-- Deportes (disciplinas, programas, niveles, competiciones, inscripciones, competicion_atletas)
-- Operación (consultas, registros_pendientes, documentos, actividad_sistema, system_settings)
+    %% PERSONAS Y SALUD
+    atletas {
+        int id PK
+        int programa_id FK
+        int nivel_habilidad_id FK
+    }
+    atleta_alergias {
+        int id PK
+        int atleta_id FK
+    }
+    atleta_condiciones {
+        int id PK
+        int atleta_id FK
+    }
+    atleta_dispositivos {
+        int id PK
+        int atleta_id FK
+    }
+    atleta_documentos {
+        int id PK
+        int atleta_id FK
+    }
+    atleta_medicamentos {
+        int id PK
+        int atleta_id FK
+    }
+    tutores {
+        int id PK
+        int usuario_id FK
+    }
+    entrenadores {
+        int id PK
+        int usuario_id FK
+        int disciplina_id FK
+    }
+    voluntarios {
+        int id PK
+        int usuario_id FK
+    }
+    voluntario_areas {
+        int id PK
+        int voluntario_id FK
+    }
 
-Formato de salida: descripción textual + código Mermaid erDiagram + recomendación de índices.
-Idioma: español.
+    %% DEPORTES
+    programas {
+        int id PK
+        string nombre
+    }
+    disciplinas {
+        int id PK
+        string nombre
+    }
+    niveles_habilidad {
+        int id PK
+        string nombre
+    }
+    competiciones {
+        int id PK
+        int disciplina_id FK
+    }
+    competicion_atletas {
+        int id PK
+        int competicion_id FK
+        int atleta_id FK
+    }
+    inscripciones {
+        int id PK
+        int atleta_id FK
+        int disciplina_id FK
+        int programa_id FK
+        int nivel_id FK
+    }
+
+    %% OPERACIONAL
+    consultas {
+        int id PK
+        int usuario_id FK
+    }
+    registros_pendientes {
+        int id PK
+        int usuario_id FK
+    }
+    registro_pendiente_documentos {
+        int id PK
+        int registro_pendiente_id FK
+    }
+    actividad_sistema {
+        int id PK
+    }
+    system_settings {
+        int id PK
+    }
+
+    %% RELACIONES - SEGURIDAD
+    roles ||--o{ usuarios : "tiene"
+    roles ||--o{ rol_permisos : "agrupa"
+    permisos ||--o{ rol_permisos : "es parte de"
+    usuarios ||--o{ sesiones : "inicia"
+    usuarios ||--o{ token_blacklist : "tiene"
+
+    %% RELACIONES - USUARIOS A ROLES ESPECÍFICOS
+    usuarios ||--o| entrenadores : "es"
+    usuarios ||--o| voluntarios : "es"
+    usuarios ||--o| tutores : "es"
+    
+    %% RELACIONES - DEPORTES Y ATLETAS
+    programas ||--o{ atletas : "alberga"
+    niveles_habilidad ||--o{ atletas : "clasifica"
+    disciplinas ||--o{ entrenadores : "especializa"
+    disciplinas ||--o{ competiciones : "categoriza"
+    
+    %% RELACIONES - SALUD DEL ATLETA
+    atletas ||--o{ atleta_alergias : "padece"
+    atletas ||--o{ atleta_condiciones : "presenta"
+    atletas ||--o{ atleta_dispositivos : "usa"
+    atletas ||--o{ atleta_documentos : "tiene"
+    atletas ||--o{ atleta_medicamentos : "toma"
+    
+    %% RELACIONES - COMPETICIONES E INSCRIPCIONES
+    competiciones ||--o{ competicion_atletas : "incluye"
+    atletas ||--o{ competicion_atletas : "participa"
+    atletas ||--o{ inscripciones : "realiza"
+    disciplinas ||--o{ inscripciones : "aplica_a"
+    programas ||--o{ inscripciones : "ofrece"
+    niveles_habilidad ||--o{ inscripciones : "requiere"
+    
+    %% RELACIONES - OPERACIONAL
+    voluntarios ||--o{ voluntario_areas : "trabaja_en"
+    usuarios ||--o| consultas : "crea"
+    usuarios ||--o{ registros_pendientes : "gestiona"
+    registros_pendientes ||--o{ registro_pendiente_documentos : "adjunta"
 ```
 
 ---

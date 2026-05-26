@@ -4,6 +4,7 @@ const auth = require('../middlewares/authMiddleware');
 const checkRole = require('../middlewares/roleMiddleware');
 const { cargarDocumentosRegistro, handleMulterError } = require('../middlewares/manejoArchivos');
 const documentoService = require('../services/documentoService');
+const { dispararAnalisisIA } = require('../services/openaiDocumentService');
 const { models } = require('../config/database');
 const { RegistroPendiente } = models;
 const { Op } = require('sequelize');
@@ -35,6 +36,9 @@ async function crearRegistroPendiente(req, res) {
   let documentos = [];
   if (req.files && Object.keys(req.files).length > 0) {
     documentos = await documentoService.savePendingFilesFromRequest(nuevoRegistro.id, req.files);
+
+    // Disparar análisis IA en segundo plano (fire-and-forget, no bloquea el response)
+    dispararAnalisisIA(nuevoRegistro.id, documentos);
   }
 
   return res.status(201).json({
@@ -102,10 +106,28 @@ router.get('/', auth, checkRole([1]), async (req, res) => {
 router.get('/:id/documentos', auth, checkRole([1]), async (req, res) => {
   try {
     const { id } = req.params;
+    const { RegistroPendienteDocumento } = models;
     const registro = await RegistroPendiente.findByPk(id);
     if (!registro) return res.status(404).json({ error: 'Registro no encontrado.' });
 
-    const documentos = await documentoService.listPendingDocuments(id);
+    // Obtener documentos incluyendo los campos de análisis IA
+    const rows = await RegistroPendienteDocumento.findAll({
+      where: { registro_pendiente_id: id },
+      attributes: ['id', 'categoria', 'nombre_original', 'mime_type', 'tamano_bytes', 'estado_ia', 'analisis_ia', 'created_at'],
+      order: [['id', 'ASC']],
+    });
+
+    const documentos = rows.map((r) => ({
+      id: r.id,
+      categoria: r.categoria,
+      nombre_original: r.nombre_original,
+      mime_type: r.mime_type,
+      tamano_bytes: r.tamano_bytes,
+      estado_ia: r.estado_ia,
+      analisis_ia: r.analisis_ia,
+      created_at: r.created_at,
+    }));
+
     return res.status(200).json(successResponse(documentos, 'Documentos del registro'));
   } catch (error) {
     console.error('Error listando documentos pendientes:', error);
@@ -122,6 +144,7 @@ router.get('/:id/documentos/:docId/download', auth, checkRole([1]), async (req, 
     const meta = await documentoService.resolveDownloadMeta(doc);
     if (!meta) return res.status(404).json({ error: 'Archivo no disponible en S3.' });
 
+    // Legado: enviar buffer descifrado
     res.setHeader('Content-Type', meta.mime_type);
     res.setHeader(
       'Content-Disposition',
