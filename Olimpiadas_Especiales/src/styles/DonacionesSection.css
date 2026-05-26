@@ -2,7 +2,7 @@
     position: relative;
     width: 100%;
     min-height: 500px;
-    background-image: url('/img/Hero_contenedor_03.jpeg'); /* Usando una existente del proyecto */
+    background-image: url('https://s3.us-east-2.amazonaws.com/olimpiadas.especiales/img/Hero_contenedor_03.jpeg'); /* Usando una existente del proyecto */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

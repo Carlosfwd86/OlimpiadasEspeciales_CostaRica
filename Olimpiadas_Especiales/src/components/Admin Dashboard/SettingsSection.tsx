@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { ServicesAdmin } from '../../services/ServicesAdmin';
+import { useAuth } from '../../context/AuthContext';
 import '../../style/AdminDashboard.css';
 import type { SystemSettings } from '../../types';
 import ModalNuevoUsuario from './ModalNuevoUsuario';
@@ -13,6 +14,7 @@ interface SettingsSectionProps {
 }
 
 export default function SettingsSection({ onThemeChange, view, searchQuery = '' }: SettingsSectionProps): React.JSX.Element {
+    const { updateUser } = useAuth();
     const [settings, setSettings] = useState<SystemSettings | null>(null);
     const [usuarios, setUsuarios] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -20,7 +22,7 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
     const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
     const [localSearch, setLocalSearch] = useState<string>('');
 
-    const [perfil, setPerfil] = useState<{ nombre: string; correoElectronico: string; passwordActual: string; passwordNuevo: string }>({
+    const [perfil, setPerfil] = useState<{ nombre: string; correoElectronico: string; passwordActual: string; passwordNuevo: string; avatar?: string; avatarOriginal?: string }>({
         nombre: '', correoElectronico: '', passwordActual: '', passwordNuevo: ''
     });
     const [savingPerfil, setSavingPerfil] = useState<boolean>(false);
@@ -44,7 +46,9 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
                 setPerfil(prev => ({
                     ...prev,
                     nombre: p.nombre ?? '',
-                    correoElectronico: p.email ?? (p as any).correoElectronico ?? ''
+                    correoElectronico: p.email ?? (p as any).correoElectronico ?? '',
+                    avatar: p.avatar,
+                    avatarOriginal: p.avatar
                 }));
             } catch (err) {
                 console.error("Error al cargar datos en Configuración:", err);
@@ -59,6 +63,19 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
         if (!settings) return;
         const k = key as keyof SystemSettings;
         setSettings({ ...settings, [k]: !settings[k] });
+    };
+
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPerfil(prev => ({ ...prev, avatar: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSave = (): void => {
@@ -83,16 +100,23 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
             correoElectronico: string;
             passwordActual?: string;
             passwordNuevo?: string;
+            avatar?: string;
         } = { nombre: perfil.nombre, correoElectronico: perfil.correoElectronico };
         if (perfil.passwordActual) payload.passwordActual = perfil.passwordActual;
         if (perfil.passwordNuevo) payload.passwordNuevo = perfil.passwordNuevo;
+        if (perfil.avatar !== perfil.avatarOriginal) payload.avatar = perfil.avatar;
 
         ServicesAdmin.updateProfile(payload)
-            .then(() => {
+            .then((updated) => {
                 setSavingPerfil(false);
                 ServicesAdmin.logActivity("Perfil", "Se actualizaron los datos del perfil administrador", "fa-solid fa-user-pen", "blue");
                 Swal.fire({ title: '¡Actualizado!', text: 'Perfil actualizado correctamente.', icon: 'success', confirmButtonColor: '#e60000' });
-                setPerfil(prev => ({ ...prev, passwordActual: '', passwordNuevo: '' }));
+                setPerfil(prev => ({ ...prev, passwordActual: '', passwordNuevo: '', avatar: updated.avatar, avatarOriginal: updated.avatar }));
+                if (updated.avatar) {
+                    updateUser({ avatar_url: updated.avatar, nombre: payload.nombre, correo_electronico: payload.correoElectronico });
+                } else {
+                    updateUser({ nombre: payload.nombre, correo_electronico: payload.correoElectronico });
+                }
             })
             .catch(err => {
                 setSavingPerfil(false);
@@ -226,13 +250,46 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
     /* ────────────────────────────────────────────────────────── */
     /*  VIEW: MI PERFIL                                           */
     /* ────────────────────────────────────────────────────────── */
-    if (view === 'perfil') return (
+    if (view === 'perfil') {
+        const currentAvatar = perfil.avatar;
+        const isUrl = currentAvatar && (currentAvatar.startsWith('http') || currentAvatar.startsWith('data:image'));
+
+        return (
         <div className="tab-container">
             <div style={{ background: 'var(--admin-white)', borderRadius: '16px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.04)', maxWidth: '560px' }}>
                 <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--admin-text-main)', marginBottom: '6px', letterSpacing: '-0.02em' }}>Mi Perfil</h2>
                 <p style={{ color: 'var(--admin-text-muted)', marginBottom: '32px', fontSize: '14px', fontWeight: 500 }}>Actualiza tus datos de acceso al panel administrativo.</p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '10px' }}>
+                        <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#e62334', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '30px', overflow: 'hidden' }}>
+                            {isUrl ? (
+                                <img src={currentAvatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <i className={String(currentAvatar ?? 'fa-solid fa-user')}></i>
+                            )}
+                            <div 
+                                style={{ position: 'absolute', bottom: 0, width: '100%', height: '30%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '12px' }}
+                                onClick={() => fileInputRef.current?.click()}
+                                title="Cambiar foto"
+                            >
+                                <i className="fa-solid fa-camera"></i>
+                            </div>
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                ref={fileInputRef} 
+                                style={{ display: 'none' }} 
+                                onChange={handleImageUpload} 
+                            />
+                        </div>
+                        <div>
+                            <button onClick={() => fileInputRef.current?.click()} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#fff', color: 'var(--admin-text-main)', cursor: 'pointer', fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+                                Cambiar foto
+                            </button>
+                            <p style={{ color: 'var(--admin-text-muted)', fontSize: '12px', margin: 0 }}>Sube una nueva foto para tu perfil.</p>
+                        </div>
+                    </div>
                     {[
                         { label: 'Nombre completo', key: 'nombre', type: 'text' },
                         { label: 'Correo electrónico', key: 'correoElectronico', type: 'email' },
@@ -278,7 +335,8 @@ export default function SettingsSection({ onThemeChange, view, searchQuery = '' 
                 </div>
             </div>
         </div>
-    );
+        );
+    }
 
     /* ────────────────────────────────────────────────────────── */
     /*  VIEW: CONFIGURACIÓN DEL SISTEMA                           */
