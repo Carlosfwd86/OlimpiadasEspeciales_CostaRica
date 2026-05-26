@@ -356,9 +356,9 @@ const atletaController = {
       const doc = await documentoService.getAtletaDocumentForDownload(id, docId);
       if (!doc) return res.status(404).json(errorResponse('Documento no encontrado', 404));
 
-      const meta = documentoService.resolveDownloadMeta(doc);
+      const meta = await documentoService.resolveDownloadMeta(doc);
       if (!meta) {
-        return res.status(404).json(errorResponse('Archivo cifrado no disponible', 404));
+        return res.status(404).json(errorResponse('Archivo no disponible en S3', 404));
       }
 
       res.setHeader('Content-Type', meta.mime_type);

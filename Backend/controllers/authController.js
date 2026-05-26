@@ -318,6 +318,7 @@ const updateProfile = async (req, res) => {
       id: usuario.id,
       nombre: usuario.nombre,
       correoElectronico: usuario.correo_electronico,
+      avatar_url: usuario.avatar_url ?? null,
       rol: usuario.rol_id
     };
 

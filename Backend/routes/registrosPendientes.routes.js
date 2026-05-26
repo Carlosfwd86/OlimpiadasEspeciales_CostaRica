@@ -119,8 +119,8 @@ router.get('/:id/documentos/:docId/download', auth, checkRole([1]), async (req, 
     const doc = await documentoService.getPendingDocumentForDownload(id, docId);
     if (!doc) return res.status(404).json({ error: 'Documento no encontrado.' });
 
-    const meta = documentoService.resolveDownloadMeta(doc);
-    if (!meta) return res.status(404).json({ error: 'Archivo cifrado no disponible.' });
+    const meta = await documentoService.resolveDownloadMeta(doc);
+    if (!meta) return res.status(404).json({ error: 'Archivo no disponible en S3.' });
 
     res.setHeader('Content-Type', meta.mime_type);
     res.setHeader(
