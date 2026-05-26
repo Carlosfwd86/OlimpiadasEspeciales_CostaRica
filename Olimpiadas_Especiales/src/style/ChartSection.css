@@ -2,8 +2,15 @@
 
 .chart-section-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
+  align-items: flex-start; /* Evita que la tarjeta pequeña se estire a la altura de la grande */
+}
+
+@media (min-width: 992px) {
+  .chart-section-container {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .chart-card {
@@ -144,6 +151,7 @@
   align-items: center;
   margin-bottom: 24px;
   gap: 20px;
+  flex-wrap: wrap; /* Permite que el contenido se ajuste en pantallas pequeñas */
 }
 
 .regional-list {
