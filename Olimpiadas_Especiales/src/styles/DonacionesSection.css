@@ -22,16 +22,20 @@
 
 .donaciones_container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr; /* Mobile first */
     gap: 50px;
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
     align-items: center;
+    text-align: center; /* Mobile first */
 }
 
 .donaciones_info_column {
     color: #fff;
+    display: flex; /* Mobile first */
+    flex-direction: column;
+    align-items: center;
 }
 
 .donaciones_badge {
@@ -90,7 +94,7 @@
     box-shadow: 0 25px 60px rgba(0,0,0,0.4);
     width: 100%;
     max-width: 450px;
-    margin-left: auto;
+    margin: 0 auto; /* Mobile first */
     animation: floatAnim 4s ease-in-out infinite;
 }
 
@@ -133,6 +137,7 @@
     cursor: pointer;
     transition: all 0.2s;
     color: #666;
+    min-height: 44px; /* Touch target */
 }
 
 .frecuencia_btn.active {
@@ -157,6 +162,7 @@
     cursor: pointer;
     transition: all 0.2s;
     color: #444;
+    min-height: 44px; /* Touch target */
 }
 
 .monto_btn_otro {
@@ -196,6 +202,7 @@
     justify-content: center;
     gap: 10px;
     transition: background 0.2s, transform 0.2s;
+    min-height: 48px; /* Touch target */
 }
 
 .boton_donar_final:hover {
@@ -214,17 +221,15 @@
 }
 
 /* RESPONSIVO */
-@media (max-width: 992px) {
+@media (min-width: 992px) {
     .donaciones_container {
-        grid-template-columns: 1fr;
-        text-align: center;
+        grid-template-columns: 1fr 1fr;
+        text-align: left;
     }
     .donaciones_info_column {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
     }
     .donaciones_card_flotante {
-        margin: 0 auto;
+        margin: 0 0 0 auto;
     }
 }

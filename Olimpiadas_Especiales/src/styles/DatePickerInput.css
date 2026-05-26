@@ -3,7 +3,7 @@
 .dpi-container {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px; /* Mobile first */
     width: 100%;
 }
 
@@ -25,18 +25,18 @@
     appearance: none;
     -webkit-appearance: none;
     width: 100%;
-    padding: 11px 36px 11px 14px;
+    padding: 10px 28px 10px 10px; /* Mobile first */
     background: #f8fafc;
     border: 1.5px solid #FF0000;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 13px; /* Mobile first */
     font-weight: 500;
     font-family: 'Outfit', 'Inter', sans-serif;
     color: #1e293b;
     cursor: pointer;
     box-sizing: border-box;
     line-height: 1.5;
-    height: 45px;
+    height: 48px; /* Accesibilidad móvil mínima 44px, usamos 48px */
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     outline: none;
 }
@@ -67,7 +67,7 @@
 /* Custom chevron icon */
 .dpi-chevron {
     position: absolute;
-    right: 10px;
+    right: 8px; /* Mobile first */
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
@@ -117,8 +117,8 @@
 }
 
 /* Responsive */
-@media (max-width: 480px) {
-    .dpi-container { gap: 6px; }
-    .dpi-select { padding: 10px 28px 10px 10px; font-size: 13px; height: 42px; }
-    .dpi-chevron { right: 8px; }
+@media (min-width: 480px) {
+    .dpi-container { gap: 8px; }
+    .dpi-select { padding: 11px 36px 11px 14px; font-size: 14px; } /* Mantenemos 48px para consistencia o bajamos a 45px en desktop, pero mejor 48px */
+    .dpi-chevron { right: 10px; }
 }

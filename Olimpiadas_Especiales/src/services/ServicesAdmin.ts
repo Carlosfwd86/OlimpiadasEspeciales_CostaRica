@@ -31,6 +31,9 @@ type ChartsApiPayload = {
     distribucionAtletas?: Array<{ name: string; value: number }>;
     crecimiento?: Graficos['crecimiento'];
     distribucion?: Graficos['distribucion'];
+    atletasPorDeporte?: Graficos['atletasPorDeporte'];
+    distribucionRegional?: Graficos['distribucionRegional'];
+    totalGeneral?: number;
 };
 
 const mapChartsResponse = (raw: ChartsApiPayload): Graficos => ({
@@ -41,7 +44,10 @@ const mapChartsResponse = (raw: ChartsApiPayload): Graficos => ({
     distribucion: raw.distribucion ?? (raw.distribucionAtletas ?? []).map(p => ({
         label: p.name,
         valor: p.value
-    }))
+    })),
+    atletasPorDeporte: raw.atletasPorDeporte,
+    distribucionRegional: raw.distribucionRegional,
+    totalGeneral: raw.totalGeneral
 });
 
 /* Servicio administrativo centralizado conectado al Backend real */

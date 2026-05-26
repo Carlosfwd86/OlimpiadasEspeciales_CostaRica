@@ -1,8 +1,12 @@
+/* ==========================================================================
+   ESTILOS BASE (Mobile-First ~375px)
+   ========================================================================== */
+
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 80px 20px;
+  padding: 40px 16px; /* Ajuste móvil */
   min-height: 100vh;
   background-color: #f8fafc;
   font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
@@ -13,32 +17,32 @@
   background-color: #ffffff;
   width: 100%;
   max-width: 550px;
-  padding: 50px;
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  padding: 30px 20px; /* Ajuste móvil */
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #f1f5f9;
   text-align: center;
   transition: transform 0.3s ease;
 }
 
 .register-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-2px); /* Hover menor en móvil */
 }
 
 .register-card h1 {
   margin-top: 0;
   color: #FF0000;
   margin-bottom: 12px;
-  font-size: 2.2rem;
+  font-size: 1.8rem; /* Ajuste móvil */
   font-weight: 900;
   letter-spacing: -0.02em;
 }
 
 .register-card p {
   color: #64748b;
-  margin-bottom: 40px;
-  font-size: 1.05rem;
-  line-height: 1.8;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .register-form {
@@ -48,15 +52,15 @@
 }
 
 .register-form .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .register-form label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-weight: 700;
   color: #1e293b;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -64,15 +68,16 @@
 .register-form input, 
 .register-form select {
   width: 100%;
-  padding: 11px 14px;
+  padding: 13px 14px;
   border: 1px solid #FF0000;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 14px; /* <16px puede causar zoom en iOS, lo dejaremos en 14px como original o 16px ideal */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
   background-color: #ffffff;
   color: #1e293b;
   font-family: inherit;
+  min-height: 48px; /* Accesible */
 }
 
 .register-form input::placeholder {
@@ -95,25 +100,24 @@
 
 .btn-register {
   width: 100%;
-  padding: 18px;
+  padding: 15px;
   background-color: #FF0000;
   color: #fff;
   border: none;
   border-radius: 16px;
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 15px;
-  box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2);
+  margin-top: 10px;
+  box-shadow: 0 8px 15px rgba(255, 0, 0, 0.2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  min-height: 48px;
 }
 
 .btn-register:hover {
   background-color: #D00000;
-  box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3);
-  transform: translateY(-2px);
 }
 
 .btn-register:active {
@@ -121,8 +125,8 @@
 }
 
 .login-link {
-  margin-top: 30px;
-  font-size: 1rem;
+  margin-top: 24px;
+  font-size: 0.95rem;
   color: #64748b;
   font-weight: 500;
 }
@@ -133,6 +137,7 @@
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 4px;
+  padding: 8px 0; /* Área táctil */
 }
 
 .login-link span:hover {
@@ -147,6 +152,7 @@
   background: #ffffff;
   font-size: 14px;
   line-height: 1.5;
+  min-height: 48px;
 }
 
 .register-form .dpi-container:hover:not(.dpi-disabled) {
@@ -163,11 +169,67 @@
   font-size: 1rem;
 }
 
-/* ── Responsive ── */
-@media (max-width: 600px) {
-  .register-card { padding: 30px 20px; }
+/* ==========================================================================
+   TABLETS Y DESKTOP (md: 600px+)
+   ========================================================================== */
+@media (min-width: 600px) {
+  .register-container {
+    padding: 80px 20px;
+  }
+
+  .register-card {
+    padding: 50px;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  }
+
+  .register-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .register-card h1 {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+  }
+
+  .register-card p {
+    font-size: 1.05rem;
+    margin-bottom: 40px;
+    line-height: 1.8;
+  }
+
+  .register-form .form-group {
+    margin-bottom: 24px;
+  }
+
+  .register-form label {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
   .register-form input,
-  .register-form select { padding: 13px 14px; }
-  .btn-register { padding: 15px; font-size: 1rem; }
-  .register-card h1 { font-size: 1.8rem; }
+  .register-form select {
+    padding: 11px 14px; /* Restaurar padding original en desktop */
+  }
+
+  .btn-register {
+    padding: 18px;
+    font-size: 1.15rem;
+    margin-top: 15px;
+    box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2);
+  }
+
+  .btn-register:hover {
+    box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .login-link {
+    margin-top: 30px;
+    font-size: 1rem;
+  }
+
+  .login-link span {
+    padding: 0;
+  }
 }

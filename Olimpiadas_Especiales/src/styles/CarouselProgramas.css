@@ -24,7 +24,7 @@
 
 /* ── Section ── */
 .carrusel-programas-section {
-    padding: 90px 5%;
+    padding: 64px 4%; /* Mobile first */
     background: #fff;
 }
 
@@ -72,7 +72,8 @@
 
 /* ── Card ── */
 .programa-card-carousel {
-    width: 360px;
+    width: 100%; /* Mobile first */
+    max-width: 420px;
     background: #fff;
     border-radius: 20px;
     overflow: hidden;
@@ -199,6 +200,7 @@
     cursor: pointer;
     letter-spacing: 0.04em;
     transition: background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+    min-height: 48px; /* Touch target */
 }
 
 .ver-todos-programas-btn:hover {
@@ -208,19 +210,19 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 1100px) {
+@media (min-width: 768px) {
+    .carrusel-programas-section {
+        padding: 90px 5%;
+    }
+
     .programa-card-carousel {
         width: 300px;
+        max-width: none;
     }
 }
 
-@media (max-width: 768px) {
-    .carrusel-programas-section {
-        padding: 64px 4%;
-    }
-
+@media (min-width: 1100px) {
     .programa-card-carousel {
-        width: 100%;
-        max-width: 420px;
+        width: 360px;
     }
 }

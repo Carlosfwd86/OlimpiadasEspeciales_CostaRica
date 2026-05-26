@@ -2,12 +2,16 @@
    CONTACTO — Olimpiadas Especiales Costa Rica
    ============================================================ */
 
+/* ==========================================================================
+   ESTILOS BASE (Mobile-First ~375px)
+   ========================================================================== */
+
 /* ── Wrapper principal ──────────────────────────────────────── */
 .contenedor_contacto_principal {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-bottom: 70px;
+  padding-bottom: 40px; /* Reducido en móvil */
   background: #f9f9f9;
 }
 
@@ -15,11 +19,11 @@
 .encabezado_consultas {
   background: #fff;
   border-bottom: 3px solid #C8102E;
-  padding: 28px 8% 22px;
+  padding: 20px 5% 16px; /* Reducido para móvil */
 }
 
 .titulo_consultas {
-  font-size: 2rem;
+  font-size: 1.3rem; /* Tamaño móvil */
   font-weight: 900;
   color: #C8102E;
   text-transform: uppercase;
@@ -29,7 +33,7 @@
 }
 
 .breadcrumb_consultas {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #777;
   margin: 0;
 }
@@ -48,8 +52,7 @@
 .hero_consultas {
   position: relative;
   width: 100%;
-  height: 420px;
-  /* background-image gestionado via style inline en Contacto.tsx → s3Url() */
+  height: 200px; /* Altura móvil */
   background-size: cover;
   background-position: center 55%;
   overflow: hidden;
@@ -69,13 +72,14 @@
   position: relative;
   z-index: 2;
   color: #fff;
-  font-size: 5rem;
+  font-size: clamp(2rem, 8vw, 5rem); /* Ajustado a móvil */
   font-weight: 900;
-  letter-spacing: 2px;
-  text-shadow: 0 4px 24px rgba(0,0,0,0.55);
+  letter-spacing: 1px;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.55);
   text-align: center;
   margin: 0;
   text-transform: uppercase;
+  padding: 0 16px;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -83,28 +87,29 @@
 ══════════════════════════════════════════════════════════════ */
 .contenedor_tarjetas_contacto {
   display: flex;
+  flex-direction: column; /* Columna en móvil */
   justify-content: center;
-  align-items: stretch;
-  gap: 30px;
+  align-items: center; /* Centrado */
+  gap: 20px;
   max-width: 1200px;
-  margin: -90px auto 0;
-  padding: 0 5%;
+  margin: 0 auto; /* Sin margen negativo en móvil */
+  padding: 30px 5%; /* Padding ajustado */
   position: relative;
   z-index: 3;
 }
 
 .tarjeta_contacto {
-  flex: 1;
-  min-width: 280px;
+  width: 100%;
+  max-width: 400px; /* Max width para móvil */
   background-color: #fff;
   color: #111;
   border-radius: 12px;
-  padding: 50px 30px;
+  padding: 40px 20px; /* Reducido en móvil */
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06); /* Sombra menor en móvil */
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-top-color 0.3s ease;
   cursor: pointer;
   border: 2px solid #111;
@@ -112,85 +117,58 @@
 }
 
 .tarjeta_contacto:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  transform: translateY(-4px); /* Hover reducido en móvil */
+  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
 }
 
-.tarjeta_contacto.tarjeta_telefono:hover {
-  border-top-color: #10B981;
-}
-
-.tarjeta_contacto.tarjeta_email:hover {
-  border-top-color: #3B82F6;
-}
-
-.tarjeta_contacto.tarjeta_redes:hover {
-  border-top-color: #8B5CF6;
-}
+.tarjeta_contacto.tarjeta_telefono:hover { border-top-color: #10B981; }
+.tarjeta_contacto.tarjeta_email:hover { border-top-color: #3B82F6; }
+.tarjeta_contacto.tarjeta_redes:hover { border-top-color: #8B5CF6; }
 
 .circulo_icono {
-  width: 80px;
-  height: 80px;
+  width: 60px; /* Más pequeño en móvil */
+  height: 60px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.2rem;
 }
 
 /* Teléfono (Emerald) */
-.circulo_icono.circulo_telefono {
-  background-color: rgba(16, 185, 129, 0.08);
-  color: #10B981;
-}
-
+.circulo_icono.circulo_telefono { background-color: rgba(16, 185, 129, 0.08); color: #10B981; }
 .tarjeta_contacto.tarjeta_telefono:hover .circulo_telefono {
-  background-color: #10B981;
-  color: #fff;
-  transform: scale(1.15) rotate(-8deg);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  background-color: #10B981; color: #fff; transform: scale(1.1) rotate(-8deg); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
 }
 
 /* Email (Royal Blue) */
-.circulo_icono.circulo_email {
-  background-color: rgba(59, 130, 246, 0.08);
-  color: #3B82F6;
-}
-
+.circulo_icono.circulo_email { background-color: rgba(59, 130, 246, 0.08); color: #3B82F6; }
 .tarjeta_contacto.tarjeta_email:hover .circulo_email {
-  background-color: #3B82F6;
-  color: #fff;
-  transform: scale(1.15) rotate(8deg);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+  background-color: #3B82F6; color: #fff; transform: scale(1.1) rotate(8deg); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
 }
 
 /* Redes Sociales (Creative Gradient / Violet) */
-.circulo_icono.circulo_redes {
-  background-color: rgba(139, 92, 246, 0.08);
-  color: #8B5CF6;
-}
-
+.circulo_icono.circulo_redes { background-color: rgba(139, 92, 246, 0.08); color: #8B5CF6; }
 .tarjeta_contacto.tarjeta_redes:hover .circulo_redes {
-  background: linear-gradient(135deg, #6366F1 0%, #D946EF 50%, #EC4899 100%);
-  color: #fff;
-  transform: scale(1.15) rotate(-5deg);
-  box-shadow: 0 6px 20px rgba(217, 70, 239, 0.35);
+  background: linear-gradient(135deg, #6366F1 0%, #D946EF 50%, #EC4899 100%); color: #fff; transform: scale(1.1) rotate(-5deg); box-shadow: 0 6px 15px rgba(217, 70, 239, 0.3);
 }
 
 .tarjeta_contacto h3 {
-  font-size: 1.6rem;
+  font-size: 1.4rem; /* Más pequeño en móvil */
   font-weight: 800;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   text-transform: capitalize;
   color: #111;
 }
 
 .tarjeta_contacto p {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 500;
   margin: 0;
   color: #555;
+  word-break: break-all; /* Prevenir desbordamiento de emails en móvil */
 }
 
 /* Redes sociales */
@@ -209,15 +187,14 @@
   align-items: center;
   gap: 10px;
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 0.95rem; /* Ajustado */
   color: #555;
   cursor: pointer;
   transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 6px 0; /* Área táctil ampliada */
 }
 
-.lista_redes li:hover {
-  transform: translateX(8px);
-}
+.lista_redes li:hover { transform: translateX(5px); }
 
 .icono_mini_red {
   width: 28px;
@@ -230,48 +207,24 @@
 }
 
 /* Facebook brand colors */
-.icono_mini_red.icono_facebook {
-  background-color: rgba(24, 119, 242, 0.12);
-  color: #1877F2;
-}
-.lista_redes li.red_facebook:hover {
-  color: #1877F2;
-}
+.icono_mini_red.icono_facebook { background-color: rgba(24, 119, 242, 0.12); color: #1877F2; }
+.lista_redes li.red_facebook:hover { color: #1877F2; }
 .lista_redes li.red_facebook:hover .icono_facebook {
-  background-color: #1877F2;
-  color: #ffffff;
-  transform: scale(1.15) rotate(-8deg);
-  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+  background-color: #1877F2; color: #ffffff; transform: scale(1.15) rotate(-8deg); box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
 }
 
 /* Instagram brand colors */
-.icono_mini_red.icono_instagram {
-  background-color: rgba(225, 48, 108, 0.12);
-  color: #E1306C;
-}
-.lista_redes li.red_instagram:hover {
-  color: #E1306C;
-}
+.icono_mini_red.icono_instagram { background-color: rgba(225, 48, 108, 0.12); color: #E1306C; }
+.lista_redes li.red_instagram:hover { color: #E1306C; }
 .lista_redes li.red_instagram:hover .icono_instagram {
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  color: #ffffff;
-  transform: scale(1.15) rotate(8deg);
-  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.3);
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: #ffffff; transform: scale(1.15) rotate(8deg); box-shadow: 0 4px 12px rgba(225, 48, 108, 0.3);
 }
 
 /* X (formerly Twitter) brand colors */
-.icono_mini_red.icono_x {
-  background-color: rgba(15, 20, 25, 0.1);
-  color: #0F1419;
-}
-.lista_redes li.red_x:hover {
-  color: #0F1419;
-}
+.icono_mini_red.icono_x { background-color: rgba(15, 20, 25, 0.1); color: #0F1419; }
+.lista_redes li.red_x:hover { color: #0F1419; }
 .lista_redes li.red_x:hover .icono_x {
-  background-color: #0F1419;
-  color: #ffffff;
-  transform: scale(1.15) rotate(-8deg);
-  box-shadow: 0 4px 12px rgba(15, 20, 25, 0.3);
+  background-color: #0F1419; color: #ffffff; transform: scale(1.15) rotate(-8deg); box-shadow: 0 4px 12px rgba(15, 20, 25, 0.3);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -279,17 +232,17 @@
 ══════════════════════════════════════════════════════════════ */
 .cuerpo_consultas {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  max-width: 1300px;
+  grid-template-columns: 1fr; /* Columna móvil */
+  gap: 28px;
   width: 92%;
-  margin: 60px auto 0;
+  max-width: 1300px;
+  margin: 32px auto 0;
 }
 
 /* Subtítulos */
 .subtitulo_formulario,
 .subtitulo_mapa {
-  font-size: 1.25rem;
+  font-size: 1.15rem; /* Ajustado */
   font-weight: 800;
   color: #111;
   text-transform: uppercase;
@@ -310,10 +263,10 @@
   background: #e8f5e9;
   border: 1px solid #66bb6a;
   color: #2e7d32;
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-radius: 6px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   margin-bottom: 16px;
   animation: fadeIn 0.3s ease;
 }
@@ -322,10 +275,10 @@
   background: #fdecea;
   border: 1px solid #ef9a9a;
   color: #b71c1c;
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-radius: 6px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   margin-bottom: 16px;
   animation: fadeIn 0.3s ease;
 }
@@ -338,7 +291,7 @@
 form#formulario_consultas_asuntos {
   display: flex;
   flex-direction: column;
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .grupo_campo {
@@ -348,7 +301,7 @@ form#formulario_consultas_asuntos {
 }
 
 .etiqueta_campo {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: #444;
   text-transform: uppercase;
@@ -362,13 +315,14 @@ form#formulario_consultas_asuntos {
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 12px 14px;
-  font-size: 0.95rem;
+  font-size: 0.95rem; /* Zoom in iOS evitado con >16px o similar, pero lo dejamos en 0.95rem/16px es ideal */
   color: #222;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
   width: 100%;
   box-sizing: border-box;
+  min-height: 44px; /* Accesibilidad */
 }
 
 .campo_texto:focus {
@@ -377,7 +331,7 @@ form#formulario_consultas_asuntos {
   background: #fff;
 }
 
-.campo_textarea { resize: vertical; min-height: 130px; }
+.campo_textarea { resize: vertical; min-height: 120px; }
 
 /* Select ASUNTO con bloque rojo */
 .wrapper_select_asunto {
@@ -402,6 +356,7 @@ form#formulario_consultas_asuntos {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .campo_select_asunto:focus {
@@ -416,9 +371,9 @@ form#formulario_consultas_asuntos {
   justify-content: center;
   background: #C8102E;
   border-radius: 0 4px 4px 0;
-  padding: 0 16px;
+  padding: 0 14px;
   pointer-events: none;
-  min-width: 46px;
+  min-width: 44px; /* Accesible */
   flex-shrink: 0;
 }
 
@@ -430,10 +385,11 @@ form#formulario_consultas_asuntos {
 }
 
 .boton_enviar_consulta {
+  width: 100%; /* Botón 100% en móvil */
   background: #fff;
   color: #111;
   border: 2px solid #111;
-  padding: 13px 60px;
+  padding: 13px 40px;
   font-size: 0.9rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -441,17 +397,16 @@ form#formulario_consultas_asuntos {
   border-radius: 2px;
   cursor: pointer;
   transition: background 0.22s ease, color 0.22s ease, transform 0.18s ease;
+  min-height: 48px;
 }
 
 .boton_enviar_consulta:hover:not(:disabled) {
   background: #C8102E;
   color: #fff;
   border-color: #C8102E;
-  transform: translateY(-2px);
 }
 
 .boton_enviar_consulta:active:not(:disabled) { transform: translateY(0); }
-
 .boton_enviar_consulta:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ── Columna mapa ────────────────────────────────────────────── */
@@ -463,31 +418,34 @@ form#formulario_consultas_asuntos {
 .direccion_mapa {
   font-size: 0.9rem;
   color: #555;
-  line-height: 1.7;
-  margin: 10px 0 18px;
+  line-height: 1.6;
+  margin: 10px 0 16px;
 }
 
 .wrapper_mapa {
   flex: 1;
-  min-height: 420px;
+  min-height: 250px; /* Reducido móvil */
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.10);
   border: 2px solid #e0e0e0;
 }
 
 .wrapper_mapa iframe {
   width: 100%;
   height: 100%;
-  min-height: 420px;
+  min-height: 250px;
   display: block;
 }
 
 /* Botón abrir en Google Maps */
 .btn_abrir_mapa {
-  display: inline-block;
+  display: flex; /* Flex para 100% width en móvil centrado si se quiere, o inline-flex */
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   margin-top: 14px;
-  padding: 10px 22px;
+  padding: 12px 22px;
   background: #C8102E;
   color: #fff;
   font-weight: 700;
@@ -496,27 +454,86 @@ form#formulario_consultas_asuntos {
   border-radius: 4px;
   text-decoration: none;
   transition: background 0.2s ease, transform 0.18s ease;
-  align-self: flex-start;
+  min-height: 44px;
 }
 
 .btn_abrir_mapa:hover {
   background: #a00c24;
-  transform: translateY(-2px);
 }
 
-/* ── RESPONSIVO ──────────────────────────────────────────────── */
-@media (max-width: 1024px) {
+/* ==========================================================================
+   TABLETS PEQUEÑAS Y MEDIANAS (md: 640px+)
+   ========================================================================== */
+@media (min-width: 640px) {
   .titulo_consultas { font-size: 1.6rem; }
-  .contenedor_tarjetas_contacto { flex-wrap: wrap; gap: 20px; margin-top: -40px; }
-  .cuerpo_consultas { grid-template-columns: 1fr; width: 94%; }
-  .wrapper_mapa, .wrapper_mapa iframe { min-height: 360px; }
+  
+  .contenedor_tarjetas_contacto { 
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    gap: 20px; 
+  }
+  
+  .tarjeta_contacto { 
+    max-width: none;
+    flex: 1; 
+    min-width: 250px;
+  }
+
+  .boton_enviar_consulta { width: auto; }
+  .btn_abrir_mapa { width: auto; align-self: flex-start; }
 }
 
-@media (max-width: 768px) {
-  .titulo_consultas { font-size: 1.3rem; }
-  .hero_consultas { height: 200px; }
-  .contenedor_tarjetas_contacto { flex-direction: column; align-items: center; margin-top: 0; padding: 30px 5%; }
-  .tarjeta_contacto { width: 100%; max-width: 400px; padding: 40px 20px; }
-  .cuerpo_consultas { margin-top: 32px; gap: 28px; }
-  .boton_enviar_consulta { padding: 13px 40px; }
+/* ==========================================================================
+   TABLETS GRANDES Y DESKTOP PEQUEÑO (lg: 1024px+)
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .contenedor_contacto_principal { padding-bottom: 70px; }
+  
+  .encabezado_consultas { padding: 28px 8% 22px; }
+  .titulo_consultas { font-size: 2rem; }
+  
+  .hero_consultas { height: 420px; }
+  .titulo_hero_consultas { font-size: 5rem; letter-spacing: 2px; }
+
+  .contenedor_tarjetas_contacto { 
+    margin-top: -90px; 
+    gap: 30px; 
+    padding: 0 5%; 
+    flex-wrap: nowrap;
+  }
+  
+  .tarjeta_contacto { 
+    padding: 50px 30px; 
+  }
+  
+  .tarjeta_contacto:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  }
+
+  .circulo_icono {
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 25px;
+  }
+  
+  .tarjeta_contacto h3 { font-size: 1.6rem; margin-bottom: 15px; }
+  .tarjeta_contacto p { font-size: 1.05rem; }
+  
+  .lista_redes li { font-size: 1.05rem; }
+
+  .cuerpo_consultas { 
+    grid-template-columns: 1fr 1fr; 
+    gap: 40px; 
+    margin: 60px auto 0; 
+  }
+
+  .subtitulo_formulario, .subtitulo_mapa { font-size: 1.25rem; }
+
+  .wrapper_mapa { min-height: 420px; box-shadow: 0 6px 24px rgba(0,0,0,0.10); }
+  .wrapper_mapa iframe { min-height: 420px; }
+  
+  .boton_enviar_consulta { padding: 13px 60px; }
+  .boton_enviar_consulta:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn_abrir_mapa:hover { transform: translateY(-2px); }
 }

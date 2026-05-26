@@ -1,12 +1,15 @@
-﻿
 /* --- VARIABLES OFICIALES (BASADO EN PALETA Y MOCKUP) --- */
 :root {
   --so-red: #FF0000;
   --so-grey: #636359;
   --so-black: #585857;
   --so-white: #FFFFFF;
-  --fondo-claro: #FFFFFF; /* Actualizado a blanco oficial */
+  --fondo-claro: #FFFFFF;
 }
+
+/* ==========================================================================
+   ESTILOS BASE (Mobile-First ~375px)
+   ========================================================================== */
 
 /* --- CONTENEDOR PRINCIPAL HERO --- */
 .contenedor_hero_principal {
@@ -18,18 +21,18 @@
   flex-direction: column;
   overflow: hidden;
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  margin-top: 2rem; /* SeparaciÃ³n del navbar */
+  margin-top: 2rem;
 }
 
 /* --- FORMA CURVA ROJA DE FONDO (WAVE) --- */
 .hero_fondo_derecha {
   position: absolute;
-  top: 10%;
-  right: 2%;
-  width: 40%;
-  height: 80%;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 60%;
   background-color: var(--so-red);
-  border-radius: 40px 0 0 100px;
+  border-radius: 0; /* Sin radio en móvil para ocupar el fondo */
   z-index: 1;
   opacity: 0.8;
   animation: floatBackground 8s ease-in-out infinite;
@@ -40,14 +43,15 @@
   50% { transform: translateY(-15px) scale(1.02); }
 }
 
-/* --- CONTENIDO SUPERIOR (Texto Izquierda / Imagen Derecha) --- */
+/* --- CONTENIDO SUPERIOR --- */
 .hero_contenido_superior {
   position: relative;
   z-index: 2;
   display: flex;
+  flex-direction: column; /* Columna en móvil */
   align-items: center;
-  justify-content: space-between;
-  padding: 40px 8% 100px; /* padding-bottom extra para que las tarjetas suban */
+  justify-content: center;
+  padding: 40px 5% 60px;
   flex: 1;
   gap: 40px;
 }
@@ -55,15 +59,17 @@
 /* --- LADO IZQUIERDO (TEXTO Y BOTONES) --- */
 .hero_texto_izquierdo {
   flex: 1;
-  max-width: 550px;
+  width: 100%;
+  max-width: 100%;
+  text-align: center; /* Centrado en móvil */
 }
 
 .hero_titulo {
-  font-size: 3.5rem;
+  font-size: 2.2rem; /* Adaptado para móvil */
   color: var(--so-black);
   font-weight: 800;
   line-height: 1.1;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .hero_titulo_rojo {
@@ -71,34 +77,41 @@
 }
 
 .hero_descripcion {
-  font-size: 1.15rem;
+  font-size: 1.05rem; /* Adaptado para móvil */
   color: var(--so-grey);
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   font-weight: 500;
 }
 
 /* --- BOTONES --- */
 .hero_botones {
   display: flex;
-  gap: 20px;
+  flex-direction: column; /* Columna en móvil */
+  gap: 15px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.boton_rojo, .boton_blanco {
+  width: 100%; /* Full width en móvil */
+  min-height: 48px; /* Altura táctil mejorada */
+  justify-content: center;
+  border-radius: 30px; 
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
   align-items: center;
+  gap: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s;
 }
 
 .boton_rojo {
   background-color: var(--so-red);
   color: var(--so-white);
   border: none;
-  padding: 16px 32px;
-  border-radius: 30px; 
-  font-weight: 700;
-  font-size: 1.05rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3); /* Mantenemos la sombra mejorada por ahora */
+  box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3);
 }
 
 .boton_rojo:hover {
@@ -111,12 +124,6 @@
   background-color: var(--so-white);
   color: var(--so-black);
   border: 2px solid #E0E0E0;
-  padding: 14px 32px; 
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 1.05rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .boton_blanco:hover {
@@ -135,25 +142,25 @@
 .hero_imagen_derecha {
   flex: 1;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; /* Centrado en móvil */
   align-items: center;
   position: relative;
+  width: 100%;
 }
 
 .imagen_ejemplo {
   width: 100%;
   max-width: 600px;
-  height: 480px;
+  height: 300px; /* Reducida para móvil */
   background-color: #cccccc;
   background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=1000&auto=format&fit=crop'); 
   background-size: cover;
   background-position: center;
-  border-radius: 20px 100px 20px 20px; 
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15); /* Mantenemos la sombra mejorada por ahora o la revertimos? Lo dejarÃ© como estaba originalmente si insiste. */
+  border-radius: 20px; /* Borde regular en móvil */
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 3;
 }
-
 
 /* --- TARJETAS INFERIORES FLOTANTES --- */
 .hero_tarjetas_inferiores_contenedor {
@@ -166,7 +173,7 @@
 }
 
 .stats_header_seccion {
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 }
 
 .stats_badge {
@@ -184,7 +191,7 @@
 
 .titulo_registro_seccion {
   color: var(--so-black);
-  font-size: 2.8rem;
+  font-size: 1.8rem; /* Adaptado para móvil */
   font-weight: 900;
   margin: 0;
   text-transform: uppercase;
@@ -195,16 +202,16 @@
   position: relative;
   z-index: 4;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 30px;
-  padding: 0 8%;
+  grid-template-columns: 1fr; /* 1 columna en móvil */
+  gap: 20px;
+  padding: 0 5%;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 .tarjeta_info.stat_card {
   background-color: var(--so-white);
-  padding: 40px 30px;
+  padding: 30px 20px; /* Reducido para móvil */
   border-radius: 24px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.06); 
   display: flex;
@@ -216,29 +223,29 @@
 }
 
 .stat_card:hover {
-  transform: translateY(-15px);
+  transform: translateY(-8px); /* Efecto menor en móvil */
   box-shadow: 0 30px 70px rgba(230, 35, 52, 0.15);
   border-color: rgba(230, 35, 52, 0.2);
 }
 
 .stat_number {
-  font-size: 3.5rem;
+  font-size: 2.8rem; /* Reducido en móvil */
   font-weight: 900;
   color: var(--so-red);
   line-height: 1;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   font-family: inherit;
 }
 
 .stat_content {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   align-items: center;
 }
 
 .stat_card h4 {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--so-black);
   margin: 0;
   font-weight: 800;
@@ -260,11 +267,6 @@
   height: 0;
   background-color: var(--so-red);
   transition: height 0.3s ease;
-}
-
-.tarjeta_info:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 45px rgba(0,0,0,0.12);
 }
 
 .tarjeta_info:hover::before {
@@ -294,8 +296,8 @@
 
 .flecha_tarjeta_roja {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 15px;
+  right: 15px;
   color: var(--so-red);
   font-size: 1.4rem;
   font-weight: bold;
@@ -308,74 +310,7 @@
   opacity: 1;
 }
 
-/* --- RESPONSIVIDAD (MÃ“VIL / TABLET) --- */
-@media (max-width: 1024px) {
-  .hero_contenido_superior {
-    flex-direction: column;
-    padding: 60px 5%;
-  }
-
-  .hero_texto_izquierdo {
-    max-width: 100%;
-    text-align: center;
-  }
-  
-  .hero_botones {
-    justify-content: center;
-  }
-
-  .hero_fondo_derecha {
-    width: 100%;
-    height: 60%;
-    bottom: 0;
-    top: auto;
-    border-radius: 0;
-  }
-
-  .hero_imagen_derecha {
-    justify-content: center;
-    width: 100%;
-    margin-top: 40px;
-  }
-  
-  .imagen_ejemplo {
-    border-radius: 20px;
-  }
-
-  .hero_tarjetas_inferiores {
-    flex-wrap: wrap;
-    margin-top: -30px;
-  }
-
-  .tarjeta_info {
-    max-width: calc(50% - 20px);
-  }
-}
-
-@media (max-width: 600px) {
-  .hero_titulo {
-    font-size: 2.5rem;
-  }
-
-  .hero_botones {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .boton_rojo, .boton_blanco {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .titulo_registro_seccion {
-    font-size: 1.5rem;
-  }
-
-  .tarjeta_info {
-    max-width: 100%;
-  }
-}
-/* --- ANIMACIONES ADICIONALES --- */
+/* --- ANIMACIONES --- */
 @keyframes titilarSinuoso {
   0% { transform: scale(1); box-shadow: 0 4px 15px rgba(255,0,0,0.4); }
   50% { transform: scale(1.03); box-shadow: 0 8px 30px rgba(255,0,0,0.7); }
@@ -386,7 +321,6 @@
   animation: titilarSinuoso 2.5s infinite ease-in-out;
 }
 
-/* --- ANIMACIÓN ICONO CLICK --- */
 @keyframes titilarIcono {
   0%, 100% { opacity: 1; transform: scale(1) translateY(0); }
   50% { opacity: 0.3; transform: scale(1.2) translateY(-2px); }
@@ -394,4 +328,93 @@
 
 .icono-click-titilante {
   animation: titilarIcono 1.2s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   TABLET / LAPTOP PEQUEÑA (md: 768px+)
+   ========================================================================== */
+@media (min-width: 768px) {
+  .hero_titulo {
+    font-size: 3rem;
+  }
+
+  .hero_botones {
+    flex-direction: row; /* Fila */
+    justify-content: center;
+    width: auto;
+  }
+
+  .boton_rojo, .boton_blanco {
+    width: auto;
+    padding: 16px 32px;
+  }
+
+  .titulo_registro_seccion {
+    font-size: 2.2rem;
+  }
+
+  .hero_tarjetas_inferiores {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    padding: 0 8%;
+  }
+
+  .imagen_ejemplo {
+    height: 400px;
+  }
+}
+
+/* ==========================================================================
+   DESKTOP (lg: 1024px+)
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .hero_contenido_superior {
+    flex-direction: row;
+    padding: 40px 8% 100px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .hero_texto_izquierdo {
+    max-width: 550px;
+    text-align: left;
+  }
+  
+  .hero_botones {
+    justify-content: flex-start;
+  }
+
+  .hero_fondo_derecha {
+    top: 10%;
+    right: 2%;
+    width: 40%;
+    height: 80%;
+    border-radius: 40px 0 0 100px; /* Borde asimétrico en desktop */
+  }
+
+  .hero_imagen_derecha {
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+  
+  .imagen_ejemplo {
+    border-radius: 20px 100px 20px 20px; /* Borde asimétrico en desktop */
+    height: 480px;
+  }
+
+  .titulo_registro_seccion {
+    font-size: 2.8rem;
+  }
+
+  .hero_tarjetas_inferiores {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Auto-fit para desktop */
+    margin-top: 0; /* Remover margen negativo */
+  }
+
+  .stat_card:hover {
+    transform: translateY(-15px); /* Efecto completo en desktop */
+  }
+
+  .stat_number {
+    font-size: 3.5rem;
+  }
 }
