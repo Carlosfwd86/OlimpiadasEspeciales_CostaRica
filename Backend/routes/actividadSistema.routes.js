@@ -36,12 +36,20 @@ router.post('/', auth, async (req, res) => {
       return res.status(400).json({ error: 'Los campos title y details son obligatorios.' });
     }
 
+    let activityTime = new Date();
+    if (time && time.toLowerCase() !== 'ahora') {
+      const parsedTime = new Date(time);
+      if (!Number.isNaN(parsedTime.getTime())) {
+        activityTime = parsedTime;
+      }
+    }
+
     const entrada = await ActividadSistema.create({
       title,
       details,
       icon,
       icon_color: iconColor,
-      time: time ? new Date(time) : new Date()
+      time: activityTime
     });
 
     return res.status(201).json(entrada);

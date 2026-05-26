@@ -1,132 +1,118 @@
-const fs = require('fs');
-const path = require('path');
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
-// Configuración de AWS S3
-const hasAwsCredentials = process.env.AWS_ACCESS_KEY_ID && 
-                          process.env.AWS_ACCESS_KEY_ID !== 'tu_aws_access_key' &&
-                          process.env.AWS_SECRET_ACCESS_KEY &&
-                          process.env.AWS_SECRET_ACCESS_KEY !== 'tu_aws_secret_key' &&
-                          process.env.AWS_S3_BUCKET_NAME &&
-                          process.env.AWS_S3_BUCKET_NAME !== 'olimpiadas-especiales-avatars';
+/**
+ * Crea el cliente S3 leyendo las variables de entorno en tiempo de ejecución.
+ * Esto garantiza que las credenciales del .env ya estén cargadas cuando se llame.
+ */
+function getS3Client() {
+  const region = process.env.AWS_REGION || 'us-east-2';
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
-let s3Client = null;
-if (hasAwsCredentials) {
-  s3Client = new S3Client({
-    region: process.env.AWS_REGION || 'us-east-1',
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
-    endpoint: process.env.AWS_S3_ENDPOINT || undefined,
-    forcePathStyle: !!process.env.AWS_S3_ENDPOINT,
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error(
+      '[s3Service] AWS_ACCESS_KEY_ID o AWS_SECRET_ACCESS_KEY no están configuradas en el .env'
+    );
+  }
+
+  return new S3Client({
+    region,
+    credentials: { accessKeyId, secretAccessKey },
+    // Los buckets con punto en el nombre requieren path-style para evitar errores SSL
+    forcePathStyle: true,
   });
 }
 
-const PUBLIC_LOCAL_DIR = path.join(__dirname, '../storage/public/avatars');
-
-// Asegurar que exista el directorio local en caso de usar el fallback
-if (!hasAwsCredentials) {
-  if (!fs.existsSync(PUBLIC_LOCAL_DIR)) {
-    fs.mkdirSync(PUBLIC_LOCAL_DIR, { recursive: true });
+function getBucketName() {
+  const bucket = process.env.AWS_S3_BUCKET_NAME;
+  if (!bucket) {
+    throw new Error('[s3Service] AWS_S3_BUCKET_NAME no está configurada en el .env');
   }
+  return bucket;
+}
+
+function getRegion() {
+  return process.env.AWS_REGION || 'us-east-2';
 }
 
 /**
- * Sube un avatar decodificando de base64.
- * @param {string|number} userId 
- * @param {string} base64String 
- * @returns {Promise<string>} La URL pública (S3 o Local)
+ * Sube un avatar en base64 a S3.
+ * @param {string|number} userId
+ * @param {string} base64String  - formato: "data:image/jpeg;base64,..."
+ * @returns {Promise<string>} URL pública del avatar en S3
  */
 async function uploadAvatar(userId, base64String) {
   if (!base64String || !base64String.startsWith('data:image/')) {
-    throw new Error('Formato de imagen inválido o no es base64.');
+    throw new Error('Formato de imagen inválido. Se esperaba un string base64 con prefijo data:image/');
   }
 
   const matches = base64String.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
   if (!matches || matches.length !== 3) {
-    throw new Error('Base64 string inválido.');
+    throw new Error('Base64 string malformado.');
   }
 
   const mimeType = matches[1];
   const buffer = Buffer.from(matches[2], 'base64');
-  
-  // Extraer extensión del mimeType (ej. image/jpeg -> jpeg)
+
   let extension = mimeType.split('/')[1] || 'jpg';
-  // Evitar nombres raros si es un formato no estandar
   if (extension === 'jpeg') extension = 'jpg';
 
-  const fileName = `avatar_${userId}_${Date.now()}.${extension}`;
-  
-  if (hasAwsCredentials) {
-    // S3 Upload
-    const key = `avatars/${fileName}`;
-    const command = new PutObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: key,
-      Body: buffer,
-      ContentType: mimeType,
-      // ACL: 'public-read' puede fallar si el bucket bloquea ACLs, pero 
-      // generalmente las fotos de perfil se configuran como lectura pública mediante bucket policies.
-    });
+  const fileName = `avatars/avatar_${userId}_${Date.now()}.${extension}`;
+  const bucket = getBucketName();
+  const region = getRegion();
+  const s3 = getS3Client();
 
-    await s3Client.send(command);
-    
-    // Construir URL pública
-    if (process.env.AWS_S3_ENDPOINT) {
-        // Estilo forcePathStyle (LocalStack, MinIO)
-        const endpoint = process.env.AWS_S3_ENDPOINT.replace(/\/$/, '');
-        return `${endpoint}/${process.env.AWS_S3_BUCKET_NAME}/${key}`;
-    }
-    // Estilo AWS estandar
-    return `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${key}`;
-  } else {
-    // Local Fallback
-    const filePath = path.join(PUBLIC_LOCAL_DIR, fileName);
-    fs.writeFileSync(filePath, buffer);
-    const port = process.env.PORT || 3000;
-    // URL expuesta por app.use('/uploads', ...)
-    return `http://localhost:${port}/uploads/avatars/${fileName}`;
-  }
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: fileName,
+    Body: buffer,
+    ContentType: mimeType,
+  });
+
+  await s3.send(command);
+
+  // URL pública usando path-style (necesario para buckets con punto en el nombre)
+  return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
 }
 
 /**
- * Intenta eliminar el avatar antiguo de S3 o local
- * @param {string} oldUrl 
+ * Elimina el avatar anterior de S3 si existe.
+ * @param {string} oldUrl
  */
 async function deleteOldAvatar(oldUrl) {
   if (!oldUrl) return;
 
   try {
-    if (hasAwsCredentials && oldUrl.includes(process.env.AWS_S3_BUCKET_NAME)) {
-      // Extraer Key
-      const urlObj = new URL(oldUrl);
-      let key = urlObj.pathname.startsWith('/') ? urlObj.pathname.substring(1) : urlObj.pathname;
-      
-      // Si usa forcePathStyle, remover el bucketName del inicio del pathname
-      if (key.startsWith(process.env.AWS_S3_BUCKET_NAME + '/')) {
-        key = key.replace(process.env.AWS_S3_BUCKET_NAME + '/', '');
-      }
+    const bucket = getBucketName();
+    const region = getRegion();
 
-      if (key.startsWith('avatars/')) {
-        const command = new DeleteObjectCommand({
-          Bucket: process.env.AWS_S3_BUCKET_NAME,
-          Key: key
-        });
-        await s3Client.send(command);
-      }
-    } else if (!hasAwsCredentials && oldUrl.includes('/uploads/avatars/')) {
-      // Eliminar archivo local
-      const fileName = oldUrl.split('/').pop();
-      if (fileName) {
-        const filePath = path.join(PUBLIC_LOCAL_DIR, fileName);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      }
+    // Verificar que la URL pertenece a nuestro bucket
+    if (!oldUrl.includes(bucket)) return;
+
+    // Extraer el Key del archivo desde la URL
+    // Soporta tanto path-style como virtual-hosted-style
+    let key;
+    const pathStylePrefix = `https://s3.${region}.amazonaws.com/${bucket}/`;
+    const vHostPrefix = `https://${bucket}.s3.${region}.amazonaws.com/`;
+
+    if (oldUrl.startsWith(pathStylePrefix)) {
+      key = oldUrl.replace(pathStylePrefix, '');
+    } else if (oldUrl.startsWith(vHostPrefix)) {
+      key = oldUrl.replace(vHostPrefix, '');
+    } else {
+      // Fallback: extraer key del pathname
+      const urlObj = new URL(oldUrl);
+      key = urlObj.pathname.replace(/^\//, '').replace(`${bucket}/`, '');
     }
+
+    if (!key || !key.startsWith('avatars/')) return;
+
+    const s3 = getS3Client();
+    const command = new DeleteObjectCommand({ Bucket: bucket, Key: key });
+    await s3.send(command);
   } catch (error) {
-    console.error('Error eliminando avatar antiguo:', error);
+    // No detener el flujo si falla la eliminación del avatar antiguo
+    console.error('[s3Service] Error eliminando avatar antiguo:', error.message);
   }
 }
 

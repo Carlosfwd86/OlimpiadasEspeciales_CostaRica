@@ -141,13 +141,8 @@ router.get('/:id/documentos/:docId/download', auth, checkRole([1]), async (req, 
     const doc = await documentoService.getPendingDocumentForDownload(id, docId);
     if (!doc) return res.status(404).json({ error: 'Documento no encontrado.' });
 
-    const meta = documentoService.resolveDownloadMeta(doc);
-    if (!meta) return res.status(404).json({ error: 'Archivo no disponible.' });
-
-    if (meta.useUrl) {
-      // Nuevo flujo: redirigir directamente a la URL pública (S3 o local)
-      return res.redirect(302, meta.url);
-    }
+    const meta = await documentoService.resolveDownloadMeta(doc);
+    if (!meta) return res.status(404).json({ error: 'Archivo no disponible en S3.' });
 
     // Legado: enviar buffer descifrado
     res.setHeader('Content-Type', meta.mime_type);

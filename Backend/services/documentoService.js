@@ -1,17 +1,100 @@
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const {
-  encryptBuffer,
-  decryptFileFromDisk,
-  sha256,
-  getStorageRoot,
-  ensureDir,
-} = require('../utils/fileEncryption');
-const { uploadDocumentoPendiente, deleteDocumentoPendiente } = require('./s3Service');
+/**
+ * documentoService.js
+ * Gestiona la subida, descarga y eliminación de documentos en AWS S3.
+ * Todos los archivos (PDFs, imágenes, certificados) van al bucket configurado en .env.
+ */
+const crypto = require('crypto');
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { models } = require('../config/database');
 
 const { RegistroPendienteDocumento, AtletaDocumento } = models;
+
+// ─── Helpers S3 ──────────────────────────────────────────────────────────────
+
+function getS3Client() {
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const region = process.env.AWS_REGION || 'us-east-2';
+
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error('[documentoService] Credenciales AWS no configuradas en .env');
+  }
+
+  return new S3Client({
+    region,
+    credentials: { accessKeyId, secretAccessKey },
+    forcePathStyle: true, // Necesario para buckets con punto en el nombre
+  });
+}
+
+function getBucket() {
+  const bucket = process.env.AWS_S3_BUCKET_NAME;
+  if (!bucket) throw new Error('[documentoService] AWS_S3_BUCKET_NAME no configurado en .env');
+  return bucket;
+}
+
+function getRegion() {
+  return process.env.AWS_REGION || 'us-east-2';
+}
+
+function buildPublicUrl(key) {
+  const bucket = getBucket();
+  const region = getRegion();
+  return `https://s3.${region}.amazonaws.com/${bucket}/${key}`;
+}
+
+/**
+ * Sube un archivo a S3 y retorna la key (ruta) dentro del bucket.
+ */
+async function uploadToS3(key, buffer, mimeType) {
+  const s3 = getS3Client();
+  const bucket = getBucket();
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: buffer,
+    ContentType: mimeType || 'application/octet-stream',
+  });
+  await s3.send(command);
+  return key;
+}
+
+/**
+ * Elimina un archivo de S3 por su key.
+ */
+async function deleteFromS3(key) {
+  if (!key) return;
+  try {
+    const s3 = getS3Client();
+    const bucket = getBucket();
+    await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+  } catch (err) {
+    console.error('[documentoService] Error eliminando de S3:', err.message);
+  }
+}
+
+/**
+ * Descarga un archivo de S3 y retorna su buffer.
+ */
+async function downloadFromS3(key) {
+  const s3 = getS3Client();
+  const bucket = getBucket();
+  const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+  const response = await s3.send(command);
+
+  // Convertir el stream a Buffer
+  const chunks = [];
+  for await (const chunk of response.Body) {
+    chunks.push(chunk);
+  }
+  return {
+    buffer: Buffer.concat(chunks),
+    contentType: response.ContentType || 'application/octet-stream',
+  };
+}
+
+// ─── Mapas y utilidades ───────────────────────────────────────────────────────
 
 const CATEGORIA_TO_TIPO = {
   cedula: 'Identificación',
@@ -26,14 +109,18 @@ const CATEGORIA_TO_TIPO = {
   otro: 'Otro',
 };
 
-const PUBLIC_DOC_FIELDS = [
-  'id',
-  'categoria',
-  'nombre_original',
-  'mime_type',
-  'tamano_bytes',
-  'fecha_subida',
-];
+function normalizeCategoria(cat) {
+  const map = {
+    certificado: 'certificado_medico',
+    identificacion_tutor: 'id_tutor',
+    delincuencia: 'antecedentes',
+  };
+  return map[cat] || cat;
+}
+
+function sha256(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex');
+}
 
 function sanitizePublicPending(doc) {
   const row = doc.toJSON ? doc.toJSON() : doc;
@@ -47,6 +134,7 @@ function sanitizePublicPending(doc) {
     estado_ia: row.estado_ia || 'PENDIENTE',
     analisis_ia: row.analisis_ia || null,
     created_at: row.created_at,
+    s3_url: row.storage_key ? buildPublicUrl(row.storage_key) : null,
   };
 }
 
@@ -60,38 +148,24 @@ function sanitizePublicAtleta(doc) {
     mime_type: row.mime_type,
     tamano_bytes: row.tamano_bytes,
     fecha_subida: row.fecha_subida,
-    tiene_archivo_cifrado: Boolean(row.storage_key && row.iv),
+    s3_url: row.storage_key ? buildPublicUrl(row.storage_key) : null,
   };
 }
 
-/**
- * @param {Express.Multer.File} file
- */
-async function writeEncryptedFile(relativeKey, buffer) {
-  const { ciphertext, iv, authTag } = encryptBuffer(buffer);
-  const fullPath = path.join(getStorageRoot(), relativeKey);
-  ensureDir(path.dirname(fullPath));
-  fs.writeFileSync(fullPath, ciphertext);
-  return { iv, authTag, hash: sha256(buffer), tamano: buffer.length };
-}
+// ─── Operaciones principales ──────────────────────────────────────────────────
 
 /**
- * Guarda documento de registro pendiente.
- * NUEVO FLUJO: sube a S3 / almacenamiento local público y guarda la URL.
+ * Guarda un documento de registro pendiente en S3.
  */
 async function savePendingDocument(registroId, categoria, file) {
-  if (!file || !file.buffer) {
-    throw new Error('Archivo inválido.');
-  }
+  if (!file || !file.buffer) throw new Error('Archivo inválido.');
 
-  // Subir archivo a S3 o carpeta pública local
-  const urlDocumento = await uploadDocumentoPendiente(
-    registroId,
-    normalizeCategoria(categoria),
-    file.buffer,
-    file.mimetype || 'application/octet-stream',
-    file.originalname || 'documento'
-  );
+  const ext = require('path').extname(file.originalname || '') || '.bin';
+  const safeCat = String(categoria).replace(/[^a-z0-9_]/gi, '_');
+  const fileName = `${safeCat}_${Date.now()}${ext}`;
+  const key = `documentos/pending/${registroId}/${fileName}`;
+
+  await uploadToS3(key, file.buffer, file.mimetype);
 
   const row = await RegistroPendienteDocumento.create({
     registro_pendiente_id: registroId,
@@ -111,40 +185,30 @@ async function savePendingDocument(registroId, categoria, file) {
   return sanitizePublicPending(row);
 }
 
-function normalizeCategoria(cat) {
-  const map = {
-    certificado: 'certificado_medico',
-    identificacion_tutor: 'id_tutor',
-    delincuencia: 'antecedentes',
-  };
-  return map[cat] || cat;
-}
-
 /**
- * Guarda documento oficial de atleta (admin).
+ * Guarda un documento oficial de atleta en S3.
  */
 async function saveAtletaDocument(atletaId, tipoDocumento, nombreDocumento, file) {
-  if (!file || !file.buffer) {
-    throw new Error('Archivo inválido.');
-  }
-  const ext = path.extname(file.originalname || '') || '.bin';
-  const fileName = `doc_${Date.now()}${ext}.enc`;
-  const storageKey = path.join('atletas', String(atletaId), fileName).replace(/\\/g, '/');
+  if (!file || !file.buffer) throw new Error('Archivo inválido.');
 
-  const meta = await writeEncryptedFile(storageKey, file.buffer);
+  const ext = require('path').extname(file.originalname || '') || '.bin';
+  const fileName = `doc_${Date.now()}${ext}`;
+  const key = `documentos/atletas/${atletaId}/${fileName}`;
+
+  await uploadToS3(key, file.buffer, file.mimetype);
 
   const row = await AtletaDocumento.create({
     atleta_id: atletaId,
     nombre_documento: nombreDocumento || file.originalname || 'Documento',
     tipo_documento: tipoDocumento || 'Otro',
-    ruta_archivo: storageKey,
+    ruta_archivo: key,
     nombre_original: file.originalname,
     mime_type: file.mimetype,
-    storage_key: storageKey,
-    iv: meta.iv,
-    auth_tag: meta.authTag,
-    hash_sha256: meta.hash,
-    tamano_bytes: meta.tamano,
+    storage_key: key,
+    iv: null,
+    auth_tag: null,
+    hash_sha256: sha256(file.buffer),
+    tamano_bytes: file.buffer.length,
   });
 
   return sanitizePublicAtleta(row);
@@ -170,25 +234,17 @@ async function getAtletaDocumentForDownload(atletaId, docId) {
   });
 }
 
-function resolveDownloadMeta(doc) {
-  // NUEVO: si tiene URL pública, el descargado se hace vía URL (ver ruta de descarga)
-  if (doc.url_documento) {
-    return {
-      useUrl: true,
-      url: doc.url_documento,
-      mime_type: doc.mime_type || 'application/octet-stream',
-      nombre: doc.nombre_original || doc.nombre_documento || 'documento',
-    };
-  }
-  // LEGADO: registros cifrados en disco
-  const storageKey = doc.storage_key || doc.ruta_archivo;
-  if (!storageKey || !doc.iv || !doc.auth_tag) {
-    return null;
-  }
+/**
+ * Resuelve los metadatos de descarga: descarga el archivo desde S3.
+ */
+async function resolveDownloadMeta(doc) {
+  const key = doc.storage_key || doc.ruta_archivo;
+  if (!key) return null;
+
+  const { buffer, contentType } = await downloadFromS3(key);
   return {
-    useUrl: false,
-    buffer: decryptFileFromDisk(storageKey, doc.iv, doc.auth_tag),
-    mime_type: doc.mime_type || 'application/octet-stream',
+    buffer,
+    mime_type: contentType || doc.mime_type || 'application/octet-stream',
     nombre: doc.nombre_original || doc.nombre_documento || 'documento',
   };
 }
@@ -217,43 +273,44 @@ async function deletePendingByRegistro(registroId) {
 async function deleteAtletaDocument(atletaId, docId) {
   const doc = await AtletaDocumento.findOne({ where: { id: docId, atleta_id: atletaId } });
   if (!doc) return false;
-  deleteFileIfExists(doc.storage_key || doc.ruta_archivo);
+  await deleteFromS3(doc.storage_key || doc.ruta_archivo);
   await doc.destroy();
   return true;
 }
 
-function deleteFileIfExists(storageKey) {
-  if (!storageKey) return;
-  const full = path.join(getStorageRoot(), storageKey);
-  if (fs.existsSync(full)) fs.unlinkSync(full);
-}
-
 /**
- * Migra documentos pendientes al atleta aprobado.
+ * Migra documentos pendientes a la carpeta definitiva de un atleta aprobado.
+ * En S3 esto implica copiar el objeto a la nueva key y borrar la anterior.
  */
 async function migratePendingToAtleta(registroId, atletaId) {
+  const { CopyObjectCommand } = require('@aws-sdk/client-s3');
   const pending = await RegistroPendienteDocumento.findAll({
     where: { registro_pendiente_id: registroId },
   });
   if (!pending.length) return [];
 
+  const s3 = getS3Client();
+  const bucket = getBucket();
   const created = [];
-  const destDir = path.join(getStorageRoot(), 'atletas', String(atletaId));
-  ensureDir(destDir);
 
   for (const doc of pending) {
-    const srcPath = path.join(getStorageRoot(), doc.storage_key);
-    if (!fs.existsSync(srcPath)) continue;
+    if (!doc.storage_key) continue;
 
-    const baseName = path.basename(doc.storage_key);
-    const newKey = path.join('atletas', String(atletaId), baseName).replace(/\\/g, '/');
-    const destPath = path.join(getStorageRoot(), newKey);
+    const baseName = require('path').basename(doc.storage_key);
+    const newKey = `documentos/atletas/${atletaId}/${baseName}`;
 
     try {
-      fs.renameSync(srcPath, destPath);
-    } catch {
-      fs.copyFileSync(srcPath, destPath);
-      fs.unlinkSync(srcPath);
+      // Copiar a la nueva ubicación en S3
+      await s3.send(new CopyObjectCommand({
+        Bucket: bucket,
+        CopySource: `${bucket}/${doc.storage_key}`,
+        Key: newKey,
+      }));
+      // Eliminar la copia pendiente
+      await deleteFromS3(doc.storage_key);
+    } catch (err) {
+      console.error('[documentoService] Error migrando archivo en S3:', err.message);
+      continue;
     }
 
     const tipo = CATEGORIA_TO_TIPO[doc.categoria] || 'Otro';
@@ -265,8 +322,8 @@ async function migratePendingToAtleta(registroId, atletaId) {
       nombre_original: doc.nombre_original,
       mime_type: doc.mime_type,
       storage_key: newKey,
-      iv: doc.iv,
-      auth_tag: doc.auth_tag,
+      iv: null,
+      auth_tag: null,
       hash_sha256: doc.hash_sha256,
       tamano_bytes: doc.tamano_bytes,
     });
@@ -274,11 +331,6 @@ async function migratePendingToAtleta(registroId, atletaId) {
   }
 
   await RegistroPendienteDocumento.destroy({ where: { registro_pendiente_id: registroId } });
-  const pendingDir = path.join(getStorageRoot(), 'pending', String(registroId));
-  if (fs.existsSync(pendingDir)) {
-    fs.rmSync(pendingDir, { recursive: true, force: true });
-  }
-
   return created;
 }
 
@@ -322,4 +374,5 @@ module.exports = {
   savePendingFilesFromRequest,
   sanitizePublicAtleta,
   CATEGORIA_TO_TIPO,
+  buildPublicUrl,
 };

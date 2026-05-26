@@ -1,0 +1,11 @@
+---
+description: Nunca subir archivos .env al repositorio (rama francela-14 y demás)
+alwaysApply: true
+---
+
+# No commitear .env
+
+- **Nunca** hacer `git add` de `.env`, `Backend/.env`, `Olimpiadas_Especiales/.env` ni variantes (`.env.local`, etc.).
+- Antes de commit/push a `francela-14` u otra rama, verificar con `git status` que no aparezcan archivos `.env`.
+- Si `.env` aparece en staging, quitarlo: `git restore --staged` en ese archivo.
+- Variables como `OPENAI_API_KEY`, `SMTP_PASS`, `JWT_SECRET` solo viven en `.env` local; documentar en `.env.example` sin valores reales si hace falta una plantilla.
