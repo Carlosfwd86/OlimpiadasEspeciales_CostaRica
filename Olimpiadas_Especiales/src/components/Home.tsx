@@ -243,7 +243,7 @@ const Home = (): React.JSX.Element => {
                             </h2>
                             {/* Imagen de Puntero (Cargada desde public/img/hand-pointer.png) */}
                             <img 
-                                src="/img/hand-pointer.png" 
+                                src={s3Url('img/hand-pointer.png')}
                                 alt="Click indicator" 
                                 className="icono-click-titilante"
                                 style={{

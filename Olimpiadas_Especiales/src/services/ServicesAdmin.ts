@@ -218,11 +218,12 @@ export const ServicesAdmin = {
     },
 
     getProfile: async (): Promise<AdminProfile> => {
-        const res = await apiClient.get<{ data: AdminProfile & { correoElectronico?: string } }>('/auth/profile');
+        const res = await apiClient.get<{ data: any }>('/auth/profile');
         const data = res.data.data;
         return {
             ...data,
-            email: data.email ?? data.correoElectronico ?? ''
+            email: data.email ?? data.correoElectronico ?? '',
+            avatar: data.avatar_url ?? data.fotoPerfil ?? data.avatar ?? ''
         };
     },
 
@@ -237,13 +238,15 @@ export const ServicesAdmin = {
             nombre: data.nombre,
             correoElectronico: data.correoElectronico ?? data.email,
             passwordActual: data.passwordActual,
-            passwordNuevo: data.passwordNuevo
+            passwordNuevo: data.passwordNuevo,
+            avatar_url: data.avatar
         };
-        const res = await apiClient.patch<{ data: AdminProfile & { correoElectronico?: string } }>('/auth/profile', payload);
+        const res = await apiClient.patch<{ data: any }>('/auth/profile', payload);
         const updated = res.data.data;
         return {
             ...updated,
-            email: updated.email ?? updated.correoElectronico ?? ''
+            email: updated.email ?? updated.correoElectronico ?? '',
+            avatar: updated.avatar_url ?? updated.fotoPerfil ?? updated.avatar ?? data.avatar ?? ''
         };
     },
 
@@ -367,8 +370,7 @@ export const ServicesAdmin = {
                 title,
                 details,
                 icon,
-                iconColor,
-                time: 'Ahora'
+                iconColor
             });
         } catch (e) {
             console.error('Error registrando actividad:', e);
