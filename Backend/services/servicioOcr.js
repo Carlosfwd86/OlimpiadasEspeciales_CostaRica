@@ -30,24 +30,20 @@ const convertirBufferABase64 = (buffer) => {
  */
 const analizarCertificadoOcr = async (archivo) => {
   try {
-    // Si la clave de API no está configurada, lanzamos un error explícito.
     if (!clienteOpenAI) {
       throw new Error('La clave OPENAI_API_KEY no está configurada en las variables de entorno (.env).');
     }
 
-    // Si el archivo es un PDF, en un entorno de producción real se usaría una biblioteca como 'pdf-img-convert'
-    // para convertir cada página en imagen, o un parseador de texto.
-    // Para asegurar compatibilidad directa, si es un PDF arrojamos un aviso o intentamos procesarlo.
-    // Como los modelos de visión de OpenAI requieren imágenes directas (PNG, JPEG, WEBP), convertiremos a base64
-    // y manejaremos las imágenes directamente.
     if (archivo.mimetype === 'application/pdf') {
       throw new Error('El sistema requiere que el certificado médico se suba en formato de imagen (PNG, JPG o WEBP) para procesar el análisis de visión artificial.');
     }
 
-    // Convertir el buffer del archivo de imagen a Base64.
+    if (!archivo.buffer || archivo.buffer.length < 100) {
+      throw new Error('El archivo de imagen está vacío o corrupto. Por favor seleccione un archivo válido.');
+    }
+
     const cadenaBase64 = convertirBufferABase64(archivo.buffer);
 
-    // Prompt detallado con las instrucciones de negocio para la IA de Olimpiadas Especiales.
     const instruccionSistema = `
       Eres un sistema experto en OCR y análisis de documentos para Olimpiadas Especiales Costa Rica.
       Tu tarea es analizar la imagen del certificado médico provista y extraer de manera 100% precisa los siguientes datos:
@@ -61,61 +57,45 @@ const analizarCertificadoOcr = async (archivo) => {
       - Por favor, sé sumamente estricto y preciso con los nombres y las fechas.
     `;
 
-    // Llamada a la API de OpenAI con soporte de visión y Salidas Estructuradas (Structured Outputs).
-    const respuestaIA = await clienteOpenAI.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: instruccionSistema
-        },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: 'Analiza este certificado médico y devuelve la información del atleta de forma estructurada en JSON.'
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:${archivo.mimetype};base64,${cadenaBase64}`
-              }
-            }
-          ]
-        }
-      ],
-      // Definición estricta del esquema JSON esperado usando Structured Outputs
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: 'datos_certificado',
-          strict: true,
-          schema: {
-            type: 'object',
-            properties: {
-              nombre_atleta: {
-                type: 'string',
-                description: 'El nombre completo y legible del atleta escrito en el certificado.'
+    try {
+      const respuestaIA = await clienteOpenAI.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: instruccionSistema
+          },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: 'Analiza este certificado médico y devuelve la información del atleta de forma estructurada en JSON.'
               },
-              fecha_vencimiento: {
-                type: 'string',
-                description: 'La fecha de vencimiento en formato YYYY-MM-DD, o vacío si no se puede deducir.'
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:${archivo.mimetype};base64,${cadenaBase64}`
+                }
               }
-            },
-            required: ['nombre_atleta', 'fecha_vencimiento'],
-            additionalProperties: false
+            ]
           }
-        }
-      },
-      temperature: 0.15 // Temperatura baja para reducir la creatividad de la IA y asegurar máxima precisión en los datos
-    });
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.15
+      });
 
-    // Extracción de la respuesta en formato JSON desde el contenido del mensaje.
-    const contenidoRespuesta = respuestaIA.choices[0].message.content;
-    const datosExtraidos = JSON.parse(contenidoRespuesta);
-
-    return datosExtraidos;
+      const contenidoRespuesta = respuestaIA.choices[0]?.message?.content;
+      if (!contenidoRespuesta) {
+        throw new Error('OpenAI no devolvió contenido en el análisis del certificado.');
+      }
+      return JSON.parse(contenidoRespuesta);
+    } catch (errorIA) {
+      if (errorIA.message?.includes('image') || errorIA.message?.includes('does not support image')) {
+        throw new Error('El modelo de IA no puede procesar esta imagen. Verifique que sea un archivo válido (PNG, JPG, WebP).');
+      }
+      throw errorIA;
+    }
 
   } catch (errorAnalisis) {
     console.error('Error detallado en servicioOcr.js:', errorAnalisis);

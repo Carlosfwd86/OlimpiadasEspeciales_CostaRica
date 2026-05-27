@@ -166,7 +166,7 @@ router.post('/', (req, res, next) => {
     } catch (error) {
       console.error('Error en POST /registros-pendientes:', error);
       if (!res.headersSent) {
-        res.status(500).json({ error: 'Error al crear registro pendiente.' });
+        res.status(500).json({ error: 'Error al crear registro pendiente.', detalle: error.message });
       }
     }
   };

@@ -146,6 +146,25 @@ const usuarioController = {
       const { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del usuario es requerido.', 400));
 
+      const { sequelize } = require('../config/database');
+      
+      // Limpiar referencias para evitar errores de Foreign Key (FK constraint)
+      await sequelize.query('DELETE FROM token_blacklist WHERE usuario_id = :id', { replacements: { id } });
+      
+      const tablesToCheck = ['sesiones'];
+      for (const table of tablesToCheck) {
+        try { await sequelize.query(`DELETE FROM ${table} WHERE usuario_id = :id`, { replacements: { id } }); } catch(e) {}
+      }
+
+      const updateTables = ['atletas', 'entrenadores', 'voluntarios', 'tutores', 'consultas', 'logauditoria', 'transacciones'];
+      for (const table of updateTables) {
+        try { await sequelize.query(`UPDATE ${table} SET usuario_id = NULL WHERE usuario_id = :id`, { replacements: { id } }); } catch(e) {}
+      }
+
+      try { await sequelize.query(`UPDATE facturas SET id_cajero = NULL WHERE id_cajero = :id`, { replacements: { id } }); } catch(e) {}
+      try { await sequelize.query(`UPDATE facturas SET id_cliente = NULL WHERE id_cliente = :id`, { replacements: { id } }); } catch(e) {}
+      try { await sequelize.query(`UPDATE resenas SET id_usuario = NULL WHERE id_usuario = :id`, { replacements: { id } }); } catch(e) {}
+
       const deleted = await Usuario.destroy({ where: { id } });
       if (!deleted) return res.status(404).json(errorResponse('Usuario no encontrado o ya eliminado.', 404));
       return res.status(200).json(successResponse(null, 'Usuario eliminado correctamente'));

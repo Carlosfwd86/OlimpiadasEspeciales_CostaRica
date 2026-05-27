@@ -62,7 +62,7 @@ const IAController = {
         }
     },
 
-    /**
+/**
      * @function procesarCertificadoOCR
      * @description Procesa una imagen de certificado médico (Base64) extrayendo sus datos mediante OCR vía IA.
      */
@@ -70,15 +70,17 @@ const IAController = {
         try {
             const { imagenBase64 } = req.body;
 
-            if (!imagenBase64) {
-                return res.status(400).json({ success: false, error: 'No se recibió ninguna imagen para procesar.' });
+            if (!imagenBase64 || typeof imagenBase64 !== 'string') {
+                return res.status(400).json({ success: false, datos: { valido: false, error: 'No se recibió ninguna imagen válida para procesar.' } });
             }
 
             const resultado = await IAService.procesarDocumentoOCR(imagenBase64);
 
             return res.status(200).json({ success: true, datos: resultado });
         } catch (error) {
-            return res.status(500).json({ success: false, error: error.message });
+            console.error('[IAController] procesarCertificadoOCR:', error.message);
+            const errorMsg = error.message || 'Error interno del servidor';
+            return res.status(500).json({ success: false, datos: { valido: false, error: errorMsg } });
         }
     },
 
@@ -90,15 +92,17 @@ const IAController = {
         try {
             const { imagenBase64 } = req.body;
 
-            if (!imagenBase64) {
-                return res.status(400).json({ success: false, error: 'No se recibió ninguna imagen del comprobante.' });
+            if (!imagenBase64 || typeof imagenBase64 !== 'string') {
+                return res.status(400).json({ success: false, comprobante: { valido: false, error: 'No se recibió ninguna imagen válida del comprobante.' } });
             }
 
             const resultado = await IAService.validarComprobanteFinanciero(imagenBase64);
 
             return res.status(200).json({ success: true, comprobante: resultado });
         } catch (error) {
-            return res.status(500).json({ success: false, error: error.message });
+            console.error('[IAController] procesarComprobante:', error.message);
+            const errorMsg = error.message || 'Error interno del servidor';
+            return res.status(500).json({ success: false, comprobante: { valido: false, error: errorMsg } });
         }
     }
 };

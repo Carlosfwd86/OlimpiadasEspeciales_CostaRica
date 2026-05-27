@@ -89,18 +89,23 @@ Máximo 3 alertas y 3 recomendaciones. Sé directo y claro para un entrenador de
     return JSON.parse(raw);
   },
 
-  procesarDocumentoOCR: async (base64Imagen) => {
-    const openai = requireOpenAI();
+procesarDocumentoOCR: async (base64Imagen) => {
+     if (!base64Imagen || typeof base64Imagen !== 'string' || base64Imagen.length < 100) {
+       throw new Error('Imagen no válida o vacía. Verifique el archivo antes de enviarlo.');
+     }
 
-    const response = await openai.chat.completions.create({
-      model: modelVision(),
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `Analiza esta imagen de un certificado médico de la Caja Costarricense de Seguro Social (CCSS) de Costa Rica.
+     const openai = requireOpenAI();
+
+     try {
+       const response = await openai.chat.completions.create({
+           model: modelVision(),
+           messages: [
+               {
+                   role: 'user',
+                   content: [
+                       {
+                           type: 'text',
+                           text: `Analiza esta imagen de un certificado médico de la Caja Costarricense de Seguro Social (CCSS) de Costa Rica.
 Extrae la información y responde ÚNICAMENTE con JSON válido (sin texto extra):
 {
   "nombre": "nombre completo del paciente o null",
@@ -115,36 +120,52 @@ Extrae la información y responde ÚNICAMENTE con JSON válido (sin texto extra)
   "valido": true
 }
 Si la imagen NO es un certificado médico válido: {"valido": false, "error": "descripción del problema"}`
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Imagen}`,
-                detail: 'high'
-              }
-            }
-          ]
-        }
-      ],
-      max_tokens: 1000,
-      response_format: { type: 'json_object' }
-    });
+                       },
+                       {
+                           type: 'image_url',
+                           image_url: {
+                               url: `data:image/jpeg;base64,${base64Imagen}`,
+                               detail: 'high'
+                           }
+                       }
+                   ]
+               }
+           ],
+           max_tokens: 1000,
+           response_format: { type: 'json_object' }
+       });
 
-    return JSON.parse(response.choices[0].message.content);
-  },
+       const content = response.choices[0]?.message?.content;
+       if (!content) {
+           throw new Error('OpenAI no devolvió contenido en el análisis del documento.');
+       }
+       return JSON.parse(content);
+     } catch (error) {
+       console.error('[IAService] Error OCR:', error.message);
+       if (error.message?.includes('image') || error.message?.includes('does not support image')) {
+         throw new Error('El modelo de IA no puede procesar imágenes PNG. Use JPG o WebP.');
+       }
+       throw error;
+     }
+   },
 
-  validarComprobanteFinanciero: async (base64Imagen) => {
-    const openai = requireOpenAI();
+validarComprobanteFinanciero: async (base64Imagen) => {
+     if (!base64Imagen || typeof base64Imagen !== 'string' || base64Imagen.length < 100) {
+       throw new Error('Imagen no válida o vacía. Verifique el archivo antes de enviarlo.');
+     }
 
-    const response = await openai.chat.completions.create({
-      model: modelVision(),
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `Analiza esta imagen de un comprobante de pago o transferencia bancaria costarricense (SINPE Móvil, IBAN, app bancaria).
+     const openai = requireOpenAI();
+
+     try {
+       const response = await openai.chat.completions.create({
+         model: modelVision(),
+         messages: [
+           {
+             role: 'user',
+             content: [
+               {
+                 type: 'text',
+                 text: `Analiza esta imagen de un comprobante de pago o transferencia bancaria costarricense (SINPE Móvil, IBAN, app bancaria).
 Extrae la información y responde ÚNICAMENTE con JSON válido (sin texto extra):
 {
   "monto": número sin símbolos (ej: 25000),
@@ -158,23 +179,34 @@ Extrae la información y responde ÚNICAMENTE con JSON válido (sin texto extra)
   "valido": true
 }
 Si la imagen NO es un comprobante de pago legible: {"valido": false, "error": "descripción del problema"}`
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Imagen}`,
-                detail: 'high'
-              }
-            }
-          ]
-        }
-      ],
-      max_tokens: 800,
-      response_format: { type: 'json_object' }
-    });
+               },
+               {
+                 type: 'image_url',
+                 image_url: {
+                   url: `data:image/jpeg;base64,${base64Imagen}`,
+                   detail: 'high'
+                 }
+               }
+             ]
+           }
+         ],
+         max_tokens: 800,
+         response_format: { type: 'json_object' }
+       });
 
-    return JSON.parse(response.choices[0].message.content);
-  }
+       const content = response.choices[0]?.message?.content;
+       if (!content) {
+         throw new Error('OpenAI no devolvió contenido en el análisis del comprobante.');
+       }
+       return JSON.parse(content);
+     } catch (error) {
+       console.error('[IAService] Error comprobante:', error.message);
+       if (error.message?.includes('image') || error.message?.includes('does not support image')) {
+         throw new Error('El modelo de IA no puede procesar imágenes PNG. Use JPG o WebP.');
+       }
+       throw error;
+     }
+   }
 };
 
 module.exports = IAService;

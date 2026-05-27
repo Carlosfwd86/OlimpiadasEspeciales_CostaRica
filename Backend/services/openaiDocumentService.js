@@ -15,7 +15,7 @@ const { models } = require('../config/database');
 const { RegistroPendienteDocumento } = models;
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
-const MIME_IMAGENES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+const MIME_IMAGENES = ['image/jpeg', 'image/jpg', 'image/webp']; // PNG excluido por limitaciones del modelo
 const MIME_PDF      = 'application/pdf';
 
 // ─── Prompts por categoría ────────────────────────────────────────────────────

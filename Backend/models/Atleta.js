@@ -144,12 +144,16 @@ const Atleta = sequelize.define('Atleta', {
       model: 'niveles_habilidad',
       key: 'id'
     }
-  }
-  ,
+  },
   disciplina_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: { model: 'disciplinas', key: 'id' }
+  },
+  usuario_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: { model: 'usuarios', key: 'id' }
   },
   req_dietetico: {
     type: DataTypes.STRING(100),

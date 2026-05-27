@@ -9,22 +9,19 @@ const multer = require('multer');
 // Esto permite que el archivo se procese directamente desde el buffer de RAM para pasarlo al servicio de IA.
 const almacenamientoMemoria = multer.memoryStorage();
 
-// Filtro para validar los tipos de archivos permitidos (JPG, JPEG, PNG, WEBP y PDF).
+// Filtro para validar los tipos de archivos permitidos (JPEG, WEBP y PDF). PNG exluido por limitaciones del modelo de IA.
 const filtroArchivos = (peticion, archivo, callback) => {
   const tiposPermitidos = [
     'image/jpeg',
-    'image/png',
     'image/jpg',
     'image/webp',
     'application/pdf'
   ];
 
   if (tiposPermitidos.includes(archivo.mimetype)) {
-    // Si el tipo de archivo es válido, se acepta.
     callback(null, true);
   } else {
-    // Si no es válido, se retorna un error indicando los formatos soportados.
-    callback(new Error('Formato de archivo no soportado. Debe ser una imagen (JPG, PNG, WEBP) o un documento PDF.'), false);
+    callback(new Error('Formato no soportado. Use JPG, JPEG, WebP o PDF. El formato PNG no es compatible con el procesador de IA.'), false);
   }
 };
 

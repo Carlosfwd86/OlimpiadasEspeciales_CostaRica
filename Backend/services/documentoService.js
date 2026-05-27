@@ -12,7 +12,11 @@ const { RegistroPendienteDocumento, AtletaDocumento } = models;
 
 // ─── Helpers S3 ──────────────────────────────────────────────────────────────
 
+let s3ClientInstance = null;
+
 function getS3Client() {
+  if (s3ClientInstance) return s3ClientInstance;
+
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
   const region = process.env.AWS_REGION || 'us-east-2';
@@ -21,11 +25,13 @@ function getS3Client() {
     throw new Error('[documentoService] Credenciales AWS no configuradas en .env');
   }
 
-  return new S3Client({
+  s3ClientInstance = new S3Client({
     region,
     credentials: { accessKeyId, secretAccessKey },
     forcePathStyle: true, // Necesario para buckets con punto en el nombre
   });
+
+  return s3ClientInstance;
 }
 
 function getBucket() {
@@ -172,13 +178,12 @@ async function savePendingDocument(registroId, categoria, file) {
     categoria: normalizeCategoria(categoria),
     nombre_original: file.originalname || 'documento',
     mime_type: file.mimetype || 'application/octet-stream',
-    // Campos crypto quedan null (ya no se usa cifrado en disco)
-    storage_key: null,
+    storage_key: key,
     iv: null,
     auth_tag: null,
     hash_sha256: null,
     tamano_bytes: file.size || file.buffer.length,
-    url_documento: urlDocumento,
+    url_documento: buildPublicUrl(key),
     estado_ia: 'PENDIENTE',
   });
 
@@ -254,20 +259,12 @@ async function deletePendingByRegistro(registroId) {
     where: { registro_pendiente_id: registroId },
   });
   for (const doc of docs) {
-    if (doc.url_documento) {
-      // Nuevo flujo: eliminar de S3 / almacenamiento local público
-      await deleteDocumentoPendiente(doc.url_documento).catch(() => {});
-    } else if (doc.storage_key) {
-      // Legado: eliminar archivo cifrado del disco
-      deleteFileIfExists(doc.storage_key);
+    // Eliminar de S3 si existe la key
+    if (doc.storage_key) {
+      await deleteFromS3(doc.storage_key);
     }
   }
   await RegistroPendienteDocumento.destroy({ where: { registro_pendiente_id: registroId } });
-  // Limpiar directorio cifrado legado si existe
-  const pendingDir = path.join(getStorageRoot(), 'pending', String(registroId));
-  if (fs.existsSync(pendingDir)) {
-    fs.rmSync(pendingDir, { recursive: true, force: true });
-  }
 }
 
 async function deleteAtletaDocument(atletaId, docId) {
