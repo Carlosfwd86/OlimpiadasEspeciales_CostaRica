@@ -20,7 +20,7 @@ const Footer = (): React.JSX.Element => {
           <img src={s3Url('img/Logo Olimpiadas.png')} alt="Logo Olimpiadas Especiales" className="footer_logo_img" />
           <p className="footer_tagline">Transformando vidas a través del deporte y la inclusión. Únete a nuestra comunidad.</p>
         </div>
-        <button className="boton_donar_footer" onClick={() => irASeccion('/contacto')}>Donar Ahora</button>
+        <button className="boton_donar_footer" onClick={() => window.open('https://donaciones.olimpiadasespeciales.org/', '_blank')}>Donar Ahora</button>
       </div>
 
 
