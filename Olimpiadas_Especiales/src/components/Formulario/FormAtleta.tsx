@@ -293,63 +293,85 @@ function FormAtleta({ onVolver }: FormAtletaProps): React.JSX.Element {
     setDatos(prev => ({ ...prev, condicionesMedicas: prev.condicionesMedicas.filter(c => c !== cond) }));
   };
 
-  const validarYGuardarArchivo = (file: File | null, tipo: keyof ArchivosAtleta): void => {
+const validarYGuardarArchivo = (file: File | null, tipo: keyof ArchivosAtleta): void => {
     if (!file) return;
-    const tiposPermitidos = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    const tiposPermitidos = ['application/pdf', 'image/jpeg', 'image/webp'];
     if (!tiposPermitidos.includes(file.type) || file.size > 5 * 1024 * 1024) {
-      Swal.fire({ icon: 'error', title: 'Archivo inválido', text: 'PDF, JPG o PNG máximo 5MB.', confirmButtonColor: '#E00000' });
+      Swal.fire({ icon: 'error', title: 'Archivo inválido', text: 'PDF o JPG/JPEG/WebP máximo 5MB. Formato PNG no soportado por el procesador de IA.', confirmButtonColor: '#E00000' });
       return;
     }
     setArchivos({ ...archivos, [tipo]: file });
   };
 
-  // Procesa el certificado médico con GPT-4o Vision y autocompleta el formulario
   const procesarCertificadoConIA = async (): Promise<void> => {
     if (!archivos.certificado) return;
     const esImagen = archivos.certificado.type.startsWith('image/');
     if (!esImagen) {
-      Swal.fire({ icon: 'info', title: 'Formato no compatible con IA', text: 'El auto-completado con IA solo funciona con imágenes (JPG, PNG, WebP). Para PDFs, complete el formulario manualmente.', confirmButtonColor: '#E00000' });
+      Swal.fire({ icon: 'info', title: 'Formato no compatible con IA', text: 'El auto-completado con IA solo funciona con imágenes (JPG, WebP). Para PDFs, complete el formulario manualmente.', confirmButtonColor: '#E00000' });
       return;
     }
 
-    setOcrCargando(true);
-    try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(archivos.certificado as File);
-      });
-
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
-      const response = await fetch(`${API_URL}/ia/registro/ocr`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ imagenBase64: base64 })
-      });
-
-      const json = await response.json();
-      if (json.success && json.datos?.valido) {
-        const d = json.datos;
-        setDatos(prev => ({
-          ...prev,
-          ...(d.nombre && { nombre: d.nombre }),
-          ...(d.cedula && { cedula: d.cedula }),
-          ...(d.fechaNacimiento && { fechaNacimiento: d.fechaNacimiento }),
-          ...(d.medicamentos?.length && { medicamentos: d.medicamentos.map((m: string) => ({ nombre: m, dosis: '', frecuencia: '' })), tomaMedicamentos: 'Si' }),
-          ...(d.condiciones?.length && { condicionesMedicas: d.condiciones }),
-        }));
-        Swal.fire({ icon: 'success', title: '¡Datos detectados!', text: `La IA extrajo información del certificado. Revisa y ajusta los campos si es necesario.`, confirmButtonColor: '#E00000' });
-      } else {
-        Swal.fire({ icon: 'warning', title: 'No se pudo leer el certificado', text: json.datos?.error || 'La imagen no contiene datos médicos reconocibles. Complete el formulario manualmente.', confirmButtonColor: '#E00000' });
-      }
-    } catch {
-      Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servicio de IA.', confirmButtonColor: '#E00000' });
-    } finally {
-      setOcrCargando(false);
+    if (archivos.certificado.type === 'image/png') {
+      Swal.fire({ icon: 'error', title: 'Formato no soportado', text: 'El formato PNG no es compatible con el procesador de IA. Por favor use JPG o WebP.', confirmButtonColor: '#E00000' });
+      return;
     }
-  };
+
+     setOcrCargando(true);
+     try {
+       const base64 = await new Promise<string>((resolve, reject) => {
+         const reader = new FileReader();
+         reader.onload = () => {
+           const result = reader.result as string;
+           const base64Data = result.split(',')[1];
+           if (!base64Data || base64Data.length < 100) {
+             reject(new Error('Archivo vacío o corrupto'));
+             return;
+           }
+           resolve(base64Data);
+         };
+         reader.onerror = reject;
+         reader.readAsDataURL(archivos.certificado as File);
+       });
+
+       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+       const response = await fetch(`${API_URL}/ia/registro/ocr`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         credentials: 'include',
+         body: JSON.stringify({ imagenBase64: base64 })
+       });
+
+       const json = await response.json();
+       if (json.success && json.datos?.valido) {
+         const d = json.datos;
+         setDatos(prev => ({
+           ...prev,
+           ...(d.nombre && { nombre: d.nombre }),
+           ...(d.cedula && { cedula: d.cedula }),
+           ...(d.fechaNacimiento && { fechaNacimiento: d.fechaNacimiento }),
+           ...(d.medicamentos?.length && { medicamentos: d.medicamentos.map((m: string) => ({ nombre: m, dosis: '', frecuencia: '' })), tomaMedicamentos: 'Si' }),
+           ...(d.condiciones?.length && { condicionesMedicas: d.condiciones }),
+         }));
+         Swal.fire({ icon: 'success', title: '¡Datos detectados!', text: `La IA extrajo información del certificado. Revisa y ajusta los campos si es necesario.`, confirmButtonColor: '#E00000' });
+       } else {
+         const errorMsg = json.datos?.error || json.error || 'La imagen no contiene datos médicos reconocibles. Complete el formulario manualmente.';
+         if (errorMsg.includes('modelo') || errorMsg.includes('imagen')) {
+           Swal.fire({ icon: 'warning', title: 'Imagen no procesable', text: errorMsg, confirmButtonColor: '#E00000' });
+         } else {
+           Swal.fire({ icon: 'warning', title: 'No se pudo leer el certificado', text: errorMsg, confirmButtonColor: '#E00000' });
+         }
+       }
+     } catch (err: unknown) {
+       const msg = err instanceof Error ? err.message : 'Error desconocido';
+       if (msg.includes('vacío') || msg.includes('corrupto')) {
+         Swal.fire({ icon: 'error', title: 'Archivo inválido', text: 'El archivo de imagen está vacío o dañado. Por favor seleccione otro archivo.', confirmButtonColor: '#E00000' });
+       } else {
+         Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servicio de IA.', confirmButtonColor: '#E00000' });
+       }
+     } finally {
+       setOcrCargando(false);
+     }
+   };
 
   const validarPaso = (): boolean => {
     if (paso === 1) {

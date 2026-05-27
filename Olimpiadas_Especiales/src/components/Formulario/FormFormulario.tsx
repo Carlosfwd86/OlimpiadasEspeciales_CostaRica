@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
 import SelectorDeRol from './SelectorDeRol';
@@ -12,6 +13,16 @@ import type { RolType } from '../../types';
 const FormFormulario: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [rol, setRol] = useState<RolType | null>(searchParams.get('rol') as RolType | null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Si el usuario ya tiene un rol asignado (y no es el rol base 'usuario' ni 'admin'), lo bloqueamos
+    // IDs: 1:admin, 2:atleta, 3:entrenador, 4:voluntario, 5:tutor, 6:usuario
+    if (user && user.rol_id > 1 && user.rol_id < 6) {
+      navigate('/perfil');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const rolParam = searchParams.get('rol') as RolType | null;
