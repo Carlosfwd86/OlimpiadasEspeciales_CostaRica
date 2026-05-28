@@ -35,10 +35,11 @@ const entrenadorController = {
     try {
       let { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del entrenador es requerido.', 400));
+      let queryCondition = { id };
       if (typeof id === 'string' && id.includes('_')) {
-        id = id.split('_')[1];
+        queryCondition = { usuario_id: id.split('_')[1] };
       }
-      const entrenador = await Entrenador.findByPk(id);
+      const entrenador = await Entrenador.findOne({ where: queryCondition });
 
       if (!entrenador) {
         return res.status(404).json(errorResponse('Entrenador no encontrado en el sistema', 404));
@@ -126,11 +127,12 @@ const entrenadorController = {
     try {
       let { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del entrenador es requerido.', 400));
+      let queryCondition = { id };
       if (typeof id === 'string' && id.includes('_')) {
-        id = id.split('_')[1];
+        queryCondition = { usuario_id: id.split('_')[1] };
       }
 
-      const entrenador = await Entrenador.findByPk(id);
+      const entrenador = await Entrenador.findOne({ where: queryCondition });
 
       if (!entrenador) {
         return res.status(404).json(errorResponse('No se encontró el entrenador para actualizar', 404));

@@ -61,12 +61,15 @@ const atletaController = {
       let { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
       
-      // Manejar el ID si viene como "atleta_4"
+      // Manejar el ID si viene como "atleta_4" (donde 4 es el usuario_id)
+      let queryCondition = { id };
       if (typeof id === 'string' && id.includes('_')) {
-        id = id.split('_')[1];
+        const usuarioId = id.split('_')[1];
+        queryCondition = { usuario_id: usuarioId };
       }
 
-      const atleta = await Atleta.findByPk(id, {
+      const atleta = await Atleta.findOne({
+        where: queryCondition,
         include: [
           { model: AtletaDocumento, as: 'documentos' },
           { model: AtletaMedicamento, as: 'medicamentos' },
@@ -144,8 +147,9 @@ const atletaController = {
         tutor_telefono: data.tutorTelefono || null,
         tutor_correo: data.tutorCorreo || null,
         tutor_pais: data.tutorPais || null,
-        tutor_cedula: data.tutorCedula || null
-        , disciplina_id: disciplinaId,
+        tutor_cedula: data.tutorCedula || null,
+        usuario_id: data.usuario_id || null,
+        disciplina_id: disciplinaId,
         nivel_habilidad_id: nivelHabilidadId,
         req_dietetico: data.reqDietetico || data.req_dietetico || null,
         especificacion_dietetico: data.especificacionDietetico || data.especificacion_dietetico || null,
@@ -273,9 +277,11 @@ const atletaController = {
       let { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del atleta es requerido.', 400));
       
-      // Manejar el ID si viene como "atleta_4"
+      // Manejar el ID si viene como "atleta_4" (donde 4 es el usuario_id)
+      let queryCondition = { id };
       if (typeof id === 'string' && id.includes('_')) {
-        id = id.split('_')[1];
+        const usuarioId = id.split('_')[1];
+        queryCondition = { usuario_id: usuarioId };
       }
 
       const data = req.body;
@@ -354,10 +360,10 @@ const atletaController = {
       if (data.relacionAtleta) updates.relacion_atleta = data.relacionAtleta;
       if (data.relacionAtletaOtro) updates.relacion_atleta_otro = data.relacionAtletaOtro;
 
-      const [actualizado] = await Atleta.update(updates, { where: { id } });
+      const [actualizado] = await Atleta.update(updates, { where: queryCondition });
 
       if (actualizado || Object.keys(updates).length > 0) {
-        const atletaActualizado = await Atleta.findByPk(id);
+        const atletaActualizado = await Atleta.findOne({ where: queryCondition });
         return res.status(200).json(successResponse(atletaActualizado, 'Atleta actualizado correctamente'));
       }
       

@@ -29,10 +29,11 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     let { id } = req.params;
-    if (typeof id === 'string' && id.includes('_')) {
-      id = id.split('_')[1];
-    }
-    const data = await Tutor.findByPk(id);
+    let queryCondition = { id };
+      if (typeof id === 'string' && id.includes('_')) {
+        queryCondition = { usuario_id: id.split('_')[1] };
+      }
+    const data = await Tutor.findOne({ where: queryCondition });
     if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
     res.json(successResponse(data, 'Tutor obtenido correctamente'));
   } catch (error) { 
@@ -90,11 +91,12 @@ exports.create = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     let { id } = req.params;
-    if (typeof id === 'string' && id.includes('_')) {
-      id = id.split('_')[1];
-    }
+    let queryCondition = { id };
+      if (typeof id === 'string' && id.includes('_')) {
+        queryCondition = { usuario_id: id.split('_')[1] };
+      }
 
-    const data = await Tutor.findByPk(id);
+    const data = await Tutor.findOne({ where: queryCondition });
     if (!data) return res.status(404).json(errorResponse('Tutor no encontrado', 404));
 
     const body = req.body;

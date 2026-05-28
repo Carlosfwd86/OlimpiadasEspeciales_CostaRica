@@ -37,11 +37,12 @@ const voluntarioController = {
     try {
       let { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
+      let queryCondition = { id };
       if (typeof id === 'string' && id.includes('_')) {
-        id = id.split('_')[1];
+        queryCondition = { usuario_id: id.split('_')[1] };
       }
 
-      const voluntario = await Voluntario.findByPk(id, {
+      const voluntario = await Voluntario.findOne({ where: queryCondition,
         include: [{ model: VoluntarioArea }]
       });
 
@@ -127,11 +128,12 @@ const voluntarioController = {
     try {
       let { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
+      let queryCondition = { id };
       if (typeof id === 'string' && id.includes('_')) {
-        id = id.split('_')[1];
+        queryCondition = { usuario_id: id.split('_')[1] };
       }
 
-      const voluntario = await Voluntario.findByPk(id);
+      const voluntario = await Voluntario.findOne({ where: queryCondition });
 
       if (!voluntario) {
         return res.status(404).json(errorResponse('Voluntario no encontrado para actualizar', 404));
@@ -206,7 +208,7 @@ const voluntarioController = {
     try {
       const { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
-      const voluntario = await Voluntario.findByPk(id);
+      const voluntario = await Voluntario.findOne({ where: queryCondition });
       if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 
       await voluntario.update({ 
@@ -228,7 +230,7 @@ const voluntarioController = {
     try {
       const { id } = req.params;
       if (!id) return res.status(400).json(errorResponse('El ID del voluntario es requerido.', 400));
-      const voluntario = await Voluntario.findByPk(id);
+      const voluntario = await Voluntario.findOne({ where: queryCondition });
       if (!voluntario) return res.status(404).json(errorResponse('No encontrado', 404));
 
       await voluntario.update({ status: 'INACTIVO' });

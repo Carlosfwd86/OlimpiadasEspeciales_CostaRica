@@ -87,9 +87,9 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
   const validarYGuardarArchivo = (file: File | null, campo: keyof Archivos): void => {
     if (!file) return;
     const maxSize = 5 * 1024 * 1024;
-    const permitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    const permitidos = ['image/jpeg', 'image/webp', 'application/pdf'];
     if (!permitidos.includes(file.type)) {
-      Swal.fire({ icon: 'error', title: 'Formato Inválido', text: 'Solo se permiten imágenes (JPG, PNG, WEBP) o PDF.', confirmButtonColor: '#E00000' });
+      Swal.fire({ icon: 'error', title: 'Formato Inválido', text: 'Solo se permiten imágenes (JPG, WebP) o PDF. El formato PNG no es soportado por el procesador de IA.', confirmButtonColor: '#E00000' });
       return;
     }
     if (file.size > maxSize) {
@@ -323,7 +323,7 @@ function FormEntrenador({ onVolver }: FormEntrenadorProps): React.JSX.Element {
                     style={{ cursor: 'pointer', border: `2px dashed ${archivos[campo] ? '#16a34a' : requerido ? '#E00000' : '#cbd5e1'}`, borderRadius: '16px', padding: '25px', textAlign: 'center', background: archivos[campo] ? '#f0fdf4' : requerido ? '#fff1f2' : '#f8fafc', transition: 'all 0.2s' }}>
                     <div className="upload-zone-icon"><FormIcon name={icon} size={36} /></div>
                     <h4 style={{ margin: '0 0 4px', fontSize: '15px', color: '#1e293b' }}>{titulo}{requerido && <span style={{ color: '#E00000' }}> *</span>}</h4>
-                    <input id={fileId} type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, campo)} />
+                    <input id={fileId} type="file" accept=".jpg,.jpeg,.webp,.pdf" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, campo)} />
                     {archivos[campo] && <ArchivoAdjuntoBadge nombre={archivos[campo]!.name} />}
                   </div>
                 ))}

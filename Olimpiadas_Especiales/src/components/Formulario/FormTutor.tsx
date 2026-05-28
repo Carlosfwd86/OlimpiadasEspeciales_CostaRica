@@ -37,7 +37,11 @@ function FormTutor({ onVolver }: FormTutorProps): React.JSX.Element {
 
   const validarYGuardarArchivo = (file: File | null, campo: keyof ArchivosTutor): void => {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { Swal.fire({ icon: 'error', title: 'Archivo Muy Grande', text: 'El archivo no debe superar los 5MB.', confirmButtonColor: '#E00000' }); return; }
+    const tiposPermitidos = ['application/pdf', 'image/jpeg', 'image/webp'];
+    if (!tiposPermitidos.includes(file.type) || file.size > 5 * 1024 * 1024) {
+      Swal.fire({ icon: 'error', title: 'Archivo inválido', text: 'PDF, JPG o WebP máximo 5MB. El formato PNG no es soportado por el procesador de IA.', confirmButtonColor: '#E00000' });
+      return;
+    }
     setArchivos(prev => ({ ...prev, [campo]: file }));
   };
 
@@ -120,7 +124,7 @@ function FormTutor({ onVolver }: FormTutorProps): React.JSX.Element {
                 <div key={fileId} onClick={() => (document.getElementById(fileId) as HTMLInputElement)?.click()} style={{ cursor: 'pointer', border: `2px dashed ${archivos[campo] ? '#16a34a' : requerido ? '#E00000' : '#cbd5e1'}`, borderRadius: '16px', padding: '25px', textAlign: 'center', background: archivos[campo] ? '#f0fdf4' : requerido ? '#fff1f2' : '#f8fafc', transition: 'all 0.2s' }}>
                   <div className="upload-zone-icon"><FormIcon name={icon} size={36} /></div>
                   <h4 style={{ margin: '0 0 4px', fontSize: '15px', color: '#1e293b' }}>{titulo}{requerido && <span style={{ color: '#E00000' }}> *</span>}</h4>
-                  <input id={fileId} type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, campo)} />
+                  <input id={fileId} type="file" accept=".jpg,.jpeg,.webp,.pdf" style={{ display: 'none' }} onChange={(e) => validarYGuardarArchivo(e.target.files?.[0] ?? null, campo)} />
                   {archivos[campo] && <ArchivoAdjuntoBadge nombre={archivos[campo]!.name} />}
                 </div>
               ))}
